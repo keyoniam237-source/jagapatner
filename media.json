@@ -8,6 +8,15 @@
         "Candi Borobudur, Magelang",
         "Borobudur Temple, Magelang"
       ]
+    },
+    {
+      "src": "videos/lombok-pantai.mp4",
+      "poster": "videos/lombok-pantai.jpg",
+      "region": "Lombok",
+      "place": [
+        "Pesisir selatan Lombok",
+        "Southern Lombok coast"
+      ]
     }
   ],
   "gallery": []
