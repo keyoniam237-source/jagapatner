@@ -782,11 +782,11 @@ function applyStatic(){
 
 /* ================= DATA ================= */
 const REG = {
-  Bali:{color:'#3f6b52',office:'Jl. Sunset Road, Kuta — Badung',coord:'Made Arsana',areas:'Seminyak · Canggu · Ubud · Nusa Dua · Uluwatu',
+  Bali:{color:'#3f6b52',areas:'Seminyak · Canggu · Ubud · Nusa Dua · Uluwatu',
     desc:['Pusat operasi terbesar kami. Melayani villa privat, boutique hotel, dan apartemen sewa harian di kawasan wisata utama.','Our largest operations hub, serving private villas, boutique hotels and short-stay apartments across the main tourist areas.']},
-  Lombok:{color:'#3d5f83',office:'Jl. Raya Senggigi — Lombok Barat',coord:'Lalu Hamdani',areas:'Senggigi · Kuta Mandalika · Gili · Mataram',
+  Lombok:{color:'#3d5f83',areas:'Senggigi · Kuta Mandalika · Gili · Mataram',
     desc:['Tim yang siap mendukung pertumbuhan Mandalika dan Gili — termasuk logistik penyeberangan untuk properti di pulau.','A team ready to support the growth of Mandalika and the Gilis — including boat logistics for island properties.']},
-  Yogyakarta:{color:'#a8483f',office:'Jl. Prawirotaman — Kota Yogyakarta',coord:'Dimas Prakoso',areas:'Kota · Sleman · Bantul · Kaliurang',
+  Yogyakarta:{color:'#a8483f',areas:'Kota · Sleman · Bantul · Kaliurang',
     desc:['Melayani guesthouse heritage, hotel kota, kos eksklusif, hingga kantor dan ruang komersial.','Serving heritage guesthouses, city hotels and premium boarding houses, through to offices and commercial spaces.']}
 };
 /* [nameID, descID, bulletsID, descEN, bulletsEN] — names translated via D */
@@ -839,39 +839,26 @@ function toast(msg){const t=$('#toast');t.innerHTML='<span style="color:var(--go
 function mnav(on){$('#mnav').classList.toggle('on',on)}
 
 /* ================= STATE ================= */
-const KEY='jaga-demo-v1';
-function seed(){
-  const today=new Date();
-  const staff=[
-    ['Made Arsana','Koordinator','Bali'],['Ni Luh Sari','Supervisor','Bali'],['Komang Adi','Housekeeper','Bali'],['Kadek Wulan','Housekeeper','Bali'],['Wayan Putra','Teknisi Kolam','Bali'],['Ketut Ayu','Laundry','Bali'],
-    ['Lalu Hamdani','Koordinator','Lombok'],['Baiq Nurul','Supervisor','Lombok'],['Zainul Arifin','Housekeeper','Lombok'],['Siti Rahmi','Housekeeper','Lombok'],
-    ['Dimas Prakoso','Koordinator','Yogyakarta'],['Rina Lestari','Supervisor','Yogyakarta'],['Agus Setiawan','Housekeeper','Yogyakarta'],['Sri Wahyuni','Housekeeper','Yogyakarta'],['Bayu Nugroho','Teknisi','Yogyakarta']
-  ].map((s,i)=>({id:'S'+(101+i),nama:s[0],peran:s[1],wilayah:s[2],shift:i%3===1?'Siang':'Pagi',aktif:i%7!==5}));
-  const clients={Bali:['Villa Kayu Seminyak','Canggu Rice House','Ubud Hillside Retreat','Apartemen Kuta Central','Nusa Dua Bay Suites'],
-                 Lombok:['Senggigi Breeze Villa','Mandalika Surf Lodge','Gili Air Bungalows','Kantor Mataram Square'],
-                 Yogyakarta:['Prawirotaman Guesthouse','Hotel Malioboro Inn','Kos Eksklusif Seturan','Kaliurang Hill Villa']};
-  const props=['Villa','Hotel','Apartemen','Kantor / Komersial'];
-  const bookings=[];let n=1;
-  Object.keys(clients).forEach(w=>{
-    clients[w].forEach((c,ci)=>{
-      for(let k=0;k<3;k++){
-        const off=((ci*3+k)*2+(w==='Lombok'?1:w==='Yogyakarta'?2:0))%14-5;
-        const d=addDays(today,off);
-        const st=off<-1?(k%5===4?'Batal':'Selesai'):off<=0?'Berjalan':off<3?'Dijadwalkan':'Baru';
-        const tim=staff.filter(s=>s.wilayah===w&&s.peran!=='Koordinator');
-        bookings.push({id:'JG-'+(2400+n++),klien:c,telp:'08'+(1100000000+n*7919).toString().slice(0,10),wilayah:w,properti:props[(ci+k)%4],
-          layanan:SERVICES[(ci+k*2)%SERVICES.length],tanggal:iso(d),jam:['08:00','10:00','13:00','15:00'][(ci+k)%4],
-          status:st,petugas:tim[(ci+k)%tim.length].nama,nilai:(350+((ci*7+k*13)%30)*50)*1000,catatan:''});
-      }
-    });
-  });
-  const sop=[['Lepas & ganti seluruh linen',0],['Vacuum & pel seluruh lantai',0],['Sanitasi kamar mandi & toilet',0],['Lap debu furnitur & dekorasi',0],['Bersihkan dapur & peralatan',0],['Restock amenitas & air mineral',0],['Cek AC, lampu, & remote',0],['Foto sebelum–sesudah per ruangan',0],['Kunci & serahkan laporan',0]];
-  return {bookings,staff,sop};
-}
+/* ================= DATA STORE (template) =================
+   Portal dikirim KOSONG — belum ada data contoh.
+   INTEGRASI: saat database pusat siap, cukup ganti isi Store.load() dan Store.save()
+   dengan panggilan API (mis. fetch ke server). Bagian lain portal tidak perlu diubah.
+   Struktur data:
+     bookings: {id, klien, telp, wilayah, properti, layanan, tanggal(YYYY-MM-DD), jam, status, petugas, nilai, catatan}
+     staff:    {id, nama, peran, wilayah, shift, aktif}
+     sop:      [teks langkah, 0|1]  */
+const KEY='jaga-data-v1';
+const SOP_TEMPLATE=[['Lepas & ganti seluruh linen',0],['Vacuum & pel seluruh lantai',0],['Sanitasi kamar mandi & toilet',0],['Lap debu furnitur & dekorasi',0],['Bersihkan dapur & peralatan',0],['Restock amenitas & air mineral',0],['Cek AC, lampu, & remote',0],['Foto sebelum–sesudah per ruangan',0],['Kunci & serahkan laporan',0]];
+const empty=()=>({bookings:[],staff:[],sop:SOP_TEMPLATE.map(x=>[x[0],0])});
+const Store={
+  load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):empty()}catch(e){return empty()}},
+  save(data){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+};
 let S;
-function load(){try{const r=localStorage.getItem(KEY);S=r?JSON.parse(r):seed()}catch(e){S=seed()}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function resetData(){S=seed();save();renderPortal();toast(L('Data contoh dipulihkan','Sample data restored'))}
+function load(){S=Store.load()}
+function save(){Store.save(S)}
+function resetData(){S=empty();save();renderPortal();toast(L('Data lokal dihapus','Local data cleared'))}
+try{localStorage.removeItem('jaga-demo-v1')}catch(e){}
 load();
 
 /* ================= WEBSITE RENDER ================= */
@@ -888,13 +875,12 @@ Lombok:`<svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice"><defs><l
 Yogyakarta:`<svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="gy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d98f6a"/><stop offset=".5" stop-color="#e7c08a"/><stop offset="1" stop-color="#3a2f26"/></linearGradient></defs><rect width="400" height="520" fill="url(#gy)"/><circle cx="110" cy="150" r="46" fill="#fde3b0" opacity=".8"/><path d="M0 330 Q120 300 200 320 T400 310 V520 H0Z" fill="#5b4a38"/><g fill="#2a211a"><path d="M80 380 h240 v-20 h-220z"/><path d="M100 360 h200 v-24 h-180z"/><path d="M120 336 h160 v-24 h-140z"/><path d="M140 312 h120 v-22 h-100z"/><path d="M160 290 h80 v-20 h-60z"/><path d="M190 270 q10 -40 20 0z"/><path d="M200 230 v-10" stroke="#2a211a" stroke-width="4"/></g><g fill="#2a211a" opacity=".85"><circle cx="120" cy="330" r="7"/><circle cx="150" cy="306" r="6"/><circle cx="250" cy="306" r="6"/><circle cx="280" cy="330" r="7"/><circle cx="170" cy="284" r="5"/><circle cx="230" cy="284" r="5"/></g><path d="M0 380 h400 v140 H0z" fill="#2a211a" opacity=".7"/></svg>`
 };
 function renderRegions(){
-  $('#regions').innerHTML=Object.entries(REG).map(([k,v],i)=>`<div class="reg reveal vis" onclick="pickRegion('${k}')"><div class="art">${ART[k]}</div><div class="c"><small>${L('Wilayah','Region')} 0${i+1}</small><h3>${k}</h3><p>${L(...v.desc)}<br><br><span style="color:var(--gold2)">${v.areas}</span></p><div class="meta"><span><b id="rc-${k}">0</b> ${L('tim aktif','active staff')}</span><span>${L('Pesan layanan →','Book a service →')}</span></div></div></div>`).join('');
-  $('#offices').innerHTML=Object.entries(REG).map(([k,v])=>`<div class="office"><b>${k}</b><p>${v.office}<br>${L('Koordinator','Coordinator')}: ${v.coord}</p></div>`).join('');
+  $('#regions').innerHTML=Object.entries(REG).map(([k,v],i)=>`<div class="reg reveal vis" onclick="pickRegion('${k}')"><div class="art">${ART[k]}</div><div class="c"><small>${L('Wilayah','Region')} 0${i+1}</small><h3>${k}</h3><p>${L(...v.desc)}<br><br><span style="color:var(--gold2)">${v.areas}</span></p><div class="meta"><span>${L('Pesan layanan →','Book a service →')}</span></div></div></div>`).join('');
+  $('#offices').innerHTML=Object.entries(REG).map(([k,v])=>`<div class="office"><b>${k}</b><p>${v.areas}</p></div>`).join('');
 }
 function pickRegion(r){$('#fWil').value=r;location.hash='kontak';}
 function updateSiteCounts(){
-  Object.keys(REG).forEach((k,i)=>{const el=$('#rc-'+k);if(el)el.textContent=S.staff.filter(s=>s.wilayah===k&&s.aktif).length;
-    const mk=$('#mk'+(i+1));if(mk)mk.textContent=S.bookings.filter(b=>b.wilayah===k&&b.status!=='Batal').length;});
+  /* angka publik tidak diambil dari data portal */
 }
 function renderServiceSelect(){const v=$('#fLay').value;$('#fLay').innerHTML=opts(SERVICES,v||SERVICES[0])}
 
@@ -991,7 +977,7 @@ function dash(){
   const counts=days.map(d=>B.filter(b=>b.tanggal===d&&b.status!=='Batal').length);const mx=Math.max(1,...counts);
   const bars=days.map((d,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span style="font-size:11px;color:var(--muted)">${counts[i]||''}</span><div title="${fmtD(d)}: ${counts[i]} ${L('pekerjaan','jobs')}" style="width:70%;height:${counts[i]/mx*120+2}px;background:${d===today?'var(--ink)':'var(--gold)'};border-radius:4px 4px 0 0"></div><span style="font-size:10.5px;color:${d===today?'var(--ink)':'var(--muted)'};font-weight:${d===today?600:400}">${new Date(d+'T00:00').getDate()}</span></div>`).join('');
   return header(L('Dasbor Operasional','Operations Dashboard'),regLabel()+' · '+new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'}),newBtn())+
-  `<div class="demo">${L('Mode demo: semua angka berasal dari data contoh dan pesanan yang Anda tambahkan di browser ini.','Demo mode: all figures come from sample data and the orders you add in this browser.')}</div>
+  `<div class="demo">${L('Template portal — belum terhubung ke database pusat. Data akan tampil di sini setelah integrasi.','Portal template — not yet connected to the central database. Data will appear here after integration.')}</div>
   <div class="kpis">
     <div class="kpi"><small>${L('Pekerjaan hari ini','Jobs today')}</small><b>${todayJobs.length}</b><span>${todayJobs.filter(b=>b.status==='Berjalan').length} ${L('sedang berjalan','in progress')}</span></div>
     <div class="kpi"><small>${L('Pesanan aktif','Active orders')}</small><b>${act.filter(b=>b.status!=='Selesai').length}</b><span>${B.filter(b=>b.status==='Baru').length} ${L('menunggu dijadwalkan','awaiting scheduling')}</span></div>
@@ -1048,7 +1034,7 @@ function staffPage(){
     return `<div class="person"><div class="av" style="background:${REG[s.wilayah].color}">${esc(ini)}</div><div style="flex:1"><h4>${esc(s.nama)}</h4><p>${esc(T(s.peran))} · ${s.wilayah} · ${s.id}</p>
     <div class="row"><span class="chip">${L('Shift '+s.shift,T(s.shift)+' shift')}</span><span class="chip">${load} ${L('tugas aktif','active jobs')}</span><span class="chip ${s.aktif?'on':'off'}" style="cursor:pointer" onclick="toggleStaff('${s.id}')">${s.aktif?L('Bertugas','On duty'):L('Libur','Off')}</span></div></div></div>`}).join('');
   return header(L('Tim & Shift','Team & Shifts'),regLabel()+' · '+Ls.length+' '+L('anggota','members'),`<button class="abtn" onclick="openStaff()">＋ ${L('Tambah staf','Add staff')}</button>`)+
-  `<p class="rg" style="margin:-10px 0 16px">${L('Klik status “Bertugas/Libur” untuk mengubah ketersediaan.','Click the “On duty/Off” status to change availability.')}</p><div class="staff">${cards}</div>`;
+  `<p class="rg" style="margin:-10px 0 16px">${L('Klik status “Bertugas/Libur” untuk mengubah ketersediaan.','Click the “On duty/Off” status to change availability.')}</p>${Ls.length?`<div class="staff">${cards}</div>`:`<div class="panel empty">${L('Belum ada data staf. Tambahkan staf, atau data akan terisi otomatis setelah terhubung ke database.','No staff yet. Add staff, or data will fill in automatically once connected to the database.')}</div>`}`;
 }
 function toggleStaff(id){const s=S.staff.find(x=>x.id===id);s.aktif=!s.aktif;save();renderPortal()}
 
@@ -1082,7 +1068,7 @@ function openBooking(id){
    <div class="f"><label>${L('Nilai (Rp)','Value (Rp)')}</label><input type="number" name="nilai" min="0" step="50000" value="${b.nilai}"></div>
    <div class="f full"><label>${L('Catatan','Notes')}</label><textarea name="catatan" rows="2">${esc(b.catatan)}</textarea></div>
   </form><div class="mact">${id?`<button class="abtn light" style="color:var(--red);margin-right:auto" onclick="delBooking('${id}')">${L('Hapus','Delete')}</button>`:''}<button class="abtn light" onclick="closeModal()">${L('Batal','Cancel')}</button><button class="abtn" onclick="saveBooking('${id||''}')">${L('Simpan','Save')}</button></div>`;
-  const fillPet=()=>{const w=$('#mWil').value;$('#mPet').innerHTML=S.staff.filter(s=>s.wilayah===w&&s.peran!=='Koordinator').map(s=>`<option ${s.nama===b.petugas?'selected':''}>${esc(s.nama)}</option>`).join('')};
+  const fillPet=()=>{const w=$('#mWil').value;$('#mPet').innerHTML=`<option value="-">${L('— Belum ditugaskan —','— Unassigned —')}</option>`+S.staff.filter(s=>s.wilayah===w&&s.peran!=='Koordinator').map(s=>`<option ${s.nama===b.petugas?'selected':''}>${esc(s.nama)}</option>`).join('')};
   fillPet();$('#mWil').onchange=fillPet;$('#modal').classList.add('on');
 }
 function saveBooking(id){
@@ -1173,7 +1159,7 @@ function applyRole(){
   $$('#pnav a.regf').forEach(a=>{a.style.display=coord&&a.dataset.reg!==USER.region?'none':'';a.classList.toggle('on',a.dataset.reg===P.reg)});
   const ini=USER.name.split(' ').map(x=>x[0]).slice(0,2).join('');
   $('#pfoot').innerHTML=`<div class="who"><div class="av">${esc(ini)}</div><div><b>${esc(USER.name)}</b><span>${USER.role==='admin'?L('Admin · semua wilayah','Admin · all regions'):L('Koordinator · ','Coordinator · ')+USER.region}</span></div></div>
-  ${L('Data contoh tersimpan di browser ini.','Sample data is stored in this browser.')}<br>${USER.role==='admin'?`<a onclick="resetData()">${L('Reset data contoh','Reset sample data')}</a> · `:''}<a onclick="logout()">${L('Keluar','Sign out')}</a> · <a href="#beranda">${L('Ke situs','Back to site')}</a>`;
+  ${L('Template · belum terhubung ke database.','Template · not yet connected to a database.')}<br>${USER.role==='admin'?`<a onclick="resetData()">${L('Hapus data lokal','Clear local data')}</a> · `:''}<a onclick="logout()">${L('Keluar','Sign out')}</a> · <a href="#beranda">${L('Ke situs','Back to site')}</a>`;
 }
 const myRegions=()=>USER&&USER.role!=='admin'?[USER.region]:Object.keys(REG);
 function enterPortal(){$('#portal').classList.remove('locked');applyRole();renderPortal()}
