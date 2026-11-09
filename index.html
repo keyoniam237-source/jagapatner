@@ -250,6 +250,134 @@ footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:2
 .mprog{font-size:13px;color:var(--muted);margin-top:12px;min-height:18px}
 .mprog.err{color:var(--red)}.mprog.ok{color:var(--green)}
 
+/* ===== PROPERTY PAGE ===== */
+#site.pmode>section,#site.pmode>.mnav~section{display:none!important}
+#site.pmode #propPage{display:block}
+#propPage{display:none;background:#f6f3ee;min-height:100vh}
+.pbanner{background:linear-gradient(180deg,#0e1210,#1c231f);color:#fff;padding:150px 6vw 60px;position:relative;overflow:hidden}
+.pbanner:after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border:1px solid rgba(201,169,106,.2);border-radius:50%}
+.pbanner .wrap{position:relative;z-index:1}
+.pbanner h1{font-family:var(--serif);font-weight:400;font-size:clamp(38px,5vw,64px);margin:14px 0 10px;line-height:1.08}
+.pbanner p{color:rgba(255,255,255,.66);max-width:620px;line-height:1.7;font-size:15.5px}
+.pbody{max-width:1320px;margin:0 auto;padding:46px 6vw 100px;display:grid;grid-template-columns:270px 1fr;gap:48px;align-items:start}
+.pside{position:sticky;top:96px}
+.pside h3{font-family:var(--serif);font-weight:400;font-size:30px;color:var(--ink);margin-bottom:18px}
+.fgrp{margin-bottom:26px}
+.fgrp h4{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px}
+.fopt{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #e6dfd1;font-size:15px;color:var(--text);cursor:pointer;user-select:none}
+.fopt input{appearance:none;width:18px;height:18px;border:1.5px solid #cfc5b2;border-radius:4px;display:grid;place-items:center;flex:none;cursor:pointer;background:#fff}
+.fopt input:checked{background:var(--ink);border-color:var(--ink)}
+.fopt input:checked:after{content:"";width:9px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.fopt span{flex:1}.fopt em{font-style:normal;font-size:13px;color:var(--muted)}
+.fopt.zero{opacity:.45}
+.ptools{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.ptools .cnt{font-size:14px;color:var(--muted)}
+.ptools select{border:1px solid #e1d8c6;background:#fff;color:var(--text);border-radius:999px;padding:10px 16px;font:inherit;font-size:13.5px}
+.ptools .pfbtn{display:none}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+.pcard{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px -18px rgba(0,0,0,.18);transition:transform .35s,box-shadow .35s;display:flex;flex-direction:column}
+.pcard:hover{transform:translateY(-4px);box-shadow:0 2px 4px rgba(0,0,0,.04),0 26px 50px -24px rgba(0,0,0,.3)}
+.pcard .ph{position:relative;aspect-ratio:4/3;overflow:hidden;background:#e6dfd1;cursor:pointer}
+.pcard .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.pcard:hover .ph img{transform:scale(1.05)}
+.bdg{position:absolute;top:16px;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.bdg.feat{left:16px;background:var(--gold);color:#fff}
+.bdg.type{right:16px;background:rgba(255,255,255,.88);color:var(--ink);text-transform:none;letter-spacing:0;font-weight:500;font-size:13.5px;backdrop-filter:blur(6px)}
+.pcard .pb{padding:22px 22px 24px;display:flex;flex-direction:column;flex:1}
+.pcard .tt{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.pcard h3{font-family:var(--serif);font-weight:400;font-size:27px;line-height:1.15;color:var(--ink);cursor:pointer}
+.pcard:hover h3{color:#8a6a24}
+.bookpill{flex:none;background:#f6efdc;color:#a88442;border:0;border-radius:999px;padding:9px 16px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.bookpill:hover{background:var(--gold);color:#fff}
+.ploc{display:flex;align-items:center;gap:8px;margin:18px 0 0;padding-bottom:16px;border-bottom:1px solid #eee6d6;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ploc svg{width:14px;height:14px;fill:var(--gold);flex:none}
+.pprice{margin:16px 0 18px;font-size:15px;color:var(--muted)}
+.pprice b{font-size:24px;font-weight:500;color:#a88442;margin:0 4px}
+.pprice small{display:block;font-size:12.5px;margin-top:4px}
+.pbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:auto}
+.pbtns button,.pbtns a{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:14px 10px;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;transition:.25s;cursor:pointer}
+.b-dark{background:var(--ink);color:#fff;border:0}.b-dark:hover{background:#2b332e}
+.b-line{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}.b-line:hover{background:var(--ink);color:#fff}
+.pempty{background:#fff;border-radius:18px;padding:60px 30px;text-align:center;color:var(--muted)}
+.pempty h3{font-family:var(--serif);font-weight:400;font-size:30px;color:var(--ink);margin-bottom:10px}
+/* detail */
+.pdet{max-width:1320px;margin:0 auto;padding:120px 6vw 100px}
+.pdet .back{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);cursor:pointer}
+.pdet .back:hover{color:var(--ink)}
+.pdet h1{font-family:var(--serif);font-weight:400;font-size:clamp(36px,4.4vw,56px);color:var(--ink);margin:14px 0 8px;line-height:1.1}
+.pdet .meta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:24px}
+.pdet .meta .ploc{margin:0;padding:0;border:0}
+.pdet .meta .bdg{position:static}
+.pgal{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:220px 220px;gap:10px;border-radius:18px;overflow:hidden;margin-bottom:40px}
+.pgal div{background:#e6dfd1;cursor:zoom-in;overflow:hidden;position:relative}
+.pgal div:first-child{grid-row:span 2}
+.pgal img{width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.pgal div:hover img{transform:scale(1.04)}
+.pgal .more{position:absolute;inset:0;background:rgba(0,0,0,.45);color:#fff;display:grid;place-items:center;font-size:15px;letter-spacing:.1em}
+.pgal.n1{grid-template-columns:1fr;grid-template-rows:440px}.pgal.n1 div:first-child{grid-row:auto}
+.pgal.n2{grid-template-columns:2fr 1fr;grid-template-rows:440px}.pgal.n2 div:first-child{grid-row:auto}
+.pgal.n3{grid-template-columns:2fr 1fr}
+.pgal.n3 div:nth-child(2),.pgal.n3 div:nth-child(3){grid-column:2}
+.pcols{display:grid;grid-template-columns:1fr 400px;gap:56px;align-items:start}
+.specs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #e1d8c6;border-bottom:1px solid #e1d8c6;margin-bottom:34px}
+.specs div{padding:20px 0;border-right:1px solid #e1d8c6;text-align:center}.specs div:last-child{border:0}
+.specs b{display:block;font-family:var(--serif);font-size:30px;font-weight:400;color:var(--ink)}
+.specs span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pdet h2{font-family:var(--serif);font-weight:400;font-size:30px;color:var(--ink);margin:0 0 14px}
+.pdesc{font-size:15.5px;line-height:1.85;color:var(--text);white-space:pre-line;margin-bottom:34px}
+.amen{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 24px;margin-bottom:30px}
+.amen div{display:flex;align-items:center;gap:10px;font-size:15px}
+.amen div:before{content:"✓";color:var(--gold);font-weight:700}
+.bk{position:sticky;top:96px;background:#fff;border-radius:18px;padding:28px;box-shadow:0 20px 50px -26px rgba(0,0,0,.3);border:1px solid #eee6d6}
+.bk .pr{font-size:14px;color:var(--muted);margin-bottom:16px}.bk .pr b{font-size:28px;font-weight:500;color:#a88442;margin-right:4px}
+.bk .seg{display:flex;width:100%;margin-bottom:16px}.bk .seg button{flex:1}
+.bk .fx{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.bk label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.bk input,.bk select,.bk textarea{width:100%;border:1px solid #e1d8c6;background:#fff;color:var(--text);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;outline:none}
+.bk input:focus,.bk select:focus,.bk textarea:focus{border-color:var(--gold)}
+.bk .full{margin-bottom:10px}
+.bk .sum{background:#faf7f1;border-radius:12px;padding:14px 16px;margin:14px 0;font-size:14px}
+.bk .sum div{display:flex;justify-content:space-between;padding:4px 0}
+.bk .sum .tot{border-top:1px solid #e6dfd1;margin-top:6px;padding-top:10px;font-weight:600;color:var(--ink);font-size:16px}
+.bk .go{width:100%;border:0;border-radius:999px;padding:16px;font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px}
+.bk .go:hover{background:var(--gold);color:#111}.bk .go:disabled{opacity:.5;cursor:not-allowed}
+.bk .note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6;text-align:center}
+.bk .err{color:var(--red);font-size:13px;margin-top:8px;min-height:18px}
+.okbox{text-align:center;padding:10px 4px}
+.okbox .ic{width:56px;height:56px;border-radius:50%;background:#e3eee7;color:var(--green);display:grid;place-items:center;font-size:26px;margin:0 auto 14px}
+.okbox h3{font-family:var(--serif);font-weight:400;font-size:28px;color:var(--ink);margin-bottom:8px}
+.okbox p{font-size:14px;color:var(--muted);line-height:1.7}
+/* home teaser */
+.hprops{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:50px}
+.hcta{margin-top:40px;display:flex;justify-content:center}
+@media(max-width:1100px){.pcols{grid-template-columns:1fr}.bk{position:static}}
+@media(max-width:960px){
+  .pbody{grid-template-columns:1fr;gap:20px}.pside{position:static;display:none;background:#fff;border-radius:16px;padding:22px}.pside.on{display:block}
+  .ptools .pfbtn{display:inline-flex}.hprops{grid-template-columns:1fr}
+  .pgal{grid-template-columns:1fr 1fr;grid-template-rows:240px 140px}.pgal div:first-child{grid-column:span 2;grid-row:auto}.pgal div:nth-child(n+4){display:none}
+  .pgal.n3 div:nth-child(2),.pgal.n3 div:nth-child(3){grid-column:auto}
+  .specs{grid-template-columns:1fr 1fr}.specs div:nth-child(2){border-right:0}.specs div{border-bottom:1px solid #e1d8c6}
+}
+@media(max-width:600px){.pbanner{padding:120px 6vw 40px}.amen{grid-template-columns:1fr}.pgrid{grid-template-columns:1fr}}
+/* admin props */
+.aplist{display:grid;gap:10px;margin-top:14px}
+.aprow{display:flex;align-items:center;gap:14px;border:1px solid #eee6d6;border-radius:12px;padding:10px;background:#fcfaf6}
+.aprow img,.aprow .noimg{width:84px;height:62px;object-fit:cover;border-radius:8px;background:#ddd3bf;flex:none}
+.aprow .t{flex:1;min-width:0;font-size:13.5px}.aprow .t b{display:block;color:var(--ink);font-size:15px}.aprow .t span{color:var(--muted);font-size:12.5px}
+.pform .fx{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pform .fx3{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pform label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+.pform input,.pform select,.pform textarea{width:100%;border:1px solid #e1d8c6;background:#fff;color:var(--text);border-radius:10px;padding:9px 12px;font:inherit;font-size:13.5px;outline:none}
+.pform .chk{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 12px;font-size:13.5px;margin-top:4px}
+.pform .chk label{display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font-size:13.5px;color:var(--text);margin:0}
+.pform .chk input{width:auto}
+.pthumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.pthumbs div{position:relative;width:86px;height:64px;border-radius:8px;overflow:hidden;background:#ddd3bf}
+.pthumbs img{width:100%;height:100%;object-fit:cover}
+.pthumbs button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:11px}
+.pthumbs .cov{position:absolute;left:3px;bottom:3px;background:var(--gold);color:#fff;font-size:9.5px;padding:2px 6px;border-radius:99px;letter-spacing:.06em}
+.mbox.wide{max-width:760px}
+
 /* ===== gallery ===== */
 .gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:220px;gap:14px;margin-top:56px}
 .gal figure{position:relative;overflow:hidden;border-radius:4px;cursor:zoom-in;background:#ddd3bf;margin:0}
@@ -539,16 +667,15 @@ tr:hover td{background:#fbf8f2}
     </div>
   </section>
 
-  <!-- PROPERTI KAMI -->
-  <section class="s" id="properti" style="background:var(--cream2)">
+  <!-- PROPERTI KAMI (cuplikan di beranda) -->
+  <section class="s" id="unggulan" style="background:var(--cream2)">
     <div class="wrap">
       <div class="split reveal">
-        <div><div class="kicker">Properti Kami</div><h2 class="t" data-en="Properties we <em>care for</em>.">Properti yang kami <em>rawat</em>.</h2></div>
-        <p class="lead">Dari villa privat hingga gedung perkantoran — setiap jenis properti memiliki paket layanan dan SOP tersendiri.</p>
+        <div><div class="kicker">Properti Kami</div><h2 class="t" data-en="Stay with <em>us</em>.">Menginap bersama <em>kami</em>.</h2></div>
+        <p class="lead">Villa, hotel, dan apartemen yang kami kelola — tersedia untuk sewa harian maupun bulanan dengan standar kebersihan JAGA.</p>
       </div>
-      <div class="pfilter reveal" id="pfilter"></div>
-      <div class="props" id="props"></div>
-      <p class="rg reveal" style="margin-top:18px">* Nama properti di atas adalah contoh tampilan — ganti dengan portofolio nyata Anda.</p>
+      <div class="hprops" id="hprops"></div>
+      <div class="hcta reveal"><a href="#properti" class="btn" id="hctaBtn">Lihat semua properti →</a></div>
     </div>
   </section>
 
@@ -696,6 +823,9 @@ tr:hover td{background:#fbf8f2}
     </div>
   </section>
 
+  <!-- HALAMAN PROPERTI (daftar & detail) -->
+  <div id="propPage"></div>
+
   <footer>
     <div class="wrap">
       <a class="brand" href="#beranda"><span class="mono"><svg><use href="#mono"/></svg></span><span class="bar"></span><span class="wm"><b>JAGA</b><small>Management Operation Partner</small></span></a>
@@ -722,6 +852,7 @@ tr:hover td{background:#fbf8f2}
         <a data-p="orders"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7M9 7h4"/></svg>Pesanan</a>
         <a data-p="sched"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Jadwal</a>
         <a data-p="staff"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-4 3.5-6 6.5-6s5.7 2 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14c2.8 0 4.8 1.6 5.5 5"/></svg>Tim &amp; Shift</a>
+        <a data-p="aprops" id="navProps" style="display:none"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5"/></svg>Properti</a>
         <a data-p="media" id="navMedia" style="display:none"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.5v5l4.5-2.5z"/></svg>Media</a>
         <a data-p="sop"><svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>Checklist SOP</a>
         <div class="sect">Wilayah</div>
@@ -749,7 +880,7 @@ try{const l=localStorage.getItem('jaga-lang');if(l==='EN'||l==='ID')LANG=l}catch
 const D={
  // nav & general
  'Beranda':'Home','Layanan':'Services','Properti Kami':'Our Properties','Mitra Kami':'Our Partners','Cerita Kami':'Our Story','Karier':'Careers','Kontak':'Contact',
- 'Mitra Operasional Perhotelan':'Your Hospitality Operations Partner',
+ 'Mitra Operasional Perhotelan':'Your Hospitality Operations Partner','Villa, hotel, dan apartemen yang kami kelola — tersedia untuk sewa harian maupun bulanan dengan standar kebersihan JAGA.':'Villas, hotels and apartments we manage — available for daily or monthly stays, kept to JAGA cleaning standards.','Lihat semua properti →':'View all properties →',
  'Kami merawat hotel, villa, apartemen, dan properti komersial di Bali, Lombok, dan Yogyakarta dengan standar perhotelan — dari housekeeping harian hingga pengelolaan operasional penuh.':'We care for hotels, villas, apartments and commercial properties in Bali, Lombok and Yogyakarta to hospitality standards — from daily housekeeping to full operational management.',
  'GULIR':'SCROLL',
  'Pilih layanan kebersihan sesuai kebutuhan, atau serahkan seluruh operasional properti Anda kepada tim kami.':'Choose the cleaning services you need, or hand over your property’s entire operation to our team.',
@@ -946,17 +1077,6 @@ $('#bookForm').addEventListener('submit',e=>{
 });
 
 /* ===== Properti, Blog, Karier ===== */
-const PTYPE={Villa:'<path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5"/>',Hotel:'<rect x="5" y="3" width="14" height="18"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M11 21v-3h2v3"/>',Apartemen:'<rect x="4" y="6" width="7" height="15"/><rect x="13" y="3" width="7" height="18"/><path d="M6 10h3M6 14h3M15 7h3M15 11h3M15 15h3"/>',Komersial:'<path d="M3 21h18M5 21V8l7-4 7 4v13M9 12h6M9 16h6"/>'};
-/* [type, region, nameID, nameEN, size, sizeUnit, place] */
-const PROPS=[['Villa','Bali','Villa Tepi Sawah','Rice Field Villa',4,'k','Ubud'],['Villa','Bali','Villa Pantai Barat','West Beach Villa',3,'k','Canggu'],['Hotel','Bali','Boutique Hotel Kuta','Kuta Boutique Hotel',28,'k','Kuta'],['Apartemen','Bali','Residensi Sunset','Sunset Residences',40,'u','Seminyak'],
- ['Villa','Lombok','Villa Bukit Mandalika','Mandalika Hill Villa',5,'k','Kuta Lombok'],['Hotel','Lombok','Bungalow Gili','Gili Bungalows',12,'k','Gili Air'],['Komersial','Lombok','Kantor Mataram','Mataram Office','1.200','m','Mataram'],
- ['Hotel','Yogyakarta','Guesthouse Heritage','Heritage Guesthouse',16,'k','Prawirotaman'],['Apartemen','Yogyakarta','Kos Eksklusif','Premium Residence',30,'u','Seturan'],['Villa','Yogyakarta','Villa Lereng Merapi','Merapi Slope Villa',4,'k','Kaliurang'],['Komersial','Yogyakarta','Ruang Kerja Kota','City Workspace',800,'m','Kota']];
-let PF='Semua';
-function renderProps(){
-  const unit=(n,u)=>u==='k'?`${n} ${L('kamar','rooms')}`:u==='u'?`${n} ${L('unit','units')}`:`${n} m²`;
-  $('#pfilter').innerHTML=['Semua','Bali','Lombok','Yogyakarta'].map(r=>`<button class="${PF===r?'on':''}" onclick="PF='${r}';renderProps()">${T(r)}</button>`).join('');
-  $('#props').innerHTML=PROPS.filter(p=>PF==='Semua'||p[1]===PF).map(p=>`<div class="prop"><div class="ph" style="background:linear-gradient(135deg,${REG[p[1]].color},#1a1f1c)"><svg viewBox="0 0 24 24">${PTYPE[p[0]]}</svg></div><div class="pb"><small>${T(p[0])} · ${p[1]}</small><h4>${L(p[2],p[3])}</h4><p>${unit(p[4],p[5])} · ${p[6]}</p></div></div>`).join('');
-}
 const POSTS=[[['Tips','Tips'],['Checklist turnover villa dalam 3 jam','A 3-hour villa turnover checklist'],['Urutan kerja yang membuat tim tetap cepat tanpa mengorbankan detail.','The work sequence that keeps teams fast without sacrificing detail.'],'#3f6b52'],
  [['Operasional','Operations'],['Mengatur stok linen saat musim ramai','Managing linen stock in peak season'],['Cara menghitung par level agar linen tidak pernah kurang.','How to calculate par levels so you never run short of linen.'],'#3d5f83'],
  [['Wilayah','Regions'],['Tantangan logistik properti di Gili','The logistics of island properties in the Gilis'],['Penyeberangan, perlengkapan, dan jadwal tim untuk properti di pulau.','Boat crossings, supplies and team schedules for island properties.'],'#a8483f']];
@@ -969,7 +1089,7 @@ function renderJobs(){
 }
 function applyJob(i){const j=JOBS[i];$('#fWil').value=j[1];document.querySelector('#bookForm textarea').value=L('Lamaran posisi: ','Application for: ')+L(...j[0])+' ('+j[1]+')';location.hash='kontak';toast(L('Isi nama & telepon, lalu kirim lamaran Anda','Enter your name & phone, then send your application'))}
 
-function renderSite(){renderGallery();renderCards();renderRegions();renderProps();renderPosts();renderJobs();renderServiceSelect();updateSiteCounts()}
+function renderSite(){renderGallery();renderCards();renderRegions();renderHomeProps();if($('#site').classList.contains('pmode'))renderPropRoute();renderPosts();renderJobs();renderServiceSelect();updateSiteCounts()}
 
 /* ===== Language switch ===== */
 function setLang(l){
@@ -981,8 +1101,8 @@ $('#langBtn').onclick=()=>{setLang(LANG==='ID'?'EN':'ID');toast(L('Bahasa Indone
 
 /* nav: solid on scroll, active link, reveal, counters */
 const nav=$('#nav');
-addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>60);
-  let cur='beranda';['beranda','layanan','properti','mitra','cerita','blog','karier','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id});
+addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>60||$('#site').classList.contains('pmode'));
+  let cur='beranda';if($('#site').classList.contains('pmode'))cur='properti';else ['beranda','layanan','unggulan','mitra','cerita','blog','karier','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id==='unggulan'?'properti':id});
   $$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
 },{passive:true});
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');
@@ -1009,6 +1129,7 @@ function renderPortal(){
   if(P.page==='staff')m.innerHTML=staffPage();
   if(P.page==='sop')m.innerHTML=sopPage();
   if(P.page==='media'){if(USER.role!=='admin'){go('dash');return}m.innerHTML=mediaPage()}
+  if(P.page==='aprops'){if(USER.role!=='admin'){go('dash');return}m.innerHTML=apropsPage()}
   updateSiteCounts();
 }
 
@@ -1197,9 +1318,11 @@ function renderGallery(){
   sec.hidden=false;
   $('#gallery').innerHTML=GALLERY.map((g,i)=>`<figure class="${g.size||''}" onclick="lbOpen(${i})"><img src="${g.src}" alt="${esc(L(...g.cap))}" loading="lazy"><figcaption><small>${g.region||''}</small>${esc(L(...g.cap))}</figcaption></figure>`).join('');
 }
-function lbOpen(i){LBI=i;const g=GALLERY[i];$('#lbImg').src=g.src;$('#lbImg').alt=L(...g.cap);$('#lbCap').textContent=(g.region?g.region+' — ':'')+L(...g.cap);$('#lb').classList.add('on')}
+let LBSET=null;
+function lbPhotos(set,i,title){LBSET=set.map(src=>({src,cap:[title,title],region:''}));lbOpen(i,true)}
+function lbOpen(i,keep){if(!keep)LBSET=null;LBI=i;const g=(LBSET||GALLERY)[i];$('#lbImg').src=g.src;$('#lbImg').alt=L(...g.cap);$('#lbCap').textContent=(g.region?g.region+' — ':'')+L(...g.cap);$('#lb').classList.add('on')}
 function lbClose(){$('#lb').classList.remove('on')}
-function lbGo(d){lbOpen((LBI+d+GALLERY.length)%GALLERY.length)}
+function lbGo(d){const n=(LBSET||GALLERY).length;lbOpen((LBI+d+n)%n,true)}
 addEventListener('keydown',e=>{if(!$('#lb').classList.contains('on'))return;if(e.key==='Escape')lbClose();if(e.key==='ArrowRight')lbGo(1);if(e.key==='ArrowLeft')lbGo(-1)});
 
 
@@ -1381,6 +1504,245 @@ async function mMove(kind,i,d){
     applyMedia();renderPortal()});
 }
 
+
+/* ================= PROPERTI (properties.json + settings.json) =================
+   Dikelola Admin dari Portal → Properti. Halaman publik: #properti (daftar) dan #p-<id> (detail). */
+let PROPS=[],SETTINGS={whatsapp:'',email:''};
+const AREAS={Bali:['Kuta','Seminyak','Canggu','Ubud','Nusa Dua','Uluwatu','Jimbaran','Sanur','Denpasar'],Lombok:['Senggigi','Kuta Mandalika','Gili Trawangan','Gili Air','Gili Meno','Mataram'],Yogyakarta:['Kota Yogyakarta','Sleman','Bantul','Kaliurang']};
+const PTYPES_PUB=['Villa','Hotel','Apartemen'];
+const AMEN={wifi:['WiFi','WiFi'],pool:['Kolam renang','Swimming pool'],ac:['AC','Air conditioning'],kitchen:['Dapur','Kitchen'],parking:['Parkir','Parking'],breakfast:['Sarapan','Breakfast'],laundry:['Laundry','Laundry'],tv:['TV','TV'],work:['Meja kerja','Workspace'],view:['Pemandangan','Scenic view'],cleaning:['Kebersihan harian','Daily cleaning'],security:['Keamanan 24 jam','24h security']};
+async function loadProps(){
+  try{const r=await fetch('properties.json?v='+Date.now(),{cache:'no-store'});if(r.ok)PROPS=(await r.json()).properties||[]}catch(e){}
+  try{const r=await fetch('settings.json?v='+Date.now(),{cache:'no-store'});if(r.ok)SETTINGS={...SETTINGS,...await r.json()}}catch(e){}
+  renderHomeProps();if($('#site').classList.contains('pmode'))renderPropRoute();
+}
+const pUrl=src=>LOCALURL[src]||src;
+const PIN='<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>';
+const rp=n=>'Rp '+Number(n||0).toLocaleString('id-ID');
+const pPrice=p=>p.priceDay?{v:p.priceDay,u:L('/ malam','/ night')}:{v:p.priceMonth,u:L('/ bulan','/ month')};
+function pCard(p){
+  const pr=pPrice(p),cover=p.photos&&p.photos[0];
+  return `<article class="pcard">
+    <div class="ph" onclick="location.hash='p-${p.id}'">${cover?`<img src="${pUrl(cover)}" alt="${esc(p.name)}" loading="lazy">`:''}
+      ${p.featured?`<span class="bdg feat">${L('Unggulan','Featured')}</span>`:''}<span class="bdg type">${esc(T(p.type))}</span></div>
+    <div class="pb">
+      <div class="tt"><h3 onclick="location.hash='p-${p.id}'">${esc(p.name)}</h3><button class="bookpill" onclick="location.hash='p-${p.id}';setTimeout(()=>{const b=document.getElementById('bkName');b&&b.scrollIntoView({behavior:'smooth',block:'center'})},350)">${L('Pesan','Book')}</button></div>
+      <div class="ploc">${PIN}${esc(p.area)}, ${esc(p.region)}</div>
+      <div class="pprice">${L('Mulai','From')}<b>${rp(pr.v)}</b>${pr.u}${p.priceDay&&p.priceMonth?`<small>${L('atau','or')} ${rp(p.priceMonth)} ${L('/ bulan','/ month')}</small>`:''}</div>
+      <div class="pbtns"><button class="b-dark" onclick="location.hash='p-${p.id}'">${L('Detail','Detail')}</button>
+      ${p.website?`<a class="b-line" href="${esc(p.website)}" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Website</a>`
+        :`<button class="b-line" onclick="location.hash='p-${p.id}'">${L('Pesan','Book')}</button>`}</div>
+    </div></article>`;
+}
+function renderHomeProps(){
+  const list=[...PROPS].sort((a,b)=>(b.featured?1:0)-(a.featured?1:0)).slice(0,3);
+  $('#hprops').innerHTML=list.map(pCard).join('');
+  $('#hprops').style.display=list.length?'':'none';
+}
+/* ---- daftar ---- */
+let PFIL={reg:[],area:[],type:[],mode:[],sort:'feat'},PSIDE=false;
+function propMatches(p,skip){
+  if(skip!=='reg'&&PFIL.reg.length&&!PFIL.reg.includes(p.region))return false;
+  if(skip!=='area'&&PFIL.area.length&&!PFIL.area.includes(p.area))return false;
+  if(skip!=='type'&&PFIL.type.length&&!PFIL.type.includes(p.type))return false;
+  if(skip!=='mode'&&PFIL.mode.length&&!PFIL.mode.some(m=>m==='day'?p.priceDay:p.priceMonth))return false;
+  return true;
+}
+function fGroup(key,title,opts){
+  return `<div class="fgrp"><h4>${title}</h4>${opts.map(([val,label])=>{const n=PROPS.filter(p=>propMatches(p,key)&&(key==='mode'?(val==='day'?p.priceDay:p.priceMonth):p[{reg:'region',area:'area',type:'type'}[key]]===val)).length;
+    return `<label class="fopt ${n?'':'zero'}"><input type="checkbox" ${PFIL[key].includes(val)?'checked':''} onchange="pToggle('${key}','${val.replace(/'/g,"\\'")}')"><span>${esc(label)}</span><em>${n}</em></label>`}).join('')}</div>`;
+}
+function pToggle(k,v){const a=PFIL[k],i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);renderPropList()}
+function renderPropList(){
+  const areas=[...new Set(PROPS.filter(p=>!PFIL.reg.length||PFIL.reg.includes(p.region)).map(p=>p.area))].sort();
+  let list=PROPS.filter(p=>propMatches(p));
+  const price=p=>p.priceDay||((p.priceMonth||0)/30);
+  if(PFIL.sort==='low')list.sort((a,b)=>price(a)-price(b));
+  else if(PFIL.sort==='high')list.sort((a,b)=>price(b)-price(a));
+  else list.sort((a,b)=>(b.featured?1:0)-(a.featured?1:0));
+  const any=PFIL.reg.length+PFIL.area.length+PFIL.type.length+PFIL.mode.length;
+  $('#propPage').innerHTML=`
+  <div class="pbanner"><div class="wrap"><div class="kicker">${L('Properti Kami','Our Properties')}</div>
+    <h1>${L('Hunian pilihan untuk menginap harian & bulanan','Curated stays, by the night or by the month')}</h1>
+    <p>${L('Villa, hotel, dan apartemen di Bali, Lombok, dan Yogyakarta yang dirawat dengan standar kebersihan dan operasional JAGA.','Villas, hotels and apartments in Bali, Lombok and Yogyakarta, maintained to JAGA cleaning and operations standards.')}</p></div></div>
+  <div class="pbody">
+    <aside class="pside ${PSIDE?'on':''}"><h3>${L('Filter','Filters')}</h3>
+      ${fGroup('reg',L('Wilayah','Region'),Object.keys(REG).map(r=>[r,r]))}
+      ${areas.length?fGroup('area','Area',areas.map(a=>[a,a])):''}
+      ${fGroup('type',L('Tipe','Type'),PTYPES_PUB.map(t=>[t,T(t)]))}
+      ${fGroup('mode',L('Sewa','Stay'),[['day',L('Harian','Daily')],['month',L('Bulanan','Monthly')]])}
+      ${any?`<button class="abtn light sm" onclick="PFIL={reg:[],area:[],type:[],mode:[],sort:PFIL.sort};renderPropList()">${L('Reset filter','Reset filters')}</button>`:''}
+    </aside>
+    <div>
+      <div class="ptools"><button class="abtn light sm pfbtn" onclick="PSIDE=!PSIDE;renderPropList()">☰ ${L('Filter','Filters')}${any?' ('+any+')':''}</button>
+        <span class="cnt">${list.length} ${L('properti','properties')}</span>
+        <select onchange="PFIL.sort=this.value;renderPropList()"><option value="feat" ${PFIL.sort==='feat'?'selected':''}>${L('Unggulan','Featured')}</option><option value="low" ${PFIL.sort==='low'?'selected':''}>${L('Harga terendah','Lowest price')}</option><option value="high" ${PFIL.sort==='high'?'selected':''}>${L('Harga tertinggi','Highest price')}</option></select></div>
+      ${list.length?`<div class="pgrid">${list.map(pCard).join('')}</div>`
+        :`<div class="pempty"><h3>${PROPS.length?L('Tidak ada yang cocok','No matches'):L('Properti segera hadir','Properties coming soon')}</h3><p>${PROPS.length?L('Coba ubah atau reset filter.','Try changing or resetting the filters.'):L('Daftar properti sedang kami siapkan. Hubungi kami untuk ketersediaan terbaru.','We are preparing our listings. Contact us for current availability.')}</p>${PROPS.length?'':`<div style="margin-top:20px"><a class="btn" href="#kontak">${L('Hubungi kami →','Contact us →')}</a></div>`}</div>`}
+    </div>
+  </div>`;
+}
+/* ---- detail + pemesanan ---- */
+let BK={mode:'day',ci:'',co:'',start:'',months:1,guests:1};
+function renderPropDetail(id){
+  const p=PROPS.find(x=>x.id===id);
+  if(!p){$('#propPage').innerHTML=`<div class="pdet"><a class="back" href="#properti">← ${L('Semua properti','All properties')}</a><div class="pempty" style="margin-top:24px"><h3>${L('Properti tidak ditemukan','Property not found')}</h3></div></div>`;return}
+  const ph=p.photos||[],n=Math.min(ph.length,5);
+  if(!(BK.pid===p.id)){BK={pid:p.id,mode:p.priceDay?'day':'month',ci:'',co:'',start:'',months:1,guests:1}}
+  const gal=n?`<div class="pgal n${Math.min(n,4)<4?n:''}">${ph.slice(0,5).map((src,i)=>`<div onclick='lbPhotos(${JSON.stringify(ph.map(pUrl)).replace(/'/g,"&#39;")},${i},${JSON.stringify(p.name).replace(/'/g,"&#39;")})'><img src="${pUrl(src)}" alt="${esc(p.name)}">${i===4&&ph.length>5?`<span class="more">+${ph.length-5} ${L('foto','photos')}</span>`:''}</div>`).join('')}</div>`:'';
+  const desc=p.desc?L(p.desc[0],p.desc[1]||p.desc[0]):'';
+  $('#propPage').innerHTML=`<div class="pdet">
+    <a class="back" href="#properti">← ${L('Semua properti','All properties')}</a>
+    <h1>${esc(p.name)}</h1>
+    <div class="meta"><div class="ploc">${PIN}${esc(p.area)}, ${esc(p.region)}</div><span class="bdg type" style="background:#efe9dc">${esc(T(p.type))}</span>${p.featured?`<span class="bdg feat">${L('Unggulan','Featured')}</span>`:''}</div>
+    ${gal}
+    <div class="pcols"><div>
+      <div class="specs"><div><b>${p.bedrooms||'—'}</b><span>${L('Kamar tidur','Bedrooms')}</span></div><div><b>${p.bathrooms||'—'}</b><span>${L('Kamar mandi','Bathrooms')}</span></div><div><b>${p.guests||'—'}</b><span>${L('Tamu','Guests')}</span></div><div><b>${p.size||'—'}</b><span>m²</span></div></div>
+      ${desc?`<h2>${L('Tentang properti','About this property')}</h2><div class="pdesc">${esc(desc)}</div>`:''}
+      ${(p.amenities||[]).length?`<h2>${L('Fasilitas','Amenities')}</h2><div class="amen">${p.amenities.map(a=>`<div>${esc(AMEN[a]?L(...AMEN[a]):a)}</div>`).join('')}</div>`:''}
+      <h2>${L('Termasuk layanan JAGA','Includes JAGA service')}</h2><div class="amen"><div>${L('Dibersihkan sesuai SOP JAGA','Cleaned to JAGA SOP')}</div><div>${L('Linen & handuk segar','Fresh linen & towels')}</div><div>${L('Dukungan tamu','Guest support')}</div><div>${L('Inspeksi sebelum check-in','Pre-check-in inspection')}</div></div>
+    </div>
+    <div><div class="bk" id="bkCard"></div></div></div>
+  </div>`;
+  renderBooking(p);
+}
+const fmtY=s=>new Date(s+'T00:00').toLocaleDateString(LOC(),{day:'numeric',month:'short',year:'numeric'});
+function bkCalc(p){
+  if(BK.mode==='day'){
+    if(!BK.ci||!BK.co)return null;const n=Math.round((new Date(BK.co)-new Date(BK.ci))/864e5);if(n<1)return null;
+    return {qty:n,unit:p.priceDay,label:L(`${n} malam`,`${n} night${n>1?'s':''}`),total:n*p.priceDay,range:`${fmtY(BK.ci)} – ${fmtY(BK.co)}`};
+  }
+  if(!BK.start)return null;const m=+BK.months;const end=new Date(BK.start+'T00:00');end.setMonth(end.getMonth()+m);
+  return {qty:m,unit:p.priceMonth,label:L(`${m} bulan`,`${m} month${m>1?'s':''}`),total:m*p.priceMonth,range:`${fmtY(BK.start)} – ${fmtY(iso(end))}`};
+}
+function renderBooking(p){
+  const today=iso(new Date()),both=p.priceDay&&p.priceMonth,c=bkCalc(p),pr=BK.mode==='day'?p.priceDay:p.priceMonth;
+  const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');
+  $('#bkCard').innerHTML=`
+    <div class="pr"><b>${rp(pr)}</b>${BK.mode==='day'?L('/ malam','/ night'):L('/ bulan','/ month')}</div>
+    ${both?`<div class="seg"><button class="${BK.mode==='day'?'on':''}" onclick="BK.mode='day';renderBooking(PROPS.find(x=>x.id==='${p.id}'))">${L('Harian','Daily')}</button><button class="${BK.mode==='month'?'on':''}" onclick="BK.mode='month';renderBooking(PROPS.find(x=>x.id==='${p.id}'))">${L('Bulanan','Monthly')}</button></div>`:''}
+    ${BK.mode==='day'?`<div class="fx"><div><label>Check-in</label><input type="date" min="${today}" value="${BK.ci}" onchange="BK.ci=this.value;if(BK.co&&BK.co<=BK.ci)BK.co='';renderBooking(PROPS.find(x=>x.id==='${p.id}'))"></div>
+      <div><label>Check-out</label><input type="date" min="${BK.ci||today}" value="${BK.co}" onchange="BK.co=this.value;renderBooking(PROPS.find(x=>x.id==='${p.id}'))"></div></div>`
+    :`<div class="fx"><div><label>${L('Mulai','Start')}</label><input type="date" min="${today}" value="${BK.start}" onchange="BK.start=this.value;renderBooking(PROPS.find(x=>x.id==='${p.id}'))"></div>
+      <div><label>${L('Lama sewa','Duration')}</label><select onchange="BK.months=this.value;renderBooking(PROPS.find(x=>x.id==='${p.id}'))">${[1,2,3,4,5,6,9,12].map(m=>`<option value="${m}" ${+BK.months===m?'selected':''}>${m} ${L('bulan','month'+(m>1?'s':''))}</option>`).join('')}</select></div></div>`}
+    <div class="full"><label>${L('Jumlah tamu','Guests')}</label><select onchange="BK.guests=this.value">${Array.from({length:Math.max(1,+p.guests||6)},(_,i)=>`<option ${+BK.guests===i+1?'selected':''}>${i+1}</option>`).join('')}</select></div>
+    ${c?`<div class="sum"><div><span>${rp(c.unit)} × ${c.label}</span><span>${rp(c.total)}</span></div><div><span style="color:var(--muted)">${c.range}</span></div><div class="tot"><span>${L('Estimasi total','Estimated total')}</span><span>${rp(c.total)}</span></div></div>`:''}
+    <div class="full"><label>${L('Nama lengkap','Full name')}</label><input id="bkName" value="${esc(BK.name||'')}" oninput="BK.name=this.value"></div>
+    <div class="fx"><div><label>WhatsApp</label><input id="bkTel" inputmode="tel" placeholder="08…" value="${esc(BK.tel||'')}" oninput="BK.tel=this.value"></div><div><label>Email</label><input id="bkMail" type="email" value="${esc(BK.mail||'')}" oninput="BK.mail=this.value"></div></div>
+    <div class="full"><label>${L('Catatan (opsional)','Notes (optional)')}</label><textarea rows="2" oninput="BK.note=this.value">${esc(BK.note||'')}</textarea></div>
+    <button class="go" ${wa?'':'disabled'} onclick="bkSubmit('${p.id}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2s-1 .2-3.4-.7c-2.9-1.1-4.7-4.1-4.8-4.3-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.6z"/></svg>${L('Pesan via WhatsApp','Book via WhatsApp')}</button>
+    <div class="err" id="bkErr"></div>
+    <div class="note">${wa?L('Pesanan dikirim ke tim JAGA melalui WhatsApp. Harga & ketersediaan dikonfirmasi oleh tim kami sebelum pembayaran.','Your request is sent to the JAGA team on WhatsApp. Price & availability are confirmed by our team before payment.'):L('Pemesanan online akan segera aktif. Sementara itu, silakan hubungi kami melalui halaman Kontak.','Online booking is coming soon. Meanwhile, please reach us via the Contact page.')}</div>`;
+}
+function bkSubmit(id){
+  const p=PROPS.find(x=>x.id===id),c=bkCalc(p),e=$('#bkErr');
+  if(!c){e.textContent=BK.mode==='day'?L('Pilih tanggal check-in dan check-out.','Choose check-in and check-out dates.'):L('Pilih tanggal mulai sewa.','Choose a start date.');return}
+  if(!(BK.name||'').trim()){e.textContent=L('Isi nama lengkap.','Enter your full name.');$('#bkName').focus();return}
+  if((BK.tel||'').replace(/\D/g,'').length<9){e.textContent=L('Isi nomor WhatsApp yang valid.','Enter a valid WhatsApp number.');$('#bkTel').focus();return}
+  const oid='JG-P'+Date.now().toString(36).toUpperCase().slice(-6);
+  const msg=[L('Halo JAGA, saya ingin memesan:','Hello JAGA, I would like to book:'),'',
+    `${L('No. pesanan','Order no.')}: ${oid}`,`${L('Properti','Property')}: ${p.name} (${T(p.type)}, ${p.area}, ${p.region})`,
+    `${L('Sewa','Stay')}: ${BK.mode==='day'?L('Harian','Daily'):L('Bulanan','Monthly')} — ${c.label}`,`${L('Tanggal','Dates')}: ${c.range}`,
+    `${L('Tamu','Guests')}: ${BK.guests}`,`${L('Estimasi total','Estimated total')}: ${rp(c.total)}`,'',
+    `${L('Nama','Name')}: ${BK.name.trim()}`,`WhatsApp: ${BK.tel.trim()}`];
+  if((BK.mail||'').trim())msg.push(`Email: ${BK.mail.trim()}`);if((BK.note||'').trim())msg.push(`${L('Catatan','Notes')}: ${BK.note.trim()}`);
+  const text=msg.join('\n');
+  const url=`https://wa.me/${(SETTINGS.whatsapp||'').replace(/\D/g,'')}?text=${encodeURIComponent(text)}`;
+  window.open(url,'_blank','noopener');
+  $('#bkCard').innerHTML=`<div class="okbox"><div class="ic">✓</div><h3>${L('Pesanan disiapkan','Request prepared')}</h3>
+    <p>${L('WhatsApp terbuka dengan detail pesanan Anda. Tekan <b>Kirim</b> di WhatsApp untuk menyelesaikan.','WhatsApp has opened with your booking details. Press <b>Send</b> in WhatsApp to complete it.')}<br><br>${L('No. pesanan','Order no.')}: <b>${oid}</b><br>${esc(p.name)} · ${c.label}<br>${rp(c.total)}</p>
+    <p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('Buka WhatsApp lagi','Open WhatsApp again')}</a> · <a style="cursor:pointer;color:var(--muted)" onclick="renderBooking(PROPS.find(x=>x.id==='${p.id}'))">${L('Ubah pesanan','Edit request')}</a></p></div>`;
+}
+function renderPropRoute(){const h=location.hash.slice(1);if(h.startsWith('p-'))renderPropDetail(h.slice(2));else renderPropList()}
+
+/* ================= ADMIN: kelola properti ================= */
+const savePropsFiles=()=>[{path:'properties.json',b64:txtB64(JSON.stringify({properties:PROPS},null,2)+'\n')}];
+function apropsPage(){
+  const tok=gh.tok();
+  const rows=PROPS.length?PROPS.map((p,i)=>`<div class="aprow">${p.photos&&p.photos[0]?`<img src="${pUrl(p.photos[0])}" alt="">`:'<div class="noimg"></div>'}
+      <div class="t"><b>${esc(p.name)} ${p.featured?'<span class="tag st-Dijadwalkan" style="margin-left:6px">'+L('Unggulan','Featured')+'</span>':''}</b><span>${esc(T(p.type))} · ${esc(p.area)}, ${esc(p.region)} · ${p.priceDay?rp(p.priceDay)+L('/malam','/night'):''}${p.priceDay&&p.priceMonth?' · ':''}${p.priceMonth?rp(p.priceMonth)+L('/bulan','/month'):''} · ${(p.photos||[]).length} ${L('foto','photos')}</span></div>
+      <a class="abtn light sm" href="#p-${p.id}" target="_blank">${L('Lihat','View')}</a>
+      <button class="abtn light sm" onclick="openPropForm(${i})">${L('Ubah','Edit')}</button>
+      <button class="abtn light sm" style="color:var(--red)" onclick="delProp(${i})">✕</button></div>`).join('')
+    :`<div class="empty" style="padding:22px">${L('Belum ada properti. Klik “Tambah properti” untuk mulai.','No properties yet. Click “Add property” to start.')}</div>`;
+  return header(L('Properti','Properties'),L('Daftar properti untuk sewa harian & bulanan di halaman Properti Kami · khusus Admin','Listings for daily & monthly stays on the Our Properties page · Admin only'),`<a class="abtn light" href="#properti" target="_blank">${L('Lihat halaman','View page')} ↗</a><button class="abtn" onclick="openPropForm(-1)">＋ ${L('Tambah properti','Add property')}</button>`)+
+  (tok?'':`<div class="demo">${L('Hubungkan GitHub terlebih dahulu di menu Media agar perubahan bisa disimpan ke website.','Connect GitHub first in the Media menu so changes can be saved to the website.')}</div>`)+
+  `<div class="panel"><div class="ph"><div><h3>${L('Daftar properti','Listings')}</h3><p>${PROPS.length} ${L('properti','properties')}</p></div></div><div class="aplist">${rows}</div></div>
+  <div class="panel"><div class="ph"><div><h3>${L('Pengaturan pemesanan','Booking settings')}</h3><p>${L('Pesanan dari halaman properti dikirim ke WhatsApp ini. Tanpa nomor, tombol pesan nonaktif.','Bookings from the property pages are sent to this WhatsApp. Without a number, the book button is disabled.')}</p></div></div>
+    <div class="mrow"><div class="f"><label>${L('Nomor WhatsApp bisnis','Business WhatsApp number')}</label><input id="setWa" inputmode="tel" placeholder="6281234567890" value="${esc(SETTINGS.whatsapp||'')}"></div>
+    <div class="f"><label>Email</label><input id="setMail" type="email" placeholder="info@…" value="${esc(SETTINGS.email||'')}"></div>
+    <button class="abtn" onclick="saveSettings()">${L('Simpan','Save')}</button></div>
+    <p class="rg" style="margin-top:8px">${L('Format: kode negara tanpa + atau 0 di depan, mis. 6281234567890.','Format: country code without + or leading 0, e.g. 6281234567890.')}</p></div>
+  <div class="mprog" id="mprog"></div>`;
+}
+async function saveSettings(){
+  let wa=$('#setWa').value.replace(/\D/g,'');if(wa.startsWith('0'))wa='62'+wa.slice(1);
+  if(wa&&wa.length<10){mProg(L('Nomor WhatsApp terlalu pendek.','WhatsApp number too short.'),'err');return}
+  await mRun(async()=>{const old={...SETTINGS};SETTINGS={...SETTINGS,whatsapp:wa,email:$('#setMail').value.trim()};
+    try{await gh.commit([{path:'settings.json',b64:txtB64(JSON.stringify(SETTINGS,null,2)+'\n')}],'Pengaturan: kontak pemesanan',mProg)}catch(e){SETTINGS=old;throw e}
+    renderPortal()});
+}
+let PF_PHOTOS=[],PF_NEW=[];
+function openPropForm(i){
+  const p=i>=0?PROPS[i]:{name:'',region:'Bali',area:'',type:'Villa',featured:false,priceDay:'',priceMonth:'',bedrooms:'',bathrooms:'',guests:'',size:'',amenities:[],desc:['',''],website:'',photos:[]};
+  PF_PHOTOS=[...(p.photos||[])];PF_NEW=[];
+  $('#mbox').classList.add('wide');
+  $('#mbox').innerHTML=`<h3>${i>=0?L('Ubah properti','Edit property'):L('Tambah properti','Add property')}</h3><form class="pform" id="pform" onsubmit="return false">
+    <label>${L('Nama properti','Property name')}</label><input name="name" required value="${esc(p.name)}" placeholder="Villa Ananta">
+    <div class="fx"><div><label>${L('Wilayah','Region')}</label><select name="region" onchange="document.getElementById('areaList').innerHTML=(AREAS[this.value]||[]).map(a=>'<option value=&quot;'+a+'&quot;>').join('')">${Object.keys(REG).map(r=>`<option ${r===p.region?'selected':''}>${r}</option>`).join('')}</select></div>
+      <div><label>Area</label><input name="area" list="areaList" required value="${esc(p.area)}" placeholder="Ubud"><datalist id="areaList">${(AREAS[p.region]||[]).map(a=>`<option value="${a}">`).join('')}</datalist></div></div>
+    <div class="fx"><div><label>${L('Tipe','Type')}</label><select name="type">${PTYPES_PUB.map(t=>`<option value="${t}" ${t===p.type?'selected':''}>${T(t)}</option>`).join('')}</select></div>
+      <div><label>Website (${L('opsional','optional')})</label><input name="website" type="url" value="${esc(p.website||'')}" placeholder="https://…"></div></div>
+    <div class="fx"><div><label>${L('Harga per malam (Rp)','Price per night (Rp)')}</label><input name="priceDay" type="number" min="0" step="50000" value="${p.priceDay||''}"></div>
+      <div><label>${L('Harga per bulan (Rp)','Price per month (Rp)')}</label><input name="priceMonth" type="number" min="0" step="500000" value="${p.priceMonth||''}"></div></div>
+    <div class="fx3"><div><label>${L('Kamar tidur','Bedrooms')}</label><input name="bedrooms" type="number" min="0" value="${p.bedrooms||''}"></div><div><label>${L('Kamar mandi','Bathrooms')}</label><input name="bathrooms" type="number" min="0" value="${p.bathrooms||''}"></div><div><label>${L('Maks. tamu','Max guests')}</label><input name="guests" type="number" min="1" value="${p.guests||''}"></div><div><label>${L('Luas (m²)','Size (m²)')}</label><input name="size" type="number" min="0" value="${p.size||''}"></div></div>
+    <label>${L('Fasilitas','Amenities')}</label><div class="chk">${Object.entries(AMEN).map(([k,v])=>`<label><input type="checkbox" name="am" value="${k}" ${(p.amenities||[]).includes(k)?'checked':''}>${L(...v)}</label>`).join('')}</div>
+    <label>${L('Deskripsi (ID)','Description (ID)')}</label><textarea name="descId" rows="3">${esc(p.desc?p.desc[0]:'')}</textarea>
+    <label>${L('Deskripsi (EN)','Description (EN)')}</label><textarea name="descEn" rows="3">${esc(p.desc?p.desc[1]:'')}</textarea>
+    <label><input type="checkbox" name="featured" ${p.featured?'checked':''} style="width:auto;margin-right:8px">${L('Tandai sebagai Unggulan','Mark as Featured')}</label>
+    <label>${L('Foto (yang pertama jadi sampul)','Photos (the first is the cover)')}</label><div class="pthumbs" id="pthumbs"></div>
+    <input type="file" accept="image/*" multiple onchange="pfAdd([...this.files]);this.value=''" style="margin-top:8px">
+  </form><div class="mprog" id="mprog"></div>
+  <div class="mact"><button class="abtn light" onclick="closeModal();$('#mbox').classList.remove('wide')">${L('Batal','Cancel')}</button><button class="abtn" onclick="saveProp(${i})">${L('Simpan ke website','Save to website')}</button></div>`;
+  pfThumbs();$('#modal').classList.add('on');
+}
+function pfThumbs(){
+  const all=[...PF_PHOTOS.map((s,i)=>({u:pUrl(s),k:'o',i})),...PF_NEW.map((n,i)=>({u:n.url,k:'n',i}))];
+  $('#pthumbs').innerHTML=all.map((x,j)=>`<div><img src="${x.u}" alt="">${j===0?`<span class="cov">${L('Sampul','Cover')}</span>`:''}<button type="button" onclick="pfRemove('${x.k}',${x.i})">✕</button></div>`).join('')||`<span class="rg">${L('Belum ada foto','No photos yet')}</span>`;
+}
+async function pfAdd(files){for(const f of files){const b=await resizeImage(f,1920,.82);PF_NEW.push({blob:b,url:URL.createObjectURL(b)})}pfThumbs()}
+function pfRemove(k,i){k==='o'?PF_PHOTOS.splice(i,1):PF_NEW.splice(i,1);pfThumbs()}
+async function saveProp(i){
+  const f=$('#pform');if(!f.reportValidity())return;const d=new FormData(f);
+  const priceDay=+d.get('priceDay')||0,priceMonth=+d.get('priceMonth')||0;
+  if(!priceDay&&!priceMonth){mProg(L('Isi minimal satu harga (per malam atau per bulan).','Enter at least one price (per night or per month).'),'err');return}
+  if(!PF_PHOTOS.length&&!PF_NEW.length){mProg(L('Tambahkan minimal satu foto.','Add at least one photo.'),'err');return}
+  const old=i>=0?PROPS[i]:null;
+  const id=old?old.id:(d.get('name').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'properti')+'-'+Date.now().toString(36).slice(-4);
+  await mRun(async()=>{
+    const files=[],newSrc=[];
+    for(const [k,n] of PF_NEW.entries()){const src=`images/properti/${id}-${Date.now().toString(36)}-${k}.jpg`;files.push({path:src,b64:await blobB64(n.blob)});newSrc.push([src,n.url])}
+    const removed=old?(old.photos||[]).filter(s=>!PF_PHOTOS.includes(s)):[];
+    const item={id,name:d.get('name').trim(),region:d.get('region'),area:d.get('area').trim(),type:d.get('type'),featured:!!d.get('featured'),
+      priceDay,priceMonth,bedrooms:+d.get('bedrooms')||0,bathrooms:+d.get('bathrooms')||0,guests:+d.get('guests')||0,size:+d.get('size')||0,
+      amenities:d.getAll('am'),desc:[d.get('descId').trim(),d.get('descEn').trim()],website:d.get('website').trim(),photos:[...PF_PHOTOS,...newSrc.map(x=>x[0])]};
+    const snapshot=JSON.stringify(PROPS);
+    if(old)PROPS[i]=item;else PROPS.push(item);
+    try{await gh.commit([...files,...removed.map(path=>({path,del:true})),...savePropsFiles()],`Properti: ${old?'ubah':'tambah'} ${item.name}`,mProg)}
+    catch(e){PROPS=JSON.parse(snapshot);throw e}
+    newSrc.forEach(([s,u])=>LOCALURL[s]=u);
+    closeModal();$('#mbox').classList.remove('wide');renderHomeProps();renderPortal();
+  });
+}
+async function delProp(i){
+  const p=PROPS[i];if(!p)return;
+  if(!window.__delOk||window.__delOk!==p.id){window.__delOk=p.id;mProg(L(`Klik ✕ sekali lagi untuk menghapus “${p.name}”.`,`Click ✕ again to delete “${p.name}”.`),'err');return}
+  window.__delOk=null;
+  await mRun(async()=>{const snap=JSON.stringify(PROPS);PROPS.splice(i,1);
+    try{await gh.commit([...(p.photos||[]).map(path=>({path,del:true})),...savePropsFiles()],`Properti: hapus ${p.name}`,mProg)}catch(e){PROPS=JSON.parse(snap);throw e}
+    renderHomeProps();renderPortal()});
+}
+
 /* ================= AKUN VIP (kode akses) =================
    Kode akses TIDAK disimpan di sini — hanya hash PBKDF2-SHA256 (150.000 iterasi, salt per akun).
    Untuk menambah/mengubah akun, minta Claude membuat kode baru. */
@@ -1429,7 +1791,7 @@ function renderLogin(){
 }
 function applyRole(){
   const coord=USER.role!=='admin';
-  $('#navMedia').style.display=coord?'none':'';
+  $('#navMedia').style.display=coord?'none':'';$('#navProps').style.display=coord?'none':'';
   if(coord)P.reg=USER.region;
   $$('#pnav a.regf').forEach(a=>{a.style.display=coord&&a.dataset.reg!==USER.region?'none':'';a.classList.toggle('on',a.dataset.reg===P.reg)});
   const ini=USER.name.split(' ').map(x=>x[0]).slice(0,2).join('');
@@ -1442,17 +1804,19 @@ function logout(){USER=null;try{sessionStorage.removeItem('jaga-user')}catch(e){
 
 
 /* ===== initial render ===== */
-loadMedia();
+loadMedia();loadProps();
 applyStatic();renderSite();
 $$('.reveal').forEach(el=>io.observe(el));
 
 
 /* ================= ROUTING ================= */
-const SITE_IDS=['beranda','cerita','layanan','properti','galeri','mitra','wilayah','proses','aplikasi','blog','karier','kontak'];
+const SITE_IDS=['beranda','cerita','layanan','unggulan','galeri','mitra','wilayah','proses','aplikasi','blog','karier','kontak'];
 function route(){
   const h=location.hash.slice(1);
   if(h==='portal'){$('#site').classList.remove('on');$('#portal').classList.add('on');scrollTo(0,0);if(USER)enterPortal();else{$('#portal').classList.add('locked');renderLogin()}return}
   $('#portal').classList.remove('on');$('#site').classList.add('on');updateSiteCounts();
+  if(h==='properti'||h.startsWith('p-')){$('#site').classList.add('pmode');renderPropRoute();scrollTo(0,0);nav.classList.add('solid');$$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#properti'));return}
+  if($('#site').classList.contains('pmode')){$('#site').classList.remove('pmode');$('#propPage').innerHTML=''}
   const el=document.getElementById(SITE_IDS.includes(h)?h:'beranda');
   requestAnimationFrame(()=>el.scrollIntoView({behavior:h?'smooth':'auto'}));
 }
