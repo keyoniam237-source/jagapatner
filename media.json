@@ -24,27 +24,32 @@
     {
       "name": "Traveloka",
       "url": "https://www.traveloka.com",
-      "logo": ""
+      "logo": "images/mitra/traveloka.png",
+      "bg": "#026aac"
     },
     {
       "name": "Booking.com",
       "url": "https://www.booking.com",
-      "logo": ""
+      "logo": "images/mitra/booking.png",
+      "bg": "#003b95"
     },
     {
       "name": "Agoda",
       "url": "https://www.agoda.com",
-      "logo": ""
+      "logo": "images/mitra/agoda.png",
+      "bg": "#ffffff"
     },
     {
       "name": "Trip.com",
       "url": "https://www.trip.com",
-      "logo": ""
+      "logo": "images/mitra/trip.png",
+      "bg": "#ffffff"
     },
     {
       "name": "tiket.com",
       "url": "https://www.tiket.com",
-      "logo": ""
+      "logo": "images/mitra/tiket.png",
+      "bg": "#0b2a4a"
     }
   ],
   "partnersBg": ""
