@@ -520,7 +520,17 @@ tr:hover td{background:#fbf8f2}
 /* ============ RESPONSIVE ============ */
 @media(max-width:1640px){.links a{padding:11px 13px;letter-spacing:.13em}.lang{padding:10px 16px 10px 12px}.pill{padding:14px 26px}}
 @media(max-width:1440px){.nav{padding-left:3vw;padding-right:3vw}.links a{padding:10px 9px;font-size:12px;letter-spacing:.1em}.links{gap:0}.pill{padding:13px 22px}}
-@media(max-width:1300px){.links{display:none}.burger{display:block}
+/* tablet / iPad landscape: menu lengkap satu baris, lebih rapat */
+@media(max-width:1300px) and (min-width:1024px){.nav{gap:14px;padding-left:2.4vw;padding-right:2.4vw}.links a{padding:9px 7px;font-size:11px;letter-spacing:.07em}
+  .lang{padding:8px 10px 8px 8px;font-size:11.5px}.pill{padding:11px 16px;font-size:11.5px;gap:9px}.brand{gap:10px}.brand .mono svg{width:32px;height:41px}.brand .bar{height:40px}
+  .brand .wm b{font-size:21px;letter-spacing:.18em}.brand .wm small{font-size:7.5px;letter-spacing:.08em}}
+/* iPad portrait: logo + bahasa + VIP di baris atas, menu lengkap di baris kedua */
+@media(max-width:1023px) and (min-width:701px){.nav{flex-wrap:wrap;justify-content:space-between;row-gap:10px;padding:14px 3vw 12px}.nav.solid{padding-top:10px;padding-bottom:8px}
+  .links{display:contents}.brand{order:1;margin-right:auto}.lang{order:2;padding:8px 14px;font-size:12px}.pill{order:3;padding:11px 20px;font-size:12px}
+  .nav:after{content:"";order:4;flex-basis:100%;height:0}.links a{order:5;padding:8px 6px;font-size:11px;letter-spacing:.06em}.links a.pill{order:3}
+  .pdet{padding-top:160px}.pbanner{padding-top:170px}}
+@media(max-width:820px) and (min-width:701px){.links a{padding:7px 3px;font-size:10.5px;letter-spacing:.03em}.nav{padding-left:2.5vw;padding-right:2.5vw}}
+@media(max-width:700px){.links{display:none}.burger{display:block}
   .mnav{position:fixed;inset:0;background:rgba(10,12,11,.97);z-index:60;flex-direction:column;align-items:center;justify-content:center;gap:8px}
   .mnav.on{display:flex}.mnav a{color:#fff;font-family:var(--serif);font-size:30px;padding:4px}
   .mnav .x{position:absolute;top:22px;right:22px;background:none;border:0;color:#fff;font-size:30px}}
