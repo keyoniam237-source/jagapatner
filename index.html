@@ -840,6 +840,7 @@ tr:hover td{background:#fbf8f2}
         <div class="f"><label>Jenis Properti</label><select name="properti"><option value="Villa">Villa</option><option value="Hotel">Hotel</option><option value="Apartemen">Apartemen</option><option value="Rumah">Rumah</option><option value="Kantor / Komersial">Kantor / Komersial</option></select></div>
         <div class="f"><label>Layanan</label><select name="layanan" id="fLay"></select></div>
         <div class="f"><label>Tanggal</label><input type="date" name="tanggal" required></div>
+        <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
         <div class="f full"><label>Lokasi / Catatan</label><textarea name="catatan" placeholder="Alamat, luas area, kebutuhan khusus…"></textarea></div>
         <div class="f full"><button class="btn" style="background:var(--gold);color:#111;align-self:flex-start">Kirim Permintaan →</button></div>
       </form>
@@ -1062,8 +1063,36 @@ const Store={
 let S;
 function load(){S=Store.load()}
 function save(){Store.save(S)}
-function resetData(){S=empty();save();renderPortal();toast(L('Data lokal dihapus','Local data cleared'))}
+function resetData(){if(ONLINE())return;S=empty();save();renderPortal();toast(L('Data lokal dihapus','Local data cleared'))}
 try{localStorage.removeItem('jaga-demo-v1')}catch(e){}
+/* ===== API pusat (Helipod) — aktif bila settings.json berisi "api" ===== */
+const apiBase=()=>(SETTINGS.api||'').replace(/\/+$/,'');
+const ONLINE=()=>!!apiBase();
+const tokGet=()=>{try{return sessionStorage.getItem('jaga-token')||''}catch(e){return''}};
+const tokSet=t=>{try{t?sessionStorage.setItem('jaga-token',t):sessionStorage.removeItem('jaga-token')}catch(e){}};
+async function api(method,path,body,auth=true){
+  let r;
+  try{r=await fetch(apiBase()+path,{method,headers:{'Content-Type':'application/json',...(auth&&tokGet()?{Authorization:'Bearer '+tokGet()}:{})},body:body?JSON.stringify(body):undefined})}
+  catch(e){throw new Error(L('Server portal tidak dapat dihubungi. Periksa koneksi internet.','The portal server cannot be reached. Check your connection.'))}
+  let j={};try{j=await r.json()}catch(e){}
+  if(r.status===401&&auth&&USER){logout(true);throw new Error(j.error||'401')}
+  if(!r.ok)throw new Error(j.error||('HTTP '+r.status));
+  return j;
+}
+let SYNC={busy:false,at:0,err:''},POLL=null;
+async function refreshData(silent){
+  if(!ONLINE()||!USER)return;
+  SYNC.busy=true;if(!silent)renderPortal();
+  try{const d=await api('GET','/data');S={bookings:d.bookings||[],staff:d.staff||[],sop:d.sop||empty().sop};SYNC.err='';SYNC.at=Date.now()}
+  catch(e){SYNC.err=e.message}
+  SYNC.busy=false;if(!$('#modal').classList.contains('on'))renderPortal();
+}
+function startPoll(){clearInterval(POLL);if(ONLINE())POLL=setInterval(()=>{if(USER&&$('#portal').classList.contains('on')&&!document.hidden&&!$('#modal').classList.contains('on'))refreshData(true)},30000)}
+/* jalankan aksi: online → API lalu muat ulang data; offline → simpan lokal */
+async function act(fn,okMsg){
+  try{await fn();if(ONLINE())await refreshData(true);else save();renderPortal();if(okMsg)toast(okMsg)}
+  catch(e){toast(L('Gagal: ','Failed: ')+esc(e.message))}
+}
 load();
 
 /* ================= WEBSITE RENDER ================= */
@@ -1089,8 +1118,14 @@ function updateSiteCounts(){
 }
 function renderServiceSelect(){const v=$('#fLay').value;$('#fLay').innerHTML=opts(SERVICES,v||SERVICES[0])}
 
-$('#bookForm').addEventListener('submit',e=>{
+$('#bookForm').addEventListener('submit',async e=>{
   e.preventDefault();const f=new FormData(e.target);
+  if(SET_READY)await SET_READY;
+  if(ONLINE()){const btn=e.target.querySelector('button');btn.disabled=true;
+    try{const r=await api('POST','/public/request',{nama:f.get('nama'),telp:f.get('telp'),wilayah:f.get('wilayah'),properti:f.get('properti'),layanan:f.get('layanan'),tanggal:f.get('tanggal'),catatan:f.get('catatan'),website:f.get('website')||''},false);
+      e.target.reset();toast(L(`Terima kasih! Permintaan ${r.id||''} sudah kami terima. Koordinator kami akan segera menghubungi Anda.`,`Thank you! Request ${r.id||''} received. Our coordinator will contact you shortly.`))}
+    catch(err){toast(L('Gagal mengirim: ','Could not send: ')+esc(err.message))}
+    btn.disabled=false;return}
   const id='JG-'+(Math.max(...S.bookings.map(b=>+b.id.split('-')[1]),2400)+1);
   const tim=S.staff.filter(s=>s.wilayah===f.get('wilayah')&&s.peran!=='Koordinator');
   S.bookings.unshift({id,klien:f.get('nama'),telp:f.get('telp'),wilayah:f.get('wilayah'),properti:f.get('properti'),layanan:f.get('layanan'),
@@ -1173,7 +1208,8 @@ function dash(){
   const counts=days.map(d=>B.filter(b=>b.tanggal===d&&b.status!=='Batal').length);const mx=Math.max(1,...counts);
   const bars=days.map((d,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span style="font-size:11px;color:var(--muted)">${counts[i]||''}</span><div title="${fmtD(d)}: ${counts[i]} ${L('pekerjaan','jobs')}" style="width:70%;height:${counts[i]/mx*120+2}px;background:${d===today?'var(--ink)':'var(--gold)'};border-radius:4px 4px 0 0"></div><span style="font-size:10.5px;color:${d===today?'var(--ink)':'var(--muted)'};font-weight:${d===today?600:400}">${new Date(d+'T00:00').getDate()}</span></div>`).join('');
   return header(L('Dasbor Operasional','Operations Dashboard'),regLabel()+' · '+new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'}),newBtn())+
-  `<div class="demo">${L('Template portal — belum terhubung ke database pusat. Data akan tampil di sini setelah integrasi.','Portal template — not yet connected to the central database. Data will appear here after integration.')}</div>
+  `${ONLINE()?(SYNC.err?`<div class="demo" style="background:#f5e3e0;border-color:#e6b8b1;color:var(--red)">${esc(SYNC.err)} <a style="cursor:pointer;text-decoration:underline" onclick="refreshData()">${L('Coba lagi','Retry')}</a></div>`:'')
+  :`<div class="demo">${L('Template portal — belum terhubung ke database pusat. Data akan tampil di sini setelah integrasi.','Portal template — not yet connected to the central database. Data will appear here after integration.')}</div>`}
   <div class="kpis">
     <div class="kpi"><small>${L('Pekerjaan hari ini','Jobs today')}</small><b>${todayJobs.length}</b><span>${todayJobs.filter(b=>b.status==='Berjalan').length} ${L('sedang berjalan','in progress')}</span></div>
     <div class="kpi"><small>${L('Pesanan aktif','Active orders')}</small><b>${act.filter(b=>b.status!=='Selesai').length}</b><span>${B.filter(b=>b.status==='Baru').length} ${L('menunggu dijadwalkan','awaiting scheduling')}</span></div>
@@ -1211,7 +1247,7 @@ function orders(){
     <div class="seg">${['Semua',...STATUSES].map(s=>`<button class="${P.st===s?'on':''}" onclick="P.st='${s}';renderPortal()">${T(s)}</button>`).join('')}</div>
   </div></div><div class="tscroll">${table(B)}</div></div>`;
 }
-function setStatus(id,st){const b=S.bookings.find(x=>x.id===id);b.status=st;save();toast(`${id} → ${T(st)}`);renderPortal()}
+function setStatus(id,st){act(async()=>{if(ONLINE())await api('PUT','/bookings/'+id,{status:st});else S.bookings.find(x=>x.id===id).status=st},`${id} → ${T(st)}`)}
 
 function sched(){
   const now=new Date();const mon=addDays(now,-((now.getDay()+6)%7)+P.weekOff*7);
@@ -1232,15 +1268,15 @@ function staffPage(){
   return header(L('Tim & Shift','Team & Shifts'),regLabel()+' · '+Ls.length+' '+L('anggota','members'),`<button class="abtn" onclick="openStaff()">＋ ${L('Tambah staf','Add staff')}</button>`)+
   `<p class="rg" style="margin:-10px 0 16px">${L('Klik status “Bertugas/Libur” untuk mengubah ketersediaan.','Click the “On duty/Off” status to change availability.')}</p>${Ls.length?`<div class="staff">${cards}</div>`:`<div class="panel empty">${L('Belum ada data staf. Tambahkan staf, atau data akan terisi otomatis setelah terhubung ke database.','No staff yet. Add staff, or data will fill in automatically once connected to the database.')}</div>`}`;
 }
-function toggleStaff(id){const s=S.staff.find(x=>x.id===id);s.aktif=!s.aktif;save();renderPortal()}
+function toggleStaff(id){const s=S.staff.find(x=>x.id===id);act(async()=>{if(ONLINE())await api('PUT','/staff/'+id,{aktif:!s.aktif});else s.aktif=!s.aktif})}
 
 function sopPage(){
   const doneN=S.sop.filter(x=>x[1]).length;
   const Q=[[['Respons permintaan baru','New request response'],['< 2 jam','< 2 hours']],[['Turnover villa standar','Standard villa turnover'],['< 3 jam','< 3 hours']],[['Audit kualitas','Quality audit'],['Bulanan','Monthly']],[['Laporan ke pemilik','Owner report'],['Setiap tgl 5','Every 5th']],[['Darurat (kebocoran, listrik)','Emergencies (leaks, power)'],['24/7','24/7']]];
-  return header(L('Checklist SOP','SOP Checklist'),L('Standar turnover villa / kamar — dipakai tim di lapangan','Villa / room turnover standard — used by field teams'),`<button class="abtn light" onclick="S.sop.forEach(x=>x[1]=0);save();renderPortal()">${L('Reset checklist','Reset checklist')}</button>`)+
+  return header(L('Checklist SOP','SOP Checklist'),L('Standar turnover villa / kamar — dipakai tim di lapangan','Villa / room turnover standard — used by field teams'),`<button class="abtn light" onclick="sopSet(null)">${L('Reset checklist','Reset checklist')}</button>`)+
   `<div class="g2"><div class="panel"><div class="ph"><div><h3>${L('Turnover kamar','Room turnover')}</h3><p>${L(`${doneN} dari ${S.sop.length} langkah selesai`,`${doneN} of ${S.sop.length} steps done`)}</p></div></div>
   <div class="track" style="margin-bottom:12px"><i style="width:${doneN/S.sop.length*100}%;background:var(--green)"></i></div>
-  <ul class="cl">${S.sop.map((x,i)=>`<li class="${x[1]?'done':''}"><input type="checkbox" ${x[1]?'checked':''} onchange="S.sop[${i}][1]=this.checked?1:0;save();renderPortal()"><span>${esc(T(x[0]))}</span></li>`).join('')}</ul></div>
+  <ul class="cl">${S.sop.map((x,i)=>`<li class="${x[1]?'done':''}"><input type="checkbox" ${x[1]?'checked':''} onchange="sopSet(${i},this.checked)"><span>${esc(T(x[0]))}</span></li>`).join('')}</ul></div>
   <div class="panel"><h3>${L('Standar kualitas','Quality standards')}</h3><p class="rg" style="margin-bottom:12px">${L('Ringkasan target layanan per wilayah','Service targets across all regions')}</p>
   <ul class="cl">${Q.map(r=>`<li style="justify-content:space-between"><span>${L(...r[0])}</span><b>${L(...r[1])}</b></li>`).join('')}</ul></div></div>`;
 }
@@ -1267,13 +1303,25 @@ function openBooking(id){
   const fillPet=()=>{const w=$('#mWil').value;$('#mPet').innerHTML=`<option value="-">${L('— Belum ditugaskan —','— Unassigned —')}</option>`+S.staff.filter(s=>s.wilayah===w&&s.peran!=='Koordinator').map(s=>`<option ${s.nama===b.petugas?'selected':''}>${esc(s.nama)}</option>`).join('')};
   fillPet();$('#mWil').onchange=fillPet;$('#modal').classList.add('on');
 }
-function saveBooking(id){
+function sopSet(i,v){act(async()=>{const steps=S.sop.map((x,k)=>[x[0],i===null?0:k===i?(v?1:0):x[1]]);if(ONLINE())await api('PUT','/sop',{steps});else S.sop=steps})}
+async function saveBooking(id){
   const f=$('#mform');if(!f.reportValidity())return;const d=Object.fromEntries(new FormData(f));d.nilai=+d.nilai||0;
-  if(id){Object.assign(S.bookings.find(x=>x.id===id),d);toast(id+L(' diperbarui',' updated'))}
-  else{const nid='JG-'+(Math.max(...S.bookings.map(b=>+b.id.split('-')[1]),2400)+1);S.bookings.unshift({id:nid,...d});toast(nid+L(' ditambahkan',' added'))}
-  save();closeModal();renderPortal();
+  const btn=$$('.mact .abtn').pop();if(btn)btn.disabled=true;
+  let nid=id;
+  await act(async()=>{
+    if(ONLINE()){const r=id?await api('PUT','/bookings/'+id,d):await api('POST','/bookings',d);nid=r.id}
+    else if(id)Object.assign(S.bookings.find(x=>x.id===id),d);
+    else{nid='JG-'+(Math.max(...S.bookings.map(b=>+b.id.split('-')[1]),2400)+1);S.bookings.unshift({id:nid,...d})}
+    closeModal();
+  });
+  if(btn)btn.disabled=false;
+  if(!$('#modal').classList.contains('on'))toast(nid+(id?L(' diperbarui',' updated'):L(' ditambahkan',' added')));
 }
-function delBooking(id){S.bookings=S.bookings.filter(b=>b.id!==id);save();closeModal();renderPortal();toast(id+L(' dihapus',' deleted'))}
+function delBooking(id){
+  if(window.__delB!==id){window.__delB=id;toast(L('Klik Hapus sekali lagi untuk konfirmasi','Click Delete again to confirm'));return}
+  window.__delB=null;
+  act(async()=>{if(ONLINE())await api('DELETE','/bookings/'+id);else S.bookings=S.bookings.filter(b=>b.id!==id);closeModal()},id+L(' dihapus',' deleted'));
+}
 function openStaff(){
   $('#mbox').innerHTML=`<h3>${L('Tambah staf','Add staff')}</h3><form class="mf" id="sform">
    <div class="f full"><label>${L('Nama','Name')}</label><input name="nama" required></div>
@@ -1284,7 +1332,7 @@ function openStaff(){
   $('#modal').classList.add('on');
 }
 function saveStaff(){const f=$('#sform');if(!f.reportValidity())return;const d=Object.fromEntries(new FormData(f));
-  S.staff.push({id:'S'+(101+S.staff.length),aktif:true,...d});save();closeModal();renderPortal();toast(esc(d.nama)+L(' ditambahkan',' added'))}
+  act(async()=>{if(ONLINE())await api('POST','/staff',d);else S.staff.push({id:'S'+(101+S.staff.length),aktif:true,...d});closeModal()},esc(d.nama)+L(' ditambahkan',' added'))}
 
 
 /* ================= VIDEO LATAR HERO =================
@@ -1534,9 +1582,11 @@ let PROPS=[],SETTINGS={whatsapp:'',email:''};
 const AREAS={Bali:['Kuta','Seminyak','Canggu','Ubud','Nusa Dua','Uluwatu','Jimbaran','Sanur','Denpasar'],Lombok:['Senggigi','Kuta Mandalika','Gili Trawangan','Gili Air','Gili Meno','Mataram'],Yogyakarta:['Kota Yogyakarta','Sleman','Bantul','Kaliurang']};
 const PTYPES_PUB=['Villa','Hotel','Apartemen'];
 const AMEN={wifi:['WiFi','WiFi'],pool:['Kolam renang','Swimming pool'],ac:['AC','Air conditioning'],kitchen:['Dapur','Kitchen'],parking:['Parkir','Parking'],breakfast:['Sarapan','Breakfast'],laundry:['Laundry','Laundry'],tv:['TV','TV'],work:['Meja kerja','Workspace'],view:['Pemandangan','Scenic view'],cleaning:['Kebersihan harian','Daily cleaning'],security:['Keamanan 24 jam','24h security']};
+let SET_READY=null;
 async function loadProps(){
+  SET_READY=(async()=>{try{const r=await fetch('settings.json?v='+Date.now(),{cache:'no-store'});if(r.ok)SETTINGS={...SETTINGS,...await r.json()}}catch(e){}})();
   try{const r=await fetch('properties.json?v='+Date.now(),{cache:'no-store'});if(r.ok)PROPS=(await r.json()).properties||[]}catch(e){}
-  try{const r=await fetch('settings.json?v='+Date.now(),{cache:'no-store'});if(r.ok)SETTINGS={...SETTINGS,...await r.json()}}catch(e){}
+  await SET_READY;
   renderHomeProps();if($('#site').classList.contains('pmode'))renderPropRoute();
 }
 const pUrl=src=>LOCALURL[src]||src;
@@ -1670,6 +1720,7 @@ function bkSubmit(id){
     `${L('Nama','Name')}: ${BK.name.trim()}`,`WhatsApp: ${BK.tel.trim()}`];
   if((BK.mail||'').trim())msg.push(`Email: ${BK.mail.trim()}`);if((BK.note||'').trim())msg.push(`${L('Catatan','Notes')}: ${BK.note.trim()}`);
   const text=msg.join('\n');
+  if(ONLINE())api('POST','/public/request',{nama:BK.name.trim(),telp:BK.tel.trim(),wilayah:p.region,properti:T(p.type),layanan:'Sewa '+(BK.mode==='day'?'harian':'bulanan')+': '+p.name,tanggal:BK.mode==='day'?BK.ci:BK.start,catatan:text,sumber:'properti'},false).catch(()=>{});
   const url=`https://wa.me/${(SETTINGS.whatsapp||'').replace(/\D/g,'')}?text=${encodeURIComponent(text)}`;
   window.open(url,'_blank','noopener');
   $('#bkCard').innerHTML=`<div class="okbox"><div class="ic">✓</div><h3>${L('Pesanan disiapkan','Request prepared')}</h3>
@@ -1694,6 +1745,7 @@ function apropsPage(){
   <div class="panel"><div class="ph"><div><h3>${L('Pengaturan pemesanan','Booking settings')}</h3><p>${L('Pesanan dari halaman properti dikirim ke WhatsApp ini. Tanpa nomor, tombol pesan nonaktif.','Bookings from the property pages are sent to this WhatsApp. Without a number, the book button is disabled.')}</p></div></div>
     <div class="mrow"><div class="f"><label>${L('Nomor WhatsApp bisnis','Business WhatsApp number')}</label><input id="setWa" inputmode="tel" placeholder="6281234567890" value="${esc(SETTINGS.whatsapp||'')}"></div>
     <div class="f"><label>Email</label><input id="setMail" type="email" placeholder="info@…" value="${esc(SETTINGS.email||'')}"></div>
+    <div class="f"><label>${L('Alamat server portal (Helipod)','Portal server URL (Helipod)')}</label><input id="setApi" type="url" placeholder="https://….helipod.app" value="${esc(SETTINGS.api||'')}"></div>
     <button class="abtn" onclick="saveSettings()">${L('Simpan','Save')}</button></div>
     <p class="rg" style="margin-top:8px">${L('Format: kode negara tanpa + atau 0 di depan, mis. 6281234567890.','Format: country code without + or leading 0, e.g. 6281234567890.')}</p></div>
   <div class="mprog" id="mprog"></div>`;
@@ -1701,7 +1753,9 @@ function apropsPage(){
 async function saveSettings(){
   let wa=$('#setWa').value.replace(/\D/g,'');if(wa.startsWith('0'))wa='62'+wa.slice(1);
   if(wa&&wa.length<10){mProg(L('Nomor WhatsApp terlalu pendek.','WhatsApp number too short.'),'err');return}
-  await mRun(async()=>{const old={...SETTINGS};SETTINGS={...SETTINGS,whatsapp:wa,email:$('#setMail').value.trim()};
+  const apiUrl=$('#setApi').value.trim().replace(/\/+$/,'');
+  if(apiUrl&&!/^https:\/\/[^\s/]+$/.test(apiUrl)){mProg(L('Alamat server harus diawali https:// tanpa garis miring di akhir.','The server URL must start with https:// with no trailing path.'),'err');return}
+  await mRun(async()=>{const old={...SETTINGS};SETTINGS={...SETTINGS,whatsapp:wa,email:$('#setMail').value.trim(),api:apiUrl};
     try{await gh.commit([{path:'settings.json',b64:txtB64(JSON.stringify(SETTINGS,null,2)+'\n')}],'Pengaturan: kontak pemesanan',mProg)}catch(e){SETTINGS=old;throw e}
     renderPortal()});
 }
@@ -1771,7 +1825,7 @@ async function delProp(i){
    Untuk menambah/mengubah akun, minta Claude membuat kode baru. */
 const ACCOUNTS=[{"id":"admin","name":"Admin JAGA","role":"admin","region":"Semua","salt":"723554a857b1f73df4a2aef081cbcf5b","hash":"81b2f24d606f98a2f4caac5e0d0a55c9cb45863edf08c169598fc98e7489d7f3"},{"id":"bali","name":"Koordinator Bali","role":"coord","region":"Bali","salt":"60103180045a699a7071f125667fd2f4","hash":"2c1f0cbf4e1a7336ad67a8eebb6108a06c1a3a92a6f7580659915b8264710fee"},{"id":"lombok","name":"Koordinator Lombok","role":"coord","region":"Lombok","salt":"775915cb938155392776cf8ab4d6ba26","hash":"89ac609eb3c54262963a129cb76536a8e0cc59b77c0f0bbba072b420aeab5764"},{"id":"yogya","name":"Koordinator Yogyakarta","role":"coord","region":"Yogyakarta","salt":"c3643450d421605c60b6d96579693293","hash":"ad451684365c8c2d2139ef4c63c086ae45fe36ead156b7fc8046da1c54350e51"}];
 let USER=null;
-try{const u=JSON.parse(sessionStorage.getItem('jaga-user')||'null');if(u&&ACCOUNTS.some(a=>a.id===u))USER=ACCOUNTS.find(a=>a.id===u)}catch(e){}
+try{const o=JSON.parse(sessionStorage.getItem('jaga-userobj')||'null');if(o&&sessionStorage.getItem('jaga-token'))USER=o;else{const u=JSON.parse(sessionStorage.getItem('jaga-user')||'null');if(u&&ACCOUNTS.some(a=>a.id===u))USER=ACCOUNTS.find(a=>a.id===u)}}catch(e){}
 const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
 async function pbkdf2(code,saltHex){
   const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveBits']);
@@ -1802,12 +1856,16 @@ function renderLogin(){
     if(code.length!==12){inp.classList.add('bad');$('#lmsg').textContent=L('Kode akses terdiri dari 12 karakter.','The access code has 12 characters.');return}
     const btn=$('#lgo');btn.disabled=true;btn.textContent=L('Memeriksa…','Checking…');
     let found=null;
-    try{for(const a of ACCOUNTS){if(await pbkdf2(code,a.salt)===a.hash){found=a;break}}}
+    if(SET_READY)await SET_READY;
+    if(ONLINE()){
+      try{const r=await api('POST','/login',{code},false);found=r.user;tokSet(r.token)}
+      catch(err){btn.disabled=false;btn.textContent=L('Masuk','Sign in');inp.classList.remove('bad');void inp.offsetWidth;inp.classList.add('bad');$('#lmsg').textContent=err.message;return}
+    }else try{for(const a of ACCOUNTS){if(await pbkdf2(code,a.salt)===a.hash){found=a;break}}}
     catch(err){$('#lmsg').textContent=L('Browser ini tidak mendukung login aman. Buka melalui https://jagapatner.my.id','This browser cannot sign in securely. Open via https://jagapatner.my.id')}
     btn.disabled=false;btn.textContent=L('Masuk','Sign in');
     if(!found){const n=f.n+1;setFails({n:n>=5?0:n,until:n>=5?now+60000:0});inp.classList.remove('bad');void inp.offsetWidth;inp.classList.add('bad');
       if(!$('#lmsg').textContent)$('#lmsg').textContent=n>=5?L('Terlalu banyak percobaan. Tunggu 60 detik.','Too many attempts. Please wait 60 seconds.'):L('Kode akses tidak valid.','Invalid access code.');return}
-    setFails({n:0,until:0});USER=found;try{sessionStorage.setItem('jaga-user',JSON.stringify(found.id))}catch(e){}
+    setFails({n:0,until:0});USER=found;try{sessionStorage.setItem('jaga-user',JSON.stringify(found.id));sessionStorage.setItem('jaga-userobj',JSON.stringify(found))}catch(e){}
     enterPortal();toast(L('Selamat datang, ','Welcome, ')+found.name);
   });
   setTimeout(()=>inp.focus(),50);
@@ -1819,11 +1877,15 @@ function applyRole(){
   $$('#pnav a.regf').forEach(a=>{a.style.display=coord&&a.dataset.reg!==USER.region?'none':'';a.classList.toggle('on',a.dataset.reg===P.reg)});
   const ini=USER.name.split(' ').map(x=>x[0]).slice(0,2).join('');
   $('#pfoot').innerHTML=`<div class="who"><div class="av">${esc(ini)}</div><div><b>${esc(USER.name)}</b><span>${USER.role==='admin'?L('Admin · semua wilayah','Admin · all regions'):L('Koordinator · ','Coordinator · ')+USER.region}</span></div></div>
-  ${L('Template · belum terhubung ke database.','Template · not yet connected to a database.')}<br>${USER.role==='admin'?`<a onclick="resetData()">${L('Hapus data lokal','Clear local data')}</a> · `:''}<a onclick="logout()">${L('Keluar','Sign out')}</a> · <a href="#beranda">${L('Ke situs','Back to site')}</a>`;
+  ${ONLINE()?`<span style="color:#7fb08f">●</span> ${L('Terhubung ke database pusat','Connected to central database')}<br><a onclick="refreshData()">${L('Muat ulang','Refresh')}</a> · `:`${L('Template · belum terhubung ke database.','Template · not yet connected to a database.')}<br>${USER.role==='admin'?`<a onclick="resetData()">${L('Hapus data lokal','Clear local data')}</a> · `:''}`}<a onclick="logout()">${L('Keluar','Sign out')}</a> · <a href="#beranda">${L('Ke situs','Back to site')}</a>`;
 }
 const myRegions=()=>USER&&USER.role!=='admin'?[USER.region]:Object.keys(REG);
-function enterPortal(){$('#portal').classList.remove('locked');applyRole();renderPortal()}
-function logout(){USER=null;try{sessionStorage.removeItem('jaga-user')}catch(e){}$('#portal').classList.add('locked');renderLogin();toast(L('Anda telah keluar','You have signed out'))}
+async function enterPortal(){$('#portal').classList.remove('locked');
+  if(SET_READY)await SET_READY;
+  if(ONLINE()&&!tokGet()){USER=null;$('#portal').classList.add('locked');renderLogin();return}
+  if(!ONLINE()&&USER&&!ACCOUNTS.some(a=>a.id===USER.id)){USER=null;$('#portal').classList.add('locked');renderLogin();return}
+  applyRole();renderPortal();if(ONLINE()){refreshData();startPoll()}}
+function logout(expired){USER=null;clearInterval(POLL);tokSet('');if(ONLINE())S=empty();try{sessionStorage.removeItem('jaga-user');sessionStorage.removeItem('jaga-userobj')}catch(e){}$('#portal').classList.add('locked');renderLogin();toast(expired===true?L('Sesi berakhir, silakan masuk lagi','Session expired, please sign in again'):L('Anda telah keluar','You have signed out'))}
 
 
 /* ===== initial render ===== */

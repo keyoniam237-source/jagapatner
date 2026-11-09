@@ -1,0 +1,10 @@
+{
+  "name": "jaga-portal-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API portal JAGA (Helipod + PostgreSQL)",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=20" },
+  "dependencies": { "pg": "^8.13.1" }
+}
