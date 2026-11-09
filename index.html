@@ -219,7 +219,7 @@ footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:2
 .hero{height:auto;min-height:100vh;padding:130px 0 110px}
 .landing{max-width:1100px;width:100%}
 .lk{display:inline-flex;align-items:center;gap:28px;margin-bottom:54px}
-.lkmark{width:92px;height:120px;color:#fff;flex:none;filter:drop-shadow(0 6px 30px rgba(0,0,0,.35))}
+.lkmark{width:96px;height:124px;color:#fff;flex:none;filter:drop-shadow(0 6px 30px rgba(0,0,0,.35))}
 .lkbar{width:1.5px;height:110px;background:rgba(255,255,255,.75)}
 .lkt{text-align:left}
 .lkname{font-family:'Montserrat',var(--sans);font-weight:500;font-size:clamp(48px,6.4vw,86px);letter-spacing:.3em;line-height:1;margin-right:-.3em;text-shadow:0 4px 40px rgba(0,0,0,.35)}
@@ -257,6 +257,12 @@ footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:2
 .svwhy h4{font-size:15px;color:var(--ink);font-weight:600;margin-bottom:2px}
 .svwhy p{font-size:14px;color:var(--muted);line-height:1.6}
 @media(max-width:1000px){.svform{grid-template-columns:1fr}}
+/* ===== logo shine ===== */
+.shine{transform:skewX(-18deg);transform-box:fill-box;animation:shine 5.5s cubic-bezier(.45,0,.2,1) infinite}
+@keyframes shine{0%{transform:translateX(0) skewX(-18deg)}38%{transform:translateX(240px) skewX(-18deg)}100%{transform:translateX(240px) skewX(-18deg)}}
+.lkmark{animation:lkglow 5.5s ease-in-out infinite}
+@keyframes lkglow{0%,100%{filter:drop-shadow(0 6px 30px rgba(0,0,0,.35)) drop-shadow(0 0 0 rgba(226,201,143,0))}25%{filter:drop-shadow(0 6px 30px rgba(0,0,0,.35)) drop-shadow(0 0 18px rgba(226,201,143,.45))}}
+@media(prefers-reduced-motion:reduce){.shine,.lkmark{animation:none}}
 /* ===== mitra ===== */
 .mitra{position:relative;overflow:hidden;color:#fff;background:#14201c}
 .mbg{position:absolute;inset:0;background-size:cover;background-position:center}
@@ -621,12 +627,12 @@ tr:hover td{background:#fbf8f2}
 <!-- ================= LOGO SYMBOL ================= -->
 <svg width="0" height="0" style="position:absolute">
   <defs>
-    <symbol id="mono" viewBox="30 24 136 178">
+    <symbol id="mono" viewBox="24 18 148 192">
       <mask id="jgGap" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="220"><rect width="200" height="220" fill="#fff"/><path d="M36 172 L156 106 V126 L36 192 Z" fill="#000"/></mask>
       <g mask="url(#jgGap)"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" fill="currentColor"/><path d="M74 132 V84 L96 72 V132 Z" fill="currentColor"/><path d="M104 132 V64 L120 55 V132 Z" fill="#c9a96a"/></g>
       <path d="M40 176 L152 114.4 V126.4 L40 188 Z" fill="#c9a96a"/>
     </symbol>
-    <symbol id="logo" viewBox="30 24 136 178">
+    <symbol id="logo" viewBox="24 18 148 192">
       <mask id="jgGap2" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="220"><rect width="200" height="220" fill="#fff"/><path d="M36 172 L156 106 V126 L36 192 Z" fill="#000"/></mask>
       <g mask="url(#jgGap2)"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" fill="currentColor"/><path d="M74 132 V84 L96 72 V132 Z" fill="currentColor"/><path d="M104 132 V64 L120 55 V132 Z" fill="#c9a96a"/></g>
       <path d="M40 176 L152 114.4 V126.4 L40 188 Z" fill="#c9a96a"/>
@@ -640,7 +646,7 @@ tr:hover td{background:#fbf8f2}
 <div id="site" class="view on">
   <header class="nav" id="nav">
     <a class="brand" href="#beranda" aria-label="JAGA">
-      <span class="mono"><svg><use href="#mono"/></svg></span>
+      <span class="mono"><svg class="" viewBox="24 18 148 192" aria-hidden="true"><defs><mask id="smN" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="220"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" fill="#fff"/><path d="M74 132 V84 L96 72 V132 Z" fill="#fff"/><path d="M104 132 V64 L120 55 V132 Z" fill="#fff"/><path d="M36 172 L156 106 V126 L36 192 Z" fill="#000"/><path d="M40 176 L152 114.4 V126.4 L40 188 Z" fill="#fff"/></mask><linearGradient id="sgN" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><use href="#mono" x="24" y="18" width="148" height="192"/><g mask="url(#smN)"><rect class="shine" x="-40" y="0" width="46" height="230" fill="url(#sgN)"/></g></svg></span>
       <span class="bar"></span>
       <span class="wm"><b>JAGA</b><small>Management Operation Partner</small></span>
     </a>
@@ -716,7 +722,7 @@ tr:hover td{background:#fbf8f2}
     <div class="veil"></div>
     <div class="in landing">
       <div class="lk">
-        <svg class="lkmark" viewBox="30 24 136 178" aria-hidden="true"><use href="#mono"/></svg>
+        <svg class="lkmark" viewBox="24 18 148 192" aria-hidden="true"><defs><mask id="smL" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="220"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" fill="#fff"/><path d="M74 132 V84 L96 72 V132 Z" fill="#fff"/><path d="M104 132 V64 L120 55 V132 Z" fill="#fff"/><path d="M36 172 L156 106 V126 L36 192 Z" fill="#000"/><path d="M40 176 L152 114.4 V126.4 L40 188 Z" fill="#fff"/></mask><linearGradient id="sgL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><use href="#mono" x="24" y="18" width="148" height="192"/><g mask="url(#smL)"><rect class="shine" x="-40" y="0" width="46" height="230" fill="url(#sgL)"/></g></svg>
         <span class="lkbar"></span>
         <div class="lkt"><div class="lkname">JAGA</div><div class="lktag">Management Operation Partner</div></div>
       </div>
