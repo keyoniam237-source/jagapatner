@@ -1,4 +1,14 @@
 {
-  "hero": [],
+  "hero": [
+    {
+      "src": "videos/yogyakarta-borobudur.mp4",
+      "poster": "videos/yogyakarta-borobudur.jpg",
+      "region": "Yogyakarta",
+      "place": [
+        "Candi Borobudur, Magelang",
+        "Borobudur Temple, Magelang"
+      ]
+    }
+  ],
   "gallery": []
 }
