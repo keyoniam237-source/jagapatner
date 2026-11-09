@@ -59,12 +59,13 @@ button{font-family:inherit;cursor:pointer}
 .eyebrow{display:inline-flex;align-items:center;gap:28px;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.85);font-weight:500}
 .eyebrow:before,.eyebrow:after{content:"";width:72px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
 .eyebrow:after{background:linear-gradient(90deg,var(--gold),transparent)}
-.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(44px,6.6vw,100px);line-height:1.04;margin:34px 0 26px;letter-spacing:-.01em;text-shadow:0 4px 40px rgba(0,0,0,.35)}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(40px,5.8vw,92px);line-height:1.08;margin:30px 0 10px;letter-spacing:-.01em;text-shadow:0 4px 40px rgba(0,0,0,.35)}
 .hero h1 em{font-style:italic;color:var(--gold2)}
 .hero p.sub{max-width:640px;margin:0 auto;font-size:16px;line-height:1.7;color:rgba(255,255,255,.82);font-weight:300}
-.regions-tag{margin-top:34px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.regions-tag a{border:1px solid rgba(255,255,255,.28);padding:10px 20px;border-radius:999px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;transition:.25s;backdrop-filter:blur(6px);background:rgba(255,255,255,.04)}
-.regions-tag a:hover{border-color:var(--gold);background:rgba(201,169,106,.18)}
+.regions-tag{margin-top:30px;display:flex;gap:0;justify-content:center;flex-wrap:wrap}
+.regions-tag a{padding:6px 18px;font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.72);transition:.3s;position:relative}
+.regions-tag a+a:before{content:"";position:absolute;left:-2px;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--gold)}
+.regions-tag a:hover{color:#fff}
 .ring{position:absolute;right:30%;bottom:16%;width:58px;height:58px;border:1.5px solid var(--gold);border-radius:50%;animation:pulse 3.4s ease-in-out infinite;z-index:2}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.18);opacity:.35}}
 .scroll{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:2;font-size:12px;letter-spacing:.3em;color:rgba(255,255,255,.65);display:flex;flex-direction:column;align-items:center;gap:10px}
@@ -218,7 +219,7 @@ footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:2
 .vbars i.done:after{transform:scaleX(1)}
 .vbars i.cur:after{animation:vbar var(--d,10s) linear forwards}
 @keyframes vbar{to{transform:scaleX(1)}}
-.regions-tag a.cur{border-color:var(--gold);background:rgba(201,169,106,.22)}
+.regions-tag a.cur{color:var(--gold2)}
 @media(max-width:600px){.vcap{left:6vw;bottom:70px}.vcap .pl b{font-size:19px}}
 @media(prefers-reduced-motion:reduce){.hvids video.on{animation:none}}
 
@@ -514,10 +515,9 @@ tr:hover td{background:#fbf8f2}
     <div class="fog"></div>
     <div class="veil"></div>
     <div class="in">
-      <div class="eyebrow">Kebersihan &amp; Keunggulan Operasional</div>
-      <h1 data-en="Cleaning Service &amp;<br>Operational <em>Management</em>">Cleaning Service &amp;<br>Manajemen <em>Operasional</em></h1>
-      <p class="sub">Kami merawat hotel, villa, apartemen, dan properti komersial di Bali, Lombok, dan Yogyakarta dengan standar perhotelan — dari housekeeping harian hingga pengelolaan operasional penuh.</p>
-      <div class="regions-tag">
+      <div class="eyebrow">Mitra Operasional Perhotelan</div>
+      <h1 data-en="Hotel, Villa &amp; Apartment<br>Cleaning &amp; Operations">Kebersihan &amp; Operasional<br>Hotel, Villa &amp; Apartemen</h1>
+            <div class="regions-tag">
         <a href="#wilayah" data-r="Bali">Bali</a><a href="#wilayah" data-r="Lombok">Lombok</a><a href="#wilayah" data-r="Yogyakarta">Yogyakarta</a>
       </div>
     </div>
@@ -748,7 +748,7 @@ try{const l=localStorage.getItem('jaga-lang');if(l==='EN'||l==='ID')LANG=l}catch
 const D={
  // nav & general
  'Beranda':'Home','Layanan':'Services','Properti Kami':'Our Properties','Mitra Kami':'Our Partners','Cerita Kami':'Our Story','Karier':'Careers','Kontak':'Contact',
- 'Kebersihan & Keunggulan Operasional':'Cleaning & Operational Excellence',
+ 'Mitra Operasional Perhotelan':'Your Hospitality Operations Partner',
  'Kami merawat hotel, villa, apartemen, dan properti komersial di Bali, Lombok, dan Yogyakarta dengan standar perhotelan — dari housekeeping harian hingga pengelolaan operasional penuh.':'We care for hotels, villas, apartments and commercial properties in Bali, Lombok and Yogyakarta to hospitality standards — from daily housekeeping to full operational management.',
  'GULIR':'SCROLL',
  'Pilih layanan kebersihan sesuai kebutuhan, atau serahkan seluruh operasional properti Anda kepada tim kami.':'Choose the cleaning services you need, or hand over your property’s entire operation to our team.',
