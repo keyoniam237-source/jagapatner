@@ -215,6 +215,48 @@ h2.t em{font-style:italic;color:var(--green)}
 footer{background:#090b0a;color:rgba(255,255,255,.55);padding:50px 6vw;font-size:13px}
 footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
 
+/* ===== landing ===== */
+.hero{height:auto;min-height:100vh;padding:130px 0 110px}
+.landing{max-width:1100px;width:100%}
+.lk{display:inline-flex;align-items:center;gap:28px;margin-bottom:54px}
+.lkmark{width:92px;height:120px;color:#fff;flex:none;filter:drop-shadow(0 6px 30px rgba(0,0,0,.35))}
+.lkbar{width:1.5px;height:110px;background:rgba(255,255,255,.75)}
+.lkt{text-align:left}
+.lkname{font-family:'Montserrat',var(--sans);font-weight:500;font-size:clamp(48px,6.4vw,86px);letter-spacing:.3em;line-height:1;margin-right:-.3em;text-shadow:0 4px 40px rgba(0,0,0,.35)}
+.lktag{font-family:'Montserrat',var(--sans);font-weight:500;font-size:clamp(11px,1.15vw,15px);letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.85);margin-top:16px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:0 auto}
+.choice{position:relative;text-align:left;padding:30px 30px 26px;border-radius:20px;background:rgba(12,16,14,.42);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .35s,border-color .35s,background .35s;display:flex;flex-direction:column}
+.choice:hover{transform:translateY(-4px);border-color:var(--gold);background:rgba(12,16,14,.58)}
+.choice .cn{position:absolute;top:24px;right:26px;font-family:var(--serif);font-style:italic;color:var(--gold2);font-size:16px}
+.choice .ci{width:34px;height:34px;fill:none;stroke:var(--gold2);stroke-width:1.4;stroke-linejoin:round;margin-bottom:18px}
+.choice h3{font-family:var(--serif);font-weight:500;font-size:30px;color:#fff;margin-bottom:10px}
+.choice p{font-size:14.5px;line-height:1.7;color:rgba(255,255,255,.72);flex:1}
+.choice .cgo{margin-top:20px;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold2)}
+.landing .regions-tag{margin-top:36px}
+@media(max-width:760px){.choices{grid-template-columns:1fr}.lk{gap:16px;margin-bottom:36px}.lkmark{width:56px;height:74px}.lkbar{height:70px}.choice{padding:24px}.choice h3{font-size:26px}.hero{padding:110px 0 100px}}
+/* ===== service pages ===== */
+.svwrap{max-width:calc(1240px + 12vw);margin:0 auto;padding:60px 6vw 100px}
+.svgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin:26px 0 70px}
+.svc{background:#fff;border:1px solid #eee6d6;border-radius:18px;padding:26px;display:flex;flex-direction:column;transition:.3s}
+.svc:hover{border-color:var(--gold);box-shadow:0 18px 40px -26px rgba(0,0,0,.3)}
+.svc svg{width:34px;height:34px;stroke:var(--gold);fill:none;stroke-width:1.3;margin-bottom:16px}
+.svc h3{font-family:var(--serif);font-weight:500;font-size:26px;color:var(--ink);margin-bottom:8px}
+.svc p{font-size:14px;line-height:1.7;color:var(--muted)}
+.svc ul{list-style:none;margin:14px 0 18px;flex:1}
+.svc li{font-size:13.5px;padding:6px 0;border-top:1px dashed #eee6d6;color:var(--text)}
+.svc li:before{content:"✓ ";color:var(--gold)}
+.svc button{align-self:flex-start;background:#f6efdc;color:#8a6a24;border:0;border-radius:999px;padding:10px 18px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.svc button:hover{background:var(--gold);color:#fff}
+.svc.sel{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,169,106,.35)}
+.svh{font-family:var(--serif);font-weight:400;font-size:clamp(30px,3.6vw,44px);color:var(--ink);margin:0 0 6px}
+.svsub{color:var(--muted);font-size:15px;line-height:1.7;max-width:640px}
+.svform{display:grid;grid-template-columns:1fr 440px;gap:50px;align-items:start;margin-top:30px}
+.svwhy{display:grid;gap:18px;margin-top:24px}
+.svwhy div{display:flex;gap:14px;align-items:flex-start}
+.svwhy b{flex:none;width:38px;height:38px;border-radius:50%;background:#f6efdc;color:#8a6a24;display:grid;place-items:center;font-family:var(--serif);font-size:18px;font-weight:500}
+.svwhy h4{font-size:15px;color:var(--ink);font-weight:600;margin-bottom:2px}
+.svwhy p{font-size:14px;color:var(--muted);line-height:1.6}
+@media(max-width:1000px){.svform{grid-template-columns:1fr}}
 /* ===== hero video ===== */
 .hvids{position:absolute;inset:0;display:none}
 .hero.has-video .hvids{display:block}
@@ -658,10 +700,29 @@ tr:hover td{background:#fbf8f2}
     <div class="hvids" id="hvids"></div>
     <div class="fog"></div>
     <div class="veil"></div>
-    <div class="in">
-      <div class="eyebrow">Mitra Operasional Perhotelan</div>
-      <h1 data-en="Hotel, Villa &amp; Apartment<br>Cleaning &amp; Operations">Kebersihan &amp; Operasional<br>Hotel, Villa &amp; Apartemen</h1>
-            <div class="regions-tag">
+    <div class="in landing">
+      <div class="lk">
+        <svg class="lkmark" viewBox="30 24 136 178" aria-hidden="true"><use href="#mono"/></svg>
+        <span class="lkbar"></span>
+        <div class="lkt"><div class="lkname">JAGA</div><div class="lktag">Management Operation Partner</div></div>
+      </div>
+      <div class="choices">
+        <a class="choice" href="#cleaning">
+          <span class="cn">01</span>
+          <svg class="ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg>
+          <h3>Cleaning Service</h3>
+          <p data-en="Housekeeping, deep cleaning and check-out turnover for villas, homes and apartments.">Housekeeping, deep cleaning, dan turnover check-out untuk villa, rumah, dan apartemen.</p>
+          <span class="cgo" data-en="Book cleaning →">Pesan cleaning →</span>
+        </a>
+        <a class="choice" href="#manajemen">
+          <span class="cn">02</span>
+          <svg class="ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6M9 11h.01M15 11h.01"/></svg>
+          <h3 data-en="Operations Management">Manajemen Operasional</h3>
+          <p data-en="We run staff, SOPs, inventory, maintenance and owner reporting for your property.">Kami kelola staf, SOP, inventaris, maintenance, dan laporan pemilik untuk properti Anda.</p>
+          <span class="cgo" data-en="Explore management →">Lihat layanan manajemen →</span>
+        </a>
+      </div>
+      <div class="regions-tag">
         <a href="#wilayah" data-r="Bali">Bali</a><a href="#wilayah" data-r="Lombok">Lombok</a><a href="#wilayah" data-r="Yogyakarta">Yogyakarta</a>
       </div>
     </div>
@@ -1152,7 +1213,7 @@ $('#langBtn').onclick=()=>{setLang(LANG==='ID'?'EN':'ID');toast(L('Bahasa Indone
 /* nav: solid on scroll, active link, reveal, counters */
 const nav=$('#nav');
 addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>60||$('#site').classList.contains('pmode'));
-  let cur='beranda';if($('#site').classList.contains('pmode'))cur='properti';else ['beranda','layanan','unggulan','mitra','cerita','blog','karier','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id==='unggulan'?'properti':id});
+  let cur='beranda';if($('#site').classList.contains('pmode'))cur=/^(cleaning|manajemen)$/.test(location.hash.slice(1))?'layanan':'properti';else ['beranda','layanan','unggulan','mitra','cerita','blog','karier','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id==='unggulan'?'properti':id});
   $$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
 },{passive:true});
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');
@@ -1719,7 +1780,84 @@ function bkSubmit(id){
     <p>${L('WhatsApp terbuka dengan detail pesanan Anda. Tekan <b>Kirim</b> di WhatsApp untuk menyelesaikan.','WhatsApp has opened with your booking details. Press <b>Send</b> in WhatsApp to complete it.')}<br><br>${L('No. pesanan','Order no.')}: <b>${oid}</b><br>${esc(p.name)} · ${c.label}<br>${rp(c.total)}</p>
     <p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('Buka WhatsApp lagi','Open WhatsApp again')}</a> · <a style="cursor:pointer;color:var(--muted)" onclick="renderBooking(PROPS.find(x=>x.id==='${p.id}'))">${L('Ubah pesanan','Edit request')}</a></p></div>`;
 }
-function renderPropRoute(){const h=location.hash.slice(1);if(h.startsWith('p-'))renderPropDetail(h.slice(2));else renderPropList()}
+function renderPropRoute(){const h=location.hash.slice(1);if(h==='cleaning'||h==='manajemen')svcPage(h);else if(h.startsWith('p-'))renderPropDetail(h.slice(2));else renderPropList()}
+
+
+/* ================= HALAMAN LAYANAN: #cleaning & #manajemen ================= */
+const SVF={cleaning:{svc:0},manajemen:{svc:0}};
+function svcPage(kind){
+  const C=kind==='cleaning',list=C?SVC.clean:SVC.ops,F=SVF[kind],today=iso(new Date());
+  const regOpt=Object.keys(REG).map(r=>`<option ${F.wilayah===r?'selected':''}>${r}</option>`).join('');
+  const typeOpt=['Villa','Hotel','Apartemen','Rumah','Kantor / Komersial'].map(t=>`<option value="${t}" ${F.properti===t?'selected':''}>${T(t)}</option>`).join('');
+  const steps=C?[[L('Pilih layanan','Choose a service'),L('Tentukan jenis pembersihan dan tanggal.','Pick the cleaning type and date.')],[L('Konfirmasi','Confirmation'),L('Koordinator wilayah menghubungi Anda dengan harga final.','Your regional coordinator confirms the final price.')],[L('Tim datang','Team arrives'),L('Tim terlatih bekerja sesuai SOP dan checklist JAGA.','A trained team works to JAGA SOPs and checklists.')],[L('Laporan foto','Photo report'),L('Anda menerima foto sebelum–sesudah setelah selesai.','You receive before–after photos when done.')]]
+    :[[L('Konsultasi','Consultation'),L('Kami pelajari properti dan target Anda.','We learn about your property and goals.')],[L('Proposal','Proposal'),L('Rencana operasional, struktur tim, dan biaya.','Operations plan, team structure and costs.')],[L('Transisi','Transition'),L('Rekrutmen, pelatihan SOP, dan sistem pelaporan.','Hiring, SOP training and reporting setup.')],[L('Berjalan','Running'),L('Operasional harian + laporan bulanan ke pemilik.','Daily operations + monthly owner reports.')]];
+  const why=C?[[L('Standar perhotelan','Hospitality standard'),L('SOP dan checklist per ruangan.','SOPs and room-by-room checklists.')],[L('Tim terlatih & terverifikasi','Trained, vetted team'),L('Staf tetap di setiap wilayah.','Permanent staff in every region.')],[L('Laporan foto','Photo reports'),L('Bukti hasil kerja setiap kunjungan.','Proof of work every visit.')]]
+    :[[L('Satu titik kontak','Single point of contact'),L('Koordinator khusus untuk properti Anda.','A dedicated coordinator for your property.')],[L('Transparan','Transparent'),L('Dasbor & laporan biaya bulanan.','Dashboard and monthly cost reports.')],[L('Fleksibel','Flexible'),L('Mulai dari satu layanan hingga operasional penuh.','From a single service to full operations.')]];
+  $('#propPage').innerHTML=`
+  <div class="pbanner"><div class="wrap"><div class="kicker">${C?'Cleaning Service':L('Manajemen Operasional','Operations Management')}</div>
+    <h1>${C?L('Properti bersih, standar perhotelan','Spotless properties, hotel standard'):L('Operasional properti, kami yang jalankan','Your property operations, run by us')}</h1>
+    <p>${C?L('Pesan housekeeping, deep cleaning, atau turnover check-out di Bali, Lombok, dan Yogyakarta. Tim kami datang tepat waktu dan bekerja sesuai SOP.','Book housekeeping, deep cleaning or check-out turnover in Bali, Lombok and Yogyakarta. Our team arrives on time and works to SOP.')
+      :L('Dari staf, SOP, inventaris, hingga laporan pemilik — serahkan operasional hotel, villa, atau apartemen Anda kepada JAGA.','From staffing, SOPs and inventory to owner reports — hand your hotel, villa or apartment operations to JAGA.')}</p>
+    <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn" style="background:var(--gold);color:#111" onclick="document.getElementById('svForm').scrollIntoView({behavior:'smooth'})">${C?L('Pesan sekarang','Book now'):L('Konsultasi gratis','Free consultation')} →</a>
+    <a class="btn ghost" style="border-color:rgba(255,255,255,.5);color:#fff" href="${C?'#manajemen':'#cleaning'}">${C?L('Layanan manajemen','Management services'):'Cleaning Service'}</a></div></div></div>
+  <div class="svwrap">
+    <div class="kicker">${L('Pilihan layanan','Services')}</div>
+    <h2 class="svh">${C?L('Pilih jenis pembersihan','Choose your cleaning'):L('Layanan manajemen','Management services')}</h2>
+    <div class="svgrid">${list.map((x,i)=>`<div class="svc ${F.svc===i?'sel':''}"><svg viewBox="0 0 24 24">${ICONS[i]}</svg><h3>${T(x[0])}</h3><p>${L(x[1],x[3])}</p><ul>${L(x[2],x[4]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul><button onclick="svPick('${kind}',${i})">${C?L('Pilih','Select'):L('Tanyakan','Ask about this')}</button></div>`).join('')}</div>
+    <div class="kicker">${L('Cara kerja','How it works')}</div>
+    <div class="steps" style="margin-top:20px">${steps.map(x=>`<div class="step"><h4>${x[0]}</h4><p>${x[1]}</p></div>`).join('')}</div>
+    <div class="svform" id="svForm">
+      <div><div class="kicker">${C?L('Pemesanan','Booking'):L('Konsultasi','Consultation')}</div>
+        <h2 class="svh">${C?L('Pesan cleaning service','Book a cleaning'):L('Bicarakan properti Anda','Tell us about your property')}</h2>
+        <p class="svsub">${C?L('Isi formulir, lalu koordinator wilayah mengonfirmasi jadwal dan harga final melalui WhatsApp.','Fill in the form and your regional coordinator confirms the schedule and final price on WhatsApp.'):L('Ceritakan kebutuhan Anda. Kami siapkan proposal tanpa biaya.','Tell us what you need. We prepare a proposal at no cost.')}</p>
+        <div class="svwhy">${why.map((x,i)=>`<div><b>${i+1}</b><div><h4>${x[0]}</h4><p>${x[1]}</p></div></div>`).join('')}</div></div>
+      <div class="bk" id="svCard">${svFormHtml(kind)}</div>
+    </div>
+  </div>`;
+}
+function svFormHtml(kind){
+  const C=kind==='cleaning',list=C?SVC.clean:SVC.ops,F=SVF[kind],today=iso(new Date());
+  const o=(arr,v)=>arr.map(([val,lab])=>`<option value="${esc(val)}" ${v===val?'selected':''}>${esc(lab)}</option>`).join('');
+  const inp=(k,ph,type='text',extra='')=>`<input type="${type}" value="${esc(F[k]||'')}" placeholder="${ph}" oninput="SVF.${kind}.${k}=this.value" ${extra}>`;
+  return `<div class="full"><label>${L('Layanan','Service')}</label><select onchange="SVF.${kind}.svc=+this.value;svcPage('${kind}');document.getElementById('svForm').scrollIntoView()">${o(list.map((x,i)=>[String(i),T(x[0])]),String(F.svc))}</select></div>
+    <div class="fx"><div><label>${L('Wilayah','Region')}</label><select onchange="SVF.${kind}.wilayah=this.value">${o(Object.keys(REG).map(r=>[r,r]),F.wilayah||'Bali')}</select></div>
+      <div><label>Area</label>${inp('area',L('mis. Canggu','e.g. Canggu'))}</div></div>
+    <div class="fx"><div><label>${L('Jenis properti','Property type')}</label><select onchange="SVF.${kind}.properti=this.value">${o(['Villa','Hotel','Apartemen','Rumah','Kantor / Komersial'].map(t=>[t,T(t)]),F.properti||'Villa')}</select></div>
+      <div><label>${C?L('Kamar / luas','Rooms / size'):L('Jumlah unit/kamar','Units / rooms')}</label>${inp('size',C?L('mis. 3 kamar','e.g. 3 bedrooms'):L('mis. 12 kamar','e.g. 12 rooms'))}</div></div>
+    ${C?`<div class="fx"><div><label>${L('Tanggal','Date')}</label>${inp('tanggal','','date',`min="${today}"`)}</div><div><label>${L('Jam','Time')}</label><select onchange="SVF.${kind}.jam=this.value">${o(['08:00','10:00','13:00','15:00'].map(t=>[t,t]),F.jam||'10:00')}</select></div></div>`:''}
+    <div class="full"><label>${L('Nama lengkap','Full name')}</label>${inp('nama','')}</div>
+    <div class="fx"><div><label>WhatsApp</label>${inp('telp','08…','tel','inputmode="tel"')}</div><div><label>Email</label>${inp('email','','email')}</div></div>
+    <div class="full"><label>${L('Catatan','Notes')}</label><textarea rows="3" oninput="SVF.${kind}.catatan=this.value" placeholder="${C?L('Alamat, akses, kebutuhan khusus…','Address, access, special requests…'):L('Ceritakan kebutuhan Anda…','Tell us what you need…')}">${esc(F.catatan||'')}</textarea></div>
+    <input tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" oninput="SVF.${kind}.hp=this.value">
+    <button class="go" onclick="svSubmit('${kind}')">${C?L('Kirim pesanan','Send booking'):L('Minta konsultasi','Request consultation')} →</button>
+    <div class="err" id="svErr"></div>
+    <div class="note">${L('Tanpa pembayaran di muka. Harga final dikonfirmasi oleh tim JAGA.','No upfront payment. The final price is confirmed by the JAGA team.')}</div>`;
+}
+function svPick(kind,i){SVF[kind].svc=i;svcPage(kind);setTimeout(()=>document.getElementById('svForm').scrollIntoView({behavior:'smooth'}),30)}
+async function svSubmit(kind){
+  const C=kind==='cleaning',F=SVF[kind],e=$('#svErr'),list=C?SVC.clean:SVC.ops;
+  const name=(F.nama||'').trim(),tel=(F.telp||'').trim();
+  if(C&&!F.tanggal){e.textContent=L('Pilih tanggal.','Choose a date.');return}
+  if(!name){e.textContent=L('Isi nama lengkap.','Enter your full name.');return}
+  if(tel.replace(/\D/g,'').length<9){e.textContent=L('Isi nomor WhatsApp yang valid.','Enter a valid WhatsApp number.');return}
+  e.textContent='';
+  const svc=list[F.svc][0],wil=F.wilayah||'Bali',tgl=C?F.tanggal:iso(new Date());
+  const lines=[`${C?'Pesanan cleaning':'Konsultasi manajemen'}: ${svc}`,`Wilayah: ${wil}${F.area?' — '+F.area:''}`,`Properti: ${F.properti||'Villa'}${F.size?' ('+F.size+')':''}`,C?`Jadwal: ${tgl} ${F.jam||'10:00'}`:'',`Nama: ${name}`,`WhatsApp: ${tel}`,F.email?`Email: ${F.email}`:'',F.catatan?`Catatan: ${F.catatan}`:''].filter(Boolean);
+  const btn=$('#svCard .go');btn.disabled=true;let id='';
+  if(SET_READY)await SET_READY;
+  if(ONLINE()){
+    try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:wil,properti:F.properti||'Villa',layanan:C?svc:'Konsultasi: '+svc,tanggal:tgl,catatan:lines.join('\n'),website:F.hp||''},false);id=r.id||''}
+    catch(err){btn.disabled=false;e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}
+  }
+  const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');
+  const waUrl=wa?`https://wa.me/${wa}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+lines.join('\n'))}`:'';
+  if(!ONLINE()&&!wa){btn.disabled=false;e.textContent=L('Pemesanan online belum aktif. Silakan hubungi kami lewat halaman Kontak.','Online booking is not active yet. Please reach us via the Contact page.');return}
+  SVF[kind]={svc:F.svc};
+  $('#svCard').innerHTML=`<div class="okbox"><div class="ic">✓</div><h3>${C?L('Pesanan diterima','Booking received'):L('Permintaan diterima','Request received')}</h3>
+    <p>${id?L('No. pesanan','Request no.')+`: <b>${id}</b><br>`:''}${esc(T(svc))} · ${wil}${C?'<br>'+fmtD(tgl)+' · '+(F.jam||'10:00'):''}<br><br>${L('Koordinator JAGA akan menghubungi Anda melalui WhatsApp.','A JAGA coordinator will contact you on WhatsApp.')}</p>
+    ${waUrl?`<p style="margin-top:14px"><a href="${waUrl}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('Chat langsung via WhatsApp','Chat now on WhatsApp')} →</a></p>`:''}
+    <p style="margin-top:10px"><a style="cursor:pointer;color:var(--muted)" onclick="svcPage('${kind}')">${L('Buat pesanan lain','Make another request')}</a></p></div>`;
+}
 
 /* ================= ADMIN: kelola properti ================= */
 const savePropsFiles=()=>[{path:'properties.json',b64:txtB64(JSON.stringify({properties:PROPS},null,2)+'\n')}];
@@ -1892,7 +2030,7 @@ function route(){
   const h=location.hash.slice(1);
   if(h==='portal'){$('#site').classList.remove('on');$('#portal').classList.add('on');scrollTo(0,0);if(USER)enterPortal();else{$('#portal').classList.add('locked');renderLogin()}return}
   $('#portal').classList.remove('on');$('#site').classList.add('on');updateSiteCounts();
-  if(h==='properti'||h.startsWith('p-')){$('#site').classList.add('pmode');renderPropRoute();scrollTo(0,0);nav.classList.add('solid');$$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#properti'));return}
+  if(h==='properti'||h.startsWith('p-')||h==='cleaning'||h==='manajemen'){$('#site').classList.add('pmode');renderPropRoute();scrollTo(0,0);nav.classList.add('solid');const k=(h==='cleaning'||h==='manajemen')?'#layanan':'#properti';$$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')===k));return}
   if($('#site').classList.contains('pmode')){$('#site').classList.remove('pmode');$('#propPage').innerHTML=''}
   const el=document.getElementById(SITE_IDS.includes(h)?h:'beranda');
   requestAnimationFrame(()=>el.scrollIntoView({behavior:h?'smooth':'auto'}));
