@@ -19,5 +19,33 @@
       ]
     }
   ],
-  "gallery": []
+  "gallery": [],
+  "partners": [
+    {
+      "name": "Traveloka",
+      "url": "https://www.traveloka.com",
+      "logo": ""
+    },
+    {
+      "name": "Booking.com",
+      "url": "https://www.booking.com",
+      "logo": ""
+    },
+    {
+      "name": "Agoda",
+      "url": "https://www.agoda.com",
+      "logo": ""
+    },
+    {
+      "name": "Trip.com",
+      "url": "https://www.trip.com",
+      "logo": ""
+    },
+    {
+      "name": "tiket.com",
+      "url": "https://www.tiket.com",
+      "logo": ""
+    }
+  ],
+  "partnersBg": ""
 }

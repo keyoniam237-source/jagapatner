@@ -257,6 +257,20 @@ footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:2
 .svwhy h4{font-size:15px;color:var(--ink);font-weight:600;margin-bottom:2px}
 .svwhy p{font-size:14px;color:var(--muted);line-height:1.6}
 @media(max-width:1000px){.svform{grid-template-columns:1fr}}
+/* ===== mitra ===== */
+.mitra{position:relative;overflow:hidden;color:#fff;background:#14201c}
+.mbg{position:absolute;inset:0;background-size:cover;background-position:center}
+.mbg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,12,.55),rgba(10,14,12,.35) 40%,rgba(10,14,12,.6))}
+.mhead{text-align:center;max-width:720px;margin:0 auto}
+.mhead .mk{font-size:13px;letter-spacing:.32em;text-transform:uppercase;font-weight:600;color:#fff}
+.mitra h2.t{color:#fff;text-align:center}.mitra h2.t em{color:var(--gold2)}
+.mitra .lead{color:rgba(255,255,255,.8);margin:0 auto;text-align:center}
+.plogos{display:flex;flex-wrap:wrap;justify-content:center;gap:28px 40px;margin-top:56px}
+.plogo{width:220px;height:100px;border-radius:16px;background:#eeeae0;display:grid;place-items:center;padding:18px 26px;transition:transform .3s,box-shadow .3s;box-shadow:0 10px 30px -18px rgba(0,0,0,.5)}
+a.plogo:hover{transform:translateY(-4px);box-shadow:0 18px 36px -18px rgba(0,0,0,.6)}
+.plogo img{max-width:100%;max-height:58px;object-fit:contain}
+.plogo span{font-family:'Montserrat',var(--sans);font-weight:600;font-size:22px;color:#1f2a33;letter-spacing:-.01em}
+@media(max-width:700px){.plogos{gap:14px}.plogo{width:calc(50% - 8px);height:82px;padding:14px}.plogo span{font-size:17px}}
 /* ===== hero video ===== */
 .hvids{position:absolute;inset:0;display:none}
 .hero.has-video .hvids{display:block}
@@ -767,19 +781,14 @@ tr:hover td{background:#fbf8f2}
   </section>
 
   <!-- MITRA KAMI -->
-  <section class="s" id="mitra">
-    <div class="wrap">
-      <div class="split reveal">
-        <div><div class="kicker">Mitra Kami</div><h2 class="t" data-en="Growing with our <em>partners</em>.">Bertumbuh bersama <em>mitra</em>.</h2></div>
-        <p class="lead">Kami bekerja sama dengan pemilik properti, pengelola, dan pemasok lokal untuk menjaga kualitas di setiap wilayah.</p>
-      </div>
-      <div class="partners reveal">
-        <div><b>Pemilik Villa &amp; Investor</b><p>Pengelolaan aset yang transparan dengan laporan bulanan.</p></div>
-        <div><b>Hotel &amp; Resort</b><p>Tenaga housekeeping tambahan saat musim ramai.</p></div>
-        <div><b>Pengelola Apartemen</b><p>Turnover cepat untuk unit sewa harian dan bulanan.</p></div>
-        <div><b>Pemasok Lokal</b><p>Linen, amenitas, dan bahan pembersih ramah lingkungan.</p></div>
-      </div>
-      <div class="reveal" style="margin-top:44px;display:flex;gap:14px;flex-wrap:wrap"><a href="#kontak" class="btn">Jadi Mitra →</a></div>
+  <section class="s mitra" id="mitra">
+    <div class="mbg" id="mitraBg"></div>
+    <div class="wrap" style="position:relative">
+      <div class="mhead reveal"><div class="mk">Mitra Kami</div>
+        <h2 class="t" data-en="Growing with our <em>partners</em>.">Bertumbuh bersama <em>mitra</em>.</h2>
+        <p class="lead">Properti yang kami kelola tersedia di platform pemesanan terkemuka, didukung pemilik properti dan pemasok lokal di setiap wilayah.</p></div>
+      <div class="plogos reveal" id="plogos"></div>
+      <div class="reveal" style="margin-top:44px;display:flex;justify-content:center"><a href="#kontak" class="btn" style="background:var(--gold);color:#111">Jadi Mitra →</a></div>
     </div>
   </section>
 
@@ -957,7 +966,7 @@ try{const l=localStorage.getItem('jaga-lang');if(l==='EN'||l==='ID')LANG=l}catch
 const D={
  // nav & general
  'Beranda':'Home','Layanan':'Services','Properti Kami':'Our Properties','Mitra Kami':'Our Partners','Cerita Kami':'Our Story','Karier':'Careers','Kontak':'Contact',
- 'Mitra Operasional Perhotelan':'Your Hospitality Operations Partner','Villa, hotel, dan apartemen yang kami kelola — tersedia untuk sewa harian maupun bulanan dengan standar kebersihan JAGA.':'Villas, hotels and apartments we manage — available for daily or monthly stays, kept to JAGA cleaning standards.','Lihat semua properti →':'View all properties →',
+ 'Mitra Operasional Perhotelan':'Your Hospitality Operations Partner','Properti yang kami kelola tersedia di platform pemesanan terkemuka, didukung pemilik properti dan pemasok lokal di setiap wilayah.':'The properties we manage are listed on leading booking platforms, backed by owners and local suppliers in every region.','Jadi Mitra →':'Become a Partner →','Villa, hotel, dan apartemen yang kami kelola — tersedia untuk sewa harian maupun bulanan dengan standar kebersihan JAGA.':'Villas, hotels and apartments we manage — available for daily or monthly stays, kept to JAGA cleaning standards.','Lihat semua properti →':'View all properties →',
  'Kami merawat hotel, villa, apartemen, dan properti komersial di Bali, Lombok, dan Yogyakarta dengan standar perhotelan — dari housekeeping harian hingga pengelolaan operasional penuh.':'We care for hotels, villas, apartments and commercial properties in Bali, Lombok and Yogyakarta to hospitality standards — from daily housekeeping to full operational management.',
  'GULIR':'SCROLL',
  'Pilih layanan kebersihan sesuai kebutuhan, atau serahkan seluruh operasional properti Anda kepada tim kami.':'Choose the cleaning services you need, or hand over your property’s entire operation to our team.',
@@ -1454,15 +1463,19 @@ addEventListener('keydown',e=>{if(!$('#lb').classList.contains('on'))return;if(e
    Daftar video latar & foto galeri disimpan di media.json di repository.
    Admin mengelolanya dari portal → Media (upload langsung ke GitHub lewat API). */
 const REPO={owner:'keyoniam237-source',repo:'jagapatner',branch:'main'};
-let MEDIA={hero:[],gallery:[]};
+let MEDIA={hero:[],gallery:[],partners:[],partnersBg:''};
 const LOCALURL={};               // pratinjau file yang baru diunggah (sebelum GitHub Pages selesai build)
 const mUrl=src=>LOCALURL[src]||src;
 async function loadMedia(){
   try{const r=await fetch('media.json?v='+Date.now(),{cache:'no-store'});
-    if(r.ok){const j=await r.json();MEDIA={hero:j.hero||[],gallery:j.gallery||[]}}}catch(e){}
+    if(r.ok){const j=await r.json();MEDIA={hero:j.hero||[],gallery:j.gallery||[],partners:j.partners||[],partnersBg:j.partnersBg||''}}}catch(e){}
   applyMedia();
 }
-function applyMedia(){HERO_VIDEOS=MEDIA.hero.map(v=>({...v,src:mUrl(v.src),poster:v.poster?mUrl(v.poster):''}));GALLERY=MEDIA.gallery.map(g=>({...g,src:mUrl(g.src)}));initHero();renderGallery()}
+function renderPartners(){
+  const bg=MEDIA.partnersBg||'videos/lombok-pantai.jpg';$('#mitraBg').style.backgroundImage=`url('${mUrl(bg)}')`;
+  $('#plogos').innerHTML=(MEDIA.partners||[]).map(p=>{const inner=p.logo?`<img src="${mUrl(p.logo)}" alt="${esc(p.name)}" loading="lazy">`:`<span>${esc(p.name)}</span>`;return p.url?`<a class="plogo" href="${esc(p.url)}" target="_blank" rel="noopener" title="${esc(p.name)}">${inner}</a>`:`<div class="plogo" title="${esc(p.name)}">${inner}</div>`}).join('');
+}
+function applyMedia(){renderPartners();HERO_VIDEOS=MEDIA.hero.map(v=>({...v,src:mUrl(v.src),poster:v.poster?mUrl(v.poster):''}));GALLERY=MEDIA.gallery.map(g=>({...g,src:mUrl(g.src)}));initHero();renderGallery()}
 
 /* ---- GitHub API (token disimpan hanya di browser admin) ---- */
 const gh={
@@ -1566,7 +1579,59 @@ function mediaPage(){
       <div class="f" style="max-width:150px"><label>${L('Ukuran','Size')}</label><select id="gSize"><option value="">${L('Normal','Normal')}</option><option value="w">${L('Lebar','Wide')}</option><option value="t">${L('Tinggi','Tall')}</option></select></div>
       <button class="abtn" onclick="mAddPhotos()">${L('Upload & simpan','Upload & save')}</button>
     </div></div>
+
+  <div class="panel"><div class="ph"><div><h3>${L('4. Mitra Kami','4. Our Partners')}</h3><p>${L('Logo mitra di bagian Mitra Kami. Gunakan logo resmi dari mitra (PNG/SVG transparan). Tanpa logo, nama mitra tampil sebagai teks.','Partner logos in the Our Partners section. Use official partner logos (transparent PNG/SVG). Without a logo, the name is shown as text.')}</p></div></div>
+    <div class="mlist">${(MEDIA.partners||[]).map((p,i)=>`<div class="mitem"><div style="width:96px;height:60px;border-radius:8px;background:#eeeae0;display:grid;place-items:center;flex:none;padding:6px">${p.logo?`<img src="${mUrl(p.logo)}" style="max-width:100%;max-height:44px;object-fit:contain;background:none;width:auto;height:auto">`:`<b style="font-size:11px;color:#1f2a33">${esc(p.name)}</b>`}</div>
+      <div class="t"><b>${esc(p.name)}</b><span>${p.url?esc(p.url):L('tanpa tautan','no link')} · ${p.logo?L('logo terpasang','logo set'):L('belum ada logo','no logo yet')}</span></div>
+      <label class="abtn light sm" style="cursor:pointer">${L('Logo','Logo')}<input type="file" accept="image/png,image/svg+xml,image/webp,image/jpeg" style="display:none" onchange="mPartnerLogo(${i},this.files[0])"></label>
+      <button title="${L('Naik','Up')}" onclick="mMove('partners',${i},-1)" ${i===0?'disabled':''}>↑</button>
+      <button class="del" title="${L('Hapus','Delete')}" onclick="mDelPartner(${i})">✕</button></div>`).join('')||`<div class="empty" style="padding:18px">${L('Belum ada mitra.','No partners yet.')}</div>`}</div>
+    <div class="mrow">
+      <div class="f"><label>${L('Nama mitra','Partner name')}</label><input id="pName" placeholder="Traveloka"></div>
+      <div class="f"><label>${L('Tautan (opsional)','Link (optional)')}</label><input id="pUrl" type="url" placeholder="https://www.traveloka.com"></div>
+      <div class="f"><label>${L('Logo (opsional)','Logo (optional)')}</label><input id="pLogo" type="file" accept="image/png,image/svg+xml,image/webp,image/jpeg"></div>
+      <button class="abtn" onclick="mAddPartner()">${L('Tambah','Add')}</button>
+    </div>
+    <div class="mrow" style="margin-top:14px">
+      <div class="f"><label>${L('Foto latar bagian Mitra','Partners section background photo')}</label><input id="pBg" type="file" accept="image/*"></div>
+      <button class="abtn light" onclick="mPartnerBg()">${L('Ganti foto latar','Change background')}</button>
+    </div></div>
   <div class="mprog" id="mprog"></div>`;
+}
+async function logoFile(f){
+  if(!f)return null;
+  if(f.size>1.5*1024*1024)throw new Error(L('Logo terlalu besar (maks. 1,5 MB).','Logo too large (max 1.5 MB).'));
+  const ext=(f.type==='image/svg+xml'?'svg':f.type==='image/png'?'png':f.type==='image/webp'?'webp':'jpg');
+  return {ext,b64:await blobB64(f),url:URL.createObjectURL(f)};
+}
+async function mAddPartner(){
+  const name=$('#pName').value.trim(),url=$('#pUrl').value.trim();
+  if(!name){mProg(L('Isi nama mitra.','Enter the partner name.'),'err');return}
+  if(url&&!/^https?:\/\//.test(url)){mProg(L('Tautan harus diawali https://','The link must start with https://'),'err');return}
+  await mRun(async()=>{const lf=await logoFile($('#pLogo').files[0]);const files=[];const item={name,url,logo:''};
+    if(lf){item.logo=`images/mitra/${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}-${Date.now().toString(36)}.${lf.ext}`;files.push({path:item.logo,b64:lf.b64})}
+    MEDIA.partners=MEDIA.partners||[];MEDIA.partners.push(item);
+    try{await gh.commit([...files,mediaJsonFile()],`Mitra: tambah ${name}`,mProg)}catch(e){MEDIA.partners.pop();throw e}
+    if(lf)LOCALURL[item.logo]=lf.url;applyMedia();renderPortal()});
+}
+async function mPartnerLogo(i,f){
+  const p=MEDIA.partners[i];if(!p||!f)return;
+  await mRun(async()=>{const lf=await logoFile(f),old=p.logo,path=`images/mitra/${p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}-${Date.now().toString(36)}.${lf.ext}`;
+    p.logo=path;try{await gh.commit([{path,b64:lf.b64},...(old?[{path:old,del:true}]:[]),mediaJsonFile()],`Mitra: logo ${p.name}`,mProg)}catch(e){p.logo=old;throw e}
+    LOCALURL[path]=lf.url;applyMedia();renderPortal()});
+}
+async function mDelPartner(i){
+  const p=MEDIA.partners[i];if(!p)return;
+  if(window.__delP!==i){window.__delP=i;mProg(L(`Klik ✕ sekali lagi untuk menghapus ${p.name}.`,`Click ✕ again to remove ${p.name}.`),'err');return}
+  window.__delP=null;
+  await mRun(async()=>{MEDIA.partners.splice(i,1);try{await gh.commit([...(p.logo?[{path:p.logo,del:true}]:[]),mediaJsonFile()],`Mitra: hapus ${p.name}`,mProg)}catch(e){MEDIA.partners.splice(i,0,p);throw e}
+    applyMedia();renderPortal()});
+}
+async function mPartnerBg(){
+  const f=$('#pBg').files[0];if(!f){mProg(L('Pilih foto.','Choose a photo.'),'err');return}
+  await mRun(async()=>{const b=await resizeImage(f,2200,.8),path=`images/mitra/latar-${Date.now().toString(36)}.jpg`,old=MEDIA.partnersBg;
+    MEDIA.partnersBg=path;try{await gh.commit([{path,b64:await blobB64(b)},...(old?[{path:old,del:true}]:[]),mediaJsonFile()],'Mitra: ganti foto latar',mProg)}catch(e){MEDIA.partnersBg=old;throw e}
+    LOCALURL[path]=URL.createObjectURL(b);applyMedia();renderPortal()});
 }
 async function mConnect(){
   const t=$('#ghTok').value.trim();if(!t){mProg(L('Tempel token terlebih dahulu.','Paste the token first.'),'err');return}
@@ -1624,7 +1689,7 @@ async function mDel(kind,i){
 async function mMove(kind,i,d){
   const a=MEDIA[kind],j=i+d;if(j<0||j>=a.length)return;
   await mRun(async()=>{[a[i],a[j]]=[a[j],a[i]];
-    try{await gh.commit([mediaJsonFile()],'Media: ubah urutan video',mProg)}catch(e){[a[i],a[j]]=[a[j],a[i]];throw e}
+    try{await gh.commit([mediaJsonFile()],kind==='partners'?'Mitra: ubah urutan':'Media: ubah urutan video',mProg)}catch(e){[a[i],a[j]]=[a[j],a[i]];throw e}
     applyMedia();renderPortal()});
 }
 
