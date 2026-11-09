@@ -11,5 +11,7 @@ Website resmi JAGA: cleaning service & manajemen operasional di Bali, Lombok, da
 |---|---|
 | `index.html` | Seluruh website + portal VIP (satu file) |
 | `jaga-logo.svg` | Logo JAGA (vektor) |
+| `media.json` | Daftar video latar & foto galeri — dikelola dari Portal → Media |
+| `videos/`, `images/` | File video & foto yang diunggah dari Portal → Media |
 | `CNAME` | Domain kustom untuk GitHub Pages — jangan dihapus |
 | `Dockerfile` | Opsional, hanya untuk hosting container (tidak dipakai GitHub Pages) |
