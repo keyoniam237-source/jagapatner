@@ -1196,10 +1196,14 @@ function renderServiceSelect(){const v=$('#fLay').value;$('#fLay').innerHTML=opt
 $('#bookForm').addEventListener('submit',async e=>{
   e.preventDefault();const f=new FormData(e.target);
   if(SET_READY)await SET_READY;
+  const wa0=(SETTINGS.whatsapp||'').replace(/\D/g,'');
+  const waText=[L('Halo JAGA, saya ingin meminta layanan:','Hello JAGA, I would like to request:'),`Nama: ${f.get('nama')}`,`Telp: ${f.get('telp')}`,`Wilayah: ${f.get('wilayah')}`,`Properti: ${f.get('properti')}`,`Layanan: ${f.get('layanan')}`,`Tanggal: ${f.get('tanggal')}`,f.get('catatan')?`Catatan: ${f.get('catatan')}`:''].filter(Boolean).join('\n');
+  let waWin=null;if(wa0){try{waWin=window.open('about:blank','_blank')}catch(_){}}
+  const goWa=id=>{if(!wa0)return;const u=`https://wa.me/${wa0}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+waText)}`;if(waWin&&!waWin.closed){try{waWin.location.href=u}catch(_){location.href=u}}else location.href=u};
   if(ONLINE()){const btn=e.target.querySelector('button');btn.disabled=true;
     try{const r=await api('POST','/public/request',{nama:f.get('nama'),telp:f.get('telp'),wilayah:f.get('wilayah'),properti:f.get('properti'),layanan:f.get('layanan'),tanggal:f.get('tanggal'),catatan:f.get('catatan'),website:f.get('website')||''},false);
-      e.target.reset();toast(L(`Terima kasih! Permintaan ${r.id||''} sudah kami terima. Koordinator kami akan segera menghubungi Anda.`,`Thank you! Request ${r.id||''} received. Our coordinator will contact you shortly.`))}
-    catch(err){toast(L('Gagal mengirim: ','Could not send: ')+esc(err.message))}
+      goWa(r.id);e.target.reset();toast(L(`Terima kasih! Permintaan ${r.id||''} sudah kami terima. Koordinator kami akan segera menghubungi Anda.`,`Thank you! Request ${r.id||''} received. Our coordinator will contact you shortly.`))}
+    catch(err){if(waWin)try{waWin.close()}catch(_){}toast(L('Gagal mengirim: ','Could not send: ')+esc(err.message))}
     btn.disabled=false;return}
   const id='JG-'+(Math.max(...S.bookings.map(b=>+b.id.split('-')[1]),2400)+1);
   const tim=S.staff.filter(s=>s.wilayah===f.get('wilayah')&&s.peran!=='Koordinator');
@@ -1927,18 +1931,21 @@ async function svSubmit(kind){
   const svc=list[F.svc][0],wil=F.wilayah||'Bali',tgl=C?F.tanggal:iso(new Date());
   const lines=[`${C?'Pesanan cleaning':'Konsultasi manajemen'}: ${svc}`,`Wilayah: ${wil}${F.area?' — '+F.area:''}`,`Properti: ${F.properti||'Rumah'}${F.size?' ('+F.size+')':''}`,C?`Jadwal: ${tgl} ${F.jam||'10:00'}`:'',`Nama: ${name}`,`WhatsApp: ${tel}`,F.email?`Email: ${F.email}`:'',F.catatan?`Catatan: ${F.catatan}`:''].filter(Boolean);
   const btn=$('#svCard .go');btn.disabled=true;let id='';
+  const wa0=(SETTINGS.whatsapp||'').replace(/\D/g,'');
+  let waWin=null;if(wa0){try{waWin=window.open('about:blank','_blank')}catch(e){}}
   if(SET_READY)await SET_READY;
   if(ONLINE()){
     try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:wil,properti:F.properti||'Rumah',layanan:C?svc:'Konsultasi: '+svc,tanggal:tgl,catatan:lines.join('\n'),website:F.hp||''},false);id=r.id||''}
-    catch(err){btn.disabled=false;e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}
+    catch(err){btn.disabled=false;if(waWin)try{waWin.close()}catch(_){}e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}
   }
   const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');
   const waUrl=wa?`https://wa.me/${wa}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+lines.join('\n'))}`:'';
   if(!ONLINE()&&!wa){btn.disabled=false;e.textContent=L('Pemesanan online belum aktif. Silakan hubungi kami lewat halaman Kontak.','Online booking is not active yet. Please reach us via the Contact page.');return}
+  if(waUrl){if(waWin&&!waWin.closed){try{waWin.location.href=waUrl}catch(_){location.href=waUrl}}else location.href=waUrl}
   SVF[kind]={svc:F.svc};
   $('#svCard').innerHTML=`<div class="okbox"><div class="ic">✓</div><h3>${C?L('Pesanan diterima','Booking received'):L('Permintaan diterima','Request received')}</h3>
-    <p>${id?L('No. pesanan','Request no.')+`: <b>${id}</b><br>`:''}${esc(T(svc))} · ${wil}${C?'<br>'+fmtD(tgl)+' · '+(F.jam||'10:00'):''}<br><br>${L('Koordinator JAGA akan menghubungi Anda melalui WhatsApp.','A JAGA coordinator will contact you on WhatsApp.')}</p>
-    ${waUrl?`<p style="margin-top:14px"><a href="${waUrl}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('Chat langsung via WhatsApp','Chat now on WhatsApp')} →</a></p>`:''}
+    <p>${id?L('No. pesanan','Request no.')+`: <b>${id}</b><br>`:''}${esc(T(svc))} · ${wil}${C?'<br>'+fmtD(tgl)+' · '+(F.jam||'10:00'):''}<br><br>${waUrl?L('WhatsApp sudah terbuka dengan detail pesanan Anda. Tekan <b>Kirim</b> di WhatsApp agar tim JAGA langsung menerimanya.','WhatsApp has opened with your booking details. Press <b>Send</b> in WhatsApp so the JAGA team receives it right away.'):L('Koordinator JAGA akan menghubungi Anda melalui WhatsApp.','A JAGA coordinator will contact you on WhatsApp.')}</p>
+    ${waUrl?`<p style="margin-top:14px"><a href="${waUrl}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('WhatsApp belum terbuka? Klik di sini','WhatsApp didn’t open? Click here')} →</a></p>`:''}
     <p style="margin-top:10px"><a style="cursor:pointer;color:var(--muted)" onclick="svcPage('${kind}')">${L('Buat pesanan lain','Make another request')}</a></p></div>`;
 }
 
