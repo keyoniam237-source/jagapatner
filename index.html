@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JAGA — Cleaning Service & Manajemen Operasional</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='530 255 495 620'><g fill='none' stroke='%231f3a4d' stroke-width='34'><path d='M692 283H862M541 354H1012M588 422H690'/><path d='M741 354V605A35 35 0 0 0 811 605V354'/><path d='M966 422H880V617A104 104 0 0 1 672 617V621'/><path d='M949 475V619A172 172 0 0 1 605 619V621'/></g><path fill='%231f3a4d' d='M588 585V513H690V585H656V548H622V585Z M680 866L777 830L875 866Z'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0e1210; --ink2:#161b18; --ink3:#1f2621; --line:rgba(255,255,255,.1);
+  --cream:#f5f0e6; --cream2:#ebe3d3; --gold:#c9a96a; --gold2:#e2c98f;
+  --text:#2a2a26; --muted:#6f6b62; --green:#3f6b52; --red:#a8483f; --blue:#3d5f83;
+  --serif:'Cormorant Garamond',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--text);background:var(--cream);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.view{display:none}.view.on{display:block}
+
+/* ============ NAV ============ */
+.nav{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;
+  padding:14px 5vw;background:linear-gradient(180deg,rgba(18,18,18,.78),rgba(18,18,18,.55));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:background .4s}
+.nav.solid{background:rgba(22,22,22,.9)}
+.brand{display:flex;align-items:center;gap:13px;color:#fff;flex:none}
+.brand .mono{display:flex;flex-direction:column;align-items:center;line-height:1}
+.brand .mono svg{width:38px;height:48px;color:#fff;display:block}
+.brand .mono small{font-family:'Montserrat',var(--sans);font-size:6.5px;letter-spacing:.12em;margin-top:2px;opacity:.9}
+.brand .bt{border-left:1px solid rgba(255,255,255,.6);padding-left:12px;line-height:1.05}
+.brand .bt b{display:block;font-weight:600;font-size:19px}
+.brand .bt span{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;opacity:.75}
+.brand .bar{width:1.5px;height:46px;background:#fff;opacity:.9}
+.brand .wm{font-family:'Montserrat',var(--sans);line-height:1;display:flex;flex-direction:column;gap:5px}
+.brand .wm b{font-weight:600;font-size:26px;letter-spacing:.22em}
+.brand .wm small{font-size:9.5px;font-weight:500;letter-spacing:.13em;white-space:nowrap;text-transform:uppercase;opacity:.8}
+.links{display:flex;align-items:center;gap:2px}
+.links a{color:rgba(255,255,255,.78);font-size:12.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:11px 15px;border-radius:999px;transition:.25s;white-space:nowrap}
+.links a:hover{color:#fff;background:rgba(255,255,255,.06)}
+.links a.act{color:#fff;background:rgba(120,96,70,.38)}
+.lang{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.8);font-size:12.5px;font-weight:500;letter-spacing:.14em;padding:0 22px 0 16px;background:none;border:0;cursor:pointer}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:12px;background:#151515;color:#fff;border:1px solid rgba(255,255,255,.08);
+  padding:13px 30px;border-radius:999px;font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;transition:.25s;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.pill:hover{background:var(--gold);color:#111}
+.burger{display:none;background:none;border:0;color:#fff;width:42px;height:42px}
+.mnav{display:none}
+
+/* ============ HERO ============ */
+.hero{position:relative;height:100vh;min-height:640px;overflow:hidden;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center}
+.hero .scene{position:absolute;inset:-4%;animation:kb 26s ease-in-out infinite alternate}
+.hero .scene svg{width:100%;height:100%;display:block}
+@keyframes kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.09) translate(-1.5%,1%)}}
+.hero .veil{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(10,14,12,.25),rgba(10,14,12,.72) 80%),linear-gradient(180deg,rgba(10,14,12,.55),rgba(10,14,12,.15) 30%,rgba(10,14,12,.6))}
+.fog{position:absolute;left:-50%;width:200%;height:40%;bottom:12%;background:radial-gradient(ellipse at 30% 50%,rgba(255,255,255,.14),transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(255,255,255,.1),transparent 55%);animation:fog 40s linear infinite;filter:blur(8px)}
+@keyframes fog{from{transform:translateX(0)}to{transform:translateX(25%)}}
+.hero .in{position:relative;z-index:2;padding:0 6vw;max-width:1200px}
+.eyebrow{display:inline-flex;align-items:center;gap:28px;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.85);font-weight:500}
+.eyebrow:before,.eyebrow:after{content:"";width:72px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.eyebrow:after{background:linear-gradient(90deg,var(--gold),transparent)}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(44px,6.6vw,100px);line-height:1.04;margin:34px 0 26px;letter-spacing:-.01em;text-shadow:0 4px 40px rgba(0,0,0,.35)}
+.hero h1 em{font-style:italic;color:var(--gold2)}
+.hero p.sub{max-width:640px;margin:0 auto;font-size:16px;line-height:1.7;color:rgba(255,255,255,.82);font-weight:300}
+.regions-tag{margin-top:34px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.regions-tag a{border:1px solid rgba(255,255,255,.28);padding:10px 20px;border-radius:999px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;transition:.25s;backdrop-filter:blur(6px);background:rgba(255,255,255,.04)}
+.regions-tag a:hover{border-color:var(--gold);background:rgba(201,169,106,.18)}
+.ring{position:absolute;right:30%;bottom:16%;width:58px;height:58px;border:1.5px solid var(--gold);border-radius:50%;animation:pulse 3.4s ease-in-out infinite;z-index:2}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.18);opacity:.35}}
+.scroll{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:2;font-size:12px;letter-spacing:.3em;color:rgba(255,255,255,.65);display:flex;flex-direction:column;align-items:center;gap:10px}
+.scroll i{width:1px;height:34px;background:linear-gradient(var(--gold),transparent);animation:drip 2s infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ============ SECTIONS ============ */
+section.s{padding:120px 6vw}
+.wrap{max-width:1240px;margin:0 auto}
+.kicker{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:600;display:flex;align-items:center;gap:14px}
+.kicker:before{content:"";width:36px;height:1px;background:var(--gold)}
+h2.t{font-family:var(--serif);font-weight:400;font-size:clamp(36px,4.6vw,62px);line-height:1.08;margin:18px 0 20px;color:var(--ink)}
+h2.t em{font-style:italic;color:var(--green)}
+.lead{font-size:16.5px;line-height:1.8;color:var(--muted);max-width:620px;font-weight:300}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 1s ease,transform 1s ease}
+.reveal.vis{opacity:1;transform:none}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #d9d0bd;border-bottom:1px solid #d9d0bd;margin-top:70px}
+.stats div{padding:34px 26px;border-right:1px solid #d9d0bd}
+.stats div:last-child{border-right:0}
+.stats b{font-family:var(--serif);font-size:54px;font-weight:400;color:var(--ink);display:block;line-height:1}
+.stats span{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:10px;display:block}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end}
+
+/* services */
+.svc-dark{background:var(--ink);color:#fff}
+.svc-dark h2.t{color:#fff}.svc-dark h2.t em{color:var(--gold2)}.svc-dark .lead{color:rgba(255,255,255,.62)}
+.tabs{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:5px;margin:46px 0 40px}
+.tabs button{background:none;border:0;color:rgba(255,255,255,.7);padding:12px 24px;border-radius:999px;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;transition:.25s}
+.tabs button.on{background:var(--gold);color:#111;font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.card{background:var(--ink);padding:42px 34px;transition:.35s;position:relative;min-height:290px}
+.card:hover{background:var(--ink3)}
+.card .n{font-family:var(--serif);font-size:15px;color:var(--gold);font-style:italic}
+.card svg{width:40px;height:40px;stroke:var(--gold2);fill:none;stroke-width:1.3;margin:24px 0 22px}
+.card h3{font-family:var(--serif);font-size:28px;font-weight:500;margin-bottom:12px}
+.card p{font-size:14.5px;line-height:1.75;color:rgba(255,255,255,.6);font-weight:300}
+.card ul{list-style:none;margin-top:16px}
+.card li{font-size:13px;color:rgba(255,255,255,.72);padding:6px 0;border-top:1px dashed rgba(255,255,255,.1)}
+.card li:before{content:"— ";color:var(--gold)}
+
+/* regions */
+.regions{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:60px}
+.reg{position:relative;border-radius:4px;overflow:hidden;height:520px;color:#fff;cursor:pointer;isolation:isolate}
+.reg .art{position:absolute;inset:0;transition:transform 1.4s cubic-bezier(.2,.7,.2,1);z-index:-2}
+.reg .art svg{width:100%;height:100%}
+.reg:hover .art{transform:scale(1.07)}
+.reg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(8,10,9,.86));z-index:-1}
+.reg .c{position:absolute;left:0;right:0;bottom:0;padding:34px}
+.reg .c small{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold2)}
+.reg .c h3{font-family:var(--serif);font-size:44px;font-weight:400;margin:8px 0 10px}
+.reg .c p{font-size:14px;line-height:1.65;color:rgba(255,255,255,.75);max-height:0;overflow:hidden;transition:max-height .6s}
+.reg:hover .c p{max-height:160px}
+.reg .c .meta{display:flex;gap:18px;margin-top:16px;font-size:12px;letter-spacing:.08em;color:rgba(255,255,255,.7)}
+.reg .c .meta b{color:#fff;font-weight:600}
+
+/* process */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;margin-top:70px;counter-reset:st}
+.step{border-top:1px solid #cdbf9f;padding-top:26px;position:relative}
+.step:before{counter-increment:st;content:"0" counter(st);font-family:var(--serif);font-size:56px;color:var(--gold);line-height:1;display:block;margin-bottom:18px}
+.step h4{font-family:var(--serif);font-size:25px;font-weight:500;color:var(--ink);margin-bottom:10px}
+.step p{font-size:14.5px;line-height:1.75;color:var(--muted)}
+
+/* app teaser */
+.teaser{background:var(--cream2)}
+.mock{background:var(--ink);border-radius:14px;padding:16px;box-shadow:0 40px 80px -30px rgba(0,0,0,.45)}
+.mock .bar{display:flex;gap:6px;margin-bottom:12px}.mock .bar i{width:10px;height:10px;border-radius:50%;background:#3a403c}
+.mock .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mock .k{background:var(--ink3);border-radius:8px;padding:14px;color:#fff}
+.mock .k small{font-size:10px;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase}
+.mock .k b{display:block;font-family:var(--serif);font-size:30px;font-weight:400;margin-top:4px}
+.mock .chart{grid-column:1/-1;background:var(--ink3);border-radius:8px;height:150px;display:flex;align-items:flex-end;gap:8px;padding:16px}
+.mock .chart i{flex:1;background:linear-gradient(var(--gold2),var(--gold));border-radius:3px 3px 0 0;opacity:.85}
+.feat{list-style:none;margin:30px 0 36px}
+.feat li{padding:14px 0;border-bottom:1px solid #d6cbb4;display:flex;gap:14px;font-size:15px;color:var(--text)}
+.feat li b{color:var(--gold);font-family:var(--serif);font-size:18px;font-style:italic;min-width:26px}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border:0;padding:16px 30px;border-radius:999px;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;transition:.25s}
+.btn:hover{background:var(--gold);color:#111}
+.btn.ghost{background:transparent;border:1px solid var(--ink);color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:#fff}
+
+/* properti */
+.pfilter{display:flex;gap:8px;flex-wrap:wrap;margin:40px 0 26px}
+.pfilter button{border:1px solid #cdbf9f;background:none;padding:9px 18px;border-radius:999px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pfilter button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.props{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.prop{background:#fff;border-radius:6px;overflow:hidden;border:1px solid #e3d9c4;transition:.3s}
+.prop:hover{transform:translateY(-4px);box-shadow:0 20px 40px -24px rgba(0,0,0,.35)}
+.prop .ph{height:150px;display:grid;place-items:center}
+.prop .ph svg{width:56px;height:56px;stroke:rgba(255,255,255,.85);fill:none;stroke-width:1.2}
+.prop .pb{padding:16px 18px}
+.prop small{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.prop h4{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--ink);margin:4px 0}
+.prop p{font-size:13px;color:var(--muted)}
+/* mitra */
+.partners{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #d9d0bd;margin-top:56px}
+.partners div{padding:30px 24px 30px 0;border-right:1px solid #d9d0bd;margin-right:24px}
+.partners div:last-child{border-right:0}
+.partners b{font-family:var(--serif);font-size:24px;font-weight:500;color:var(--ink);display:block;margin-bottom:8px}
+.partners p{font-size:14px;line-height:1.7;color:var(--muted)}
+/* blog */
+.posts{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:56px}
+.post{cursor:pointer}
+.post .cv{height:210px;border-radius:4px;margin-bottom:18px;position:relative;overflow:hidden}
+.post .cv span{position:absolute;left:14px;top:14px;background:rgba(0,0,0,.45);color:#fff;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;padding:6px 12px;border-radius:999px}
+.post small{font-size:12px;color:var(--muted)}
+.post h4{font-family:var(--serif);font-size:25px;font-weight:500;color:var(--ink);margin:6px 0 8px;line-height:1.2}
+.post:hover h4{color:var(--green)}
+.post p{font-size:14px;line-height:1.7;color:var(--muted)}
+/* karier */
+.jobs{margin-top:50px;border-top:1px solid #d9d0bd}
+.job-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:20px;align-items:center;padding:24px 0;border-bottom:1px solid #d9d0bd}
+.job-row h4{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--ink)}
+.job-row span{font-size:14px;color:var(--muted)}
+.rg{font-size:12px;color:var(--muted)}
+@media(max-width:960px){.props{grid-template-columns:1fr 1fr}.partners,.posts{grid-template-columns:1fr}.partners div{border-right:0;border-bottom:1px solid #d9d0bd;margin:0}.job-row{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.props{grid-template-columns:1fr}}
+/* contact / booking */
+.contact{background:var(--ink);color:#fff}
+.contact h2.t{color:#fff}.contact h2.t em{color:var(--gold2)}.contact .lead{color:rgba(255,255,255,.62)}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:18px 22px}
+.f{display:flex;flex-direction:column;gap:8px}
+.f.full{grid-column:1/-1}
+.f label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.f input,.f select,.f textarea{background:transparent;border:0;border-bottom:1px solid rgba(255,255,255,.25);color:#fff;font:inherit;font-size:15px;padding:10px 0;outline:none;transition:.25s}
+.f select option{color:#111}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--gold)}
+.f textarea{resize:vertical;min-height:80px}
+.offices{display:grid;gap:22px;margin-top:40px}
+.office{border-left:1px solid var(--gold);padding-left:18px}
+.office b{font-family:var(--serif);font-size:24px;font-weight:500}
+.office p{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;margin-top:4px}
+footer{background:#090b0a;color:rgba(255,255,255,.55);padding:50px 6vw;font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:16px 24px;border-radius:999px;font-size:14px;z-index:200;transition:transform .45s cubic-bezier(.2,.8,.2,1);border:1px solid var(--gold);display:flex;gap:10px;align-items:center;max-width:92vw}
+.toast.on{transform:translate(-50%,0)}
+
+/* ============ APP / PORTAL ============ */
+#portal{background:#f3efe7;min-height:100vh}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.side{background:var(--ink);color:#fff;padding:24px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+.side .brand{padding:4px 8px 26px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.side .brand svg{width:30px;height:38px;color:#fff}.side .brand .bt b{font-size:16px}
+.side nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;font-size:14px;color:rgba(255,255,255,.7);margin-bottom:2px;transition:.2s;cursor:pointer}
+.side nav a svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+.side nav a:hover{background:rgba(255,255,255,.05);color:#fff}
+.side nav a.on{background:rgba(201,169,106,.18);color:var(--gold2)}
+.side .sect{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:18px 14px 8px}
+.side .foot{margin-top:auto;padding:14px;border-top:1px solid var(--line);font-size:12px;color:rgba(255,255,255,.5)}
+.side .foot a{color:var(--gold2);cursor:pointer}
+.main{padding:28px 34px 60px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+.top h1{font-family:var(--serif);font-weight:500;font-size:38px;color:var(--ink);line-height:1}
+.top .sub{font-size:13px;color:var(--muted);margin-top:6px}
+.seg{display:inline-flex;background:#fff;border:1px solid #e1d8c6;border-radius:999px;padding:4px}
+.seg button{border:0;background:none;padding:8px 16px;border-radius:999px;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--ink);color:#fff}
+.abtn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border:0;padding:11px 20px;border-radius:999px;font-size:13px;font-weight:500}
+.abtn:hover{background:var(--gold);color:#111}
+.abtn.sm{padding:6px 12px;font-size:12px}
+.abtn.light{background:#fff;color:var(--ink);border:1px solid #e1d8c6}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid #e8e0cf;border-radius:14px;padding:20px}
+.kpi small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.kpi b{display:block;font-family:var(--serif);font-size:40px;font-weight:500;color:var(--ink);margin-top:6px;line-height:1}
+.kpi span{font-size:12px;color:var(--muted)}
+.panel{background:#fff;border:1px solid #e8e0cf;border-radius:14px;padding:22px;margin-bottom:20px}
+.panel h3{font-family:var(--serif);font-weight:500;font-size:24px;color:var(--ink);margin-bottom:4px}
+.panel .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.panel .ph p{font-size:13px;color:var(--muted)}
+.g2{display:grid;grid-template-columns:1.5fr 1fr;gap:20px}
+.regrow{display:grid;grid-template-columns:110px 1fr 60px;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f0eadf;font-size:14px}
+.regrow:last-child{border:0}
+.track{height:10px;background:#f1ece2;border-radius:99px;overflow:hidden;display:flex}
+.track i{display:block;height:100%}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:10px 12px;border-bottom:1px solid #ebe3d3;white-space:nowrap}
+td{padding:13px 12px;border-bottom:1px solid #f2ede3;vertical-align:middle}
+tr:hover td{background:#fbf8f2}
+.tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:500;white-space:nowrap}
+.st-Baru{background:#e8eef5;color:var(--blue)}
+.st-Dijadwalkan{background:#f6efdc;color:#8a6a24}
+.st-Berjalan{background:#efe6f3;color:#6b4380}
+.st-Selesai{background:#e3eee7;color:var(--green)}
+.st-Batal{background:#f5e3e0;color:var(--red)}
+.rg{font-size:12px;color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select,.mf input,.mf select,.mf textarea{border:1px solid #e1d8c6;background:#fff;border-radius:10px;padding:9px 12px;font:inherit;font-size:13.5px;outline:none}
+.filters input:focus,.mf input:focus,.mf select:focus{border-color:var(--gold)}
+.tscroll{overflow-x:auto}
+.sel-status{border:1px solid #e1d8c6;border-radius:8px;padding:5px 6px;font:inherit;font-size:12.5px;background:#fff}
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+/* schedule */
+.week{display:grid;grid-template-columns:repeat(7,minmax(130px,1fr));gap:10px;overflow-x:auto}
+.day{background:#faf7f1;border:1px solid #eee6d6;border-radius:12px;padding:10px;min-height:260px}
+.day h5{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:10px;display:flex;justify-content:space-between}
+.day h5 b{color:var(--ink);font-family:var(--serif);font-size:20px;letter-spacing:0}
+.day.today{border-color:var(--gold);background:#fffaf0}
+.job{background:#fff;border-left:3px solid var(--gold);border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer}
+.job b{display:block;font-size:12.5px;color:var(--ink)}
+.job span{color:var(--muted)}
+/* staff */
+.staff{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.person{background:#fff;border:1px solid #e8e0cf;border-radius:14px;padding:18px;display:flex;gap:14px;align-items:flex-start}
+.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-size:19px;color:#fff;flex:none}
+.person h4{font-size:15px;font-weight:600;color:var(--ink)}
+.person p{font-size:12.5px;color:var(--muted);margin-top:2px}
+.person .row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.chip{font-size:11px;padding:3px 9px;border-radius:999px;background:#f3eee4;color:var(--muted)}
+.chip.on{background:#e3eee7;color:var(--green)}
+.chip.off{background:#f5e3e0;color:var(--red)}
+/* checklist */
+.cl{list-style:none}
+.cl li{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #f0eadf;font-size:14px}
+.cl input{width:18px;height:18px;accent-color:var(--green)}
+.cl li.done span{text-decoration:line-through;color:var(--muted)}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(10,12,11,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:120;padding:20px}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:18px;width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:28px}
+.mbox h3{font-family:var(--serif);font-size:30px;font-weight:500;color:var(--ink);margin-bottom:18px}
+.mf{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mf .f label{color:var(--muted)}
+.mf .full{grid-column:1/-1}
+.mact{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.demo{background:#fbf3df;border:1px solid #ecd9a9;color:#7a5f22;border-radius:10px;padding:10px 14px;font-size:12.5px;margin-bottom:18px}
+.mtop{display:none}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1520px){.links a{padding:10px 11px;letter-spacing:.11em}.lang{padding:0 12px}.pill{padding:12px 22px}}
+@media(max-width:1400px){.nav{padding-left:3vw;padding-right:3vw}.links a{padding:9px 8px;font-size:12px;letter-spacing:.08em}}
+@media(max-width:1300px){.links{display:none}.burger{display:block}
+  .mnav{position:fixed;inset:0;background:rgba(10,12,11,.97);z-index:60;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+  .mnav.on{display:flex}.mnav a{color:#fff;font-family:var(--serif);font-size:30px;padding:4px}
+  .mnav .x{position:absolute;top:22px;right:22px;background:none;border:0;color:#fff;font-size:30px}}
+@media(max-width:960px){
+  .split,.g2{grid-template-columns:1fr;gap:40px}
+  .cards,.regions{grid-template-columns:1fr}.reg{height:420px}.reg .c p{max-height:none}
+  .steps{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.stats div:nth-child(2){border-right:0}.stats div{border-bottom:1px solid #d9d0bd}
+  .kpis{grid-template-columns:1fr 1fr}
+  .app{grid-template-columns:1fr}.side{display:none;position:fixed;inset:0 30% 0 0;z-index:90;height:100vh}.side.on{display:flex}
+  .mtop{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;padding:12px 18px;position:sticky;top:0;z-index:80}
+  .mtop .brand svg{width:26px;height:33px;color:#fff}.mtop .brand .bt b{font-size:15px}
+  .main{padding:22px 16px 60px}.ring{display:none}
+}
+@media(max-width:600px){section.s{padding:84px 6vw}.form,.mf{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.eyebrow{font-size:11px;gap:14px}.eyebrow:before,.eyebrow:after{width:30px}.brand .bt span{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGO SYMBOL ================= -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="mono" viewBox="530 255 495 620">
+      <g fill="none" stroke="currentColor" stroke-width="34" stroke-linejoin="miter">
+        <path d="M692 283H862M541 354H1012M588 422H690"/>
+        <path d="M741 354V605A35 35 0 0 0 811 605V354"/>
+        <path d="M966 422H880V617A104 104 0 0 1 672 617V621"/>
+        <path d="M949 475V619A172 172 0 0 1 605 619V621"/>
+      </g>
+      <path fill="currentColor" d="M588 585V513H690V585H656V548H622V585Z M680 866L777 830L875 866Z"/>
+    </symbol>
+    <symbol id="logo" viewBox="530 255 495 620">
+      <g fill="none" stroke="currentColor" stroke-width="34" stroke-linejoin="miter">
+        <path d="M692 283H862M541 354H1012M588 422H690"/>
+        <path d="M741 354V605A35 35 0 0 0 811 605V354"/>
+        <path d="M966 422H880V617A104 104 0 0 1 672 617V621"/>
+        <path d="M949 475V619A172 172 0 0 1 605 619V621"/>
+      </g>
+      <path fill="currentColor" d="M588 585V513H690V585H656V548H622V585Z M680 866L777 830L875 866Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================================================================ -->
+<!-- ========================= WEBSITE ============================== -->
+<!-- ================================================================ -->
+<div id="site" class="view on">
+  <header class="nav" id="nav">
+    <a class="brand" href="#beranda" aria-label="JAGA">
+      <span class="mono"><svg><use href="#mono"/></svg></span>
+      <span class="bar"></span>
+      <span class="wm"><b>JAGA</b><small>Management Operation Partner</small></span>
+    </a>
+    <nav class="links" id="links">
+      <a href="#beranda" class="act">Beranda</a>
+      <a href="#layanan">Layanan</a>
+      <a href="#properti">Properti Kami</a>
+      <a href="#mitra">Mitra Kami</a>
+      <a href="#cerita">Cerita Kami</a>
+      <a href="#blog">Blog</a>
+      <a href="#karier">Karier</a>
+      <a href="#kontak">Kontak</a>
+      <button class="lang" id="langBtn" title="Bahasa / Language"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-2.9a15.7 15.7 0 0 0-1.4-3.6A8 8 0 0 1 18.9 8ZM12 4c.8 1.2 1.5 2.5 1.9 4h-3.8c.4-1.5 1.1-2.8 1.9-4ZM4.3 14a8.2 8.2 0 0 1 0-4h3.4a16 16 0 0 0 0 4H4.3Zm.8 2h3a15.7 15.7 0 0 0 1.3 3.6A8 8 0 0 1 5.1 16Zm3-8h-3a8 8 0 0 1 4.3-3.6A15.7 15.7 0 0 0 8.1 8ZM12 20c-.8-1.2-1.5-2.5-1.9-4h3.8c-.4 1.5-1.1 2.8-1.9 4Zm2.3-6H9.7a14.7 14.7 0 0 1 0-4h4.6a14.7 14.7 0 0 1 0 4Zm.3 5.6a15.7 15.7 0 0 0 1.4-3.6h2.9a8 8 0 0 1-4.3 3.6ZM16.3 14a16 16 0 0 0 0-4h3.4a8.2 8.2 0 0 1 0 4h-3.4Z"/></svg><span id="langLbl">ID</span></button>
+      <a href="#portal" class="pill"><svg width="16" height="14" viewBox="0 0 24 20" fill="currentColor"><path d="M2 5l5.5 5L12 2l4.5 8L22 5l-2.2 11H4.2z"/><rect x="4.2" y="17" width="15.6" height="2" rx="1"/></svg>VIP</a>
+    </nav>
+    <button class="burger" onclick="mnav(true)" aria-label="Menu"><svg viewBox="0 0 24 24" width="26" stroke="currentColor" stroke-width="1.6"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
+  </header>
+  <div class="mnav" id="mnav">
+    <button class="x" onclick="mnav(false)">✕</button>
+    <a href="#beranda" onclick="mnav(false)">Beranda</a><a href="#layanan" onclick="mnav(false)">Layanan</a><a href="#properti" onclick="mnav(false)">Properti Kami</a><a href="#mitra" onclick="mnav(false)">Mitra Kami</a><a href="#cerita" onclick="mnav(false)">Cerita Kami</a><a href="#blog" onclick="mnav(false)">Blog</a><a href="#karier" onclick="mnav(false)">Karier</a><a href="#kontak" onclick="mnav(false)">Kontak</a>
+    <a href="#portal" class="pill" style="font-family:var(--sans);font-size:13px;margin-top:20px" onclick="mnav(false)">VIP Portal</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="beranda">
+    <div class="scene">
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d6b5a"/><stop offset=".45" stop-color="#a9a684"/><stop offset=".7" stop-color="#c9bf95"/><stop offset="1" stop-color="#3d4a36"/></linearGradient>
+          <radialGradient id="sun" cx=".62" cy=".44" r=".35"><stop offset="0" stop-color="#fff3cf" stop-opacity=".9"/><stop offset="1" stop-color="#fff3cf" stop-opacity="0"/></radialGradient>
+          <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter><filter id="blur2"><feGaussianBlur stdDeviation="2"/></filter>
+        </defs>
+        <rect width="1600" height="1000" fill="url(#sky)"/>
+        <rect width="1600" height="1000" fill="url(#sun)"/>
+        <!-- volcano -->
+        <path d="M520 600 L880 270 Q900 255 920 270 L1300 600Z" fill="#6f7a64" opacity=".55" filter="url(#blur6)"/>
+        <!-- far hills -->
+        <path d="M0 640 Q200 520 400 590 T800 560 T1200 580 T1600 540 V1000 H0Z" fill="#56664d" opacity=".75" filter="url(#blur2)"/>
+        <!-- rice terraces -->
+        <g fill="none" stroke="#c8c48f" stroke-opacity=".35" stroke-width="3">
+          <path d="M0 760 Q400 700 800 740 T1600 700"/><path d="M0 800 Q400 745 800 785 T1600 748"/><path d="M0 845 Q400 795 800 830 T1600 800"/><path d="M0 892 Q400 848 800 880 T1600 855"/>
+        </g>
+        <path d="M0 720 Q400 660 800 700 T1600 660 V1000 H0Z" fill="#3e5236" opacity=".7"/>
+        <!-- palms left -->
+        <g fill="#1d2a1c">
+          <path d="M150 1000 Q165 700 210 460" stroke="#1d2a1c" stroke-width="12" fill="none"/>
+          <path d="M210 460 Q120 430 40 500 Q130 455 210 470Z"/><path d="M210 460 Q300 410 380 470 Q290 440 212 470Z"/>
+          <path d="M210 460 Q180 360 110 320 Q190 380 214 465Z"/><path d="M210 460 Q260 360 330 340 Q260 390 214 466Z"/>
+          <path d="M210 460 Q150 520 120 610 Q175 520 212 470Z"/>
+          <path d="M0 1000 V380 Q60 300 140 260 Q120 360 160 450 Q100 600 120 1000Z" opacity=".9"/>
+        </g>
+        <!-- trees right -->
+        <g fill="#1a2619">
+          <ellipse cx="1480" cy="420" rx="260" ry="220"/><ellipse cx="1350" cy="300" rx="180" ry="150"/><ellipse cx="1560" cy="640" rx="200" ry="260"/>
+          <path d="M1380 1000 Q1400 760 1430 600" stroke="#1a2619" stroke-width="22" fill="none"/>
+        </g>
+        <g stroke="#253323" stroke-width="3" fill="none" opacity=".8">
+          <path d="M1200 220 Q1000 300 820 420"/><path d="M1260 260 Q1120 420 980 520"/><path d="M1240 180 Q1050 150 900 200"/>
+        </g>
+        <!-- figure: a housekeeper silhouette arranging linen -->
+        <g transform="translate(760 560)" fill="#141a14" opacity=".88">
+          <circle cx="40" cy="0" r="22"/>
+          <path d="M18 26 Q40 18 64 26 L78 140 Q40 152 4 140Z"/>
+          <path d="M64 34 Q110 60 150 40 L156 52 Q110 80 62 56Z"/>
+          <path d="M18 34 Q-20 70 -40 50 L-46 60 Q-14 92 22 58Z"/>
+          <path d="M14 138 L22 300 L38 300 L40 150Z"/><path d="M46 150 L52 300 L68 300 L66 138Z"/>
+          <rect x="140" y="20" width="120" height="70" rx="4" fill="#e9e2cf" opacity=".55"/>
+        </g>
+      </svg>
+    </div>
+    <div class="fog"></div>
+    <div class="veil"></div>
+    <div class="in">
+      <div class="eyebrow">Kebersihan &amp; Keunggulan Operasional</div>
+      <h1 data-en="Cleaning Service &amp;<br>Operational <em>Management</em>">Cleaning Service &amp;<br>Manajemen <em>Operasional</em></h1>
+      <p class="sub">Kami merawat hotel, villa, apartemen, dan properti komersial di Bali, Lombok, dan Yogyakarta dengan standar perhotelan — dari housekeeping harian hingga pengelolaan operasional penuh.</p>
+      <div class="regions-tag">
+        <a href="#wilayah" data-r="Bali">Bali</a><a href="#wilayah" data-r="Lombok">Lombok</a><a href="#wilayah" data-r="Yogyakarta">Yogyakarta</a>
+      </div>
+    </div>
+    <div class="ring"></div>
+    <div class="scroll">GULIR<i></i></div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="s svc-dark" id="layanan">
+    <div class="wrap">
+      <div class="split reveal">
+        <div><div class="kicker">Layanan</div><h2 class="t" data-en="Two pillars, <em>one standard</em>.">Dua pilar, <em>satu standar</em>.</h2></div>
+        <p class="lead">Pilih layanan kebersihan sesuai kebutuhan, atau serahkan seluruh operasional properti Anda kepada tim kami.</p>
+      </div>
+      <div class="tabs reveal"><button class="on" data-t="clean">Cleaning Service</button><button data-t="ops">Manajemen Operasional</button></div>
+      <div class="cards reveal" id="cards"></div>
+    </div>
+  </section>
+
+  <!-- PROPERTI KAMI -->
+  <section class="s" id="properti" style="background:var(--cream2)">
+    <div class="wrap">
+      <div class="split reveal">
+        <div><div class="kicker">Properti Kami</div><h2 class="t" data-en="Properties we <em>care for</em>.">Properti yang kami <em>rawat</em>.</h2></div>
+        <p class="lead">Dari villa privat hingga gedung perkantoran — setiap jenis properti memiliki paket layanan dan SOP tersendiri.</p>
+      </div>
+      <div class="pfilter reveal" id="pfilter"></div>
+      <div class="props" id="props"></div>
+      <p class="rg reveal" style="margin-top:18px">* Nama properti di atas adalah contoh tampilan — ganti dengan portofolio nyata Anda.</p>
+    </div>
+  </section>
+
+  <!-- MITRA KAMI -->
+  <section class="s" id="mitra">
+    <div class="wrap">
+      <div class="split reveal">
+        <div><div class="kicker">Mitra Kami</div><h2 class="t" data-en="Growing with our <em>partners</em>.">Bertumbuh bersama <em>mitra</em>.</h2></div>
+        <p class="lead">Kami bekerja sama dengan pemilik properti, pengelola, dan pemasok lokal untuk menjaga kualitas di setiap wilayah.</p>
+      </div>
+      <div class="partners reveal">
+        <div><b>Pemilik Villa &amp; Investor</b><p>Pengelolaan aset yang transparan dengan laporan bulanan.</p></div>
+        <div><b>Hotel &amp; Resort</b><p>Tenaga housekeeping tambahan saat musim ramai.</p></div>
+        <div><b>Pengelola Apartemen</b><p>Turnover cepat untuk unit sewa harian dan bulanan.</p></div>
+        <div><b>Pemasok Lokal</b><p>Linen, amenitas, dan bahan pembersih ramah lingkungan.</p></div>
+      </div>
+      <div class="reveal" style="margin-top:44px;display:flex;gap:14px;flex-wrap:wrap"><a href="#kontak" class="btn">Jadi Mitra →</a></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="s" id="cerita">
+    <div class="wrap">
+      <div class="split reveal">
+        <div>
+          <div class="kicker">Cerita Kami</div>
+          <h2 class="t" data-en="Spotless properties, <em>operations</em> that run flawlessly.">Properti yang bersih, <em>operasi</em> yang berjalan tanpa cela.</h2>
+        </div>
+        <p class="lead">JAGA menggabungkan tim kebersihan terlatih dengan sistem manajemen operasional modern. Setiap pekerjaan dijadwalkan, diperiksa dengan checklist, dan dilaporkan secara digital — sehingga pemilik properti selalu tahu kondisi asetnya, di mana pun mereka berada.</p>
+      </div>
+      <div class="stats reveal">
+        <div><b data-count="3">0</b><span>Wilayah operasi</span></div>
+        <div><b data-count="24" data-suf="/7">0</b><span>Layanan darurat</span></div>
+        <div><b data-count="11">0</b><span>Jenis layanan</span></div>
+        <div><b data-count="100" data-suf="%">0</b><span>Pekerjaan tercatat digital</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGIONS -->
+  <section class="s" id="wilayah">
+    <div class="wrap">
+      <div class="split reveal">
+        <div><div class="kicker">Wilayah Layanan</div><h2 class="t" data-en="Present in three key <em>destinations</em>.">Hadir di tiga <em>destinasi</em> utama.</h2></div>
+        <p class="lead">Setiap wilayah memiliki koordinator lapangan, tim tetap, dan gudang perlengkapan sendiri untuk respons yang cepat.</p>
+      </div>
+      <div class="regions" id="regions"></div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="s" id="proses" style="background:var(--cream2)">
+    <div class="wrap">
+      <div class="reveal"><div class="kicker">Cara Kerja</div><h2 class="t" data-en="From request to <em>report</em>.">Dari permintaan hingga <em>laporan</em>.</h2></div>
+      <div class="steps reveal">
+        <div class="step"><h4>Survei &amp; Penawaran</h4><p>Koordinator wilayah meninjau properti, luas area, dan kebutuhan khusus, lalu mengirim penawaran transparan.</p></div>
+        <div class="step"><h4>Penjadwalan</h4><p>Pekerjaan masuk ke aplikasi, tim ditugaskan sesuai wilayah, keahlian, dan ketersediaan.</p></div>
+        <div class="step"><h4>Eksekusi + Checklist</h4><p>Tim bekerja berdasarkan SOP dan checklist digital per ruangan, termasuk foto sebelum–sesudah.</p></div>
+        <div class="step"><h4>Inspeksi &amp; Laporan</h4><p>Supervisor melakukan quality check, lalu laporan dan tagihan dikirim langsung ke pemilik.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP TEASER -->
+  <section class="s teaser" id="aplikasi" style="background:var(--cream)">
+    <div class="wrap split" style="align-items:center">
+      <div class="reveal">
+        <div class="kicker">Aplikasi Web</div>
+        <h2 class="t" data-en="Your entire operation on <em>one screen</em>.">Seluruh operasi dalam <em>satu layar</em>.</h2>
+        <p class="lead">Portal JAGA dipakai tim internal dan klien untuk memantau setiap pekerjaan di Bali, Lombok, dan Yogyakarta.</p>
+        <ul class="feat">
+          <li><b>i.</b>Dasbor KPI per wilayah secara real-time</li>
+          <li><b>ii.</b>Manajemen pesanan &amp; status pekerjaan</li>
+          <li><b>iii.</b>Jadwal mingguan &amp; penugasan tim</li>
+          <li><b>iv.</b>Data staf, shift, dan checklist SOP</li>
+        </ul>
+        <a href="#portal" class="btn">Buka Portal →</a>
+      </div>
+      <div class="reveal">
+        <div class="mock">
+          <div class="bar"><i></i><i></i><i></i></div>
+          <div class="grid">
+            <div class="k"><small>Bali</small><b id="mk1">—</b></div>
+            <div class="k"><small>Lombok</small><b id="mk2">—</b></div>
+            <div class="k"><small>Yogyakarta</small><b id="mk3">—</b></div>
+            <div class="chart"><i style="height:40%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:80%"></i><i style="height:66%"></i><i style="height:92%"></i><i style="height:74%"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG -->
+  <section class="s" id="blog" style="background:var(--cream2)">
+    <div class="wrap">
+      <div class="split reveal">
+        <div><div class="kicker">Blog</div><h2 class="t" data-en="Insights &amp; <em>tips</em>.">Wawasan &amp; <em>tips</em>.</h2></div>
+        <p class="lead">Catatan praktis seputar perawatan properti dan operasional perhotelan.</p>
+      </div>
+      <div class="posts reveal" id="posts"></div>
+    </div>
+  </section>
+
+  <!-- KARIER -->
+  <section class="s" id="karier">
+    <div class="wrap">
+      <div class="split reveal">
+        <div><div class="kicker">Karier</div><h2 class="t" data-en="Join our <em>team</em>.">Bergabung dengan <em>tim</em> kami.</h2></div>
+        <p class="lead">Kami membuka lowongan di Bali, Lombok, dan Yogyakarta. Pelatihan SOP disediakan untuk semua posisi.</p>
+      </div>
+      <div class="jobs reveal" id="jobs"></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="s contact" id="kontak">
+    <div class="wrap split" style="align-items:start">
+      <div class="reveal">
+        <div class="kicker">Kontak &amp; Pemesanan</div>
+        <h2 class="t" data-en="Let's care for your property <em>together</em>.">Mari rawat properti Anda <em>bersama</em>.</h2>
+        <p class="lead">Isi formulir, dan koordinator wilayah akan menghubungi Anda untuk survei dan penawaran.</p>
+        <div class="offices" id="offices"></div>
+      </div>
+      <form class="form reveal" id="bookForm">
+        <div class="f"><label>Nama</label><input name="nama" required placeholder="Nama lengkap"></div>
+        <div class="f"><label>Telepon / WhatsApp</label><input name="telp" required placeholder="08xx"></div>
+        <div class="f"><label>Wilayah</label><select name="wilayah" id="fWil"><option>Bali</option><option>Lombok</option><option>Yogyakarta</option></select></div>
+        <div class="f"><label>Jenis Properti</label><select name="properti"><option value="Villa">Villa</option><option value="Hotel">Hotel</option><option value="Apartemen">Apartemen</option><option value="Rumah">Rumah</option><option value="Kantor / Komersial">Kantor / Komersial</option></select></div>
+        <div class="f"><label>Layanan</label><select name="layanan" id="fLay"></select></div>
+        <div class="f"><label>Tanggal</label><input type="date" name="tanggal" required></div>
+        <div class="f full"><label>Lokasi / Catatan</label><textarea name="catatan" placeholder="Alamat, luas area, kebutuhan khusus…"></textarea></div>
+        <div class="f full"><button class="btn" style="background:var(--gold);color:#111;align-self:flex-start">Kirim Permintaan →</button></div>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <a class="brand" href="#beranda"><span class="mono"><svg><use href="#mono"/></svg></span><span class="bar"></span><span class="wm"><b>JAGA</b><small>Management Operation Partner</small></span></a>
+      <div>Bali · Lombok · Yogyakarta &nbsp;—&nbsp; © 2026 JAGA</div>
+      <a href="#portal" style="color:var(--gold2)">Portal Operasional →</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ================================================================ -->
+<!-- =========================== PORTAL ============================= -->
+<!-- ================================================================ -->
+<div id="portal" class="view">
+  <div class="mtop">
+    <a class="brand" href="#beranda"><svg><use href="#logo"/></svg><div class="bt"><b style="font-family:Montserrat,var(--sans);letter-spacing:.2em">JAGA</b></div></a>
+    <button class="burger" style="display:block" onclick="document.querySelector('.side').classList.toggle('on')"><svg viewBox="0 0 24 24" width="24" stroke="currentColor" stroke-width="1.6"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
+  </div>
+  <div class="app">
+    <aside class="side">
+      <a class="brand" href="#beranda"><svg><use href="#logo"/></svg><div class="bt"><b style="font-family:Montserrat,var(--sans);letter-spacing:.2em">JAGA</b><span>Portal</span></div></a>
+      <nav id="pnav">
+        <a data-p="dash" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Dasbor</a>
+        <a data-p="orders"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7M9 7h4"/></svg>Pesanan</a>
+        <a data-p="sched"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Jadwal</a>
+        <a data-p="staff"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-4 3.5-6 6.5-6s5.7 2 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14c2.8 0 4.8 1.6 5.5 5"/></svg>Tim &amp; Shift</a>
+        <a data-p="sop"><svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>Checklist SOP</a>
+        <div class="sect">Wilayah</div>
+        <a data-reg="Semua" class="regf on"><span class="dot" style="background:#c9a96a"></span>Semua wilayah</a>
+        <a data-reg="Bali" class="regf"><span class="dot" style="background:#3f6b52"></span>Bali</a>
+        <a data-reg="Lombok" class="regf"><span class="dot" style="background:#3d5f83"></span>Lombok</a>
+        <a data-reg="Yogyakarta" class="regf"><span class="dot" style="background:#a8483f"></span>Yogyakarta</a>
+      </nav>
+      <div class="foot">Data contoh tersimpan di browser ini.<br><a onclick="resetData()">Reset data contoh</a> · <a href="#beranda">Ke situs</a></div>
+    </aside>
+    <main class="main" id="pmain"></main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= LANGUAGE ================= */
+let LANG='ID';
+try{const l=localStorage.getItem('jaga-lang');if(l==='EN'||l==='ID')LANG=l}catch(e){}
+/* Indonesian → English dictionary (static text + shared data values) */
+const D={
+ // nav & general
+ 'Beranda':'Home','Layanan':'Services','Properti Kami':'Our Properties','Mitra Kami':'Our Partners','Cerita Kami':'Our Story','Karier':'Careers','Kontak':'Contact',
+ 'Kebersihan & Keunggulan Operasional':'Cleaning & Operational Excellence',
+ 'Kami merawat hotel, villa, apartemen, dan properti komersial di Bali, Lombok, dan Yogyakarta dengan standar perhotelan — dari housekeeping harian hingga pengelolaan operasional penuh.':'We care for hotels, villas, apartments and commercial properties in Bali, Lombok and Yogyakarta to hospitality standards — from daily housekeeping to full operational management.',
+ 'GULIR':'SCROLL',
+ 'Pilih layanan kebersihan sesuai kebutuhan, atau serahkan seluruh operasional properti Anda kepada tim kami.':'Choose the cleaning services you need, or hand over your property’s entire operation to our team.',
+ 'Cleaning Service':'Cleaning Service','Manajemen Operasional':'Operational Management',
+ 'Dari villa privat hingga gedung perkantoran — setiap jenis properti memiliki paket layanan dan SOP tersendiri.':'From private villas to office buildings — every property type has its own service package and SOP.',
+ '* Nama properti di atas adalah contoh tampilan — ganti dengan portofolio nyata Anda.':'* The property names above are display samples — replace them with your real portfolio.',
+ 'Kami bekerja sama dengan pemilik properti, pengelola, dan pemasok lokal untuk menjaga kualitas di setiap wilayah.':'We work with property owners, managers and local suppliers to maintain quality in every region.',
+ 'Pemilik Villa & Investor':'Villa Owners & Investors','Pengelolaan aset yang transparan dengan laporan bulanan.':'Transparent asset management with monthly reports.',
+ 'Hotel & Resort':'Hotels & Resorts','Tenaga housekeeping tambahan saat musim ramai.':'Extra housekeeping staff during peak season.',
+ 'Pengelola Apartemen':'Apartment Managers','Turnover cepat untuk unit sewa harian dan bulanan.':'Fast turnover for daily and monthly rental units.',
+ 'Pemasok Lokal':'Local Suppliers','Linen, amenitas, dan bahan pembersih ramah lingkungan.':'Linen, amenities and eco-friendly cleaning supplies.',
+ 'Jadi Mitra →':'Become a Partner →',
+ 'JAGA menggabungkan tim kebersihan terlatih dengan sistem manajemen operasional modern. Setiap pekerjaan dijadwalkan, diperiksa dengan checklist, dan dilaporkan secara digital — sehingga pemilik properti selalu tahu kondisi asetnya, di mana pun mereka berada.':'JAGA combines trained cleaning teams with a modern operations management system. Every job is scheduled, checked against a checklist and reported digitally — so owners always know the condition of their property, wherever they are.',
+ 'Wilayah operasi':'Operating regions','Layanan darurat':'Emergency service','Jenis layanan':'Service types','Pekerjaan tercatat digital':'Jobs logged digitally',
+ 'Wilayah Layanan':'Service Regions',
+ 'Setiap wilayah memiliki koordinator lapangan, tim tetap, dan gudang perlengkapan sendiri untuk respons yang cepat.':'Each region has its own field coordinator, permanent team and supply store for fast response.',
+ 'Cara Kerja':'How It Works','Survei & Penawaran':'Survey & Quote',
+ 'Koordinator wilayah meninjau properti, luas area, dan kebutuhan khusus, lalu mengirim penawaran transparan.':'The regional coordinator reviews the property, its size and special needs, then sends a transparent quote.',
+ 'Penjadwalan':'Scheduling','Pekerjaan masuk ke aplikasi, tim ditugaskan sesuai wilayah, keahlian, dan ketersediaan.':'The job enters the app and a team is assigned by region, skills and availability.',
+ 'Eksekusi + Checklist':'Execution + Checklist','Tim bekerja berdasarkan SOP dan checklist digital per ruangan, termasuk foto sebelum–sesudah.':'The team works to SOPs and a digital room-by-room checklist, including before–after photos.',
+ 'Inspeksi & Laporan':'Inspection & Report','Supervisor melakukan quality check, lalu laporan dan tagihan dikirim langsung ke pemilik.':'A supervisor runs a quality check, then the report and invoice go straight to the owner.',
+ 'Aplikasi Web':'Web App',
+ 'Portal JAGA dipakai tim internal dan klien untuk memantau setiap pekerjaan di Bali, Lombok, dan Yogyakarta.':'The JAGA portal is used by our team and clients to track every job in Bali, Lombok and Yogyakarta.',
+ 'Dasbor KPI per wilayah secara real-time':'Real-time KPI dashboard per region','Manajemen pesanan & status pekerjaan':'Order & job status management',
+ 'Jadwal mingguan & penugasan tim':'Weekly schedule & team assignment','Data staf, shift, dan checklist SOP':'Staff, shifts and SOP checklists',
+ 'Buka Portal →':'Open Portal →',
+ 'Catatan praktis seputar perawatan properti dan operasional perhotelan.':'Practical notes on property care and hospitality operations.',
+ 'Kami membuka lowongan di Bali, Lombok, dan Yogyakarta. Pelatihan SOP disediakan untuk semua posisi.':'We are hiring in Bali, Lombok and Yogyakarta. SOP training is provided for every position.',
+ 'Kontak & Pemesanan':'Contact & Booking',
+ 'Isi formulir, dan koordinator wilayah akan menghubungi Anda untuk survei dan penawaran.':'Fill in the form and a regional coordinator will contact you for a survey and quote.',
+ 'Nama':'Name','Telepon / WhatsApp':'Phone / WhatsApp','Wilayah':'Region','Jenis Properti':'Property Type','Tanggal':'Date','Lokasi / Catatan':'Location / Notes',
+ 'Kirim Permintaan →':'Send Request →','Portal Operasional →':'Operations Portal →',
+ 'Nama lengkap':'Full name','Alamat, luas area, kebutuhan khusus…':'Address, area size, special needs…',
+ // portal static
+ 'Dasbor':'Dashboard','Pesanan':'Orders','Jadwal':'Schedule','Tim & Shift':'Team & Shifts','Checklist SOP':'SOP Checklist','Semua wilayah':'All regions',
+ 'Data contoh tersimpan di browser ini.':'Sample data is stored in this browser.','Reset data contoh':'Reset sample data','Ke situs':'Back to site',
+ // property types
+ 'Villa':'Villa','Hotel':'Hotel','Apartemen':'Apartment','Rumah':'House','Kantor / Komersial':'Office / Commercial','Komersial':'Commercial',
+ // statuses
+ 'Baru':'New','Dijadwalkan':'Scheduled','Berjalan':'In progress','Selesai':'Completed','Batal':'Cancelled','Semua':'All',
+ // roles & shifts
+ 'Koordinator':'Coordinator','Supervisor':'Supervisor','Housekeeper':'Housekeeper','Teknisi':'Technician','Teknisi Kolam':'Pool Technician','Laundry':'Laundry',
+ 'Pagi':'Morning','Siang':'Afternoon','Malam':'Night',
+ // services
+ 'Housekeeping Harian':'Daily Housekeeping','Deep Cleaning':'Deep Cleaning','Check-out Turnover':'Check-out Turnover','Laundry & Linen':'Laundry & Linen',
+ 'Kolam & Taman':'Pool & Garden','Pasca Renovasi':'Post-Renovation','Manajemen Staf':'Staff Management','SOP & Quality Control':'SOP & Quality Control',
+ 'Inventaris & Pengadaan':'Inventory & Procurement','Maintenance Preventif':'Preventive Maintenance','Pelaporan Pemilik':'Owner Reporting','Operasional Penuh':'Full Operations',
+ // SOP
+ 'Lepas & ganti seluruh linen':'Strip & replace all linen','Vacuum & pel seluruh lantai':'Vacuum & mop all floors','Sanitasi kamar mandi & toilet':'Sanitise bathroom & toilet',
+ 'Lap debu furnitur & dekorasi':'Dust furniture & decor','Bersihkan dapur & peralatan':'Clean kitchen & utensils','Restock amenitas & air mineral':'Restock amenities & drinking water',
+ 'Cek AC, lampu, & remote':'Check AC, lights & remotes','Foto sebelum–sesudah per ruangan':'Before–after photos per room','Kunci & serahkan laporan':'Lock up & submit report'
+};
+const T=s=>LANG==='EN'?(D[s]??s):s;
+const L=(id,en)=>LANG==='EN'?en:id;
+const LOC=()=>LANG==='EN'?'en-GB':'id-ID';
+
+/* ---- static text: record originals once, then swap ---- */
+const DYN='#cards,#regions,#offices,#props,#pfilter,#posts,#jobs,#fLay,#pmain,#langLbl,#mbox,#toast';
+const STATIC=[];
+(function collect(){
+  const roots=[document.getElementById('site'),document.querySelector('.side')];
+  roots.forEach(root=>{
+    const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+      const p=n.parentElement;if(!p||p.closest('svg,script,[data-en]')||p.closest(DYN))return NodeFilter.FILTER_REJECT;
+      return D[n.nodeValue.trim()]!==undefined?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT}});
+    let n;while(n=w.nextNode())STATIC.push([n,n.nodeValue]);
+  });
+  document.querySelectorAll('[data-en]').forEach(el=>{el._id=el.innerHTML});
+  document.querySelectorAll('#site [placeholder]').forEach(el=>{el._ph=el.getAttribute('placeholder')});
+  document.querySelectorAll('#site option[value]').forEach(el=>{el._id=el.textContent});
+})();
+function applyStatic(){
+  STATIC.forEach(([n,orig])=>{const k=orig.trim();n.nodeValue=orig.replace(k,T(k))});
+  document.querySelectorAll('[data-en]').forEach(el=>{el.innerHTML=LANG==='EN'?el.dataset.en:el._id});
+  document.querySelectorAll('#site [placeholder]').forEach(el=>{el.setAttribute('placeholder',T(el._ph))});
+  document.querySelectorAll('#site option[value]').forEach(el=>{el.textContent=T(el._id)});
+  document.documentElement.lang=LANG==='EN'?'en':'id';
+  document.title=L('JAGA — Cleaning Service & Manajemen Operasional','JAGA — Cleaning Service & Operational Management');
+  $('#langLbl').textContent=LANG;
+}
+
+/* ================= DATA ================= */
+const REG = {
+  Bali:{color:'#3f6b52',office:'Jl. Sunset Road, Kuta — Badung',coord:'Made Arsana',areas:'Seminyak · Canggu · Ubud · Nusa Dua · Uluwatu',
+    desc:['Pusat operasi terbesar kami. Melayani villa privat, boutique hotel, dan apartemen sewa harian di kawasan wisata utama.','Our largest operations hub, serving private villas, boutique hotels and short-stay apartments across the main tourist areas.']},
+  Lombok:{color:'#3d5f83',office:'Jl. Raya Senggigi — Lombok Barat',coord:'Lalu Hamdani',areas:'Senggigi · Kuta Mandalika · Gili · Mataram',
+    desc:['Tim yang siap mendukung pertumbuhan Mandalika dan Gili — termasuk logistik penyeberangan untuk properti di pulau.','A team ready to support the growth of Mandalika and the Gilis — including boat logistics for island properties.']},
+  Yogyakarta:{color:'#a8483f',office:'Jl. Prawirotaman — Kota Yogyakarta',coord:'Dimas Prakoso',areas:'Kota · Sleman · Bantul · Kaliurang',
+    desc:['Melayani guesthouse heritage, hotel kota, kos eksklusif, hingga kantor dan ruang komersial.','Serving heritage guesthouses, city hotels and premium boarding houses, through to offices and commercial spaces.']}
+};
+/* [nameID, descID, bulletsID, descEN, bulletsEN] — names translated via D */
+const SVC = {
+  clean:[
+    ['Housekeeping Harian','Pembersihan kamar dan area umum berstandar hotel, termasuk pergantian linen dan amenitas.',['Make-up room & turndown','Pergantian linen & handuk','Restock amenitas'],
+     'Hotel-standard cleaning of rooms and common areas, including linen and amenity changes.',['Make-up room & turndown','Linen & towel change','Amenity restock']],
+    ['Deep Cleaning','Pembersihan menyeluruh hingga sudut tersembunyi untuk properti yang butuh penyegaran total.',['Dapur & kamar mandi intensif','Kasur & sofa (vacuum/steam)','Kaca, plafon, ventilasi'],
+     'Thorough cleaning down to hidden corners for properties that need a complete refresh.',['Intensive kitchen & bathroom','Mattress & sofa (vacuum/steam)','Glass, ceilings, vents']],
+    ['Check-out Turnover','Persiapan cepat antar-tamu untuk villa & apartemen sewa harian, lengkap dengan laporan foto.',['Inspeksi kerusakan','Foto sebelum–sesudah','Siap check-in < 3 jam'],
+     'Fast preparation between guests for short-stay villas & apartments, with a photo report.',['Damage inspection','Before–after photos','Check-in ready < 3 hours']],
+    ['Laundry & Linen','Pengelolaan linen terpusat: cuci, setrika, dan sirkulasi stok per properti.',['Pickup & delivery','Stok par level','Penggantian linen rusak'],
+     'Centralised linen management: washing, ironing and stock rotation per property.',['Pickup & delivery','Par-level stock','Damaged linen replacement']],
+    ['Kolam & Taman','Perawatan kolam renang dan lanskap tropis agar properti selalu tampil prima.',['Uji & keseimbangan air','Pemangkasan & pemupukan','Pembersihan dedaunan'],
+     'Pool and tropical landscape care so the property always looks its best.',['Water testing & balancing','Pruning & fertilising','Leaf clearing']],
+    ['Pasca Renovasi','Membersihkan debu konstruksi, sisa cat, dan material sebelum properti dibuka.',['Debu halus & semen','Pembersihan kaca & lantai','Siap serah terima'],
+     'Removing construction dust, paint residue and materials before the property opens.',['Fine dust & cement','Glass & floor cleaning','Handover ready']]
+  ],
+  ops:[
+    ['Manajemen Staf','Rekrutmen, pelatihan, penggajian, dan pengaturan shift untuk tim properti Anda.',['Rekrutmen lokal','Pelatihan SOP','Rotasi shift'],
+     'Recruitment, training, payroll and shift planning for your property team.',['Local recruitment','SOP training','Shift rotation']],
+    ['SOP & Quality Control','Menyusun standar kerja dan menjalankan audit kualitas berkala di setiap properti.',['Audit bulanan','Skor kualitas','Tindak lanjut temuan'],
+     'Writing work standards and running regular quality audits at every property.',['Monthly audits','Quality scores','Follow-up on findings']],
+    ['Inventaris & Pengadaan','Mengelola stok amenitas, bahan kimia, dan perlengkapan agar tidak pernah kosong.',['Stok minimum otomatis','Pemasok terpercaya','Laporan pemakaian'],
+     'Managing amenities, chemicals and supplies so you never run out.',['Automatic minimum stock','Trusted suppliers','Usage reports']],
+    ['Maintenance Preventif','Jadwal perawatan AC, listrik, plumbing, dan peralatan untuk mencegah kerusakan.',['Kalender perawatan','Teknisi on-call','Log riwayat aset'],
+     'Scheduled care for AC, electrical, plumbing and equipment to prevent breakdowns.',['Maintenance calendar','On-call technicians','Asset history log']],
+    ['Pelaporan Pemilik','Laporan bulanan operasional dan biaya yang mudah dibaca bagi pemilik properti.',['Dasbor online','Rincian biaya','Rekomendasi perbaikan'],
+     'Clear monthly operations and cost reports for property owners.',['Online dashboard','Cost breakdown','Improvement recommendations']],
+    ['Operasional Penuh','Kami menjalankan seluruh operasi harian properti — Anda tinggal menerima hasilnya.',['Satu titik kontak','Koordinator khusus','Kontrak fleksibel'],
+     'We run the property’s entire daily operation — you simply receive the results.',['Single point of contact','Dedicated coordinator','Flexible contracts']]
+  ]
+};
+const ICONS = ['<path d="M4 20h16M6 20V9l6-5 6 5v11M10 20v-6h4v6"/>','<path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2 8 12.7 4 8.8 9.5 8z"/>','<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>','<path d="M5 4h14v16H5z"/><circle cx="12" cy="13" r="4"/><path d="M8 7h.01M11 7h.01"/>','<path d="M3 16c3-2 6 2 9 0s6 2 9 0M3 20c3-2 6 2 9 0s6 2 9 0M12 3v9M8 7l4-4 4 4"/>','<path d="M4 20l6-6M14 4l6 6-8 8-6-6z"/>'];
+const SERVICES = [...SVC.clean.map(s=>s[0]),...SVC.ops.map(s=>s[0])];
+const STATUSES = ['Baru','Dijadwalkan','Berjalan','Selesai','Batal'];
+const PTYPES=['Villa','Hotel','Apartemen','Rumah','Kantor / Komersial'];
+
+/* ================= HELPERS ================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const fmtD=s=>{const d=new Date(s+'T00:00');return d.toLocaleDateString(LOC(),{day:'numeric',month:'short'})};
+const rupiah=n=>'Rp '+n.toLocaleString('id-ID');
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* <option value="ID">label in current language</option> */
+const opts=(arr,v)=>arr.map(o=>`<option value="${esc(o)}" ${o===v?'selected':''}>${esc(T(o))}</option>`).join('');
+function toast(msg){const t=$('#toast');t.innerHTML='<span style="color:var(--gold2)">✦</span> '+msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3200)}
+function mnav(on){$('#mnav').classList.toggle('on',on)}
+
+/* ================= STATE ================= */
+const KEY='jaga-demo-v1';
+function seed(){
+  const today=new Date();
+  const staff=[
+    ['Made Arsana','Koordinator','Bali'],['Ni Luh Sari','Supervisor','Bali'],['Komang Adi','Housekeeper','Bali'],['Kadek Wulan','Housekeeper','Bali'],['Wayan Putra','Teknisi Kolam','Bali'],['Ketut Ayu','Laundry','Bali'],
+    ['Lalu Hamdani','Koordinator','Lombok'],['Baiq Nurul','Supervisor','Lombok'],['Zainul Arifin','Housekeeper','Lombok'],['Siti Rahmi','Housekeeper','Lombok'],
+    ['Dimas Prakoso','Koordinator','Yogyakarta'],['Rina Lestari','Supervisor','Yogyakarta'],['Agus Setiawan','Housekeeper','Yogyakarta'],['Sri Wahyuni','Housekeeper','Yogyakarta'],['Bayu Nugroho','Teknisi','Yogyakarta']
+  ].map((s,i)=>({id:'S'+(101+i),nama:s[0],peran:s[1],wilayah:s[2],shift:i%3===1?'Siang':'Pagi',aktif:i%7!==5}));
+  const clients={Bali:['Villa Kayu Seminyak','Canggu Rice House','Ubud Hillside Retreat','Apartemen Kuta Central','Nusa Dua Bay Suites'],
+                 Lombok:['Senggigi Breeze Villa','Mandalika Surf Lodge','Gili Air Bungalows','Kantor Mataram Square'],
+                 Yogyakarta:['Prawirotaman Guesthouse','Hotel Malioboro Inn','Kos Eksklusif Seturan','Kaliurang Hill Villa']};
+  const props=['Villa','Hotel','Apartemen','Kantor / Komersial'];
+  const bookings=[];let n=1;
+  Object.keys(clients).forEach(w=>{
+    clients[w].forEach((c,ci)=>{
+      for(let k=0;k<3;k++){
+        const off=((ci*3+k)*2+(w==='Lombok'?1:w==='Yogyakarta'?2:0))%14-5;
+        const d=addDays(today,off);
+        const st=off<-1?(k%5===4?'Batal':'Selesai'):off<=0?'Berjalan':off<3?'Dijadwalkan':'Baru';
+        const tim=staff.filter(s=>s.wilayah===w&&s.peran!=='Koordinator');
+        bookings.push({id:'JG-'+(2400+n++),klien:c,telp:'08'+(1100000000+n*7919).toString().slice(0,10),wilayah:w,properti:props[(ci+k)%4],
+          layanan:SERVICES[(ci+k*2)%SERVICES.length],tanggal:iso(d),jam:['08:00','10:00','13:00','15:00'][(ci+k)%4],
+          status:st,petugas:tim[(ci+k)%tim.length].nama,nilai:(350+((ci*7+k*13)%30)*50)*1000,catatan:''});
+      }
+    });
+  });
+  const sop=[['Lepas & ganti seluruh linen',0],['Vacuum & pel seluruh lantai',0],['Sanitasi kamar mandi & toilet',0],['Lap debu furnitur & dekorasi',0],['Bersihkan dapur & peralatan',0],['Restock amenitas & air mineral',0],['Cek AC, lampu, & remote',0],['Foto sebelum–sesudah per ruangan',0],['Kunci & serahkan laporan',0]];
+  return {bookings,staff,sop};
+}
+let S;
+function load(){try{const r=localStorage.getItem(KEY);S=r?JSON.parse(r):seed()}catch(e){S=seed()}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function resetData(){S=seed();save();renderPortal();toast(L('Data contoh dipulihkan','Sample data restored'))}
+load();
+
+/* ================= WEBSITE RENDER ================= */
+let TAB='clean';
+function renderCards(){
+  $('#cards').innerHTML=SVC[TAB].map((s,i)=>`<div class="card"><div class="n">0${i+1}</div><svg viewBox="0 0 24 24">${ICONS[i]}</svg><h3>${T(s[0])}</h3><p>${L(s[1],s[3])}</p><ul>${L(s[2],s[4]).map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></div>`).join('');
+}
+$$('.tabs button').forEach(b=>b.onclick=()=>{$$('.tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');TAB=b.dataset.t;renderCards()});
+
+/* region illustrations (inline SVG, no external images) */
+const ART={
+Bali:`<svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9c98a"/><stop offset=".5" stop-color="#b98a5c"/><stop offset="1" stop-color="#2e3a2b"/></linearGradient></defs><rect width="400" height="520" fill="url(#gb)"/><circle cx="270" cy="170" r="54" fill="#fbe7b8" opacity=".85"/><path d="M0 330 Q100 290 200 320 T400 300 V520 H0Z" fill="#4c5e3e"/><g fill="#1f2a1d"><path d="M130 520 V250 L120 250 L150 160 L180 250 L170 250 V520Z"/><path d="M110 260 h80 l-14 -22 h-52z"/><path d="M118 220 h64 l-12 -20 h-40z"/><path d="M126 184 h48 l-10 -18 h-28z"/><path d="M230 520 V260 L220 260 L250 170 L280 260 L270 260 V520Z"/><path d="M210 270 h80 l-14 -22 h-52z"/><path d="M218 230 h64 l-12 -20 h-40z"/></g><g stroke="#1f2a1d" stroke-width="5" fill="none"><path d="M40 520 Q50 380 70 300"/><path d="M360 520 Q350 400 330 320"/></g><g fill="#1f2a1d"><path d="M70 300 q-40 -10 -60 20 q30 -18 60 -14z"/><path d="M70 300 q40 -20 70 0 q-35 -10 -68 4z"/><path d="M70 300 q-10 -40 -40 -55 q30 25 42 58z"/><path d="M330 320 q40 -10 60 20 q-30 -18 -60 -14z"/><path d="M330 320 q-40 -20 -70 0 q35 -10 68 4z"/></g></svg>`,
+Lombok:`<svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9cc4d2"/><stop offset=".55" stop-color="#d9d0b0"/><stop offset=".56" stop-color="#3f8a9a"/><stop offset="1" stop-color="#1c3f4a"/></linearGradient></defs><rect width="400" height="520" fill="url(#gl)"/><path d="M40 286 L160 120 Q170 110 180 120 L320 286Z" fill="#6c7f72" opacity=".75"/><path d="M150 135 l30 -15 l10 20z" fill="#eef" opacity=".7"/><path d="M0 286 Q200 270 400 286 V300 H0Z" fill="#cfe2d9" opacity=".6"/><g stroke="#fff" stroke-opacity=".35" stroke-width="2" fill="none"><path d="M20 340 q40 -8 80 0 t80 0"/><path d="M200 380 q40 -8 80 0 t80 0"/><path d="M60 430 q40 -8 80 0 t80 0"/></g><path d="M90 400 l150 0 l-20 22 l-110 0z" fill="#1c2420"/><path d="M160 400 V300 L230 395Z" fill="#f2ecdc"/><path d="M155 400 V292" stroke="#1c2420" stroke-width="3"/><path d="M60 404 h40 M230 404 h50" stroke="#1c2420" stroke-width="3"/></svg>`,
+Yogyakarta:`<svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="gy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d98f6a"/><stop offset=".5" stop-color="#e7c08a"/><stop offset="1" stop-color="#3a2f26"/></linearGradient></defs><rect width="400" height="520" fill="url(#gy)"/><circle cx="110" cy="150" r="46" fill="#fde3b0" opacity=".8"/><path d="M0 330 Q120 300 200 320 T400 310 V520 H0Z" fill="#5b4a38"/><g fill="#2a211a"><path d="M80 380 h240 v-20 h-220z"/><path d="M100 360 h200 v-24 h-180z"/><path d="M120 336 h160 v-24 h-140z"/><path d="M140 312 h120 v-22 h-100z"/><path d="M160 290 h80 v-20 h-60z"/><path d="M190 270 q10 -40 20 0z"/><path d="M200 230 v-10" stroke="#2a211a" stroke-width="4"/></g><g fill="#2a211a" opacity=".85"><circle cx="120" cy="330" r="7"/><circle cx="150" cy="306" r="6"/><circle cx="250" cy="306" r="6"/><circle cx="280" cy="330" r="7"/><circle cx="170" cy="284" r="5"/><circle cx="230" cy="284" r="5"/></g><path d="M0 380 h400 v140 H0z" fill="#2a211a" opacity=".7"/></svg>`
+};
+function renderRegions(){
+  $('#regions').innerHTML=Object.entries(REG).map(([k,v],i)=>`<div class="reg reveal vis" onclick="pickRegion('${k}')"><div class="art">${ART[k]}</div><div class="c"><small>${L('Wilayah','Region')} 0${i+1}</small><h3>${k}</h3><p>${L(...v.desc)}<br><br><span style="color:var(--gold2)">${v.areas}</span></p><div class="meta"><span><b id="rc-${k}">0</b> ${L('tim aktif','active staff')}</span><span>${L('Pesan layanan →','Book a service →')}</span></div></div></div>`).join('');
+  $('#offices').innerHTML=Object.entries(REG).map(([k,v])=>`<div class="office"><b>${k}</b><p>${v.office}<br>${L('Koordinator','Coordinator')}: ${v.coord}</p></div>`).join('');
+}
+function pickRegion(r){$('#fWil').value=r;location.hash='kontak';}
+function updateSiteCounts(){
+  Object.keys(REG).forEach((k,i)=>{const el=$('#rc-'+k);if(el)el.textContent=S.staff.filter(s=>s.wilayah===k&&s.aktif).length;
+    const mk=$('#mk'+(i+1));if(mk)mk.textContent=S.bookings.filter(b=>b.wilayah===k&&b.status!=='Batal').length;});
+}
+function renderServiceSelect(){const v=$('#fLay').value;$('#fLay').innerHTML=opts(SERVICES,v||SERVICES[0])}
+
+$('#bookForm').addEventListener('submit',e=>{
+  e.preventDefault();const f=new FormData(e.target);
+  const id='JG-'+(Math.max(...S.bookings.map(b=>+b.id.split('-')[1]),2400)+1);
+  const tim=S.staff.filter(s=>s.wilayah===f.get('wilayah')&&s.peran!=='Koordinator');
+  S.bookings.unshift({id,klien:f.get('nama'),telp:f.get('telp'),wilayah:f.get('wilayah'),properti:f.get('properti'),layanan:f.get('layanan'),
+    tanggal:f.get('tanggal'),jam:'09:00',status:'Baru',petugas:tim[0]?tim[0].nama:'-',nilai:0,catatan:f.get('catatan')});
+  save();updateSiteCounts();e.target.reset();
+  toast(L(`Permintaan ${id} tercatat — lihat di menu Pesanan pada Portal (demo).`,`Request ${id} recorded — see Orders in the Portal (demo).`));
+});
+
+/* ===== Properti, Blog, Karier ===== */
+const PTYPE={Villa:'<path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5"/>',Hotel:'<rect x="5" y="3" width="14" height="18"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M11 21v-3h2v3"/>',Apartemen:'<rect x="4" y="6" width="7" height="15"/><rect x="13" y="3" width="7" height="18"/><path d="M6 10h3M6 14h3M15 7h3M15 11h3M15 15h3"/>',Komersial:'<path d="M3 21h18M5 21V8l7-4 7 4v13M9 12h6M9 16h6"/>'};
+/* [type, region, nameID, nameEN, size, sizeUnit, place] */
+const PROPS=[['Villa','Bali','Villa Tepi Sawah','Rice Field Villa',4,'k','Ubud'],['Villa','Bali','Villa Pantai Barat','West Beach Villa',3,'k','Canggu'],['Hotel','Bali','Boutique Hotel Kuta','Kuta Boutique Hotel',28,'k','Kuta'],['Apartemen','Bali','Residensi Sunset','Sunset Residences',40,'u','Seminyak'],
+ ['Villa','Lombok','Villa Bukit Mandalika','Mandalika Hill Villa',5,'k','Kuta Lombok'],['Hotel','Lombok','Bungalow Gili','Gili Bungalows',12,'k','Gili Air'],['Komersial','Lombok','Kantor Mataram','Mataram Office','1.200','m','Mataram'],
+ ['Hotel','Yogyakarta','Guesthouse Heritage','Heritage Guesthouse',16,'k','Prawirotaman'],['Apartemen','Yogyakarta','Kos Eksklusif','Premium Residence',30,'u','Seturan'],['Villa','Yogyakarta','Villa Lereng Merapi','Merapi Slope Villa',4,'k','Kaliurang'],['Komersial','Yogyakarta','Ruang Kerja Kota','City Workspace',800,'m','Kota']];
+let PF='Semua';
+function renderProps(){
+  const unit=(n,u)=>u==='k'?`${n} ${L('kamar','rooms')}`:u==='u'?`${n} ${L('unit','units')}`:`${n} m²`;
+  $('#pfilter').innerHTML=['Semua','Bali','Lombok','Yogyakarta'].map(r=>`<button class="${PF===r?'on':''}" onclick="PF='${r}';renderProps()">${T(r)}</button>`).join('');
+  $('#props').innerHTML=PROPS.filter(p=>PF==='Semua'||p[1]===PF).map(p=>`<div class="prop"><div class="ph" style="background:linear-gradient(135deg,${REG[p[1]].color},#1a1f1c)"><svg viewBox="0 0 24 24">${PTYPE[p[0]]}</svg></div><div class="pb"><small>${T(p[0])} · ${p[1]}</small><h4>${L(p[2],p[3])}</h4><p>${unit(p[4],p[5])} · ${p[6]}</p></div></div>`).join('');
+}
+const POSTS=[[['Tips','Tips'],['Checklist turnover villa dalam 3 jam','A 3-hour villa turnover checklist'],['Urutan kerja yang membuat tim tetap cepat tanpa mengorbankan detail.','The work sequence that keeps teams fast without sacrificing detail.'],'#3f6b52'],
+ [['Operasional','Operations'],['Mengatur stok linen saat musim ramai','Managing linen stock in peak season'],['Cara menghitung par level agar linen tidak pernah kurang.','How to calculate par levels so you never run short of linen.'],'#3d5f83'],
+ [['Wilayah','Regions'],['Tantangan logistik properti di Gili','The logistics of island properties in the Gilis'],['Penyeberangan, perlengkapan, dan jadwal tim untuk properti di pulau.','Boat crossings, supplies and team schedules for island properties.'],'#a8483f']];
+function renderPosts(){
+  $('#posts').innerHTML=POSTS.map(p=>`<div class="post" onclick="toast(L('Artikel lengkap akan tersedia segera','The full article is coming soon'))"><div class="cv" style="background:linear-gradient(135deg,${p[3]},#1a1f1c)"><span>${L(...p[0])}</span></div><small>${new Date().toLocaleDateString(LOC(),{month:'long',year:'numeric'})}</small><h4>${L(...p[1])}</h4><p>${L(...p[2])}</p></div>`).join('');
+}
+const JOBS=[[['Housekeeper','Housekeeper'],'Bali',1],[['Supervisor Housekeeping','Housekeeping Supervisor'],'Lombok',1],[['Teknisi Kolam & Taman','Pool & Garden Technician'],'Bali',1],[['Staf Laundry','Laundry Staff'],'Yogyakarta',0],[['Koordinator Operasional','Operations Coordinator'],'Yogyakarta',1]];
+function renderJobs(){
+  $('#jobs').innerHTML=JOBS.map((j,i)=>`<div class="job-row"><h4>${L(...j[0])}</h4><span><span class="dot" style="background:${REG[j[1]].color}"></span>${j[1]}</span><span>${j[2]?L('Penuh waktu','Full time'):L('Shift','Shift work')}</span><button class="btn ghost" onclick="applyJob(${i})">${L('Lamar →','Apply →')}</button></div>`).join('');
+}
+function applyJob(i){const j=JOBS[i];$('#fWil').value=j[1];document.querySelector('#bookForm textarea').value=L('Lamaran posisi: ','Application for: ')+L(...j[0])+' ('+j[1]+')';location.hash='kontak';toast(L('Isi nama & telepon, lalu kirim lamaran Anda','Enter your name & phone, then send your application'))}
+
+function renderSite(){renderCards();renderRegions();renderProps();renderPosts();renderJobs();renderServiceSelect();updateSiteCounts()}
+
+/* ===== Language switch ===== */
+function setLang(l){
+  LANG=l;try{localStorage.setItem('jaga-lang',l)}catch(e){}
+  applyStatic();renderSite();if($('#portal').classList.contains('on'))renderPortal();
+  if($('#modal').classList.contains('on'))closeModal();
+}
+$('#langBtn').onclick=()=>{setLang(LANG==='ID'?'EN':'ID');toast(L('Bahasa Indonesia','English'))};
+
+/* nav: solid on scroll, active link, reveal, counters */
+const nav=$('#nav');
+addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>60);
+  let cur='beranda';['beranda','layanan','properti','mitra','cerita','blog','karier','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id});
+  $$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
+},{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');
+  e.target.querySelectorAll('[data-count]').forEach(c=>{if(c._d)return;c._d=1;const to=+c.dataset.count,suf=c.dataset.suf||'';let t0=null;
+    const step=t=>{t0??=t;const p=Math.min(1,(t-t0)/1400);c.textContent=Math.round(to*(1-Math.pow(1-p,3)))+suf;if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)});
+  io.unobserve(e.target)}}),{threshold:.15});
+
+/* ================= PORTAL ================= */
+let P={page:'dash',reg:'Semua',q:'',st:'Semua',weekOff:0};
+const inReg=b=>P.reg==='Semua'||b.wilayah===P.reg;
+$$('#pnav a[data-p]').forEach(a=>a.onclick=()=>{P.page=a.dataset.p;$$('#pnav a[data-p]').forEach(x=>x.classList.toggle('on',x===a));$('.side').classList.remove('on');renderPortal()});
+$$('#pnav a.regf').forEach(a=>a.onclick=()=>{P.reg=a.dataset.reg;$$('#pnav a.regf').forEach(x=>x.classList.toggle('on',x===a));$('.side').classList.remove('on');renderPortal()});
+
+function header(title,sub,actions=''){return `<div class="top"><div><h1>${title}</h1><div class="sub">${sub}</div></div><div style="display:flex;gap:10px;flex-wrap:wrap">${actions}</div></div>`}
+const regLabel=()=>P.reg==='Semua'?'Bali · Lombok · Yogyakarta':P.reg;
+const newBtn=()=>`<button class="abtn" onclick="openBooking()">＋ ${L('Pesanan baru','New order')}</button>`;
+
+function renderPortal(){
+  const m=$('#pmain');
+  if(P.page==='dash')m.innerHTML=dash();
+  if(P.page==='orders')m.innerHTML=orders();
+  if(P.page==='sched')m.innerHTML=sched();
+  if(P.page==='staff')m.innerHTML=staffPage();
+  if(P.page==='sop')m.innerHTML=sopPage();
+  updateSiteCounts();
+}
+
+function dash(){
+  const B=S.bookings.filter(inReg), today=iso(new Date());
+  const act=B.filter(b=>b.status!=='Batal');
+  const todayJobs=B.filter(b=>b.tanggal===today&&b.status!=='Batal');
+  const done=B.filter(b=>b.status==='Selesai').length, closed=B.filter(b=>['Selesai','Batal'].includes(b.status)).length;
+  const rev=B.filter(b=>b.status==='Selesai').reduce((a,b)=>a+b.nilai,0);
+  const staffOn=S.staff.filter(s=>(P.reg==='Semua'||s.wilayah===P.reg)&&s.aktif).length;
+  const COL={Baru:'#3d5f83',Dijadwalkan:'#c9a96a',Berjalan:'#8b62a0',Selesai:'#3f6b52',Batal:'#a8483f'};
+  const regRows=Object.keys(REG).map(k=>{const r=S.bookings.filter(b=>b.wilayah===k);const tot=r.length||1;
+    const seg=STATUSES.map(s=>{const c=r.filter(b=>b.status===s).length;return `<i title="${T(s)}: ${c}" style="width:${c/tot*100}%;background:${COL[s]}"></i>`}).join('');
+    return `<div class="regrow"><span><span class="dot" style="background:${REG[k].color}"></span>${k}</span><div class="track">${seg}</div><b style="text-align:right">${r.length}</b></div>`}).join('');
+  const legend=STATUSES.map(s=>`<span class="tag st-${s}">${T(s)}</span>`).join(' ');
+  const upcoming=B.filter(b=>b.tanggal>=today&&!['Batal','Selesai'].includes(b.status)).sort((a,b)=>(a.tanggal+a.jam).localeCompare(b.tanggal+b.jam)).slice(0,6);
+  const days=[...Array(14)].map((_,i)=>iso(addDays(new Date(),i-6)));
+  const counts=days.map(d=>B.filter(b=>b.tanggal===d&&b.status!=='Batal').length);const mx=Math.max(1,...counts);
+  const bars=days.map((d,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span style="font-size:11px;color:var(--muted)">${counts[i]||''}</span><div title="${fmtD(d)}: ${counts[i]} ${L('pekerjaan','jobs')}" style="width:70%;height:${counts[i]/mx*120+2}px;background:${d===today?'var(--ink)':'var(--gold)'};border-radius:4px 4px 0 0"></div><span style="font-size:10.5px;color:${d===today?'var(--ink)':'var(--muted)'};font-weight:${d===today?600:400}">${new Date(d+'T00:00').getDate()}</span></div>`).join('');
+  return header(L('Dasbor Operasional','Operations Dashboard'),regLabel()+' · '+new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'}),newBtn())+
+  `<div class="demo">${L('Mode demo: semua angka berasal dari data contoh dan pesanan yang Anda tambahkan di browser ini.','Demo mode: all figures come from sample data and the orders you add in this browser.')}</div>
+  <div class="kpis">
+    <div class="kpi"><small>${L('Pekerjaan hari ini','Jobs today')}</small><b>${todayJobs.length}</b><span>${todayJobs.filter(b=>b.status==='Berjalan').length} ${L('sedang berjalan','in progress')}</span></div>
+    <div class="kpi"><small>${L('Pesanan aktif','Active orders')}</small><b>${act.filter(b=>b.status!=='Selesai').length}</b><span>${B.filter(b=>b.status==='Baru').length} ${L('menunggu dijadwalkan','awaiting scheduling')}</span></div>
+    <div class="kpi"><small>${L('Tingkat penyelesaian','Completion rate')}</small><b>${closed?Math.round(done/closed*100):0}%</b><span>${L(`${done} selesai dari ${closed} ditutup`,`${done} completed of ${closed} closed`)}</span></div>
+    <div class="kpi"><small>${L('Nilai selesai','Completed value')}</small><b style="font-size:30px">${rupiah(rev)}</b><span>${staffOn} ${L('staf aktif','active staff')}</span></div>
+  </div>
+  <div class="g2">
+    <div class="panel"><div class="ph"><div><h3>${L('Beban kerja 14 hari','14-day workload')}</h3><p>${L('Jumlah pekerjaan per hari (hari ini ditandai gelap)','Jobs per day (today shown in dark)')}</p></div></div><div style="display:flex;align-items:flex-end;height:170px;gap:2px">${bars}</div></div>
+    <div class="panel"><div class="ph"><div><h3>${L('Per wilayah','By region')}</h3><p>${L('Komposisi status pesanan','Order status breakdown')}</p></div></div>${regRows}<div style="margin-top:14px;display:flex;gap:6px;flex-wrap:wrap">${legend}</div></div>
+  </div>
+  <div class="panel"><div class="ph"><div><h3>${L('Pekerjaan berikutnya','Upcoming jobs')}</h3><p>${L('Terjadwal paling dekat','Next on the schedule')}</p></div><button class="abtn light sm" onclick="go('orders')">${L('Lihat semua →','View all →')}</button></div>
+  <div class="tscroll">${table(upcoming,true)}</div></div>`;
+}
+function go(p){$$('#pnav a[data-p]').forEach(x=>x.classList.toggle('on',x.dataset.p===p));P.page=p;renderPortal()}
+
+function table(rows,compact){
+  if(!rows.length)return `<div class="empty">${L('Belum ada pesanan untuk filter ini.','No orders match this filter yet.')}</div>`;
+  const th=[L('Klien','Client'),L('Wilayah','Region'),L('Layanan','Service'),L('Jadwal','Schedule'),L('Petugas','Assigned to')];
+  return `<table><thead><tr><th>ID</th>${th.map(x=>`<th>${x}</th>`).join('')}${compact?'':`<th>${L('Nilai','Value')}</th>`}<th>Status</th>${compact?'':'<th></th>'}</tr></thead><tbody>${
+  rows.map(b=>`<tr><td style="font-weight:600;white-space:nowrap">${b.id}</td><td>${esc(b.klien)}<div class="rg">${esc(T(b.properti))}</div></td>
+  <td><span class="dot" style="background:${REG[b.wilayah].color}"></span>${b.wilayah}</td><td>${esc(T(b.layanan))}</td>
+  <td style="white-space:nowrap">${fmtD(b.tanggal)} <span class="rg">${b.jam}</span></td><td>${esc(b.petugas)}</td>
+  ${compact?'':`<td style="white-space:nowrap">${b.nilai?rupiah(b.nilai):`<span class="rg">${L('Menunggu survei','Awaiting survey')}</span>`}</td>`}
+  <td>${compact?`<span class="tag st-${b.status}">${T(b.status)}</span>`:`<select class="sel-status" onchange="setStatus('${b.id}',this.value)">${opts(STATUSES,b.status)}</select>`}</td>
+  ${compact?'':`<td><button class="abtn light sm" onclick="openBooking('${b.id}')">${L('Ubah','Edit')}</button></td>`}</tr>`).join('')}</tbody></table>`;
+}
+function orders(){
+  let B=S.bookings.filter(inReg);
+  if(P.st!=='Semua')B=B.filter(b=>b.status===P.st);
+  if(P.q){const q=P.q.toLowerCase();B=B.filter(b=>(b.id+b.klien+b.layanan+T(b.layanan)+b.petugas).toLowerCase().includes(q))}
+  B=[...B].sort((a,b)=>b.tanggal.localeCompare(a.tanggal));
+  return header(L('Pesanan','Orders'),regLabel()+' · '+B.length+' '+L('pesanan','orders'),newBtn())+
+  `<div class="panel"><div class="ph"><div class="filters">
+    <input placeholder="${L('Cari klien, ID, layanan…','Search client, ID, service…')}" value="${esc(P.q)}" oninput="P.q=this.value;clearTimeout(window._q);window._q=setTimeout(()=>{renderPortal();const i=document.querySelector('.filters input');i.focus();i.setSelectionRange(i.value.length,i.value.length)},250)">
+    <div class="seg">${['Semua',...STATUSES].map(s=>`<button class="${P.st===s?'on':''}" onclick="P.st='${s}';renderPortal()">${T(s)}</button>`).join('')}</div>
+  </div></div><div class="tscroll">${table(B)}</div></div>`;
+}
+function setStatus(id,st){const b=S.bookings.find(x=>x.id===id);b.status=st;save();toast(`${id} → ${T(st)}`);renderPortal()}
+
+function sched(){
+  const now=new Date();const mon=addDays(now,-((now.getDay()+6)%7)+P.weekOff*7);
+  const days=[...Array(7)].map((_,i)=>addDays(mon,i));const today=iso(now);
+  const cols=days.map(d=>{const k=iso(d);const jobs=S.bookings.filter(b=>inReg(b)&&b.tanggal===k&&b.status!=='Batal').sort((a,b)=>a.jam.localeCompare(b.jam));
+    return `<div class="day ${k===today?'today':''}"><h5>${d.toLocaleDateString(LOC(),{weekday:'short'})}<b>${d.getDate()}</b></h5>${jobs.map(j=>`<div class="job" style="border-color:${REG[j.wilayah].color}" onclick="openBooking('${j.id}')"><b>${j.jam} · ${esc(j.klien)}</b><span>${esc(T(j.layanan))}</span><br><span>👤 ${esc(j.petugas)}</span></div>`).join('')||'<div class="rg" style="padding:6px">—</div>'}</div>`}).join('');
+  return header(L('Jadwal Mingguan','Weekly Schedule'),`${regLabel()} · ${days[0].toLocaleDateString(LOC(),{day:'numeric',month:'short'})} – ${days[6].toLocaleDateString(LOC(),{day:'numeric',month:'short',year:'numeric'})}`,
+    `<button class="abtn light" onclick="P.weekOff--;renderPortal()">‹</button><button class="abtn light" onclick="P.weekOff=0;renderPortal()">${L('Minggu ini','This week')}</button><button class="abtn light" onclick="P.weekOff++;renderPortal()">›</button>`+newBtn())+
+  `<div class="panel" style="padding:14px"><div class="week">${cols}</div></div>`;
+}
+
+function staffPage(){
+  const Ls=S.staff.filter(s=>P.reg==='Semua'||s.wilayah===P.reg);
+  const cards=Ls.map(s=>{const load=S.bookings.filter(b=>b.petugas===s.nama&&['Dijadwalkan','Berjalan'].includes(b.status)).length;
+    const ini=s.nama.split(' ').map(x=>x[0]).slice(0,2).join('');
+    return `<div class="person"><div class="av" style="background:${REG[s.wilayah].color}">${esc(ini)}</div><div style="flex:1"><h4>${esc(s.nama)}</h4><p>${esc(T(s.peran))} · ${s.wilayah} · ${s.id}</p>
+    <div class="row"><span class="chip">${L('Shift '+s.shift,T(s.shift)+' shift')}</span><span class="chip">${load} ${L('tugas aktif','active jobs')}</span><span class="chip ${s.aktif?'on':'off'}" style="cursor:pointer" onclick="toggleStaff('${s.id}')">${s.aktif?L('Bertugas','On duty'):L('Libur','Off')}</span></div></div></div>`}).join('');
+  return header(L('Tim & Shift','Team & Shifts'),regLabel()+' · '+Ls.length+' '+L('anggota','members'),`<button class="abtn" onclick="openStaff()">＋ ${L('Tambah staf','Add staff')}</button>`)+
+  `<p class="rg" style="margin:-10px 0 16px">${L('Klik status “Bertugas/Libur” untuk mengubah ketersediaan.','Click the “On duty/Off” status to change availability.')}</p><div class="staff">${cards}</div>`;
+}
+function toggleStaff(id){const s=S.staff.find(x=>x.id===id);s.aktif=!s.aktif;save();renderPortal()}
+
+function sopPage(){
+  const doneN=S.sop.filter(x=>x[1]).length;
+  const Q=[[['Respons permintaan baru','New request response'],['< 2 jam','< 2 hours']],[['Turnover villa standar','Standard villa turnover'],['< 3 jam','< 3 hours']],[['Audit kualitas','Quality audit'],['Bulanan','Monthly']],[['Laporan ke pemilik','Owner report'],['Setiap tgl 5','Every 5th']],[['Darurat (kebocoran, listrik)','Emergencies (leaks, power)'],['24/7','24/7']]];
+  return header(L('Checklist SOP','SOP Checklist'),L('Standar turnover villa / kamar — dipakai tim di lapangan','Villa / room turnover standard — used by field teams'),`<button class="abtn light" onclick="S.sop.forEach(x=>x[1]=0);save();renderPortal()">${L('Reset checklist','Reset checklist')}</button>`)+
+  `<div class="g2"><div class="panel"><div class="ph"><div><h3>${L('Turnover kamar','Room turnover')}</h3><p>${L(`${doneN} dari ${S.sop.length} langkah selesai`,`${doneN} of ${S.sop.length} steps done`)}</p></div></div>
+  <div class="track" style="margin-bottom:12px"><i style="width:${doneN/S.sop.length*100}%;background:var(--green)"></i></div>
+  <ul class="cl">${S.sop.map((x,i)=>`<li class="${x[1]?'done':''}"><input type="checkbox" ${x[1]?'checked':''} onchange="S.sop[${i}][1]=this.checked?1:0;save();renderPortal()"><span>${esc(T(x[0]))}</span></li>`).join('')}</ul></div>
+  <div class="panel"><h3>${L('Standar kualitas','Quality standards')}</h3><p class="rg" style="margin-bottom:12px">${L('Ringkasan target layanan per wilayah','Service targets across all regions')}</p>
+  <ul class="cl">${Q.map(r=>`<li style="justify-content:space-between"><span>${L(...r[0])}</span><b>${L(...r[1])}</b></li>`).join('')}</ul></div></div>`;
+}
+
+/* ===== modals ===== */
+function closeModal(){$('#modal').classList.remove('on')}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+function openBooking(id){
+  const b=id?S.bookings.find(x=>x.id===id):{klien:'',telp:'',wilayah:P.reg==='Semua'?'Bali':P.reg,properti:'Villa',layanan:SERVICES[0],tanggal:iso(new Date()),jam:'09:00',status:'Dijadwalkan',petugas:'',nilai:0,catatan:''};
+  $('#mbox').innerHTML=`<h3>${id?L('Ubah ','Edit ')+id:L('Pesanan baru','New order')}</h3><form class="mf" id="mform">
+   <div class="f full"><label>${L('Klien / Properti','Client / Property')}</label><input name="klien" required value="${esc(b.klien)}"></div>
+   <div class="f"><label>${L('Telepon','Phone')}</label><input name="telp" value="${esc(b.telp)}"></div>
+   <div class="f"><label>${L('Wilayah','Region')}</label><select name="wilayah" id="mWil">${opts(Object.keys(REG),b.wilayah)}</select></div>
+   <div class="f"><label>${L('Jenis properti','Property type')}</label><select name="properti">${opts(PTYPES,b.properti)}</select></div>
+   <div class="f"><label>${L('Layanan','Service')}</label><select name="layanan">${opts(SERVICES,b.layanan)}</select></div>
+   <div class="f"><label>${L('Tanggal','Date')}</label><input type="date" name="tanggal" required value="${b.tanggal}"></div>
+   <div class="f"><label>${L('Jam','Time')}</label><input type="time" name="jam" value="${b.jam}"></div>
+   <div class="f"><label>${L('Petugas','Assigned to')}</label><select name="petugas" id="mPet"></select></div>
+   <div class="f"><label>Status</label><select name="status">${opts(STATUSES,b.status)}</select></div>
+   <div class="f"><label>${L('Nilai (Rp)','Value (Rp)')}</label><input type="number" name="nilai" min="0" step="50000" value="${b.nilai}"></div>
+   <div class="f full"><label>${L('Catatan','Notes')}</label><textarea name="catatan" rows="2">${esc(b.catatan)}</textarea></div>
+  </form><div class="mact">${id?`<button class="abtn light" style="color:var(--red);margin-right:auto" onclick="delBooking('${id}')">${L('Hapus','Delete')}</button>`:''}<button class="abtn light" onclick="closeModal()">${L('Batal','Cancel')}</button><button class="abtn" onclick="saveBooking('${id||''}')">${L('Simpan','Save')}</button></div>`;
+  const fillPet=()=>{const w=$('#mWil').value;$('#mPet').innerHTML=S.staff.filter(s=>s.wilayah===w&&s.peran!=='Koordinator').map(s=>`<option ${s.nama===b.petugas?'selected':''}>${esc(s.nama)}</option>`).join('')};
+  fillPet();$('#mWil').onchange=fillPet;$('#modal').classList.add('on');
+}
+function saveBooking(id){
+  const f=$('#mform');if(!f.reportValidity())return;const d=Object.fromEntries(new FormData(f));d.nilai=+d.nilai||0;
+  if(id){Object.assign(S.bookings.find(x=>x.id===id),d);toast(id+L(' diperbarui',' updated'))}
+  else{const nid='JG-'+(Math.max(...S.bookings.map(b=>+b.id.split('-')[1]),2400)+1);S.bookings.unshift({id:nid,...d});toast(nid+L(' ditambahkan',' added'))}
+  save();closeModal();renderPortal();
+}
+function delBooking(id){S.bookings=S.bookings.filter(b=>b.id!==id);save();closeModal();renderPortal();toast(id+L(' dihapus',' deleted'))}
+function openStaff(){
+  $('#mbox').innerHTML=`<h3>${L('Tambah staf','Add staff')}</h3><form class="mf" id="sform">
+   <div class="f full"><label>${L('Nama','Name')}</label><input name="nama" required></div>
+   <div class="f"><label>${L('Peran','Role')}</label><select name="peran">${opts(['Housekeeper','Supervisor','Teknisi','Teknisi Kolam','Laundry','Koordinator'],'Housekeeper')}</select></div>
+   <div class="f"><label>${L('Wilayah','Region')}</label><select name="wilayah">${opts(Object.keys(REG),P.reg)}</select></div>
+   <div class="f"><label>Shift</label><select name="shift">${opts(['Pagi','Siang','Malam'],'Pagi')}</select></div>
+  </form><div class="mact"><button class="abtn light" onclick="closeModal()">${L('Batal','Cancel')}</button><button class="abtn" onclick="saveStaff()">${L('Simpan','Save')}</button></div>`;
+  $('#modal').classList.add('on');
+}
+function saveStaff(){const f=$('#sform');if(!f.reportValidity())return;const d=Object.fromEntries(new FormData(f));
+  S.staff.push({id:'S'+(101+S.staff.length),aktif:true,...d});save();closeModal();renderPortal();toast(esc(d.nama)+L(' ditambahkan',' added'))}
+
+/* ===== initial render ===== */
+applyStatic();renderSite();
+$$('.reveal').forEach(el=>io.observe(el));
+
+/* ================= ROUTING ================= */
+const SITE_IDS=['beranda','cerita','layanan','properti','mitra','wilayah','proses','aplikasi','blog','karier','kontak'];
+function route(){
+  const h=location.hash.slice(1);
+  if(h==='portal'){$('#site').classList.remove('on');$('#portal').classList.add('on');scrollTo(0,0);renderPortal();return}
+  $('#portal').classList.remove('on');$('#site').classList.add('on');updateSiteCounts();
+  const el=document.getElementById(SITE_IDS.includes(h)?h:'beranda');
+  requestAnimationFrame(()=>el.scrollIntoView({behavior:h?'smooth':'auto'}));
+}
+addEventListener('hashchange',route);route();
+
+</script>
+</body>
+</html>
