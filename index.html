@@ -277,6 +277,15 @@ a.plogo:hover{transform:translateY(-4px);box-shadow:0 18px 36px -18px rgba(0,0,0
 .plogo img{max-width:100%;max-height:52px;object-fit:contain}
 .plogo span{font-family:'Montserrat',var(--sans);font-weight:600;font-size:22px;color:#1f2a33;letter-spacing:-.01em}
 @media(max-width:700px){.plogos{gap:14px}.plogo{width:calc(50% - 8px);height:82px;padding:14px}.plogo span{font-size:17px}}
+/* ===== cleaning packages ===== */
+.svprice{font-size:14px;color:var(--muted);margin:-2px 0 10px}.svprice b{font-size:22px;font-weight:500;color:#a88442}
+.cmpw{overflow-x:auto;margin:18px 0 0;background:#fff;border:1px solid #eee6d6;border-radius:18px}
+.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:14px}
+.cmp th{padding:18px 14px;text-align:center;font-family:var(--serif);font-weight:500;font-size:19px;color:var(--ink);text-transform:none;letter-spacing:0;border-bottom:1px solid #eee6d6}
+.cmp th small{display:block;font-family:var(--sans);font-size:12px;color:var(--muted);margin-top:4px}.cmp th small b{color:#a88442;font-weight:600}
+.cmp td{padding:12px 14px;text-align:center;border-bottom:1px solid #f3eee4;color:var(--text)}
+.cmp td:first-child{text-align:left;color:var(--muted)}
+.cmp tr:last-child td{border-bottom:0}.cmp .y{color:var(--green);font-weight:700}.cmp .n{color:#cfc5b2}
 /* ===== hero video ===== */
 .hvids{position:absolute;inset:0;display:none}
 .hero.has-video .hvids{display:block}
@@ -1017,7 +1026,7 @@ const D={
  'Koordinator':'Coordinator','Supervisor':'Supervisor','Housekeeper':'Housekeeper','Teknisi':'Technician','Teknisi Kolam':'Pool Technician','Laundry':'Laundry',
  'Pagi':'Morning','Siang':'Afternoon','Malam':'Night',
  // services
- 'Housekeeping Harian':'Daily Housekeeping','Deep Cleaning':'Deep Cleaning','Check-out Turnover':'Check-out Turnover','Laundry & Linen':'Laundry & Linen',
+ 'Basic Cleaning':'Basic Cleaning','Regular Cleaning':'Regular Cleaning','Cleaning Special':'Special Cleaning','Kosan':'Boarding house','Kantor':'Office','Restoran':'Restaurant','Housekeeping Harian':'Daily Housekeeping','Deep Cleaning':'Deep Cleaning','Check-out Turnover':'Check-out Turnover','Laundry & Linen':'Laundry & Linen',
  'Kolam & Taman':'Pool & Garden','Pasca Renovasi':'Post-Renovation','Manajemen Staf':'Staff Management','SOP & Quality Control':'SOP & Quality Control',
  'Inventaris & Pengadaan':'Inventory & Procurement','Maintenance Preventif':'Preventive Maintenance','Pelaporan Pemilik':'Owner Reporting','Operasional Penuh':'Full Operations',
  // SOP
@@ -1066,18 +1075,14 @@ const REG = {
 /* [nameID, descID, bulletsID, descEN, bulletsEN] — names translated via D */
 const SVC = {
   clean:[
-    ['Housekeeping Harian','Pembersihan kamar dan area umum berstandar hotel, termasuk pergantian linen dan amenitas.',['Make-up room & turndown','Pergantian linen & handuk','Restock amenitas'],
-     'Hotel-standard cleaning of rooms and common areas, including linen and amenity changes.',['Make-up room & turndown','Linen & towel change','Amenity restock']],
-    ['Deep Cleaning','Pembersihan menyeluruh hingga sudut tersembunyi untuk properti yang butuh penyegaran total.',['Dapur & kamar mandi intensif','Kasur & sofa (vacuum/steam)','Kaca, plafon, ventilasi'],
-     'Thorough cleaning down to hidden corners for properties that need a complete refresh.',['Intensive kitchen & bathroom','Mattress & sofa (vacuum/steam)','Glass, ceilings, vents']],
-    ['Check-out Turnover','Persiapan cepat antar-tamu untuk villa & apartemen sewa harian, lengkap dengan laporan foto.',['Inspeksi kerusakan','Foto sebelum–sesudah','Siap check-in < 3 jam'],
-     'Fast preparation between guests for short-stay villas & apartments, with a photo report.',['Damage inspection','Before–after photos','Check-in ready < 3 hours']],
-    ['Laundry & Linen','Pengelolaan linen terpusat: cuci, setrika, dan sirkulasi stok per properti.',['Pickup & delivery','Stok par level','Penggantian linen rusak'],
-     'Centralised linen management: washing, ironing and stock rotation per property.',['Pickup & delivery','Par-level stock','Damaged linen replacement']],
-    ['Kolam & Taman','Perawatan kolam renang dan lanskap tropis agar properti selalu tampil prima.',['Uji & keseimbangan air','Pemangkasan & pemupukan','Pembersihan dedaunan'],
-     'Pool and tropical landscape care so the property always looks its best.',['Water testing & balancing','Pruning & fertilising','Leaf clearing']],
-    ['Pasca Renovasi','Membersihkan debu konstruksi, sisa cat, dan material sebelum properti dibuka.',['Debu halus & semen','Pembersihan kaca & lantai','Siap serah terima'],
-     'Removing construction dust, paint residue and materials before the property opens.',['Fine dust & cement','Glass & floor cleaning','Handover ready']]
+    ['Basic Cleaning','Pembersihan dasar ruangan: sapu dan pel lantai. Tidak termasuk kamar mandi dan dapur.',['Sapu & pel lantai ruangan','Kamar tidur & ruang tamu','Tanpa kamar mandi & dapur','Termasuk alat & chemical'],
+     'Basic room cleaning: sweeping and mopping. Bathrooms and kitchen not included.',['Sweep & mop room floors','Bedrooms & living room','Excludes bathroom & kitchen','Tools & chemicals included'],55000],
+    ['Regular Cleaning','Sapu dan pel di semua ruangan, termasuk kamar mandi dan dapur.',['Sapu & pel semua ruangan','Termasuk lantai kamar mandi & dapur','Buang sampah','Termasuk alat & chemical'],
+     'Sweeping and mopping in every room, including bathroom and kitchen.',['Sweep & mop every room','Includes bathroom & kitchen floors','Rubbish removal','Tools & chemicals included'],77000],
+    ['Deep Cleaning','Pembersihan menyeluruh hingga ke sudut: kamar, kamar mandi, toilet, dapur, dan seluruh ruangan.',['Seluruh area & sudut ruangan','Kamar mandi & toilet (kerak, noda)','Dapur: kompor, sink, kabinet','Kamar & semua ruangan','Termasuk alat & chemical'],
+     'Thorough corner-to-corner cleaning: bedrooms, bathroom, toilet, kitchen and every room.',['Every area & corner','Bathroom & toilet (scale, stains)','Kitchen: stove, sink, cabinets','Bedrooms & all rooms','Tools & chemicals included'],88000],
+    ['Cleaning Special','Layanan tambahan sesuai kebutuhan: cermin & kaca, serta pembersihan khusus kantor dan restoran.',['Cermin, kaca & jendela','Kantor & ruang kerja','Restoran & area dapur komersial','Jadwal & lingkup disesuaikan','Termasuk alat & chemical'],
+     'Add-on and custom work: mirrors and glass, plus dedicated cleaning for offices and restaurants.',['Mirrors, glass & windows','Offices & workspaces','Restaurants & commercial kitchens','Custom schedule & scope','Tools & chemicals included'],0],
   ],
   ops:[
     ['Manajemen Staf','Rekrutmen, pelatihan, penggajian, dan pengaturan shift untuk tim properti Anda.',['Rekrutmen lokal','Pelatihan SOP','Rotasi shift'],
@@ -1095,9 +1100,11 @@ const SVC = {
   ]
 };
 const ICONS = ['<path d="M4 20h16M6 20V9l6-5 6 5v11M10 20v-6h4v6"/>','<path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2 8 12.7 4 8.8 9.5 8z"/>','<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>','<path d="M5 4h14v16H5z"/><circle cx="12" cy="13" r="4"/><path d="M8 7h.01M11 7h.01"/>','<path d="M3 16c3-2 6 2 9 0s6 2 9 0M3 20c3-2 6 2 9 0s6 2 9 0M12 3v9M8 7l4-4 4 4"/>','<path d="M4 20l6-6M14 4l6 6-8 8-6-6z"/>'];
+const kRp=n=>n?L('Mulai','From')+' <b>Rp '+(n/1000)+L('rb','k')+'</b>':L('Harga sesuai kebutuhan','Custom quote');
 const SERVICES = [...SVC.clean.map(s=>s[0]),...SVC.ops.map(s=>s[0])];
 const STATUSES = ['Baru','Dijadwalkan','Berjalan','Selesai','Batal'];
-const PTYPES=['Villa','Hotel','Apartemen','Rumah','Kantor / Komersial'];
+const PTYPES=['Rumah','Kosan','Apartemen','Villa','Hotel','Kantor','Restoran','Kantor / Komersial'];
+const CTYPES=['Rumah','Kosan','Apartemen','Villa','Hotel','Kantor','Restoran'];
 
 /* ================= HELPERS ================= */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -1166,7 +1173,7 @@ load();
 /* ================= WEBSITE RENDER ================= */
 let TAB='clean';
 function renderCards(){
-  $('#cards').innerHTML=SVC[TAB].map((s,i)=>`<div class="card"><div class="n">0${i+1}</div><svg viewBox="0 0 24 24">${ICONS[i]}</svg><h3>${T(s[0])}</h3><p>${L(s[1],s[3])}</p><ul>${L(s[2],s[4]).map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></div>`).join('');
+  $('#cards').innerHTML=SVC[TAB].map((s,i)=>`<div class="card"><div class="n">0${i+1}</div><svg viewBox="0 0 24 24">${ICONS[i]}</svg><h3>${T(s[0])}</h3>${TAB==='clean'?`<div class="svprice" style="color:var(--gold2)">${kRp(s[5])}</div>`:''}<p>${L(s[1],s[3])}</p><ul>${L(s[2],s[4]).map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></div>`).join('');
 }
 $$('.tabs button').forEach(b=>b.onclick=()=>{$$('.tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');TAB=b.dataset.t;renderCards()});
 
@@ -1874,7 +1881,12 @@ function svcPage(kind){
   <div class="svwrap">
     <div class="kicker">${L('Pilihan layanan','Services')}</div>
     <h2 class="svh">${C?L('Pilih jenis pembersihan','Choose your cleaning'):L('Layanan manajemen','Management services')}</h2>
-    <div class="svgrid">${list.map((x,i)=>`<div class="svc ${F.svc===i?'sel':''}"><svg viewBox="0 0 24 24">${ICONS[i]}</svg><h3>${T(x[0])}</h3><p>${L(x[1],x[3])}</p><ul>${L(x[2],x[4]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul><button onclick="svPick('${kind}',${i})">${C?L('Pilih','Select'):L('Tanyakan','Ask about this')}</button></div>`).join('')}</div>
+    <div class="svgrid">${list.map((x,i)=>`<div class="svc ${F.svc===i?'sel':''}"><svg viewBox="0 0 24 24">${ICONS[i]}</svg><h3>${T(x[0])}</h3>${C?`<div class="svprice">${kRp(x[5])}</div>`:''}<p>${L(x[1],x[3])}</p><ul>${L(x[2],x[4]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul><button onclick="svPick('${kind}',${i})">${C?L('Pilih','Select'):L('Tanyakan','Ask about this')}</button></div>`).join('')}</div>
+    ${C?`<div class="kicker">${L('Perbandingan paket','Package comparison')}</div>
+    <div class="cmpw"><table class="cmp"><thead><tr><th></th>${list.map(x=>`<th>${T(x[0])}<small>${kRp(x[5])}</small></th>`).join('')}</tr></thead><tbody>
+    ${[[L('Sapu & pel lantai','Sweep & mop floors'),1,1,1,1],[L('Kamar tidur & ruang tamu','Bedrooms & living room'),1,1,1,1],[L('Kamar mandi & toilet','Bathroom & toilet'),0,L('Lantai','Floor'),1,1],[L('Dapur','Kitchen'),0,L('Lantai','Floor'),1,1],[L('Sudut, kerak & noda','Corners, scale & stains'),0,0,1,1],[L('Cermin & kaca','Mirrors & glass'),0,0,0,1],[L('Kantor & restoran','Offices & restaurants'),0,0,0,1],[L('Alat & chemical','Tools & chemicals'),1,1,1,1]].map(r=>`<tr><td>${r[0]}</td>${r.slice(1).map(v=>`<td>${v===1?'<span class="y">✓</span>':v===0?'<span class="n">—</span>':v}</td>`).join('')}</tr>`).join('')}
+    </tbody></table></div>
+    <p class="svsub" style="margin:14px 0 40px">${L('Melayani hotel, kosan, rumah, kantor, restoran, villa, dan apartemen. Harga mulai, menyesuaikan luas dan kondisi properti.','For hotels, boarding houses, homes, offices, restaurants, villas and apartments. Starting prices; final price depends on size and condition.')}</p>`:''}
     <div class="kicker">${L('Cara kerja','How it works')}</div>
     <div class="steps" style="margin-top:20px">${steps.map(x=>`<div class="step"><h4>${x[0]}</h4><p>${x[1]}</p></div>`).join('')}</div>
     <div class="svform" id="svForm">
@@ -1893,7 +1905,7 @@ function svFormHtml(kind){
   return `<div class="full"><label>${L('Layanan','Service')}</label><select onchange="SVF.${kind}.svc=+this.value;svcPage('${kind}');document.getElementById('svForm').scrollIntoView()">${o(list.map((x,i)=>[String(i),T(x[0])]),String(F.svc))}</select></div>
     <div class="fx"><div><label>${L('Wilayah','Region')}</label><select onchange="SVF.${kind}.wilayah=this.value">${o(Object.keys(REG).map(r=>[r,r]),F.wilayah||'Bali')}</select></div>
       <div><label>Area</label>${inp('area',L('mis. Canggu','e.g. Canggu'))}</div></div>
-    <div class="fx"><div><label>${L('Jenis properti','Property type')}</label><select onchange="SVF.${kind}.properti=this.value">${o(['Villa','Hotel','Apartemen','Rumah','Kantor / Komersial'].map(t=>[t,T(t)]),F.properti||'Villa')}</select></div>
+    <div class="fx"><div><label>${L('Jenis properti','Property type')}</label><select onchange="SVF.${kind}.properti=this.value">${o(CTYPES.map(t=>[t,T(t)]),F.properti||'Rumah')}</select></div>
       <div><label>${C?L('Kamar / luas','Rooms / size'):L('Jumlah unit/kamar','Units / rooms')}</label>${inp('size',C?L('mis. 3 kamar','e.g. 3 bedrooms'):L('mis. 12 kamar','e.g. 12 rooms'))}</div></div>
     ${C?`<div class="fx"><div><label>${L('Tanggal','Date')}</label>${inp('tanggal','','date',`min="${today}"`)}</div><div><label>${L('Jam','Time')}</label><select onchange="SVF.${kind}.jam=this.value">${o(['08:00','10:00','13:00','15:00'].map(t=>[t,t]),F.jam||'10:00')}</select></div></div>`:''}
     <div class="full"><label>${L('Nama lengkap','Full name')}</label>${inp('nama','')}</div>
@@ -1913,11 +1925,11 @@ async function svSubmit(kind){
   if(tel.replace(/\D/g,'').length<9){e.textContent=L('Isi nomor WhatsApp yang valid.','Enter a valid WhatsApp number.');return}
   e.textContent='';
   const svc=list[F.svc][0],wil=F.wilayah||'Bali',tgl=C?F.tanggal:iso(new Date());
-  const lines=[`${C?'Pesanan cleaning':'Konsultasi manajemen'}: ${svc}`,`Wilayah: ${wil}${F.area?' — '+F.area:''}`,`Properti: ${F.properti||'Villa'}${F.size?' ('+F.size+')':''}`,C?`Jadwal: ${tgl} ${F.jam||'10:00'}`:'',`Nama: ${name}`,`WhatsApp: ${tel}`,F.email?`Email: ${F.email}`:'',F.catatan?`Catatan: ${F.catatan}`:''].filter(Boolean);
+  const lines=[`${C?'Pesanan cleaning':'Konsultasi manajemen'}: ${svc}`,`Wilayah: ${wil}${F.area?' — '+F.area:''}`,`Properti: ${F.properti||'Rumah'}${F.size?' ('+F.size+')':''}`,C?`Jadwal: ${tgl} ${F.jam||'10:00'}`:'',`Nama: ${name}`,`WhatsApp: ${tel}`,F.email?`Email: ${F.email}`:'',F.catatan?`Catatan: ${F.catatan}`:''].filter(Boolean);
   const btn=$('#svCard .go');btn.disabled=true;let id='';
   if(SET_READY)await SET_READY;
   if(ONLINE()){
-    try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:wil,properti:F.properti||'Villa',layanan:C?svc:'Konsultasi: '+svc,tanggal:tgl,catatan:lines.join('\n'),website:F.hp||''},false);id=r.id||''}
+    try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:wil,properti:F.properti||'Rumah',layanan:C?svc:'Konsultasi: '+svc,tanggal:tgl,catatan:lines.join('\n'),website:F.hp||''},false);id=r.id||''}
     catch(err){btn.disabled=false;e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}
   }
   const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');
