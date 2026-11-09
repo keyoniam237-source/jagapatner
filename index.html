@@ -201,6 +201,49 @@ h2.t em{font-style:italic;color:var(--green)}
 footer{background:#090b0a;color:rgba(255,255,255,.55);padding:50px 6vw;font-size:13px}
 footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
 
+/* ===== gallery ===== */
+.gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:220px;gap:14px;margin-top:56px}
+.gal figure{position:relative;overflow:hidden;border-radius:4px;cursor:zoom-in;background:#ddd3bf;margin:0}
+.gal figure.w{grid-column:span 2}.gal figure.t{grid-row:span 2}
+.gal img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.gal figure:hover img{transform:scale(1.06)}
+.gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:30px 16px 14px;color:#fff;font-size:13px;background:linear-gradient(transparent,rgba(0,0,0,.65));opacity:0;transition:.4s}
+.gal figure:hover figcaption{opacity:1}
+.gal figcaption small{display:block;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);margin-bottom:3px}
+.lb{position:fixed;inset:0;background:rgba(8,10,9,.94);z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:30px}
+.lb.on{display:flex}.lb img{max-width:92vw;max-height:80vh;border-radius:4px}
+.lb p{color:rgba(255,255,255,.8);font-size:14px}
+.lb button{position:absolute;background:none;border:0;color:#fff;font-size:34px;padding:14px;opacity:.75}.lb button:hover{opacity:1}
+.lb .x{top:10px;right:16px}.lb .pv{left:10px;top:50%}.lb .nx{right:10px;top:50%}
+@media(max-width:960px){.gal{grid-template-columns:1fr 1fr;grid-auto-rows:170px}}
+
+/* ===== VIP login ===== */
+#portal.locked .app,#portal.locked .mtop{display:none}
+.login{display:none;min-height:100vh;background:radial-gradient(ellipse at 30% 20%,#26302a,var(--ink) 60%);color:#fff;align-items:center;justify-content:center;padding:30px;position:relative;overflow:hidden}
+#portal.locked .login{display:flex}
+.login:before{content:"";position:absolute;width:560px;height:560px;border:1px solid rgba(201,169,106,.18);border-radius:50%;right:-160px;top:-160px}
+.login:after{content:"";position:absolute;width:380px;height:380px;border:1px solid rgba(201,169,106,.12);border-radius:50%;left:-120px;bottom:-120px}
+.lcard{position:relative;z-index:1;width:100%;max-width:440px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(12px);border-radius:18px;padding:44px 40px 34px;text-align:center}
+.lcard .mk{width:52px;height:66px;color:#fff;margin:0 auto 18px;display:block}
+.lcard .eb{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold2)}
+.lcard h1{font-family:var(--serif);font-weight:400;font-size:40px;margin:10px 0 8px}
+.lcard p.s{font-size:14px;color:rgba(255,255,255,.62);line-height:1.6;margin-bottom:28px}
+.lcard input{width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:16px;color:#fff;font:600 20px/1 ui-monospace,Menlo,monospace;letter-spacing:.18em;text-align:center;text-transform:uppercase;outline:none;transition:.2s}
+.lcard input:focus{border-color:var(--gold)}
+.lcard input.bad{border-color:#c0574c;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.lcard .go{width:100%;margin-top:14px;background:var(--gold);color:#111;border:0;border-radius:12px;padding:15px;font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;transition:.2s}
+.lcard .go:hover{background:var(--gold2)}.lcard .go:disabled{opacity:.5;cursor:wait}
+.lcard .msg{min-height:20px;margin-top:14px;font-size:13px;color:#e08a80}
+.lcard .ft{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.7}
+.lcard .ft a{color:var(--gold2);cursor:pointer}
+.lback{position:absolute;top:24px;left:28px;z-index:2;color:rgba(255,255,255,.7);font-size:13px;letter-spacing:.1em}
+.lback:hover{color:#fff}
+@media(max-width:600px){.lcard{padding:36px 22px 28px}.lcard input{font-size:17px;letter-spacing:.08em}.lcard h1{font-size:34px}}
+.who{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.who .av{width:32px;height:32px;font-size:13px;background:var(--gold);color:#111}
+.who b{display:block;color:#fff;font-size:13px}.who span{font-size:11px;color:rgba(255,255,255,.5)}
+
 /* toast */
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:16px 24px;border-radius:999px;font-size:14px;z-index:200;transition:transform .45s cubic-bezier(.2,.8,.2,1);border:1px solid var(--gold);display:flex;gap:10px;align-items:center;max-width:92vw}
 .toast.on{transform:translate(-50%,0)}
@@ -459,6 +502,17 @@ tr:hover td{background:#fbf8f2}
     </div>
   </section>
 
+  <!-- GALERI (tampil otomatis jika ada foto di daftar GALLERY) -->
+  <section class="s" id="galeri" hidden>
+    <div class="wrap">
+      <div class="split reveal">
+        <div><div class="kicker">Galeri</div><h2 class="t" data-en="Our work, <em>up close</em>.">Hasil kerja kami, <em>dari dekat</em>.</h2></div>
+        <p class="lead">Dokumentasi nyata dari properti yang kami rawat di Bali, Lombok, dan Yogyakarta.</p>
+      </div>
+      <div class="gal reveal" id="gallery"></div>
+    </div>
+  </section>
+
   <!-- MITRA KAMI -->
   <section class="s" id="mitra">
     <div class="wrap">
@@ -604,7 +658,8 @@ tr:hover td{background:#fbf8f2}
 <!-- ================================================================ -->
 <!-- =========================== PORTAL ============================= -->
 <!-- ================================================================ -->
-<div id="portal" class="view">
+<div id="portal" class="view locked">
+  <div class="login" id="login"></div>
   <div class="mtop">
     <a class="brand" href="#beranda"><svg><use href="#logo"/></svg><div class="bt"><b style="font-family:Montserrat,var(--sans);letter-spacing:.2em">JAGA</b></div></a>
     <button class="burger" style="display:block" onclick="document.querySelector('.side').classList.toggle('on')"><svg viewBox="0 0 24 24" width="24" stroke="currentColor" stroke-width="1.6"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
@@ -624,7 +679,7 @@ tr:hover td{background:#fbf8f2}
         <a data-reg="Lombok" class="regf"><span class="dot" style="background:#3d5f83"></span>Lombok</a>
         <a data-reg="Yogyakarta" class="regf"><span class="dot" style="background:#a8483f"></span>Yogyakarta</a>
       </nav>
-      <div class="foot">Data contoh tersimpan di browser ini.<br><a onclick="resetData()">Reset data contoh</a> · <a href="#beranda">Ke situs</a></div>
+      <div class="foot" id="pfoot"></div>
     </aside>
     <main class="main" id="pmain"></main>
   </div>
@@ -633,6 +688,7 @@ tr:hover td{background:#fbf8f2}
 <!-- MODAL -->
 <div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
 <div class="toast" id="toast"></div>
+<div class="lb" id="lb"><button class="x" onclick="lbClose()" aria-label="Tutup">✕</button><button class="pv" onclick="lbGo(-1)" aria-label="Sebelumnya">‹</button><img id="lbImg" alt=""><p id="lbCap"></p><button class="nx" onclick="lbGo(1)" aria-label="Berikutnya">›</button></div>
 
 <script>
 /* ================= LANGUAGE ================= */
@@ -678,7 +734,7 @@ const D={
  'Nama lengkap':'Full name','Alamat, luas area, kebutuhan khusus…':'Address, area size, special needs…',
  // portal static
  'Dasbor':'Dashboard','Pesanan':'Orders','Jadwal':'Schedule','Tim & Shift':'Team & Shifts','Checklist SOP':'SOP Checklist','Semua wilayah':'All regions',
- 'Data contoh tersimpan di browser ini.':'Sample data is stored in this browser.','Reset data contoh':'Reset sample data','Ke situs':'Back to site',
+ 'Dokumentasi nyata dari properti yang kami rawat di Bali, Lombok, dan Yogyakarta.':'Real photos from properties we care for in Bali, Lombok and Yogyakarta.','Galeri':'Gallery',
  // property types
  'Villa':'Villa','Hotel':'Hotel','Apartemen':'Apartment','Rumah':'House','Kantor / Komersial':'Office / Commercial','Komersial':'Commercial',
  // statuses
@@ -876,12 +932,12 @@ function renderJobs(){
 }
 function applyJob(i){const j=JOBS[i];$('#fWil').value=j[1];document.querySelector('#bookForm textarea').value=L('Lamaran posisi: ','Application for: ')+L(...j[0])+' ('+j[1]+')';location.hash='kontak';toast(L('Isi nama & telepon, lalu kirim lamaran Anda','Enter your name & phone, then send your application'))}
 
-function renderSite(){renderCards();renderRegions();renderProps();renderPosts();renderJobs();renderServiceSelect();updateSiteCounts()}
+function renderSite(){renderGallery();renderCards();renderRegions();renderProps();renderPosts();renderJobs();renderServiceSelect();updateSiteCounts()}
 
 /* ===== Language switch ===== */
 function setLang(l){
   LANG=l;try{localStorage.setItem('jaga-lang',l)}catch(e){}
-  applyStatic();renderSite();if($('#portal').classList.contains('on'))renderPortal();
+  applyStatic();renderSite();if($('#portal').classList.contains('on')){if(USER){applyRole();renderPortal()}else renderLogin()}
   if($('#modal').classList.contains('on'))closeModal();
 }
 $('#langBtn').onclick=()=>{setLang(LANG==='ID'?'EN':'ID');toast(L('Bahasa Indonesia','English'))};
@@ -901,13 +957,14 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.targ
 let P={page:'dash',reg:'Semua',q:'',st:'Semua',weekOff:0};
 const inReg=b=>P.reg==='Semua'||b.wilayah===P.reg;
 $$('#pnav a[data-p]').forEach(a=>a.onclick=()=>{P.page=a.dataset.p;$$('#pnav a[data-p]').forEach(x=>x.classList.toggle('on',x===a));$('.side').classList.remove('on');renderPortal()});
-$$('#pnav a.regf').forEach(a=>a.onclick=()=>{P.reg=a.dataset.reg;$$('#pnav a.regf').forEach(x=>x.classList.toggle('on',x===a));$('.side').classList.remove('on');renderPortal()});
+$$('#pnav a.regf').forEach(a=>a.onclick=()=>{if(USER&&USER.role!=='admin')return;P.reg=a.dataset.reg;$$('#pnav a.regf').forEach(x=>x.classList.toggle('on',x===a));$('.side').classList.remove('on');renderPortal()});
 
 function header(title,sub,actions=''){return `<div class="top"><div><h1>${title}</h1><div class="sub">${sub}</div></div><div style="display:flex;gap:10px;flex-wrap:wrap">${actions}</div></div>`}
 const regLabel=()=>P.reg==='Semua'?'Bali · Lombok · Yogyakarta':P.reg;
 const newBtn=()=>`<button class="abtn" onclick="openBooking()">＋ ${L('Pesanan baru','New order')}</button>`;
 
 function renderPortal(){
+  if(!USER)return;
   const m=$('#pmain');
   if(P.page==='dash')m.innerHTML=dash();
   if(P.page==='orders')m.innerHTML=orders();
@@ -1015,7 +1072,7 @@ function openBooking(id){
   $('#mbox').innerHTML=`<h3>${id?L('Ubah ','Edit ')+id:L('Pesanan baru','New order')}</h3><form class="mf" id="mform">
    <div class="f full"><label>${L('Klien / Properti','Client / Property')}</label><input name="klien" required value="${esc(b.klien)}"></div>
    <div class="f"><label>${L('Telepon','Phone')}</label><input name="telp" value="${esc(b.telp)}"></div>
-   <div class="f"><label>${L('Wilayah','Region')}</label><select name="wilayah" id="mWil">${opts(Object.keys(REG),b.wilayah)}</select></div>
+   <div class="f"><label>${L('Wilayah','Region')}</label><select name="wilayah" id="mWil">${opts(myRegions(),b.wilayah)}</select></div>
    <div class="f"><label>${L('Jenis properti','Property type')}</label><select name="properti">${opts(PTYPES,b.properti)}</select></div>
    <div class="f"><label>${L('Layanan','Service')}</label><select name="layanan">${opts(SERVICES,b.layanan)}</select></div>
    <div class="f"><label>${L('Tanggal','Date')}</label><input type="date" name="tanggal" required value="${b.tanggal}"></div>
@@ -1039,7 +1096,7 @@ function openStaff(){
   $('#mbox').innerHTML=`<h3>${L('Tambah staf','Add staff')}</h3><form class="mf" id="sform">
    <div class="f full"><label>${L('Nama','Name')}</label><input name="nama" required></div>
    <div class="f"><label>${L('Peran','Role')}</label><select name="peran">${opts(['Housekeeper','Supervisor','Teknisi','Teknisi Kolam','Laundry','Koordinator'],'Housekeeper')}</select></div>
-   <div class="f"><label>${L('Wilayah','Region')}</label><select name="wilayah">${opts(Object.keys(REG),P.reg)}</select></div>
+   <div class="f"><label>${L('Wilayah','Region')}</label><select name="wilayah">${opts(myRegions(),P.reg)}</select></div>
    <div class="f"><label>Shift</label><select name="shift">${opts(['Pagi','Siang','Malam'],'Pagi')}</select></div>
   </form><div class="mact"><button class="abtn light" onclick="closeModal()">${L('Batal','Cancel')}</button><button class="abtn" onclick="saveStaff()">${L('Simpan','Save')}</button></div>`;
   $('#modal').classList.add('on');
@@ -1047,15 +1104,92 @@ function openStaff(){
 function saveStaff(){const f=$('#sform');if(!f.reportValidity())return;const d=Object.fromEntries(new FormData(f));
   S.staff.push({id:'S'+(101+S.staff.length),aktif:true,...d});save();closeModal();renderPortal();toast(esc(d.nama)+L(' ditambahkan',' added'))}
 
+/* ================= GALERI =================
+   Tambahkan foto ke folder images/ lalu daftarkan di sini.
+   size: '' (normal) | 'w' (lebar 2 kolom) | 't' (tinggi 2 baris) */
+const GALLERY=[
+  // {src:'images/contoh.jpg', region:'Bali', cap:['Villa di Ubud setelah deep cleaning','Ubud villa after deep cleaning'], size:'w'},
+];
+let LBI=0;
+function renderGallery(){
+  const sec=$('#galeri');if(!GALLERY.length){sec.hidden=true;return}
+  sec.hidden=false;
+  $('#gallery').innerHTML=GALLERY.map((g,i)=>`<figure class="${g.size||''}" onclick="lbOpen(${i})"><img src="${g.src}" alt="${esc(L(...g.cap))}" loading="lazy"><figcaption><small>${g.region||''}</small>${esc(L(...g.cap))}</figcaption></figure>`).join('');
+}
+function lbOpen(i){LBI=i;const g=GALLERY[i];$('#lbImg').src=g.src;$('#lbImg').alt=L(...g.cap);$('#lbCap').textContent=(g.region?g.region+' — ':'')+L(...g.cap);$('#lb').classList.add('on')}
+function lbClose(){$('#lb').classList.remove('on')}
+function lbGo(d){lbOpen((LBI+d+GALLERY.length)%GALLERY.length)}
+addEventListener('keydown',e=>{if(!$('#lb').classList.contains('on'))return;if(e.key==='Escape')lbClose();if(e.key==='ArrowRight')lbGo(1);if(e.key==='ArrowLeft')lbGo(-1)});
+
+/* ================= AKUN VIP (kode akses) =================
+   Kode akses TIDAK disimpan di sini — hanya hash PBKDF2-SHA256 (150.000 iterasi, salt per akun).
+   Untuk menambah/mengubah akun, minta Claude membuat kode baru. */
+const ACCOUNTS=[{"id":"admin","name":"Admin JAGA","role":"admin","region":"Semua","salt":"723554a857b1f73df4a2aef081cbcf5b","hash":"81b2f24d606f98a2f4caac5e0d0a55c9cb45863edf08c169598fc98e7489d7f3"},{"id":"bali","name":"Koordinator Bali","role":"coord","region":"Bali","salt":"60103180045a699a7071f125667fd2f4","hash":"2c1f0cbf4e1a7336ad67a8eebb6108a06c1a3a92a6f7580659915b8264710fee"},{"id":"lombok","name":"Koordinator Lombok","role":"coord","region":"Lombok","salt":"775915cb938155392776cf8ab4d6ba26","hash":"89ac609eb3c54262963a129cb76536a8e0cc59b77c0f0bbba072b420aeab5764"},{"id":"yogya","name":"Koordinator Yogyakarta","role":"coord","region":"Yogyakarta","salt":"c3643450d421605c60b6d96579693293","hash":"ad451684365c8c2d2139ef4c63c086ae45fe36ead156b7fc8046da1c54350e51"}];
+let USER=null;
+try{const u=JSON.parse(sessionStorage.getItem('jaga-user')||'null');if(u&&ACCOUNTS.some(a=>a.id===u))USER=ACCOUNTS.find(a=>a.id===u)}catch(e){}
+const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+async function pbkdf2(code,saltHex){
+  const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveBits']);
+  const salt=new Uint8Array(saltHex.match(/../g).map(h=>parseInt(h,16)));
+  return hex(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:150000},key,256));
+}
+function getFails(){try{return JSON.parse(localStorage.getItem('jaga-fails')||'{"n":0,"until":0}')}catch(e){return{n:0,until:0}}}
+function setFails(f){try{localStorage.setItem('jaga-fails',JSON.stringify(f))}catch(e){}}
+function renderLogin(){
+  $('#login').innerHTML=`<a class="lback" href="#beranda">← ${L('Kembali ke situs','Back to site')}</a>
+  <form class="lcard" id="lform" autocomplete="off">
+    <svg class="mk"><use href="#mono"/></svg>
+    <div class="eb">JAGA · VIP</div>
+    <h1>${L('Akses Portal','Portal Access')}</h1>
+    <p class="s">${L('Masukkan kode akses yang diberikan oleh tim JAGA untuk membuka portal operasional.','Enter the access code provided by the JAGA team to open the operations portal.')}</p>
+    <input id="lcode" inputmode="text" maxlength="14" placeholder="XXXX-XXXX-XXXX" aria-label="${L('Kode akses','Access code')}" spellcheck="false">
+    <button class="go" id="lgo">${L('Masuk','Sign in')}</button>
+    <div class="msg" id="lmsg"></div>
+    <div class="ft">${L('Belum punya kode akses? Hubungi koordinator JAGA di wilayah Anda.','No access code yet? Contact the JAGA coordinator in your region.')}<br><a href="#kontak">${L('Hubungi kami →','Contact us →')}</a></div>
+  </form>`;
+  const inp=$('#lcode');
+  inp.addEventListener('input',()=>{const r=inp.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12);inp.value=r.match(/.{1,4}/g)?.join('-')||'';inp.classList.remove('bad');$('#lmsg').textContent=''});
+  $('#lform').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const f=getFails(),now=Date.now();
+    if(f.until>now){$('#lmsg').textContent=L(`Terlalu banyak percobaan. Coba lagi dalam ${Math.ceil((f.until-now)/1000)} detik.`,`Too many attempts. Try again in ${Math.ceil((f.until-now)/1000)} seconds.`);return}
+    const code=inp.value.replace(/-/g,'');
+    if(code.length!==12){inp.classList.add('bad');$('#lmsg').textContent=L('Kode akses terdiri dari 12 karakter.','The access code has 12 characters.');return}
+    const btn=$('#lgo');btn.disabled=true;btn.textContent=L('Memeriksa…','Checking…');
+    let found=null;
+    try{for(const a of ACCOUNTS){if(await pbkdf2(code,a.salt)===a.hash){found=a;break}}}
+    catch(err){$('#lmsg').textContent=L('Browser ini tidak mendukung login aman. Buka melalui https://jagapatner.my.id','This browser cannot sign in securely. Open via https://jagapatner.my.id')}
+    btn.disabled=false;btn.textContent=L('Masuk','Sign in');
+    if(!found){const n=f.n+1;setFails({n:n>=5?0:n,until:n>=5?now+60000:0});inp.classList.remove('bad');void inp.offsetWidth;inp.classList.add('bad');
+      if(!$('#lmsg').textContent)$('#lmsg').textContent=n>=5?L('Terlalu banyak percobaan. Tunggu 60 detik.','Too many attempts. Please wait 60 seconds.'):L('Kode akses tidak valid.','Invalid access code.');return}
+    setFails({n:0,until:0});USER=found;try{sessionStorage.setItem('jaga-user',JSON.stringify(found.id))}catch(e){}
+    enterPortal();toast(L('Selamat datang, ','Welcome, ')+found.name);
+  });
+  setTimeout(()=>inp.focus(),50);
+}
+function applyRole(){
+  const coord=USER.role!=='admin';
+  if(coord)P.reg=USER.region;
+  $$('#pnav a.regf').forEach(a=>{a.style.display=coord&&a.dataset.reg!==USER.region?'none':'';a.classList.toggle('on',a.dataset.reg===P.reg)});
+  const ini=USER.name.split(' ').map(x=>x[0]).slice(0,2).join('');
+  $('#pfoot').innerHTML=`<div class="who"><div class="av">${esc(ini)}</div><div><b>${esc(USER.name)}</b><span>${USER.role==='admin'?L('Admin · semua wilayah','Admin · all regions'):L('Koordinator · ','Coordinator · ')+USER.region}</span></div></div>
+  ${L('Data contoh tersimpan di browser ini.','Sample data is stored in this browser.')}<br>${USER.role==='admin'?`<a onclick="resetData()">${L('Reset data contoh','Reset sample data')}</a> · `:''}<a onclick="logout()">${L('Keluar','Sign out')}</a> · <a href="#beranda">${L('Ke situs','Back to site')}</a>`;
+}
+const myRegions=()=>USER&&USER.role!=='admin'?[USER.region]:Object.keys(REG);
+function enterPortal(){$('#portal').classList.remove('locked');applyRole();renderPortal()}
+function logout(){USER=null;try{sessionStorage.removeItem('jaga-user')}catch(e){}$('#portal').classList.add('locked');renderLogin();toast(L('Anda telah keluar','You have signed out'))}
+
+
 /* ===== initial render ===== */
 applyStatic();renderSite();
 $$('.reveal').forEach(el=>io.observe(el));
 
+
 /* ================= ROUTING ================= */
-const SITE_IDS=['beranda','cerita','layanan','properti','mitra','wilayah','proses','aplikasi','blog','karier','kontak'];
+const SITE_IDS=['beranda','cerita','layanan','properti','galeri','mitra','wilayah','proses','aplikasi','blog','karier','kontak'];
 function route(){
   const h=location.hash.slice(1);
-  if(h==='portal'){$('#site').classList.remove('on');$('#portal').classList.add('on');scrollTo(0,0);renderPortal();return}
+  if(h==='portal'){$('#site').classList.remove('on');$('#portal').classList.add('on');scrollTo(0,0);if(USER)enterPortal();else{$('#portal').classList.add('locked');renderLogin()}return}
   $('#portal').classList.remove('on');$('#site').classList.add('on');updateSiteCounts();
   const el=document.getElementById(SITE_IDS.includes(h)?h:'beranda');
   requestAnimationFrame(()=>el.scrollIntoView({behavior:h?'smooth':'auto'}));
