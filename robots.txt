@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /#portal
 
 Sitemap: https://jagapatner.my.id/sitemap.xml
