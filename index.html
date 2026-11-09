@@ -201,6 +201,27 @@ h2.t em{font-style:italic;color:var(--green)}
 footer{background:#090b0a;color:rgba(255,255,255,.55);padding:50px 6vw;font-size:13px}
 footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
 
+/* ===== hero video ===== */
+.hvids{position:absolute;inset:0;display:none}
+.hero.has-video .hvids{display:block}
+.hero.has-video .scene,.hero.has-video .fog,.hero.has-video .ring{display:none}
+.hvids video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.8s ease;transform:scale(1.04)}
+.hvids video.on{opacity:1;animation:hzoom 14s linear forwards}
+@keyframes hzoom{from{transform:scale(1.04)}to{transform:scale(1.1)}}
+.vcap{position:absolute;left:5vw;bottom:34px;z-index:3;color:#fff;display:none;text-align:left;align-items:center;gap:18px}
+.hero.has-video .vcap{display:flex}
+.vcap .pl{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.vcap .pl b{display:block;font-family:var(--serif);font-weight:400;font-size:24px;letter-spacing:0;text-transform:none;color:#fff;margin-top:2px}
+.vbars{display:flex;gap:6px}
+.vbars i{width:34px;height:2px;background:rgba(255,255,255,.25);position:relative;overflow:hidden;cursor:pointer}
+.vbars i:after{content:"";position:absolute;inset:0;background:var(--gold2);transform:scaleX(0);transform-origin:left}
+.vbars i.done:after{transform:scaleX(1)}
+.vbars i.cur:after{animation:vbar var(--d,10s) linear forwards}
+@keyframes vbar{to{transform:scaleX(1)}}
+.regions-tag a.cur{border-color:var(--gold);background:rgba(201,169,106,.22)}
+@media(max-width:600px){.vcap{left:6vw;bottom:70px}.vcap .pl b{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.hvids video.on{animation:none}}
+
 /* ===== gallery ===== */
 .gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:220px;gap:14px;margin-top:56px}
 .gal figure{position:relative;overflow:hidden;border-radius:4px;cursor:zoom-in;background:#ddd3bf;margin:0}
@@ -463,6 +484,7 @@ tr:hover td{background:#fbf8f2}
         </g>
       </svg>
     </div>
+    <div class="hvids" id="hvids"></div>
     <div class="fog"></div>
     <div class="veil"></div>
     <div class="in">
@@ -474,6 +496,7 @@ tr:hover td{background:#fbf8f2}
       </div>
     </div>
     <div class="ring"></div>
+    <div class="vcap" id="vcap"><div class="pl" id="vplace"></div><div class="vbars" id="vbars"></div></div>
     <div class="scroll">GULIR<i></i></div>
   </section>
 
@@ -923,7 +946,7 @@ function renderSite(){renderGallery();renderCards();renderRegions();renderProps(
 /* ===== Language switch ===== */
 function setLang(l){
   LANG=l;try{localStorage.setItem('jaga-lang',l)}catch(e){}
-  applyStatic();renderSite();if($('#portal').classList.contains('on')){if(USER){applyRole();renderPortal()}else renderLogin()}
+  applyStatic();renderSite();if(HERO_VIDEOS.length)heroLabel(HV);if($('#portal').classList.contains('on')){if(USER){applyRole();renderPortal()}else renderLogin()}
   if($('#modal').classList.contains('on'))closeModal();
 }
 $('#langBtn').onclick=()=>{setLang(LANG==='ID'?'EN':'ID');toast(L('Bahasa Indonesia','English'))};
@@ -1090,6 +1113,44 @@ function openStaff(){
 function saveStaff(){const f=$('#sform');if(!f.reportValidity())return;const d=Object.fromEntries(new FormData(f));
   S.staff.push({id:'S'+(101+S.staff.length),aktif:true,...d});save();closeModal();renderPortal();toast(esc(d.nama)+L(' ditambahkan',' added'))}
 
+
+/* ================= VIDEO LATAR HERO =================
+   Video diputar bergantian (crossfade). Kosong = pakai ilustrasi bawaan.
+   Simpan file di folder videos/ (MP4 H.264, tanpa suara, ±10–15 detik, ≤6 MB). */
+const HERO_VIDEOS=[
+  // {src:'videos/bali.mp4', poster:'videos/bali.jpg', region:'Bali', place:['Sawah terasering, Ubud','Rice terraces, Ubud']},
+];
+let HV=0,HVt=null;
+function initHero(){
+  if(!HERO_VIDEOS.length)return;
+  const hero=$('#beranda');hero.classList.add('has-video');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('#hvids').innerHTML=HERO_VIDEOS.map((v,i)=>`<video muted playsinline ${i===0?'autoplay preload="auto"':'preload="none"'} poster="${v.poster||''}" src="${v.src}" aria-hidden="true"></video>`).join('');
+  $('#vbars').innerHTML=HERO_VIDEOS.map((_,i)=>`<i onclick="heroGo(${i})"></i>`).join('');
+  if(reduce){const v=$$('#hvids video')[0];v.removeAttribute('autoplay');v.classList.add('on');heroLabel(0);return}
+  heroGo(0);
+  document.addEventListener('visibilitychange',()=>{const v=$$('#hvids video')[HV];if(!v)return;document.hidden?v.pause():v.play().catch(()=>{})});
+}
+function heroLabel(i){
+  const v=HERO_VIDEOS[i];
+  $('#vplace').innerHTML=`${v.region}<b>${esc(L(...v.place))}</b>`;
+  $$('.regions-tag a').forEach(a=>a.classList.toggle('cur',a.dataset.r===v.region));
+}
+function heroGo(i){
+  const vids=$$('#hvids video');if(!vids.length)return;
+  clearTimeout(HVt);HV=(i+vids.length)%vids.length;
+  vids.forEach((v,k)=>{if(k!==HV){v.classList.remove('on');setTimeout(()=>{if(k!==HV)v.pause()},1800)}});
+  const v=vids[HV];v.currentTime=0;v.classList.add('on');v.play().catch(()=>{});
+  const nx=vids[(HV+1)%vids.length];if(nx.preload!=='auto'){nx.preload='auto';nx.load()}
+  heroLabel(HV);
+  $$('#vbars i').forEach((b,k)=>{b.className=k<HV?'done':'';});
+  const me=HV,sched=()=>{if(me!==HV)return;clearTimeout(HVt);
+    const dur=Math.min(14,Math.max(5,(isFinite(v.duration)&&v.duration)||10))-1.2;
+    const bar=$$('#vbars i')[HV];bar.style.setProperty('--d',dur+'s');bar.className='';void bar.offsetWidth;bar.className='cur';
+    HVt=setTimeout(()=>heroGo(HV+1),dur*1000)};
+  if(v.readyState>=1)sched();else{v.addEventListener('loadedmetadata',sched,{once:true});HVt=setTimeout(sched,2500)}
+}
+
 /* ================= GALERI =================
    Tambahkan foto ke folder images/ lalu daftarkan di sini.
    size: '' (normal) | 'w' (lebar 2 kolom) | 't' (tinggi 2 baris) */
@@ -1167,6 +1228,7 @@ function logout(){USER=null;try{sessionStorage.removeItem('jaga-user')}catch(e){
 
 
 /* ===== initial render ===== */
+initHero();
 applyStatic();renderSite();
 $$('.reveal').forEach(el=>io.observe(el));
 
