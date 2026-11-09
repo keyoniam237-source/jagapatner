@@ -1,9 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="530 255 495 620" width="495" height="620">
-      <g fill="none" stroke="#1f3a4d" stroke-width="34" stroke-linejoin="miter">
-        <path d="M692 283H862M541 354H1012M588 422H690"/>
-        <path d="M741 354V605A35 35 0 0 0 811 605V354"/>
-        <path d="M966 422H880V617A104 104 0 0 1 672 617V621"/>
-        <path d="M949 475V619A172 172 0 0 1 605 619V621"/>
-      </g>
-      <path fill="#1f3a4d" d="M588 585V513H690V585H656V548H622V585Z M680 866L777 830L875 866Z"/>
-    </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="30 24 136 178" width="544" height="712"><mask id="g" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="220"><rect width="200" height="220" fill="#fff"/><path d="M36 172 L156 106 V126 L36 192 Z" fill="#000"/></mask><g mask="url(#g)"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" fill="#0f1b2d"/><path d="M74 132 V84 L96 72 V132 Z" fill="#0f1b2d"/><path d="M104 132 V64 L120 55 V132 Z" fill="#b08d4f"/></g><path d="M40 176 L152 114.4 V126.4 L40 188 Z" fill="#b08d4f"/></svg>
