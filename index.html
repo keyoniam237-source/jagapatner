@@ -228,15 +228,28 @@ a.ci:hover{border-color:var(--gold);background:rgba(255,255,255,.04)}
 .ci small{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5)}
 .ci b{display:block;font-size:15.5px;font-weight:500;margin-top:2px;line-height:1.45}
 .creg{font-size:13px;color:rgba(255,255,255,.55);margin-top:6px}.creg b{color:rgba(255,255,255,.85);font-weight:500}
-.fcontact{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center}
-.fcontact a,.fcontact>span{display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,.7);font-size:13px}
-.fcontact a:hover{color:var(--gold2)}
-.fcontact svg{width:17px;height:17px;fill:none;stroke:var(--gold2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
-footer .fcopy{margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08);justify-content:center;font-size:12px;color:rgba(255,255,255,.4)}
+.fgrid{display:grid;grid-template-columns:1.3fr 1fr 1.3fr 1fr;gap:48px;max-width:1340px;margin:0 auto}
+.fcol h5{font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold2);margin:8px 0 22px}
+.fcol p{font-size:14.5px;line-height:1.75;color:rgba(255,255,255,.72)}
+.fbrand p{margin:22px 0 22px;max-width:380px}
+.fsoc{display:flex;gap:10px}
+.fsoc a{width:44px;height:44px;border:1px solid rgba(255,255,255,.25);border-radius:50%;display:grid;place-items:center;color:#fff;transition:.25s}
+.fsoc a:hover{border-color:var(--gold);color:var(--gold2)}
+.fsoc svg,.fcon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.flinks{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px}
+.flinks a{color:rgba(255,255,255,.85);font-size:15px}.flinks a:hover{color:var(--gold2)}
+.fcon{display:grid;gap:16px}
+.fcon a,.fcon>span{display:flex;gap:14px;align-items:flex-start;color:rgba(255,255,255,.85);font-size:15px;line-height:1.5}
+.fcon a:hover{color:var(--gold2)}.fcon svg{color:var(--gold2);margin-top:2px}
+.fvip{white-space:nowrap;display:inline-flex;align-items:center;gap:14px;margin-top:22px;border:1.5px solid rgba(255,255,255,.35);border-radius:999px;padding:13px 26px;color:#fff;font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;transition:.25s}
+.fvip svg{color:var(--gold2)}.fvip:hover{border-color:var(--gold);background:rgba(201,169,106,.1)}
+.fcopy{max-width:1340px;margin:48px auto 0;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);font-size:12.5px;color:rgba(255,255,255,.45)}
+@media(max-width:1100px){.fgrid{grid-template-columns:1fr 1fr;gap:40px}}
+@media(max-width:620px){.fgrid{grid-template-columns:1fr;gap:34px}}
 .office{border-left:1px solid var(--gold);padding-left:18px}
 .office b{font-family:var(--serif);font-size:24px;font-weight:500}
 .office p{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;margin-top:4px}
-footer{background:#090b0a;color:rgba(255,255,255,.55);padding:50px 6vw;font-size:13px}
+footer{background:#1a1a1a;color:rgba(255,255,255,.55);padding:64px 6vw 34px;font-size:13px}
 footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
 
 /* ===== landing ===== */
@@ -1013,12 +1026,8 @@ tr:hover td{background:#fbf8f2}
   <div id="propPage"></div>
 
   <footer>
-    <div class="wrap">
-      <a class="brand" href="#beranda"><span class="mono"><svg><use href="#mono"/></svg></span><span class="bar"></span><span class="wm"><b>JAGA</b><small>Management &amp; Operations</small></span></a>
-      <div class="fcontact" id="fcontact"></div>
-      <a href="#portal" style="color:var(--gold2)">Portal Operasional →</a>
-    </div>
-    <div class="wrap fcopy">Bali · Lombok · Yogyakarta &nbsp;—&nbsp; © 2026 JAGA · Management &amp; Operations</div>
+    <div class="fgrid" id="fgrid"></div>
+    <div class="fcopy" id="fcopy"></div>
   </footer>
 </div>
 
@@ -1290,7 +1299,17 @@ function contactItems(){const wa=(SETTINGS.whatsapp||'62882005837975').replace(/
     ['ig','Instagram','Jaga Management',ig?(/^https?:/.test(ig)?ig:'https://www.instagram.com/'+ig.replace(/^@/,'')+'/'):'']]}
 function contactList(){return contactItems().map(([k,t,v,u])=>`${u?`<a class="ci" href="${u}" target="_blank" rel="noopener">`:'<div class="ci">'}<span class="cic">${ICO[k]}</span><span><small>${t}</small><b>${esc(v)}</b></span>${u?'</a>':'</div>'}`).join('')+
   `<div class="creg">${L('Wilayah layanan','Service areas')}: <b>Bali · Lombok · Yogyakarta</b></div>`}
-function renderFootContact(){const f=$('#fcontact');if(f)f.innerHTML=contactItems().map(([k,t,v,u])=>u?`<a href="${u}" target="_blank" rel="noopener" title="${esc(t)}">${ICO[k]}<span>${esc(v)}</span></a>`:`<span title="${esc(t)}">${ICO[k]}<span>${esc(v)}</span></span>`).join('')}
+function renderFootContact(){const g=$('#fgrid');if(!g)return;const it=contactItems();
+  const links=[['#beranda','Beranda','Home'],['#layanan','Layanan','Services'],['#properti','Properti Kami','Properties'],['#mitra','Mitra Kami','Partners'],['#cerita','Cerita Kami','Our Story'],['#blog','Blog','Blog'],['#karier','Karier','Careers'],['#kontak','Hubungi Kami','Contact Us']];
+  const soc=it.filter(x=>x[3]);
+  g.innerHTML=`<div class="fcol fbrand"><a class="brand" href="#beranda"><span class="mono"><svg><use href="#mono"/></svg></span><span class="bar"></span><span class="wm"><b>JAGA</b><small>Management &amp; Operations</small></span></a>
+      <p>${L('JAGA adalah mitra manajemen & operasional properti di Bali, Lombok, dan Yogyakarta — cleaning service, manajemen operasional, dan pemasok chemical kebersihan profesional.','JAGA is a property management & operations partner in Bali, Lombok and Yogyakarta — cleaning services, operations management and professional cleaning chemical supplies.')}</p>
+      <div class="fsoc">${soc.map(([k,t,v,u])=>`<a href="${u}" target="_blank" rel="noopener" aria-label="${esc(t)}" title="${esc(t)}">${ICO[k]}</a>`).join('')}</div></div>
+    <div class="fcol"><h5>${L('Tautan cepat','Quick links')}</h5><div class="flinks">${links.map(l=>`<a href="${l[0]}">${L(l[1],l[2])}</a>`).join('')}</div></div>
+    <div class="fcol"><h5>${L('Kontak','Contact')}</h5><div class="fcon">${it.map(([k,t,v,u])=>`${u?`<a href="${u}" target="_blank" rel="noopener">`:'<span>'}${ICO[k]}<span>${esc(v)}</span>${u?'</a>':'</span>'}`).join('')}</div></div>
+    <div class="fcol"><h5>Member VIP</h5><p>${L('Bergabunglah dengan program VIP JAGA untuk akses portal, laporan properti, dan layanan prioritas.','Join the JAGA VIP programme for portal access, property reports and priority service.')}</p>
+      <a class="fvip" href="#portal"><svg width="18" height="15" viewBox="0 0 24 20" fill="currentColor"><path d="M2 5l5.5 5L12 2l4.5 8L22 5l-2.2 11H4.2z"/><rect x="4.2" y="17" width="15.6" height="2" rx="1"/></svg>${L('Gabung sekarang','Join now')}</a></div>`;
+  $('#fcopy').innerHTML=`© ${new Date().getFullYear()} JAGA — Management &amp; Operations · Bali · Lombok · Yogyakarta`}
 function pickRegion(r){$('#fWil').value=r;location.hash='kontak';}
 function updateSiteCounts(){
   /* angka publik tidak diambil dari data portal */
