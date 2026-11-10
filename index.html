@@ -1137,7 +1137,7 @@ const kRp=n=>n?L('Mulai','From')+' <b>Rp '+(n/1000)+L('rb','k')+'</b>':L('Harga 
 const SERVICES = [...SVC.clean.map(s=>s[0]),...SVC.ops.map(s=>s[0])];
 const STATUSES = ['Baru','Dijadwalkan','Berjalan','Selesai','Batal'];
 const PTYPES=['Rumah','Kosan','Apartemen','Villa','Hotel','Kantor','Restoran','Kantor / Komersial'];
-const CTYPES=['Rumah','Kosan','Apartemen','Villa','Hotel','Kantor','Restoran'];
+const JAMS=Array.from({length:11},(_,i)=>String(8+i).padStart(2,'0')+':00');const CTYPES=['Rumah','Kosan','Apartemen','Villa','Hotel','Kantor','Restoran'];
 
 /* ================= HELPERS ================= */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -1945,7 +1945,7 @@ function svFormHtml(kind){
       <div><label>Area</label>${inp('area',L('mis. Canggu','e.g. Canggu'))}</div></div>
     <div class="fx"><div><label>${L('Jenis properti','Property type')}</label><select onchange="SVF.${kind}.properti=this.value">${o(CTYPES.map(t=>[t,T(t)]),F.properti||'Rumah')}</select></div>
       <div><label>${C?L('Kamar / luas','Rooms / size'):L('Jumlah unit/kamar','Units / rooms')}</label>${inp('size',C?L('mis. 3 kamar','e.g. 3 bedrooms'):L('mis. 12 kamar','e.g. 12 rooms'))}</div></div>
-    ${C?`<div class="fx"><div><label>${L('Tanggal','Date')}</label>${inp('tanggal','','date',`min="${today}"`)}</div><div><label>${L('Jam','Time')}</label><select onchange="SVF.${kind}.jam=this.value">${o(['08:00','10:00','13:00','15:00'].map(t=>[t,t]),F.jam||'10:00')}</select></div></div>`:''}
+    ${C?`<div class="fx"><div><label>${L('Tanggal','Date')}</label>${inp('tanggal','','date',`min="${today}"`)}</div><div><label>${L('Jam','Time')}</label><select onchange="SVF.${kind}.jam=this.value">${o(JAMS.map(t=>[t,t]),F.jam||'10:00')}</select></div></div>`:''}
     <div class="full"><label>${L('Nama lengkap','Full name')}</label>${inp('nama','')}</div>
     <div class="fx"><div><label>WhatsApp</label>${inp('telp','08…','tel','inputmode="tel"')}</div><div><label>Email</label>${inp('email','','email')}</div></div>
     <div class="full"><label>${L('Catatan','Notes')}</label><textarea rows="3" oninput="SVF.${kind}.catatan=this.value" placeholder="${C?L('Alamat, akses, kebutuhan khusus…','Address, access, special requests…'):L('Ceritakan kebutuhan Anda…','Tell us what you need…')}">${esc(F.catatan||'')}</textarea></div>
@@ -2022,7 +2022,7 @@ function cleanPage(){
         <label>${L('Wilayah','Region')}<select onchange="CB.wilayah=this.value">${o(Object.keys(REG).map(r=>[r,r]),CB.wilayah)}</select></label>
         <label>${L('Jenis properti','Property')}<select onchange="CB.properti=this.value">${o(CTYPES.map(t=>[t,T(t)]),CB.properti)}</select></label>
         <label>${L('Tanggal','Date')}<input type="date" min="${today}" value="${CB.tanggal||''}" onchange="CB.tanggal=this.value" required></label>
-        <label>${L('Jam','Time')}<select onchange="CB.jam=this.value">${o(['08:00','10:00','13:00','15:00'].map(t=>[t,t]),CB.jam)}</select></label>
+        <label>${L('Jam','Time')}<select onchange="CB.jam=this.value">${o(JAMS.map(t=>[t,t]),CB.jam)}</select></label>
         <label class="full">${L('Alamat / area','Address / area')}<input value="${esc(CB.alamat||'')}" oninput="CB.alamat=this.value" placeholder="${L('mis. Jl. Pantai Batu Bolong, Canggu','e.g. Jl. Pantai Batu Bolong, Canggu')}"></label>
       </div>
 
