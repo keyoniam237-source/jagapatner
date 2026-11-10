@@ -1490,7 +1490,7 @@ async function loadMedia(){
 }
 function renderPartners(){
   const bg=MEDIA.partnersBg||'videos/lombok-pantai.jpg';$('#mitraBg').style.backgroundImage=`url('${mUrl(bg)}')`;
-  $('#plogos').innerHTML=(MEDIA.partners||[]).map(p=>{const inner=p.logo?`<img src="${mUrl(p.logo)}" alt="${esc(p.name)}" loading="lazy">`:`<span>${esc(p.name)}</span>`,st=p.bg&&/^#[0-9a-f]{3,8}$/i.test(p.bg)?` style="background:${p.bg}"`:'';return p.url?`<a class="plogo"${st} href="${esc(p.url)}" target="_blank" rel="noopener" title="${esc(p.name)}">${inner}</a>`:`<div class="plogo"${st} title="${esc(p.name)}">${inner}</div>`}).join('');
+  $('#plogos').innerHTML=(MEDIA.partners||[]).map(p=>{const inner=p.logo?`<img src="${mUrl(p.logo)}" alt="${esc(p.name)}" loading="lazy">`:`<span>${esc(p.name)}</span>`,st=p.bg&&/^#[0-9a-f]{3,8}$/i.test(p.bg)?` style="background:${p.bg}"`:'';return `<div class="plogo"${st} title="${esc(p.name)}">${inner}</div>`}).join('');
 }
 function applyMedia(){renderPartners();HERO_VIDEOS=MEDIA.hero.map(v=>({...v,src:mUrl(v.src),poster:v.poster?mUrl(v.poster):''}));GALLERY=MEDIA.gallery.map(g=>({...g,src:mUrl(g.src)}));initHero();renderGallery()}
 
