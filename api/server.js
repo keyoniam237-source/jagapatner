@@ -69,7 +69,7 @@ function bookingInput(d, partial) {
   set('klien', str(d.klien, 120)); set('telp', str(d.telp, 40)); set('wilayah', str(d.wilayah, 20));
   set('properti', str(d.properti, 60)); set('layanan', str(d.layanan, 80)); set('tanggal', str(d.tanggal, 10));
   set('jam', str(d.jam, 5) || '09:00'); set('status', str(d.status, 20) || 'Baru'); set('petugas', str(d.petugas, 80) || '-');
-  set('nilai', Math.max(0, Math.min(1e12, Math.round(+d.nilai || 0)))); set('catatan', str(d.catatan, 1000));
+  set('nilai', Math.max(0, Math.min(1e12, Math.round(+d.nilai || 0)))); set('catatan', str(d.catatan, 3000));
   if ('klien' in o && !o.klien) throw new HttpErr(400, 'Nama klien wajib diisi');
   if ('wilayah' in o && !REGIONS.includes(o.wilayah)) throw new HttpErr(400, 'Wilayah tidak valid');
   if ('tanggal' in o && !isDate(o.tanggal)) throw new HttpErr(400, 'Tanggal tidak valid');
@@ -123,8 +123,10 @@ async function route(req, u, method, path, body, ip) {
     const d = bookingInput({ klien: body.nama, telp: body.telp, wilayah: body.wilayah, properti: body.properti, layanan: body.layanan, tanggal: body.tanggal, catatan: body.catatan, status: 'Baru' }, false);
     if (d.telp.replace(/\D/g, '').length < 8) throw new HttpErr(400, 'Nomor telepon tidak valid');
     const [{ id }] = await q(`SELECT 'JG-' || nextval('booking_seq') AS id`);
-    await q(`INSERT INTO bookings(id,klien,telp,wilayah,properti,layanan,tanggal,jam,status,petugas,nilai,catatan,sumber) VALUES($1,$2,$3,$4,$5,$6,$7,'09:00','Baru','-',0,$8,$9)`,
-      [id, d.klien, d.telp, d.wilayah, d.properti, d.layanan, d.tanggal, d.catatan, str(body.sumber, 20) === 'properti' ? 'properti' : 'web']);
+    const jam = /^\d{2}:\d{2}$/.test(str(body.jam, 5)) ? str(body.jam, 5) : '09:00';
+    const nilai = Math.max(0, Math.min(1e11, Math.round(+body.nilai || 0)));
+    await q(`INSERT INTO bookings(id,klien,telp,wilayah,properti,layanan,tanggal,jam,status,petugas,nilai,catatan,sumber) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'Baru','-',$9,$10,$11)`,
+      [id, d.klien, d.telp, d.wilayah, d.properti, d.layanan, d.tanggal, jam, nilai, d.catatan, str(body.sumber, 20) === 'properti' ? 'properti' : 'web']);
     notify([`🔔 Pesanan baru ${id}`, `Layanan: ${d.layanan || '-'}`, `Wilayah: ${d.wilayah}`, `Properti: ${d.properti || '-'}`, `Tanggal: ${d.tanggal}`, `Nama: ${d.klien}`, `Telp/WA: ${d.telp}`, `wa.me/${d.telp.replace(/\D/g, '').replace(/^0/, '62')}`, d.catatan ? `Catatan: ${d.catatan.slice(0, 600)}` : ''].filter(Boolean).join('\n')).catch(() => {});
     return { ok: true, id };
   }
