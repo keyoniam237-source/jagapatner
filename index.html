@@ -1967,9 +1967,15 @@ function apropsPage(){
     <div class="f"><label>Email</label><input id="setMail" type="email" placeholder="info@…" value="${esc(SETTINGS.email||'')}"></div>
     <div class="f"><label>${L('Alamat server portal (Helipod)','Portal server URL (Helipod)')}</label><input id="setApi" type="url" placeholder="https://….helipod.app" value="${esc(SETTINGS.api||'')}"></div>
     <button class="abtn" onclick="saveSettings()">${L('Simpan','Save')}</button></div>
-    <p class="rg" style="margin-top:8px">${L('Format: kode negara tanpa + atau 0 di depan, mis. 6281234567890.','Format: country code without + or leading 0, e.g. 6281234567890.')}</p></div>
+    <p class="rg" style="margin-top:8px">${L('Format: kode negara tanpa + atau 0 di depan, mis. 6281234567890.','Format: country code without + or leading 0, e.g. 6281234567890.')}</p>
+    ${ONLINE()?`<div class="mrow" style="margin-top:14px"><button class="abtn light" onclick="testNotify()">${L('Tes notifikasi WhatsApp/Telegram','Test WhatsApp/Telegram notification')}</button></div>`:''}</div>
   <div class="mprog" id="mprog"></div>`;
 }
+async function testNotify(){mProg(L('Mengirim tes…','Sending test…'));
+  try{const r=await api('POST','/admin/test-notify',{});
+    if(!r.whatsapp&&!r.telegram)mProg(L('Notifikasi belum diatur di server (variabel CALLMEBOT_* atau TELEGRAM_* di Helipod).','Notifications are not configured on the server (CALLMEBOT_* or TELEGRAM_* variables in Helipod).'),'err');
+    else mProg(L('Tes dikirim ke ','Test sent to ')+[r.whatsapp?'WhatsApp':'',r.telegram?'Telegram':''].filter(Boolean).join(' & ')+L('. Cek HP Anda dalam 1 menit.','. Check your phone within a minute.'),'ok')}
+  catch(e){mProg(L('Gagal: ','Failed: ')+e.message,'err')}}
 async function saveSettings(){
   let wa=$('#setWa').value.replace(/\D/g,'');if(wa.startsWith('0'))wa='62'+wa.slice(1);
   if(wa&&wa.length<10){mProg(L('Nomor WhatsApp terlalu pendek.','WhatsApp number too short.'),'err');return}

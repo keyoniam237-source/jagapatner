@@ -82,6 +82,20 @@ const audit = (u, action, ref) => q(`INSERT INTO audit(actor,action,ref) VALUES(
 const BOOK_COLS = `id,klien,telp,wilayah,properti,layanan,tanggal,jam,status,petugas,nilai::float8 AS nilai,catatan,sumber`;
 const STAFF_COLS = `id,nama,peran,wilayah,shift,aktif`;
 
+/* ---------- notifikasi gratis (opsional) ----------
+   CallMeBot (WhatsApp ke nomor sendiri): CALLMEBOT_PHONE (mis. 62882...), CALLMEBOT_APIKEY
+   Telegram: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID */
+async function notify(text) {
+  const jobs = [];
+  const cp = (process.env.CALLMEBOT_PHONE || '').replace(/\D/g, ''), ck = process.env.CALLMEBOT_APIKEY || '';
+  if (cp && ck) jobs.push(fetch(`https://api.callmebot.com/whatsapp.php?phone=${cp}&apikey=${encodeURIComponent(ck)}&text=${encodeURIComponent(text)}`, { signal: AbortSignal.timeout(15000) })
+    .then(async r => { const t = await r.text(); if (!r.ok || /error|invalid/i.test(t.slice(0, 300))) console.error('CallMeBot:', r.status, t.slice(0, 200)); }));
+  const tt = process.env.TELEGRAM_BOT_TOKEN || '', tc = process.env.TELEGRAM_CHAT_ID || '';
+  if (tt && tc) jobs.push(fetch(`https://api.telegram.org/bot${tt}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: tc, text }), signal: AbortSignal.timeout(15000) })
+    .then(async r => { if (!r.ok) console.error('Telegram:', r.status, (await r.text()).slice(0, 200)); }));
+  await Promise.allSettled(jobs).then(rs => rs.forEach(x => x.status === 'rejected' && console.error('Notifikasi gagal:', x.reason && x.reason.message)));
+}
+
 /* ---------- routes ---------- */
 async function route(req, u, method, path, body, ip) {
   if (method === 'GET' && path === '/health') { await q('SELECT 1'); return { ok: true }; }
@@ -111,12 +125,19 @@ async function route(req, u, method, path, body, ip) {
     const [{ id }] = await q(`SELECT 'JG-' || nextval('booking_seq') AS id`);
     await q(`INSERT INTO bookings(id,klien,telp,wilayah,properti,layanan,tanggal,jam,status,petugas,nilai,catatan,sumber) VALUES($1,$2,$3,$4,$5,$6,$7,'09:00','Baru','-',0,$8,$9)`,
       [id, d.klien, d.telp, d.wilayah, d.properti, d.layanan, d.tanggal, d.catatan, str(body.sumber, 20) === 'properti' ? 'properti' : 'web']);
+    notify([`🔔 Pesanan baru ${id}`, `Layanan: ${d.layanan || '-'}`, `Wilayah: ${d.wilayah}`, `Properti: ${d.properti || '-'}`, `Tanggal: ${d.tanggal}`, `Nama: ${d.klien}`, `Telp/WA: ${d.telp}`, `wa.me/${d.telp.replace(/\D/g, '').replace(/^0/, '62')}`, d.catatan ? `Catatan: ${d.catatan.slice(0, 600)}` : ''].filter(Boolean).join('\n')).catch(() => {});
     return { ok: true, id };
   }
 
   /* ---- butuh login ---- */
   if (!u) throw new HttpErr(401, 'Sesi berakhir. Silakan masuk lagi.');
   const reg = u.role === 'admin' ? null : u.region;
+
+  if (method === 'POST' && path === '/admin/test-notify') {
+    if (u.role !== 'admin') throw new HttpErr(403, 'Khusus Admin');
+    await notify('✅ Tes notifikasi JAGA berhasil. Pesanan baru dari website akan dikirim ke sini.');
+    return { ok: true, whatsapp: !!(process.env.CALLMEBOT_PHONE && process.env.CALLMEBOT_APIKEY), telegram: !!(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID) };
+  }
 
   if (method === 'GET' && path === '/me') return { user: { id: u.id, name: u.name, role: u.role, region: u.region } };
 
