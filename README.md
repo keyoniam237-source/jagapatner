@@ -1,4 +1,4 @@
-# JAGA — Management Operation Partner
+# JAGA — Management & Operations
 
 Website resmi JAGA: cleaning service & manajemen operasional di Bali, Lombok, dan Yogyakarta.
 
