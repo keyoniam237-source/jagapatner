@@ -126,6 +126,7 @@ h2.t em{font-style:italic;color:var(--green)}
 .reg{position:relative;border-radius:4px;overflow:hidden;height:520px;color:#fff;cursor:pointer;isolation:isolate}
 .reg .art{position:absolute;inset:0;transition:transform 1.4s cubic-bezier(.2,.7,.2,1);z-index:-2}
 .reg .art svg{width:100%;height:100%}
+.reg .art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .reg:hover .art{transform:scale(1.07)}
 .reg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(8,10,9,.86));z-index:-1}
 .reg .c{position:absolute;left:0;right:0;bottom:0;padding:34px}
@@ -1217,7 +1218,8 @@ Lombok:`<svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice"><defs><l
 Yogyakarta:`<svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="gy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d98f6a"/><stop offset=".5" stop-color="#e7c08a"/><stop offset="1" stop-color="#3a2f26"/></linearGradient></defs><rect width="400" height="520" fill="url(#gy)"/><circle cx="110" cy="150" r="46" fill="#fde3b0" opacity=".8"/><path d="M0 330 Q120 300 200 320 T400 310 V520 H0Z" fill="#5b4a38"/><g fill="#2a211a"><path d="M80 380 h240 v-20 h-220z"/><path d="M100 360 h200 v-24 h-180z"/><path d="M120 336 h160 v-24 h-140z"/><path d="M140 312 h120 v-22 h-100z"/><path d="M160 290 h80 v-20 h-60z"/><path d="M190 270 q10 -40 20 0z"/><path d="M200 230 v-10" stroke="#2a211a" stroke-width="4"/></g><g fill="#2a211a" opacity=".85"><circle cx="120" cy="330" r="7"/><circle cx="150" cy="306" r="6"/><circle cx="250" cy="306" r="6"/><circle cx="280" cy="330" r="7"/><circle cx="170" cy="284" r="5"/><circle cx="230" cy="284" r="5"/></g><path d="M0 380 h400 v140 H0z" fill="#2a211a" opacity=".7"/></svg>`
 };
 function renderRegions(){
-  $('#regions').innerHTML=Object.entries(REG).map(([k,v],i)=>`<div class="reg reveal vis" onclick="pickRegion('${k}')"><div class="art">${ART[k]}</div><div class="c"><small>${L('Wilayah','Region')} 0${i+1}</small><h3>${k}</h3><p>${L(...v.desc)}<br><br><span style="color:var(--gold2)">${v.areas}</span></p><div class="meta"><span>${L('Pesan layanan →','Book a service →')}</span></div></div></div>`).join('');
+  const REGPHOTO={Bali:'images/wilayah/bali.jpg',Lombok:'images/wilayah/lombok.jpg',Yogyakarta:'images/wilayah/yogyakarta.jpg'};
+  $('#regions').innerHTML=Object.entries(REG).map(([k,v],i)=>`<div class="reg reveal vis" onclick="pickRegion('${k}')"><div class="art">${ART[k]}${REGPHOTO[k]?`<img src="${REGPHOTO[k]}" alt="${k}" loading="lazy" onerror="this.remove()">`:''}</div><div class="c"><small>${L('Wilayah','Region')} 0${i+1}</small><h3>${k}</h3><p>${L(...v.desc)}<br><br><span style="color:var(--gold2)">${v.areas}</span></p><div class="meta"><span>${L('Pesan layanan →','Book a service →')}</span></div></div></div>`).join('');
   $('#offices').innerHTML=Object.entries(REG).map(([k,v])=>`<div class="office"><b>${k}</b><p>${v.areas}</p></div>`).join('');
 }
 function pickRegion(r){$('#fWil').value=r;location.hash='kontak';}
