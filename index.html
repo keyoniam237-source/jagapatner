@@ -313,6 +313,13 @@ a.plogo:hover{transform:translateY(-4px);box-shadow:0 18px 36px -18px rgba(0,0,0
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .cgrid label{display:flex;flex-direction:column;gap:6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5d7882}
 .cgrid .full{grid-column:1/-1}
+.cpr i{font-style:normal;font-size:.55em;font-weight:500;color:#5d7882;margin-left:2px}
+.cmapbox{border:1.5px solid #dcebf0;border-radius:14px;padding:12px;background:#f7fcfd;display:flex;flex-direction:column;gap:10px}
+.cmaphead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5d7882}
+.cgps{border:0;background:#2a7f97;color:#fff;border-radius:999px;padding:9px 14px;font:inherit;font-size:13px;letter-spacing:0;text-transform:none;cursor:pointer}
+.cgps:hover{background:#1f6a80}
+#cmap{width:100%;height:260px;border:0;border-radius:10px;background:#e3f1f5}
+.cmapst{font-size:13px;color:#5d7882;line-height:1.5}.cmapst a{color:#2a7f97;font-weight:600}
 .cgrid input,.cgrid select{border:1.5px solid #dcebf0;border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;text-transform:none;letter-spacing:0;color:#0f2b3a;background:#fff;outline:none}
 .cgrid input:focus,.cgrid select:focus{border-color:#2f7f97}
 .csum{margin:22px 0 12px;padding:14px 16px;background:#eef8fb;border-radius:12px;font-size:14.5px;color:#1f5a6c}.csum b{color:#0f2b3a}
@@ -1134,7 +1141,7 @@ const SVC = {
   ]
 };
 const ICONS = ['<path d="M4 20h16M6 20V9l6-5 6 5v11M10 20v-6h4v6"/>','<path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2 8 12.7 4 8.8 9.5 8z"/>','<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>','<path d="M5 4h14v16H5z"/><circle cx="12" cy="13" r="4"/><path d="M8 7h.01M11 7h.01"/>','<path d="M3 16c3-2 6 2 9 0s6 2 9 0M3 20c3-2 6 2 9 0s6 2 9 0M12 3v9M8 7l4-4 4 4"/>','<path d="M4 20l6-6M14 4l6 6-8 8-6-6z"/>'];
-const kRp=n=>n?L('Mulai','From')+' <b>Rp '+(n/1000)+L('rb','k')+'</b>':L('Harga sesuai kebutuhan','Custom quote');
+const kRp=n=>n?'<b>Rp '+(n/1000)+L('rb','k')+'</b>'+L(' / jam',' / hour'):L('Harga sesuai kebutuhan','Custom quote');
 const SERVICES = [...SVC.clean.map(s=>s[0]),...SVC.ops.map(s=>s[0])];
 const STATUSES = ['Baru','Dijadwalkan','Berjalan','Selesai','Batal'];
 const PTYPES=['Rumah','Kosan','Apartemen','Villa','Hotel','Kantor','Restoran','Kantor / Komersial'];
@@ -1926,7 +1933,7 @@ function svcPage(kind){
     <div class="cmpw"><table class="cmp"><thead><tr><th></th>${list.map(x=>`<th>${T(x[0])}<small>${kRp(x[5])}</small></th>`).join('')}</tr></thead><tbody>
     ${[[L('Sapu & pel lantai','Sweep & mop floors'),1,1,1,1],[L('Kamar tidur & ruang tamu','Bedrooms & living room'),1,1,1,1],[L('Kamar mandi & toilet','Bathroom & toilet'),0,L('Lantai','Floor'),1,1],[L('Dapur','Kitchen'),0,L('Lantai','Floor'),1,1],[L('Sudut, kerak & noda','Corners, scale & stains'),0,0,1,1],[L('Cermin & kaca','Mirrors & glass'),0,0,0,1],[L('Kantor & restoran','Offices & restaurants'),0,0,0,1],[L('Alat & chemical','Tools & chemicals'),1,1,1,1]].map(r=>`<tr><td>${r[0]}</td>${r.slice(1).map(v=>`<td>${v===1?'<span class="y">✓</span>':v===0?'<span class="n">—</span>':v}</td>`).join('')}</tr>`).join('')}
     </tbody></table></div>
-    <p class="svsub" style="margin:14px 0 40px">${L('Melayani hotel, kosan, rumah, kantor, restoran, villa, dan apartemen. Harga mulai, menyesuaikan luas dan kondisi properti.','For hotels, boarding houses, homes, offices, restaurants, villas and apartments. Starting prices; final price depends on size and condition.')}</p>`:''}
+    <p class="svsub" style="margin:14px 0 40px">${L('Melayani hotel, kosan, rumah, kantor, restoran, villa, dan apartemen. Harga per jam; durasi menyesuaikan luas dan kondisi properti.','For hotels, boarding houses, homes, offices, restaurants, villas and apartments. Hourly rates; duration depends on size and condition.')}</p>`:''}
     <div class="kicker">${L('Cara kerja','How it works')}</div>
     <div class="steps" style="margin-top:20px">${steps.map(x=>`<div class="step"><h4>${x[0]}</h4><p>${x[1]}</p></div>`).join('')}</div>
     <div class="svform" id="svForm">
@@ -1987,7 +1994,7 @@ async function svSubmit(kind){
 
 
 /* ================= HALAMAN CLEANING (sederhana, 3 langkah) ================= */
-const CB={pkg:2,wilayah:'Bali',properti:'Rumah',jam:'10:00'};
+const CB={pkg:2,wilayah:'Bali',properti:'Rumah',jam:'10:00',durasi:2};
 const BUBBLES=`<svg class="cbub" viewBox="0 0 1440 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
   <g fill="none" stroke="#fff" stroke-opacity=".55">
     <circle cx="120" cy="120" r="46" stroke-width="2"/><circle cx="220" cy="300" r="22" stroke-width="1.5"/><circle cx="60" cy="420" r="30" stroke-width="1.5"/>
@@ -2012,7 +2019,7 @@ function cleanPage(){
       <div class="cstep"><b>1</b>${L('Pilih paket','Choose a package')}</div>
       <div class="cpkgs">${list.map((x,i)=>`<label class="cpkg ${CB.pkg===i?'on':''}"><input type="radio" name="pkg" value="${i}" ${CB.pkg===i?'checked':''} onchange="CB.pkg=${i};document.querySelectorAll('.cpkg').forEach((e,k)=>e.classList.toggle('on',k===${i}))">
         ${i===2?`<em>${L('Terlaris','Most popular')}</em>`:''}
-        <strong>${T(x[0])}</strong><span class="cpr">${x[5]?`Rp ${x[5]/1000}${L('rb','k')}`:L('Sesuai kebutuhan','Custom')}</span>
+        <strong>${T(x[0])}</strong><span class="cpr">${x[5]?`Rp ${x[5]/1000}${L('rb','k')}<i>/${L('jam','hour')}</i>`:L('Sesuai kebutuhan','Custom')}</span>
         <small>${esc(L(x[1],x[3]))}</small></label>`).join('')}</div>
       <details class="cdet"><summary>${L('Lihat perbedaan paket','Compare packages')}</summary>
         <table class="cmp"><thead><tr><th></th>${list.map(x=>`<th>${T(x[0]).replace(' Cleaning','').replace('Cleaning ','')}</th>`).join('')}</tr></thead><tbody>
@@ -2024,8 +2031,15 @@ function cleanPage(){
         <label>${L('Wilayah','Region')}<select onchange="CB.wilayah=this.value">${o(Object.keys(REG).map(r=>[r,r]),CB.wilayah)}</select></label>
         <label>${L('Jenis properti','Property')}<select onchange="CB.properti=this.value">${o(CTYPES.map(t=>[t,T(t)]),CB.properti)}</select></label>
         <label>${L('Tanggal','Date')}<input type="date" min="${today}" value="${CB.tanggal||''}" onchange="CB.tanggal=this.value" required></label>
-        <label>${L('Jam','Time')}<select onchange="CB.jam=this.value">${o(JAMS.map(t=>[t,t]),CB.jam)}</select></label>
-        <label class="full">${L('Alamat / area','Address / area')}<input value="${esc(CB.alamat||'')}" oninput="CB.alamat=this.value" placeholder="${L('mis. Jl. Pantai Batu Bolong, Canggu','e.g. Jl. Pantai Batu Bolong, Canggu')}"></label>
+        <label>${L('Jam mulai','Start time')}<select onchange="CB.jam=this.value">${o(JAMS.map(t=>[t,t]),CB.jam)}</select></label>
+        <label>${L('Durasi','Duration')}<select onchange="CB.durasi=+this.value">${o([1,2,3,4,5,6,7,8].map(n=>[String(n),n+' '+L('jam','hour'+(n>1?'s':''))]),String(CB.durasi))}</select></label>
+        <label class="full">${L('Alamat lengkap','Full address')}<input value="${esc(CB.alamat||'')}" oninput="CB.alamat=this.value" onchange="cMap()" placeholder="${L('mis. Jl. Pantai Batu Bolong No. 12, Canggu','e.g. Jl. Pantai Batu Bolong No. 12, Canggu')}"></label>
+        <div class="full cmapbox">
+          <div class="cmaphead"><span>${L('Titik lokasi (Google Maps)','Location pin (Google Maps)')}</span><button type="button" class="cgps" onclick="cGps()">📍 ${L('Gunakan lokasi saya','Use my location')}</button></div>
+          <iframe id="cmap" title="Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <input id="clink" value="${esc(CB.link||'')}" onchange="cLink(this.value)" placeholder="${L('atau tempel link Google Maps','or paste a Google Maps link')}">
+          <div class="cmapst" id="cmapst"></div>
+        </div>
       </div>
 
       <div class="cstep"><b>3</b>${L('Kontak Anda','Your contact')}</div>
@@ -2038,12 +2052,27 @@ function cleanPage(){
       <div class="csum" id="csum"></div>
       <button class="cgo" id="cgo"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>${L('Pesan via WhatsApp','Book via WhatsApp')}</button>
       <div class="err" id="cerr"></div>
-      <p class="cnote">${L('Harga mulai; harga final dikonfirmasi tim JAGA sesuai luas & kondisi. Melayani rumah, kosan, apartemen, villa, hotel, kantor, dan restoran.','Starting prices; the final price is confirmed by JAGA based on size & condition. We serve homes, boarding houses, apartments, villas, hotels, offices and restaurants.')}</p>
+      <p class="cnote">${L('Harga per jam; total final dikonfirmasi tim JAGA sesuai luas & kondisi. Melayani rumah, kosan, apartemen, villa, hotel, kantor, dan restoran.','Hourly rates; the final total is confirmed by JAGA based on size & condition. We serve homes, boarding houses, apartments, villas, hotels, offices and restaurants.')}</p>
     </form>
   </div>`;
-  cleanSum();$('#cform').addEventListener('change',cleanSum);
+  cleanSum();$('#cform').addEventListener('change',cleanSum);cMap();
 }
-function cleanSum(){const x=SVC.clean[CB.pkg];$('#csum').innerHTML=`${L('Paket','Package')}: <b>${T(x[0])}</b> · ${x[5]?L('mulai','from')+` <b>Rp ${(x[5]).toLocaleString('id-ID')}</b>`:L('harga sesuai kebutuhan','custom quote')}`}
+const idr=n=>'Rp '+n.toLocaleString('id-ID');
+function cPrice(){const x=SVC.clean[CB.pkg];return x[5]?`${idr(x[5])}/jam × ${CB.durasi} jam = ${idr(x[5]*CB.durasi)}`:'harga sesuai kebutuhan'}
+function cleanSum(){const x=SVC.clean[CB.pkg];$('#csum').innerHTML=`${L('Paket','Package')}: <b>${T(x[0])}</b> · ${x[5]?`${idr(x[5])}/${L('jam','hr')} × ${CB.durasi} ${L('jam','hr')} = <b>${idr(x[5]*CB.durasi)}</b> <small>(${L('estimasi','estimate')})</small>`:L('harga sesuai kebutuhan','custom quote')}`}
+function cPin(){return CB.lat!=null?`https://www.google.com/maps?q=${CB.lat},${CB.lng}`:(CB.link||'')}
+function cMap(){const f=$('#cmap');if(!f)return;const q=CB.lat!=null?`${CB.lat},${CB.lng}`:[CB.alamat,CB.wilayah,'Indonesia'].filter(Boolean).join(', ');const z=CB.lat!=null||CB.alamat?17:10;
+  const src=`https://maps.google.com/maps?q=${encodeURIComponent(q)}&z=${z}&hl=${LANG==='EN'?'en':'id'}&output=embed`;if(f.src!==src)f.src=src;
+  const st=$('#cmapst');if(st)st.innerHTML=CB.lat!=null?`✓ ${L('Titik tersimpan','Pin saved')}: ${CB.lat}, ${CB.lng} · <a href="${cPin()}" target="_blank" rel="noopener">${L('cek di Google Maps','check in Google Maps')}</a> · <a href="javascript:void 0" onclick="CB.lat=CB.lng=null;CB.link='';$('#clink').value='';cMap()">${L('hapus','clear')}</a>`:CB.link?`✓ ${L('Link lokasi tersimpan','Location link saved')} · <a href="${esc(CB.link)}" target="_blank" rel="noopener">${L('buka','open')}</a>`:L('Peta mengikuti alamat yang Anda ketik. Agar titik tepat, tekan “Gunakan lokasi saya” saat berada di lokasi, atau tempel link Google Maps.','The map follows the address you type. For an exact pin, tap “Use my location” while on site, or paste a Google Maps link.')}
+function cGps(){const st=$('#cmapst');if(!navigator.geolocation){st.textContent=L('Browser tidak mendukung lokasi.','Location not supported by this browser.');return}
+  st.textContent=L('Mencari lokasi Anda…','Finding your location…');
+  navigator.geolocation.getCurrentPosition(p=>{CB.lat=+p.coords.latitude.toFixed(6);CB.lng=+p.coords.longitude.toFixed(6);CB.link='';cMap()},
+    ()=>{st.textContent=L('Izin lokasi ditolak/gagal. Izinkan akses lokasi di browser, atau tempel link Google Maps.','Location permission denied or failed. Allow location access, or paste a Google Maps link.')},{enableHighAccuracy:true,timeout:15000})}
+function cLink(v){v=(v||'').trim();CB.lat=CB.lng=null;CB.link='';
+  if(v){const m=v.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)||v.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/)||v.match(/[?&](?:q|query|ll)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/)||v.match(/^(-?\d+\.\d+),\s*(-?\d+\.\d+)$/);
+    if(m){CB.lat=+(+m[1]).toFixed(6);CB.lng=+(+m[2]).toFixed(6)}else if(/^https?:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.[a-z.]+\/maps|maps\.google\.)/i.test(v))CB.link=v;
+    else{$('#cmapst').textContent=L('Link tidak dikenali. Salin link dari tombol Bagikan di Google Maps.','Link not recognised. Copy the link from the Share button in Google Maps.');return}}
+  cMap()}
 async function cleanSubmit(){
   const e=$('#cerr'),x=SVC.clean[CB.pkg],tel=(CB.telp||'').trim(),name=(CB.nama||'').trim();
   if(!CB.tanggal){e.textContent=L('Pilih tanggal.','Choose a date.');return}
@@ -2051,14 +2080,14 @@ async function cleanSubmit(){
   if(tel.replace(/\D/g,'').length<9){e.textContent=L('Isi nomor WhatsApp yang valid.','Enter a valid WhatsApp number.');return}
   e.textContent='';const btn=$('#cgo');btn.disabled=true;
   const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');let w=null;if(wa){try{w=window.open('about:blank','_blank')}catch(_){}}
-  const lines=[`Pesanan cleaning: ${x[0]}${x[5]?' (mulai Rp '+x[5].toLocaleString('id-ID')+')':''}`,`Wilayah: ${CB.wilayah}${CB.alamat?' — '+CB.alamat:''}`,`Properti: ${CB.properti}`,`Jadwal: ${CB.tanggal} ${CB.jam}`,`Nama: ${name}`,`WhatsApp: ${tel}`,CB.catatan?`Catatan: ${CB.catatan}`:''].filter(Boolean);
+  const lines=[`Pesanan cleaning: ${x[0]}`,`Harga: ${cPrice()}`,`Wilayah: ${CB.wilayah}${CB.alamat?' — '+CB.alamat:''}`,cPin()?`Titik lokasi: ${cPin()}`:'',`Properti: ${CB.properti}`,`Jadwal: ${CB.tanggal} ${CB.jam} (${CB.durasi} jam)`,`Nama: ${name}`,`WhatsApp: ${tel}`,CB.catatan?`Catatan: ${CB.catatan}`:''].filter(Boolean);
   let id='';if(SET_READY)await SET_READY;
   if(ONLINE()){try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:CB.wilayah,properti:CB.properti,layanan:x[0],tanggal:CB.tanggal,catatan:lines.join('\n'),website:CB.hp||''},false);id=r.id||''}
     catch(err){btn.disabled=false;if(w)try{w.close()}catch(_){}e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}}
   const url=wa?`https://wa.me/${wa}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+lines.join('\n'))}`:'';
   if(url){if(w&&!w.closed){try{w.location.href=url}catch(_){location.href=url}}else location.href=url}
   else if(!ONLINE()){btn.disabled=false;e.textContent=L('Pemesanan online belum aktif. Hubungi kami lewat halaman Kontak.','Online booking is not active yet. Contact us via the Contact page.');return}
-  const tg=CB.tanggal,jm=CB.jam;Object.assign(CB,{tanggal:'',nama:'',telp:'',catatan:'',alamat:''});
+  const tg=CB.tanggal,jm=CB.jam;Object.assign(CB,{tanggal:'',nama:'',telp:'',catatan:'',alamat:'',lat:null,lng:null,link:''});
   $('#cform').innerHTML=`<div class="okbox" style="padding:30px 10px"><div class="ic">✓</div><h3>${L('Pesanan diterima','Booking received')}</h3>
     <p>${id?L('No. pesanan','Booking no.')+`: <b>${id}</b><br>`:''}${T(x[0])} · ${fmtD(tg)} · ${jm}<br><br>${url?L('WhatsApp sudah terbuka — tekan <b>Kirim</b> agar tim JAGA langsung menerimanya.','WhatsApp has opened — press <b>Send</b> so the JAGA team gets it right away.'):L('Tim JAGA akan menghubungi Anda melalui WhatsApp.','The JAGA team will contact you on WhatsApp.')}</p>
     ${url?`<p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('WhatsApp belum terbuka? Klik di sini','WhatsApp didn’t open? Click here')} →</a></p>`:''}
