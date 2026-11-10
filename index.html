@@ -120,6 +120,16 @@ h2.t em{font-style:italic;color:var(--green)}
 .card ul{list-style:none;margin-top:16px}
 .card li{font-size:13px;color:rgba(255,255,255,.72);padding:6px 0;border-top:1px dashed rgba(255,255,255,.1)}
 .card li:before{content:"— ";color:var(--gold)}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:46px}
+.pillar{position:relative;display:flex;flex-direction:column;padding:34px 28px 28px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.03);color:#fff;transition:transform .35s,border-color .35s,background .35s;min-height:330px}
+.pillar:hover{transform:translateY(-5px);border-color:var(--gold);background:rgba(255,255,255,.07)}
+.pillar .n{font-family:var(--serif);font-style:italic;color:var(--gold);font-size:15px}
+.pillar svg{width:40px;height:40px;stroke:var(--gold2);fill:none;stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round;margin:22px 0 20px}
+.pillar h3{font-family:var(--serif);font-weight:500;font-size:26px;line-height:1.15;margin-bottom:12px}
+.pillar p{font-size:14px;line-height:1.7;color:rgba(255,255,255,.62);font-weight:300;flex:1}
+.pillar .go{margin-top:22px;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2)}
+@media(max-width:1100px){.pillars{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.pillars{grid-template-columns:1fr}.pillar{min-height:0}}
 
 /* regions */
 .regions{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:60px}
@@ -217,7 +227,6 @@ footer{background:#090b0a;color:rgba(255,255,255,.55);padding:50px 6vw;font-size
 footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
 
 /* ===== landing ===== */
-.hero{height:auto;min-height:100vh;padding:130px 0 110px}
 .landing{max-width:1100px;width:100%}
 .lk{display:inline-flex;align-items:center;gap:28px;margin-bottom:54px}
 .lkmark{width:96px;height:124px;color:#fff;flex:none;filter:drop-shadow(0 6px 30px rgba(0,0,0,.35))}
@@ -313,6 +322,20 @@ a.plogo:hover{transform:translateY(-4px);box-shadow:0 18px 36px -18px rgba(0,0,0
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .cgrid label{display:flex;flex-direction:column;gap:6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5d7882}
 .cgrid .full{grid-column:1/-1}
+.pbanner.chban{background:linear-gradient(160deg,#0f2b3a,#17485a 60%,#1f6a80)}
+.chwhy{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:0 0 56px}
+.chwhy div{background:#fff;border:1px solid #e6eef1;border-radius:16px;padding:20px}
+.chwhy h4{font-size:15px;color:var(--ink);font-weight:600;margin-bottom:4px}.chwhy p{font-size:13.5px;color:var(--muted);line-height:1.6}
+.chgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0 40px}
+.chit{position:relative;text-align:left;background:#fff;border:1.5px solid #dcebf0;border-radius:16px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:6px;cursor:pointer;font:inherit;transition:.2s}
+.chit:hover{border-color:#2a7f97}
+.chit b{font-size:15px;color:#0f2b3a;padding-right:26px}.chit small{font-size:13px;color:#5d7882;line-height:1.5}
+.chit .ck{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:50%;border:1.5px solid #cfe2e8;display:grid;place-items:center;font-size:12px;color:transparent}
+.chit.on{border-color:#2a7f97;background:#eef8fb;box-shadow:0 0 0 3px rgba(42,127,151,.12)}
+.chit.on .ck{background:#2a7f97;border-color:#2a7f97;color:#fff}
+.cform.chform{max-width:820px;margin:0 auto}
+@media(max-width:1000px){.chwhy,.chgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.chwhy,.chgrid{grid-template-columns:1fr}}
 .cpr i{font-style:normal;font-size:.55em;font-weight:500;color:#5d7882;margin-left:2px}
 .cmapbox{border:1.5px solid #dcebf0;border-radius:14px;padding:12px;background:#f7fcfd;display:flex;flex-direction:column;gap:10px}
 .cmaphead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5d7882}
@@ -770,28 +793,9 @@ tr:hover td{background:#fbf8f2}
     <div class="hvids" id="hvids"></div>
     <div class="fog"></div>
     <div class="veil"></div>
-    <div class="in landing">
-      <div class="lk">
-        <svg class="lkmark" viewBox="24 18 148 192" aria-hidden="true"><defs><mask id="smL" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="220"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" fill="#fff"/><path d="M74 132 V84 L96 72 V132 Z" fill="#fff"/><path d="M104 132 V64 L120 55 V132 Z" fill="#fff"/><path d="M36 172 L156 106 V126 L36 192 Z" fill="#000"/><path d="M40 176 L152 114.4 V126.4 L40 188 Z" fill="#fff"/></mask><linearGradient id="sgL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><use href="#mono" x="24" y="18" width="148" height="192"/><g mask="url(#smL)"><rect class="shine" x="-40" y="0" width="46" height="230" fill="url(#sgL)"/></g></svg>
-        <span class="lkbar"></span>
-        <div class="lkt"><div class="lkname">JAGA</div><div class="lktag">Management Operation Partner</div></div>
-      </div>
-      <div class="choices">
-        <a class="choice" href="#cleaning">
-          <span class="cn">01</span>
-          <svg class="ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg>
-          <h3>Cleaning Service</h3>
-          <p data-en="Housekeeping, deep cleaning and check-out turnover for villas, homes and apartments.">Housekeeping, deep cleaning, dan turnover check-out untuk villa, rumah, dan apartemen.</p>
-          <span class="cgo" data-en="Book cleaning →">Pesan cleaning →</span>
-        </a>
-        <a class="choice" href="#manajemen">
-          <span class="cn">02</span>
-          <svg class="ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6M9 11h.01M15 11h.01"/></svg>
-          <h3 data-en="Operations Management">Manajemen Operasional</h3>
-          <p data-en="We run staff, SOPs, inventory, maintenance and owner reporting for your property.">Kami kelola staf, SOP, inventaris, maintenance, dan laporan pemilik untuk properti Anda.</p>
-          <span class="cgo" data-en="Explore management →">Lihat layanan manajemen →</span>
-        </a>
-      </div>
+    <div class="in">
+      <div class="eyebrow" data-en="Hospitality Operations Partner">Mitra Operasional Perhotelan</div>
+      <h1 data-en="Hotel, Villa &amp; Apartment<br>Cleaning &amp; Operations">Kebersihan &amp; Operasional<br>Hotel, Villa &amp; Apartemen</h1>
       <div class="regions-tag">
         <a href="#wilayah" data-r="Bali">Bali</a><a href="#wilayah" data-r="Lombok">Lombok</a><a href="#wilayah" data-r="Yogyakarta">Yogyakarta</a>
       </div>
@@ -805,11 +809,10 @@ tr:hover td{background:#fbf8f2}
   <section class="s svc-dark" id="layanan">
     <div class="wrap">
       <div class="split reveal">
-        <div><div class="kicker">Layanan</div><h2 class="t" data-en="Two pillars, <em>one standard</em>.">Dua pilar, <em>satu standar</em>.</h2></div>
-        <p class="lead">Pilih layanan kebersihan sesuai kebutuhan, atau serahkan seluruh operasional properti Anda kepada tim kami.</p>
+        <div><div class="kicker">Layanan</div><h2 class="t" data-en="Four services, <em>one standard</em>.">Empat layanan, <em>satu standar</em>.</h2></div>
+        <p class="lead" data-en="Choose the JAGA service you need — each one opens its own page.">Pilih layanan JAGA yang Anda butuhkan — setiap layanan punya halamannya sendiri.</p>
       </div>
-      <div class="tabs reveal"><button class="on" data-t="clean">Cleaning Service</button><button data-t="ops">Manajemen Operasional</button></div>
-      <div class="cards reveal" id="cards"></div>
+      <div class="pillars reveal" id="cards"></div>
     </div>
   </section>
 
@@ -1212,11 +1215,14 @@ async function act(fn,okMsg){
 load();
 
 /* ================= WEBSITE RENDER ================= */
-let TAB='clean';
+const PILLARS=[
+  ['#cleaning','<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>','Cleaning Service','Cleaning Service','Basic, Regular, Deep & Special Cleaning untuk rumah, kosan, villa, hotel, kantor, dan restoran. Mulai Rp 55rb/jam.','Basic, Regular, Deep & Special Cleaning for homes, villas, hotels, offices and restaurants. From Rp 55k/hour.','Pesan cleaning','Book cleaning'],
+  ['#manajemen','<path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6M9 11h.01M15 11h.01"/>','Manajemen Operasional','Operations Management','Staf, SOP, inventaris, maintenance, dan laporan pemilik — operasional properti Anda kami jalankan.','Staff, SOPs, inventory, maintenance and owner reports — we run your property operations.','Konsultasi gratis','Free consultation'],
+  ['#chemical','<path d="M9 3h6M10 3v6L5 18a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3L14 9V3"/><path d="M7.5 14h9"/>','Professional Cleaning Chemicals Suppliers','Professional Cleaning Chemicals Suppliers','Pemasok chemical kebersihan kelas profesional untuk hotel, villa, kantor, restoran, dan usaha laundry.','Professional-grade cleaning chemicals for hotels, villas, offices, restaurants and laundries.','Minta penawaran','Request a quote'],
+  ['#properti','<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>','Properti Eksklusif','Exclusive Properties','Properti eksklusif pilihan yang di-JAGA oleh kami — sewa harian maupun bulanan.','Hand-picked exclusive properties looked after by JAGA — daily or monthly stays.','Lihat properti','View properties']];
 function renderCards(){
-  $('#cards').innerHTML=SVC[TAB].map((s,i)=>`<div class="card"><div class="n">0${i+1}</div><svg viewBox="0 0 24 24">${ICONS[i]}</svg><h3>${T(s[0])}</h3>${TAB==='clean'?`<div class="svprice" style="color:var(--gold2)">${kRp(s[5])}</div>`:''}<p>${L(s[1],s[3])}</p><ul>${L(s[2],s[4]).map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></div>`).join('');
+  $('#cards').innerHTML=PILLARS.map((p,i)=>`<a class="pillar" href="${p[0]}"><span class="n">0${i+1}</span><svg viewBox="0 0 24 24">${p[1]}</svg><h3>${L(p[2],p[3])}</h3><p>${L(p[4],p[5])}</p><span class="go">${L(p[6],p[7])} →</span></a>`).join('');
 }
-$$('.tabs button').forEach(b=>b.onclick=()=>{$$('.tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');TAB=b.dataset.t;renderCards()});
 
 /* region illustrations (inline SVG, no external images) */
 const ART={
@@ -1281,7 +1287,7 @@ $('#langBtn').onclick=()=>{setLang(LANG==='ID'?'EN':'ID');toast(L('Bahasa Indone
 /* nav: solid on scroll, active link, reveal, counters */
 const nav=$('#nav');
 addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>60||$('#site').classList.contains('pmode'));
-  let cur='beranda';if($('#site').classList.contains('pmode'))cur=/^(cleaning|manajemen)$/.test(location.hash.slice(1))?'layanan':'properti';else ['beranda','layanan','unggulan','mitra','cerita','blog','karier','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id==='unggulan'?'properti':id});
+  let cur='beranda';if($('#site').classList.contains('pmode'))cur=/^(cleaning|manajemen|chemical)$/.test(location.hash.slice(1))?'layanan':'properti';else ['beranda','layanan','unggulan','mitra','cerita','blog','karier','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id==='unggulan'?'properti':id});
   $$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
 },{passive:true});
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');
@@ -1904,7 +1910,7 @@ function bkSubmit(id){
     <p>${L('WhatsApp terbuka dengan detail pesanan Anda. Tekan <b>Kirim</b> di WhatsApp untuk menyelesaikan.','WhatsApp has opened with your booking details. Press <b>Send</b> in WhatsApp to complete it.')}<br><br>${L('No. pesanan','Order no.')}: <b>${oid}</b><br>${esc(p.name)} · ${c.label}<br>${rp(c.total)}</p>
     <p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('Buka WhatsApp lagi','Open WhatsApp again')}</a> · <a style="cursor:pointer;color:var(--muted)" onclick="renderBooking(PROPS.find(x=>x.id==='${p.id}'))">${L('Ubah pesanan','Edit request')}</a></p></div>`;
 }
-function renderPropRoute(){const h=location.hash.slice(1);if(h==='cleaning'||h==='manajemen')svcPage(h);else if(h.startsWith('p-'))renderPropDetail(h.slice(2));else renderPropList()}
+function renderPropRoute(){const h=location.hash.slice(1);if(h==='chemical')return chemPage();if(h==='cleaning'||h==='manajemen')svcPage(h);else if(h.startsWith('p-'))renderPropDetail(h.slice(2));else renderPropList()}
 
 
 /* ================= HALAMAN LAYANAN: #cleaning & #manajemen ================= */
@@ -2095,6 +2101,68 @@ async function cleanSubmit(){
   scrollTo({top:0,behavior:'smooth'});
 }
 
+/* ================= HALAMAN CHEMICAL SUPPLIES (#chemical) ================= */
+const CHEMS=[['Pembersih lantai','Floor cleaner','Untuk keramik, granit, marmer & vinyl.','For ceramic, granite, marble & vinyl.'],
+  ['Pembersih kamar mandi & kerak','Bathroom & descaler','Kloset, wastafel, shower, noda kerak & karat.','Toilets, basins, showers, limescale & rust.'],
+  ['Pembersih kaca & cermin','Glass & mirror cleaner','Bening tanpa bekas garis.','Streak-free shine.'],
+  ['Degreaser dapur','Kitchen degreaser','Minyak & lemak di kompor, hood, dan dapur komersial.','Grease on stoves, hoods and commercial kitchens.'],
+  ['Disinfektan & sanitizer','Disinfectant & sanitiser','Permukaan, gagang pintu & area umum.','Surfaces, handles & public areas.'],
+  ['Sabun & amenities','Soap & amenities','Sabun cuci tangan, sabun piring, amenities tamu.','Hand soap, dish soap, guest amenities.'],
+  ['Chemical laundry','Laundry chemicals','Deterjen, pemutih, pelembut & pewangi linen.','Detergent, bleach, softener & linen fragrance.'],
+  ['Pengharum ruangan','Air freshener','Aroma segar untuk kamar, lobi & toilet.','Fresh scents for rooms, lobbies & toilets.']];
+const CH={sel:[],wilayah:'Bali'};
+function chemPage(){
+  const o=(arr,v)=>arr.map(a=>`<option ${a===v?'selected':''}>${esc(a)}</option>`).join('');
+  $('#propPage').innerHTML=`
+  <div class="pbanner chban"><div class="wrap"><div class="kicker">Professional Cleaning Chemicals Suppliers</div>
+    <h1>${L('Chemical kebersihan kelas profesional','Professional-grade cleaning chemicals')}</h1>
+    <p>${L('Pasokan chemical untuk hotel, villa, apartemen, kantor, restoran, dan laundry di Bali, Lombok, dan Yogyakarta. Pilih produk, kirim permintaan, dan tim JAGA mengirimkan penawaran lewat WhatsApp.','Chemical supplies for hotels, villas, apartments, offices, restaurants and laundries in Bali, Lombok and Yogyakarta. Pick products, send a request, and JAGA replies with a quote on WhatsApp.')}</p></div></div>
+  <div class="svwrap">
+    <div class="chwhy">${[[L('Kelas profesional','Professional grade'),L('Untuk standar kebersihan perhotelan.','Built for hospitality cleaning standards.')],[L('Satuan atau rutin','One-off or recurring'),L('Beli sekali atau langganan bulanan.','Buy once or on a monthly supply.')],[L('Diantar ke lokasi','Delivered to you'),'Bali · Lombok · Yogyakarta'],[L('Panduan pemakaian','Usage guidance'),L('Rekomendasi takaran & cara pakai untuk staf.','Dilution and usage tips for your staff.')]].map(x=>`<div><h4>${x[0]}</h4><p>${x[1]}</p></div>`).join('')}</div>
+    <div class="kicker">${L('Produk','Products')}</div>
+    <h2 class="svh">${L('Pilih produk yang dibutuhkan','Choose the products you need')}</h2>
+    <p class="svsub">${L('Klik untuk menandai. Harga dan ukuran kemasan dikirim bersama penawaran.','Tap to select. Prices and pack sizes come with the quote.')}</p>
+    <div class="chgrid" id="chgrid">${CHEMS.map((c,i)=>`<button type="button" class="chit ${CH.sel.includes(i)?'on':''}" onclick="chToggle(${i},this)"><span class="ck">✓</span><b>${L(c[0],c[1])}</b><small>${L(c[2],c[3])}</small></button>`).join('')}</div>
+    <form class="cform chform" id="chform" onsubmit="event.preventDefault();chemSubmit()">
+      <div class="cstep"><b>✓</b>${L('Minta penawaran','Request a quote')}</div>
+      <div class="cgrid">
+        <label>${L('Nama','Name')}<input id="chNama" required autocomplete="name"></label>
+        <label>WhatsApp<input id="chTel" type="tel" inputmode="tel" placeholder="08…" required autocomplete="tel"></label>
+        <label>${L('Nama usaha / properti','Business / property')}<input id="chUsaha" placeholder="${L('opsional','optional')}"></label>
+        <label>${L('Wilayah pengiriman','Delivery region')}<select id="chWil">${o(Object.keys(REG),CH.wilayah)}</select></label>
+        <label class="full">${L('Perkiraan kebutuhan / catatan','Estimated quantity / notes')}<input id="chCat" placeholder="${L('mis. pembersih lantai 20 liter per bulan','e.g. floor cleaner 20 litres per month')}"></label>
+      </div>
+      <input id="chHp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <div class="csum" id="chsum"></div>
+      <button class="cgo" id="chgo"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>${L('Kirim permintaan via WhatsApp','Send request via WhatsApp')}</button>
+      <div class="err" id="cherr"></div>
+    </form>
+  </div>`;chSum();
+}
+function chToggle(i,el){const k=CH.sel.indexOf(i);k<0?CH.sel.push(i):CH.sel.splice(k,1);el.classList.toggle('on',k<0);chSum()}
+function chSum(){const n=CH.sel.length;$('#chsum').innerHTML=n?`${L('Produk dipilih','Selected')}: <b>${CH.sel.map(i=>L(CHEMS[i][0],CHEMS[i][1])).join(', ')}</b>`:L('Belum ada produk dipilih — pilih di atas, atau tulis kebutuhan Anda di catatan.','No products selected yet — pick above, or describe your needs in the notes.')}
+async function chemSubmit(){
+  const e=$('#cherr'),name=$('#chNama').value.trim(),tel=$('#chTel').value.trim(),us=$('#chUsaha').value.trim(),wil=$('#chWil').value,cat=$('#chCat').value.trim();
+  if(!CH.sel.length&&!cat){e.textContent=L('Pilih minimal satu produk atau isi catatan kebutuhan.','Pick at least one product or describe your needs.');return}
+  if(!name){e.textContent=L('Isi nama Anda.','Enter your name.');return}
+  if(tel.replace(/\D/g,'').length<9){e.textContent=L('Isi nomor WhatsApp yang valid.','Enter a valid WhatsApp number.');return}
+  e.textContent='';const btn=$('#chgo');btn.disabled=true;
+  const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');let w=null;if(wa){try{w=window.open('about:blank','_blank')}catch(_){}}
+  const lines=['Permintaan penawaran chemical',CH.sel.length?'Produk: '+CH.sel.map(i=>CHEMS[i][0]).join(', '):'',cat?'Kebutuhan: '+cat:'',us?'Usaha/properti: '+us:'','Wilayah: '+wil,'Nama: '+name,'WhatsApp: '+tel].filter(Boolean);
+  let id='';if(SET_READY)await SET_READY;
+  if(ONLINE()){try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:wil,properti:us||'-',layanan:'Chemical Supplies',tanggal:iso(new Date()),catatan:lines.join('\n'),website:$('#chHp').value||''},false);id=r.id||''}
+    catch(err){btn.disabled=false;if(w)try{w.close()}catch(_){}e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}}
+  const url=wa?`https://wa.me/${wa}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+lines.join('\n'))}`:'';
+  if(url){if(w&&!w.closed){try{w.location.href=url}catch(_){location.href=url}}else location.href=url}
+  else if(!ONLINE()){btn.disabled=false;e.textContent=L('Permintaan online belum aktif. Hubungi kami lewat halaman Kontak.','Online requests are not active yet. Contact us via the Contact page.');return}
+  CH.sel=[];
+  $('#chform').innerHTML=`<div class="okbox" style="padding:30px 10px"><div class="ic">✓</div><h3>${L('Permintaan terkirim','Request sent')}</h3>
+    <p>${id?L('No. permintaan','Request no.')+`: <b>${id}</b><br><br>`:''}${url?L('WhatsApp sudah terbuka — tekan <b>Kirim</b> agar tim JAGA mengirim penawaran.','WhatsApp has opened — press <b>Send</b> so JAGA can send your quote.'):L('Tim JAGA akan menghubungi Anda melalui WhatsApp.','The JAGA team will contact you on WhatsApp.')}</p>
+    ${url?`<p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('WhatsApp belum terbuka? Klik di sini','WhatsApp didn’t open? Click here')} →</a></p>`:''}
+    <p style="margin-top:10px"><a style="cursor:pointer;color:var(--muted)" onclick="chemPage()">${L('Kirim permintaan lain','Send another request')}</a></p></div>`;
+  $('#chform').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
 /* ================= ADMIN: kelola properti ================= */
 const savePropsFiles=()=>[{path:'properties.json',b64:txtB64(JSON.stringify({properties:PROPS},null,2)+'\n')}];
 function apropsPage(){
@@ -2272,7 +2340,7 @@ function route(){
   const h=location.hash.slice(1);
   if(h==='portal'){$('#site').classList.remove('on');$('#portal').classList.add('on');scrollTo(0,0);if(USER)enterPortal();else{$('#portal').classList.add('locked');renderLogin()}return}
   $('#portal').classList.remove('on');$('#site').classList.add('on');updateSiteCounts();
-  if(h==='properti'||h.startsWith('p-')||h==='cleaning'||h==='manajemen'){$('#site').classList.add('pmode');renderPropRoute();scrollTo(0,0);nav.classList.add('solid');const k=(h==='cleaning'||h==='manajemen')?'#layanan':'#properti';$$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')===k));return}
+  if(h==='properti'||h.startsWith('p-')||h==='cleaning'||h==='manajemen'||h==='chemical'){$('#site').classList.add('pmode');renderPropRoute();scrollTo(0,0);nav.classList.add('solid');const k=(h==='cleaning'||h==='manajemen'||h==='chemical')?'#layanan':'#properti';$$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')===k));return}
   if($('#site').classList.contains('pmode')){$('#site').classList.remove('pmode');$('#propPage').innerHTML=''}
   const el=document.getElementById(SITE_IDS.includes(h)?h:'beranda');
   requestAnimationFrame(()=>el.scrollIntoView({behavior:h?'smooth':'auto'}));
