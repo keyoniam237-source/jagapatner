@@ -1285,7 +1285,7 @@ Yogyakarta:`<svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice"><def
 function renderRegions(){
   const REGPHOTO={Bali:'images/wilayah/bali.jpg',Lombok:'images/wilayah/lombok.jpg',Yogyakarta:'images/wilayah/yogyakarta.jpg'};
   $('#regions').innerHTML=Object.entries(REG).map(([k,v],i)=>`<div class="reg reveal vis" onclick="pickRegion('${k}')"><div class="art">${ART[k]}${REGPHOTO[k]?`<img src="${REGPHOTO[k]}" alt="${k}" loading="lazy" onerror="this.remove()">`:''}</div><div class="c"><small>${L('Wilayah','Region')} 0${i+1}</small><h3>${k}</h3><p>${L(...v.desc)}<br><br><span style="color:var(--gold2)">${v.areas}</span></p><div class="meta"><span>${L('Pesan layanan →','Book a service →')}</span></div></div></div>`).join('');
-  $('#offices').innerHTML=contactList();
+  $('#offices').innerHTML=`<div class="creg">${L('Wilayah layanan','Service areas')}: <b>Bali · Lombok · Yogyakarta</b></div>`;
 }
 const OFFICE='Jl. Gatot Subroto Tengah, Denpasar, Bali, Indonesia';
 const ICO={map:'<svg viewBox="0 0 24 24"><path d="M12 22s7-7.6 7-13a7 7 0 0 0-14 0c0 5.4 7 13 7 13z"/><circle cx="12" cy="9" r="2.6"/></svg>',
