@@ -120,16 +120,25 @@ h2.t em{font-style:italic;color:var(--green)}
 .card ul{list-style:none;margin-top:16px}
 .card li{font-size:13px;color:rgba(255,255,255,.72);padding:6px 0;border-top:1px dashed rgba(255,255,255,.1)}
 .card li:before{content:"— ";color:var(--gold)}
-.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:46px}
-.pillar{position:relative;display:flex;flex-direction:column;padding:34px 28px 28px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.03);color:#fff;transition:transform .35s,border-color .35s,background .35s;min-height:330px}
-.pillar:hover{transform:translateY(-5px);border-color:var(--gold);background:rgba(255,255,255,.07)}
-.pillar .n{font-family:var(--serif);font-style:italic;color:var(--gold);font-size:15px}
-.pillar svg{width:40px;height:40px;stroke:var(--gold2);fill:none;stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round;margin:22px 0 20px}
-.pillar h3{font-family:var(--serif);font-weight:500;font-size:26px;line-height:1.15;margin-bottom:12px}
-.pillar p{font-size:14px;line-height:1.7;color:rgba(255,255,255,.62);font-weight:300;flex:1}
-.pillar .go{margin-top:22px;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2)}
-@media(max-width:1100px){.pillars{grid-template-columns:1fr 1fr}}
-@media(max-width:620px){.pillars{grid-template-columns:1fr}.pillar{min-height:0}}
+.pillars{margin-top:64px;border-top:1px solid rgba(201,169,106,.22)}
+.pillar{position:relative;display:grid;grid-template-columns:70px 64px minmax(0,1.15fr) minmax(0,1fr) 64px;align-items:center;gap:34px;padding:38px 26px;border-bottom:1px solid rgba(201,169,106,.22);color:#fff;overflow:hidden;isolation:isolate}
+.pillar:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(201,169,106,.10),rgba(201,169,106,.02) 60%,transparent);transform:scaleX(0);transform-origin:left;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.pillar:hover:before{transform:scaleX(1)}
+.pillar .n{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--gold);letter-spacing:.02em}
+.pillar .ic{width:58px;height:58px;border-radius:50%;border:1px solid rgba(201,169,106,.4);display:grid;place-items:center;transition:.4s}
+.pillar .ic svg{width:24px;height:24px;stroke:var(--gold2);fill:none;stroke-width:1.2;stroke-linejoin:round;stroke-linecap:round}
+.pillar:hover .ic{border-color:var(--gold2);background:rgba(201,169,106,.08)}
+.pillar .tt{transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.pillar:hover .tt{transform:translateX(8px)}
+.pillar h3{font-family:var(--serif);font-weight:400;font-size:clamp(26px,2.4vw,36px);line-height:1.12;letter-spacing:.005em}
+.pillar .ptag{display:block;margin-top:10px;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold2)}
+.pillar p{font-size:14.5px;line-height:1.8;color:rgba(255,255,255,.6);font-weight:300;max-width:440px}
+.pillar .ar{justify-self:end;width:56px;height:56px;border-radius:50%;border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;transition:.4s}
+.pillar .ar svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.4;transition:.4s}
+.pillar:hover .ar{background:var(--gold);border-color:var(--gold);transform:rotate(-45deg)}
+.pillar:hover .ar svg{stroke:#111}
+@media(max-width:1000px){.pillar{grid-template-columns:52px minmax(0,1fr) 52px;gap:10px 20px;padding:30px 6px}.pillar .ic{display:none}.pillar .n{grid-row:1/3;align-self:start;padding-top:6px}.pillar .tt{grid-column:2}.pillar p{grid-column:2;grid-row:2}.pillar .ar{grid-column:3;grid-row:1/3;width:48px;height:48px}}
+@media(max-width:560px){.pillar{grid-template-columns:38px minmax(0,1fr)}.pillar .ar{display:none}.pillar .n{font-size:18px}}
 
 /* regions */
 .regions{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:60px}
@@ -875,7 +884,7 @@ tr:hover td{background:#fbf8f2}
     <div class="wrap">
       <div class="split reveal">
         <div><div class="kicker">Layanan</div><h2 class="t" data-en="Four services, <em>one standard</em>.">Empat layanan, <em>satu standar</em>.</h2></div>
-        <p class="lead" data-en="Choose the JAGA service you need — each one opens its own page.">Pilih layanan JAGA yang Anda butuhkan — setiap layanan punya halamannya sendiri.</p>
+        <p class="lead" data-en="One partner for the cleanliness, operations, supplies and stays of your property.">Satu mitra untuk kebersihan, operasional, pasokan, dan hunian properti Anda.</p>
       </div>
       <div class="pillars reveal" id="cards"></div>
     </div>
@@ -1268,12 +1277,13 @@ load();
 
 /* ================= WEBSITE RENDER ================= */
 const PILLARS=[
-  ['#cleaning','<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>','Cleaning Service','Cleaning Service','Basic, Regular, Deep & Special Cleaning untuk rumah, kosan, villa, hotel, kantor, dan restoran. Mulai Rp 55rb/jam.','Basic, Regular, Deep & Special Cleaning for homes, villas, hotels, offices and restaurants. From Rp 55k/hour.','Pesan cleaning','Book cleaning'],
+  ['#cleaning','<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>','Cleaning Service','Cleaning Service','Basic, Regular, Deep & Special Cleaning untuk rumah, kosan, villa, hotel, kantor, dan restoran — alat & chemical sudah termasuk.','Basic, Regular, Deep & Special Cleaning for homes, villas, hotels, offices and restaurants — tools & chemicals included.','Pesan cleaning','Book cleaning'],
   ['#manajemen','<path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6M9 11h.01M15 11h.01"/>','Manajemen Operasional','Operations Management','Staf, SOP, inventaris, maintenance, dan laporan pemilik — operasional properti Anda kami jalankan.','Staff, SOPs, inventory, maintenance and owner reports — we run your property operations.','Konsultasi gratis','Free consultation'],
   ['#chemical','<path d="M9 3h6M10 3v6L5 18a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3L14 9V3"/><path d="M7.5 14h9"/>','Professional Cleaning Chemicals Suppliers','Professional Cleaning Chemicals Suppliers','Pemasok chemical kebersihan kelas profesional untuk hotel, villa, kantor, restoran, dan usaha laundry.','Professional-grade cleaning chemicals for hotels, villas, offices, restaurants and laundries.','Minta penawaran','Request a quote'],
   ['#properti','<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>','Properti Eksklusif','Exclusive Properties','Properti eksklusif pilihan yang di-JAGA oleh kami — sewa harian maupun bulanan.','Hand-picked exclusive properties looked after by JAGA — daily or monthly stays.','Lihat properti','View properties']];
+const PTAG=[['Mulai Rp 55rb / jam','From Rp 55k / hour'],['Konsultasi gratis','Free consultation'],['Penawaran untuk bisnis','Business supply'],['Sewa harian & bulanan','Daily & monthly stays']];
 function renderCards(){
-  $('#cards').innerHTML=PILLARS.map((p,i)=>`<a class="pillar" href="${p[0]}"><span class="n">0${i+1}</span><svg viewBox="0 0 24 24">${p[1]}</svg><h3>${L(p[2],p[3])}</h3><p>${L(p[4],p[5])}</p><span class="go">${L(p[6],p[7])} →</span></a>`).join('');
+  $('#cards').innerHTML=PILLARS.map((p,i)=>`<a class="pillar" href="${p[0]}" aria-label="${esc(L(p[2],p[3]))}"><span class="n">0${i+1}</span><span class="ic"><svg viewBox="0 0 24 24">${p[1]}</svg></span><div class="tt"><h3>${L(p[2],p[3])}</h3><span class="ptag">${L(...PTAG[i])}</span></div><p>${L(p[4],p[5])}</p><span class="ar"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>`).join('');
 }
 
 /* region illustrations (inline SVG, no external images) */
