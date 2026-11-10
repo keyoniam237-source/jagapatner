@@ -333,7 +333,47 @@ a.plogo:hover{transform:translateY(-4px);box-shadow:0 18px 36px -18px rgba(0,0,0
 .chit .ck{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:50%;border:1.5px solid #cfe2e8;display:grid;place-items:center;font-size:12px;color:transparent}
 .chit.on{border-color:#2a7f97;background:#eef8fb;box-shadow:0 0 0 3px rgba(42,127,151,.12)}
 .chit.on .ck{background:#2a7f97;border-color:#2a7f97;color:#fff}
-.cform.chform{max-width:820px;margin:0 auto}
+.chcartTop{margin-top:24px;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:11px 20px;font:inherit;font-size:14px;cursor:pointer}
+.chcartTop b{background:#fff;color:#17485a;border-radius:999px;min-width:22px;padding:1px 7px;font-size:12px}
+.prgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:26px 0 30px}
+.prc{background:#fff;border:1px solid #e3eef2;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:.25s}
+.prc:hover{box-shadow:0 20px 40px -28px rgba(15,43,58,.45);border-color:#cfe2e8}
+.primg{aspect-ratio:1/1;background:linear-gradient(160deg,#f2f9fb,#e2f1f6);display:grid;place-items:center;overflow:hidden}
+.primg svg{width:62%;height:62%}.primg img{width:100%;height:100%;object-fit:cover}
+.prb{padding:16px 16px 18px;display:flex;flex-direction:column;flex:1}
+.prb h3{font-size:16px;font-weight:600;color:#0f2b3a;line-height:1.3}
+.prsz{font-size:12.5px;color:#5d7882;margin-top:3px}
+.prpr{font-size:19px;font-weight:700;color:#1f6a80;margin:8px 0 6px}
+.prb p{font-size:13px;color:#5d7882;line-height:1.55;flex:1}
+.prbuy{display:flex;gap:8px;margin-top:14px;align-items:center}
+.qty{display:flex;align-items:center;border:1.5px solid #dcebf0;border-radius:10px;overflow:hidden;background:#fff}
+.qty button{width:32px;height:38px;border:0;background:#f3f9fb;color:#0f2b3a;font-size:17px;cursor:pointer}.qty button:hover{background:#e3f1f5}
+.qty input{width:40px;height:38px;border:0;text-align:center;font:inherit;font-size:14px;color:#0f2b3a;-moz-appearance:textfield;background:#fff}
+.qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.qty.sm button{width:28px;height:30px}.qty.sm input{width:34px;height:30px}
+.padd{flex:1;height:41px;border:0;border-radius:10px;background:#2a7f97;color:#fff;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}.padd:hover{background:#1f6a80}
+.prin{font-size:12px;color:#25a466;margin-top:8px;min-height:14px}
+.cfab{position:fixed;right:22px;bottom:22px;z-index:60;display:flex;align-items:center;gap:10px;background:#0f2b3a;color:#fff;border:0;border-radius:999px;padding:15px 18px;box-shadow:0 14px 30px -10px rgba(15,43,58,.6);cursor:pointer;font:inherit}
+.cfab span{position:absolute;top:-4px;left:34px;background:#25a466;color:#fff;font-size:11px;font-weight:700;border-radius:999px;min-width:20px;height:20px;display:none;place-items:center;padding:0 5px}
+.cfab.has span{display:grid}.cfab em{font-style:normal;font-size:14px;font-weight:600}.cfab.has{padding-right:22px}
+.cfab.bump{animation:bump .45s}@keyframes bump{40%{transform:scale(1.12)}}
+.cdrw{position:fixed;inset:0;z-index:90;background:rgba(10,20,25,.45);opacity:0;pointer-events:none;transition:opacity .25s}
+.cdrw.on{opacity:1;pointer-events:auto}
+.cpanel{position:absolute;top:0;right:0;bottom:0;width:min(440px,100%);background:#fff;overflow-y:auto;padding:22px;transform:translateX(100%);transition:transform .3s;color:#0f2b3a}
+.cdrw.on .cpanel{transform:none}
+.cph{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.cph h3{font-size:19px;font-weight:600}.cph button{border:0;background:#f3f9fb;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:14px}
+.cli{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #eef4f6}
+.clim{width:56px;height:56px;border-radius:10px;background:#eef7fa;display:grid;place-items:center;overflow:hidden}.clim svg{width:80%;height:80%}.clim img{width:100%;height:100%;object-fit:cover}
+.clt b{font-size:14px;display:block}.clt small{font-size:12px;color:#5d7882;display:block;margin:2px 0 6px}
+.clr{text-align:right}.clr b{font-size:14px;display:block}.clr button{border:0;background:none;color:#c0392b;font-size:12px;cursor:pointer;margin-top:6px}
+.ctot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:15px}.ctot b{font-size:20px;color:#1f6a80}
+.cfine{font-size:12px;color:#5d7882;margin:4px 0 16px}
+.ccheck{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ccheck label,.ccheck input,.ccheck select{min-width:0;width:100%}.clt .qty{display:inline-flex}.ccheck .cgo{margin-top:6px}
+.cempty{text-align:center;padding:60px 10px;color:#5d7882}.cempty p{margin:10px 0 18px}
+.apimg{width:56px;height:56px;border-radius:10px;background:#eef7fa;display:grid;place-items:center;overflow:hidden;flex:none}.apimg svg{width:80%;height:80%}.apimg img{width:100%;height:100%;object-fit:cover}
+@media(max-width:1100px){.prgrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:820px){.prgrid{grid-template-columns:1fr 1fr;gap:12px}.prb{padding:12px}.prbuy{flex-direction:column;align-items:stretch}.qty{justify-content:space-between}.qty input{flex:1}}
+@media(max-width:420px){.ccheck{grid-template-columns:1fr}}
 @media(max-width:1000px){.chwhy,.chgrid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.chwhy,.chgrid{grid-template-columns:1fr}}
 .cpr i{font-style:normal;font-size:.55em;font-weight:500;color:#5d7882;margin-left:2px}
@@ -998,6 +1038,7 @@ tr:hover td{background:#fbf8f2}
         <a data-p="sched"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Jadwal</a>
         <a data-p="staff"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-4 3.5-6 6.5-6s5.7 2 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14c2.8 0 4.8 1.6 5.5 5"/></svg>Tim &amp; Shift</a>
         <a data-p="aprops" id="navProps" style="display:none"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5"/></svg>Properti</a>
+        <a data-p="aprod" id="navProd" style="display:none"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L5 18a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3L14 9V3"/><path d="M7.5 14h9"/></svg>Produk</a>
         <a data-p="media" id="navMedia" style="display:none"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.5v5l4.5-2.5z"/></svg>Media</a>
         <a data-p="sop"><svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-4"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>Checklist SOP</a>
         <div class="sect">Wilayah</div>
@@ -1315,6 +1356,7 @@ function renderPortal(){
   if(P.page==='sop')m.innerHTML=sopPage();
   if(P.page==='media'){if(USER.role!=='admin'){go('dash');return}m.innerHTML=mediaPage()}
   if(P.page==='aprops'){if(USER.role!=='admin'){go('dash');return}m.innerHTML=apropsPage()}
+  if(P.page==='aprod'){if(USER.role!=='admin'){go('dash');return}m.innerHTML=aprodPage()}
   updateSiteCounts();
 }
 
@@ -2101,66 +2143,145 @@ async function cleanSubmit(){
   scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ================= HALAMAN CHEMICAL SUPPLIES (#chemical) ================= */
-const CHEMS=[['Pembersih lantai','Floor cleaner','Untuk keramik, granit, marmer & vinyl.','For ceramic, granite, marble & vinyl.'],
-  ['Pembersih kamar mandi & kerak','Bathroom & descaler','Kloset, wastafel, shower, noda kerak & karat.','Toilets, basins, showers, limescale & rust.'],
-  ['Pembersih kaca & cermin','Glass & mirror cleaner','Bening tanpa bekas garis.','Streak-free shine.'],
-  ['Degreaser dapur','Kitchen degreaser','Minyak & lemak di kompor, hood, dan dapur komersial.','Grease on stoves, hoods and commercial kitchens.'],
-  ['Disinfektan & sanitizer','Disinfectant & sanitiser','Permukaan, gagang pintu & area umum.','Surfaces, handles & public areas.'],
-  ['Sabun & amenities','Soap & amenities','Sabun cuci tangan, sabun piring, amenities tamu.','Hand soap, dish soap, guest amenities.'],
-  ['Chemical laundry','Laundry chemicals','Deterjen, pemutih, pelembut & pewangi linen.','Detergent, bleach, softener & linen fragrance.'],
-  ['Pengharum ruangan','Air freshener','Aroma segar untuk kamar, lobi & toilet.','Fresh scents for rooms, lobbies & toilets.']];
-const CH={sel:[],wilayah:'Bali'};
+/* ================= TOKO CHEMICAL (#chemical) — produk dari products.json, dikelola di Portal → Produk ================= */
+let PRODS=[];
+let CART={};try{CART=JSON.parse(localStorage.getItem('jaga-cart')||'{}')||{}}catch(e){CART={}}
+const CK={wilayah:'Bali'};const PQ={};
+async function loadProducts(){try{const r=await fetch('products.json?v='+Date.now(),{cache:'no-store'});if(r.ok)PRODS=(await r.json()).products||[]}catch(e){}
+  if(location.hash==='#chemical')chemPage()}
+const pName=p=>L(p.name,p.nameEn||p.name),pUse=p=>L(p.usage,p.usageEn||p.usage);
+const jug=(c='#3a9fc4')=>`<svg viewBox="0 0 120 120" aria-hidden="true"><path d="M38 30h24v-8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8h4c8 0 14 6 14 14v54a8 8 0 0 1-8 8H32a8 8 0 0 1-8-8V48c0-10 6-18 14-18z" fill="#fff" stroke="#cfe2e8" stroke-width="2"/><path d="M84 30h4c8 0 14 6 14 14v6H84z" fill="#eaf4f7"/><rect x="62" y="12" width="18" height="8" rx="2" fill="${c}"/><path d="M26 66h70v32a8 8 0 0 1-8 8H32a8 8 0 0 1-6-6z" fill="${c}" opacity=".85"/><rect x="36" y="46" width="44" height="30" rx="4" fill="#fff" stroke="${c}" stroke-width="2"/><path d="M44 56h28M44 64h20" stroke="${c}" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="88" r="3" fill="#fff" opacity=".7"/><circle cx="52" cy="94" r="2" fill="#fff" opacity=".6"/></svg>`;
+const pImg=p=>p.photo?`<img src="${pUrl(p.photo)}" alt="${esc(p.name)}" loading="lazy">`:jug(p.color);
+const cartSave=()=>{try{localStorage.setItem('jaga-cart',JSON.stringify(CART))}catch(e){}};
+const cartItems=()=>Object.entries(CART).map(([id,q])=>({p:PRODS.find(x=>x.id===id&&x.active!==false),q})).filter(x=>x.p&&x.q>0);
+const cartCount=()=>cartItems().reduce((a,x)=>a+x.q,0),cartTotal=()=>cartItems().reduce((a,x)=>a+x.q*(+x.p.price||0),0);
 function chemPage(){
-  const o=(arr,v)=>arr.map(a=>`<option ${a===v?'selected':''}>${esc(a)}</option>`).join('');
+  const list=PRODS.filter(p=>p.active!==false);
   $('#propPage').innerHTML=`
   <div class="pbanner chban"><div class="wrap"><div class="kicker">Professional Cleaning Chemicals Suppliers</div>
     <h1>${L('Chemical kebersihan kelas profesional','Professional-grade cleaning chemicals')}</h1>
-    <p>${L('Pasokan chemical untuk hotel, villa, apartemen, kantor, restoran, dan laundry di Bali, Lombok, dan Yogyakarta. Pilih produk, kirim permintaan, dan tim JAGA mengirimkan penawaran lewat WhatsApp.','Chemical supplies for hotels, villas, apartments, offices, restaurants and laundries in Bali, Lombok and Yogyakarta. Pick products, send a request, and JAGA replies with a quote on WhatsApp.')}</p></div></div>
+    <p>${L('Untuk hotel, villa, apartemen, kantor, restoran, dan laundry di Bali, Lombok, dan Yogyakarta. Pilih produk & jumlah, masukkan ke keranjang, lalu kirim pesanan lewat WhatsApp.','For hotels, villas, apartments, offices, restaurants and laundries in Bali, Lombok and Yogyakarta. Pick products and quantities, add to cart, then send your order on WhatsApp.')}</p>
+    <button class="chcartTop" onclick="cartOpen(true)">🛒 ${L('Keranjang','Cart')} <b id="ccTop">${cartCount()}</b></button></div></div>
   <div class="svwrap">
     <div class="chwhy">${[[L('Kelas profesional','Professional grade'),L('Untuk standar kebersihan perhotelan.','Built for hospitality cleaning standards.')],[L('Satuan atau rutin','One-off or recurring'),L('Beli sekali atau langganan bulanan.','Buy once or on a monthly supply.')],[L('Diantar ke lokasi','Delivered to you'),'Bali · Lombok · Yogyakarta'],[L('Panduan pemakaian','Usage guidance'),L('Rekomendasi takaran & cara pakai untuk staf.','Dilution and usage tips for your staff.')]].map(x=>`<div><h4>${x[0]}</h4><p>${x[1]}</p></div>`).join('')}</div>
     <div class="kicker">${L('Produk','Products')}</div>
-    <h2 class="svh">${L('Pilih produk yang dibutuhkan','Choose the products you need')}</h2>
-    <p class="svsub">${L('Klik untuk menandai. Harga dan ukuran kemasan dikirim bersama penawaran.','Tap to select. Prices and pack sizes come with the quote.')}</p>
-    <div class="chgrid" id="chgrid">${CHEMS.map((c,i)=>`<button type="button" class="chit ${CH.sel.includes(i)?'on':''}" onclick="chToggle(${i},this)"><span class="ck">✓</span><b>${L(c[0],c[1])}</b><small>${L(c[2],c[3])}</small></button>`).join('')}</div>
-    <form class="cform chform" id="chform" onsubmit="event.preventDefault();chemSubmit()">
-      <div class="cstep"><b>✓</b>${L('Minta penawaran','Request a quote')}</div>
-      <div class="cgrid">
-        <label>${L('Nama','Name')}<input id="chNama" required autocomplete="name"></label>
-        <label>WhatsApp<input id="chTel" type="tel" inputmode="tel" placeholder="08…" required autocomplete="tel"></label>
-        <label>${L('Nama usaha / properti','Business / property')}<input id="chUsaha" placeholder="${L('opsional','optional')}"></label>
-        <label>${L('Wilayah pengiriman','Delivery region')}<select id="chWil">${o(Object.keys(REG),CH.wilayah)}</select></label>
-        <label class="full">${L('Perkiraan kebutuhan / catatan','Estimated quantity / notes')}<input id="chCat" placeholder="${L('mis. pembersih lantai 20 liter per bulan','e.g. floor cleaner 20 litres per month')}"></label>
-      </div>
-      <input id="chHp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-      <div class="csum" id="chsum"></div>
-      <button class="cgo" id="chgo"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>${L('Kirim permintaan via WhatsApp','Send request via WhatsApp')}</button>
-      <div class="err" id="cherr"></div>
-    </form>
-  </div>`;chSum();
+    <h2 class="svh">${L('Katalog produk','Product catalogue')}</h2>
+    <p class="svsub">${L('Harga per kemasan. Ongkos kirim dan ketersediaan dikonfirmasi tim JAGA lewat WhatsApp.','Prices per pack. Delivery cost and availability are confirmed by JAGA on WhatsApp.')}</p>
+    <div class="prgrid">${list.length?list.map(p=>{const q=PQ[p.id]||1,inC=CART[p.id]||0;return `<div class="prc">
+      <div class="primg">${pImg(p)}</div>
+      <div class="prb"><h3>${esc(pName(p))}</h3><div class="prsz">${esc(p.size||'')}</div>
+        <div class="prpr">${+p.price?rp(p.price):L('Hubungi kami','Ask for price')}</div>
+        <p>${esc(pUse(p))}</p>
+        <div class="prbuy"><div class="qty"><button type="button" onclick="pq('${p.id}',-1)" aria-label="-">−</button><input id="q-${p.id}" type="number" min="1" max="999" value="${q}" onchange="PQ['${p.id}']=Math.max(1,Math.min(999,parseInt(this.value)||1));this.value=PQ['${p.id}']"><button type="button" onclick="pq('${p.id}',1)" aria-label="+">+</button></div>
+          <button class="padd" onclick="cartAdd('${p.id}')">${L('+ Keranjang','Add to cart')}</button></div>
+        <div class="prin" id="in-${p.id}">${inC?`✓ ${inC} ${L('di keranjang','in cart')}`:''}</div></div></div>`}).join(''):`<div class="empty">${L('Produk segera hadir.','Products coming soon.')}</div>`}</div>
+  </div>
+  <button class="cfab" id="cfab" onclick="cartOpen(true)" aria-label="${L('Keranjang','Cart')}"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h3l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.1L21 7.5H6.4"/></svg><span id="cfabN"></span><em id="cfabT"></em></button>
+  <div class="cdrw" id="cdrw" onclick="if(event.target===this)cartOpen(false)"><aside class="cpanel" id="cpanel"></aside></div>`;
+  cartRender();
 }
-function chToggle(i,el){const k=CH.sel.indexOf(i);k<0?CH.sel.push(i):CH.sel.splice(k,1);el.classList.toggle('on',k<0);chSum()}
-function chSum(){const n=CH.sel.length;$('#chsum').innerHTML=n?`${L('Produk dipilih','Selected')}: <b>${CH.sel.map(i=>L(CHEMS[i][0],CHEMS[i][1])).join(', ')}</b>`:L('Belum ada produk dipilih — pilih di atas, atau tulis kebutuhan Anda di catatan.','No products selected yet — pick above, or describe your needs in the notes.')}
+function pq(id,d){const v=Math.max(1,Math.min(999,(PQ[id]||1)+d));PQ[id]=v;const e=$('#q-'+id);if(e)e.value=v}
+function cartAdd(id){const q=PQ[id]||1;CART[id]=Math.min(999,(CART[id]||0)+q);PQ[id]=1;const e=$('#q-'+id);if(e)e.value=1;cartSave();cartRender();
+  const f=$('#cfab');if(f){f.classList.remove('bump');void f.offsetWidth;f.classList.add('bump')}toast(L('Ditambahkan ke keranjang','Added to cart'))}
+function cartSet(id,q){q=Math.max(0,Math.min(999,q|0));if(q)CART[id]=q;else delete CART[id];cartSave();cartRender()}
+function cartOpen(on){const d=$('#cdrw');if(d){d.classList.toggle('on',on);document.body.style.overflow=on?'hidden':''}}
+function cartRender(){
+  const it=cartItems(),n=cartCount(),t=cartTotal();
+  const nn=$('#cfabN'),tt=$('#cfabT'),top=$('#ccTop');if(nn)nn.textContent=n||'';if(tt)tt.textContent=n?rp(t):'';if(top)top.textContent=n;
+  const f=$('#cfab');if(f)f.classList.toggle('has',n>0);
+  PRODS.forEach(p=>{const e=$('#in-'+p.id);if(e)e.textContent=CART[p.id]?`✓ ${CART[p.id]} ${L('di keranjang','in cart')}`:''});
+  const pnl=$('#cpanel');if(!pnl)return;
+  const o=(arr,v)=>arr.map(a=>`<option ${a===v?'selected':''}>${esc(a)}</option>`).join('');
+  pnl.innerHTML=`<div class="cph"><h3>🛒 ${L('Keranjang belanja','Shopping cart')}</h3><button onclick="cartOpen(false)" aria-label="close">✕</button></div>
+  ${it.length?`<div class="clist">${it.map(({p,q})=>`<div class="cli"><div class="clim">${pImg(p)}</div><div class="clt"><b>${esc(pName(p))}</b><small>${esc(p.size||'')} · ${+p.price?rp(p.price):'—'}</small>
+      <div class="qty sm"><button onclick="cartSet('${p.id}',${q-1})">−</button><input type="number" min="0" value="${q}" onchange="cartSet('${p.id}',parseInt(this.value)||0)"><button onclick="cartSet('${p.id}',${q+1})">+</button></div></div>
+      <div class="clr"><b>${rp(q*(+p.price||0))}</b><button onclick="cartSet('${p.id}',0)">${L('Hapus','Remove')}</button></div></div>`).join('')}</div>
+    <div class="ctot"><span>${L('Subtotal','Subtotal')} (${n} item)</span><b>${rp(t)}</b></div><p class="cfine">${L('Belum termasuk ongkos kirim. Total final dikonfirmasi lewat WhatsApp.','Excludes delivery. Final total is confirmed on WhatsApp.')}</p>
+    <form class="cgrid ccheck" id="ccheck" onsubmit="event.preventDefault();chemSubmit()">
+      <label>${L('Nama','Name')}<input id="chNama" required autocomplete="name" value="${esc(CK.nama||'')}" oninput="CK.nama=this.value"></label>
+      <label>WhatsApp<input id="chTel" type="tel" inputmode="tel" placeholder="08…" required autocomplete="tel" value="${esc(CK.telp||'')}" oninput="CK.telp=this.value"></label>
+      <label>${L('Usaha / properti','Business / property')}<input id="chUsaha" placeholder="${L('opsional','optional')}" value="${esc(CK.usaha||'')}" oninput="CK.usaha=this.value"></label>
+      <label>${L('Wilayah','Region')}<select id="chWil" onchange="CK.wilayah=this.value">${o(Object.keys(REG),CK.wilayah)}</select></label>
+      <label class="full">${L('Alamat pengiriman','Delivery address')}<input id="chAlamat" required value="${esc(CK.alamat||'')}" oninput="CK.alamat=this.value" placeholder="${L('Jalan, nomor, area','Street, number, area')}"></label>
+      <label class="full">${L('Catatan (opsional)','Notes (optional)')}<input id="chCat" value="${esc(CK.cat||'')}" oninput="CK.cat=this.value"></label>
+      <input id="chHp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <button class="cgo full" id="chgo"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>${L('Pesan via WhatsApp','Order via WhatsApp')}</button>
+      <div class="err full" id="cherr"></div></form>`
+  :`<div class="cempty"><div style="font-size:42px">🛒</div><p>${L('Keranjang masih kosong.','Your cart is empty.')}</p><button class="abtn light" onclick="cartOpen(false)">${L('Lihat produk','Browse products')}</button></div>`}`;
+}
 async function chemSubmit(){
-  const e=$('#cherr'),name=$('#chNama').value.trim(),tel=$('#chTel').value.trim(),us=$('#chUsaha').value.trim(),wil=$('#chWil').value,cat=$('#chCat').value.trim();
-  if(!CH.sel.length&&!cat){e.textContent=L('Pilih minimal satu produk atau isi catatan kebutuhan.','Pick at least one product or describe your needs.');return}
+  const e=$('#cherr'),it=cartItems(),name=(CK.nama||'').trim(),tel=(CK.telp||'').trim(),al=(CK.alamat||'').trim();
+  if(!it.length){e.textContent=L('Keranjang kosong.','Cart is empty.');return}
   if(!name){e.textContent=L('Isi nama Anda.','Enter your name.');return}
   if(tel.replace(/\D/g,'').length<9){e.textContent=L('Isi nomor WhatsApp yang valid.','Enter a valid WhatsApp number.');return}
+  if(!al){e.textContent=L('Isi alamat pengiriman.','Enter the delivery address.');return}
   e.textContent='';const btn=$('#chgo');btn.disabled=true;
   const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');let w=null;if(wa){try{w=window.open('about:blank','_blank')}catch(_){}}
-  const lines=['Permintaan penawaran chemical',CH.sel.length?'Produk: '+CH.sel.map(i=>CHEMS[i][0]).join(', '):'',cat?'Kebutuhan: '+cat:'',us?'Usaha/properti: '+us:'','Wilayah: '+wil,'Nama: '+name,'WhatsApp: '+tel].filter(Boolean);
+  const lines=['Pesanan chemical:',...it.map(({p,q},k)=>`${k+1}. ${p.name} (${p.size||'-'}) × ${q} = ${rp(q*(+p.price||0))}`),`Subtotal: ${rp(cartTotal())} (belum ongkir)`,'',`Nama: ${name}`,`WhatsApp: ${tel}`,CK.usaha?`Usaha/properti: ${CK.usaha}`:null,`Wilayah: ${CK.wilayah}`,`Alamat kirim: ${al}`,CK.cat?`Catatan: ${CK.cat}`:null].filter(x=>x!==null);
   let id='';if(SET_READY)await SET_READY;
-  if(ONLINE()){try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:wil,properti:us||'-',layanan:'Chemical Supplies',tanggal:iso(new Date()),catatan:lines.join('\n'),website:$('#chHp').value||''},false);id=r.id||''}
+  if(ONLINE()){try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:CK.wilayah,properti:CK.usaha||'-',layanan:'Chemical Supplies',tanggal:iso(new Date()),catatan:lines.join('\n'),website:$('#chHp').value||''},false);id=r.id||''}
     catch(err){btn.disabled=false;if(w)try{w.close()}catch(_){}e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}}
   const url=wa?`https://wa.me/${wa}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+lines.join('\n'))}`:'';
   if(url){if(w&&!w.closed){try{w.location.href=url}catch(_){location.href=url}}else location.href=url}
-  else if(!ONLINE()){btn.disabled=false;e.textContent=L('Permintaan online belum aktif. Hubungi kami lewat halaman Kontak.','Online requests are not active yet. Contact us via the Contact page.');return}
-  CH.sel=[];
-  $('#chform').innerHTML=`<div class="okbox" style="padding:30px 10px"><div class="ic">✓</div><h3>${L('Permintaan terkirim','Request sent')}</h3>
-    <p>${id?L('No. permintaan','Request no.')+`: <b>${id}</b><br><br>`:''}${url?L('WhatsApp sudah terbuka — tekan <b>Kirim</b> agar tim JAGA mengirim penawaran.','WhatsApp has opened — press <b>Send</b> so JAGA can send your quote.'):L('Tim JAGA akan menghubungi Anda melalui WhatsApp.','The JAGA team will contact you on WhatsApp.')}</p>
-    ${url?`<p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('WhatsApp belum terbuka? Klik di sini','WhatsApp didn’t open? Click here')} →</a></p>`:''}
-    <p style="margin-top:10px"><a style="cursor:pointer;color:var(--muted)" onclick="chemPage()">${L('Kirim permintaan lain','Send another request')}</a></p></div>`;
-  $('#chform').scrollIntoView({behavior:'smooth',block:'center'});
+  else if(!ONLINE()){btn.disabled=false;e.textContent=L('Pemesanan online belum aktif. Hubungi kami lewat halaman Kontak.','Online ordering is not active yet. Contact us via the Contact page.');return}
+  const tot=cartTotal();CART={};cartSave();CK.cat='';cartRender();
+  $('#cpanel').innerHTML=`<div class="cph"><h3>${L('Pesanan terkirim','Order sent')}</h3><button onclick="cartOpen(false)">✕</button></div><div class="okbox" style="padding:30px 10px"><div class="ic">✓</div><h3>${L('Terima kasih!','Thank you!')}</h3>
+    <p>${id?L('No. pesanan','Order no.')+`: <b>${id}</b><br>`:''}${L('Subtotal','Subtotal')}: <b>${rp(tot)}</b><br><br>${url?L('WhatsApp sudah terbuka — tekan <b>Kirim</b> agar tim JAGA memproses pesanan.','WhatsApp has opened — press <b>Send</b> so JAGA can process your order.'):L('Tim JAGA akan menghubungi Anda melalui WhatsApp.','The JAGA team will contact you on WhatsApp.')}</p>
+    ${url?`<p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('WhatsApp belum terbuka? Klik di sini','WhatsApp didn’t open? Click here')} →</a></p>`:''}</div>`;
+}
+
+/* ================= ADMIN: kelola produk chemical (products.json) ================= */
+const saveProdFiles=()=>[{path:'products.json',b64:txtB64(JSON.stringify({products:PRODS},null,2)+'\n')}];
+function aprodPage(){
+  const tok=gh.tok();
+  const rows=PRODS.length?PRODS.map((p,i)=>`<div class="aprow"><div class="apimg">${pImg(p)}</div>
+      <div class="t"><b>${esc(p.name)} ${p.active===false?'<span class="tag" style="margin-left:6px">'+L('Disembunyikan','Hidden')+'</span>':''}</b><span>${esc(p.size||'')} · ${+p.price?rp(p.price):L('tanpa harga','no price')}</span></div>
+      <button class="abtn light sm" onclick="openProdForm(${i})">${L('Ubah','Edit')}</button>
+      <button class="abtn light sm" style="color:var(--red)" onclick="delProd(${i})">✕</button></div>`).join('')
+    :`<div class="empty" style="padding:22px">${L('Belum ada produk.','No products yet.')}</div>`;
+  return header(L('Produk Chemical','Chemical Products'),L('Katalog & harga di halaman Chemical Suppliers · khusus Admin','Catalogue & prices on the Chemical Suppliers page · Admin only'),`<a class="abtn light" href="#chemical" target="_blank">${L('Lihat halaman','View page')} ↗</a><button class="abtn" onclick="openProdForm(-1)">＋ ${L('Tambah produk','Add product')}</button>`)+
+  (tok?'':`<div class="demo">${L('Hubungkan GitHub terlebih dahulu di menu Media agar perubahan bisa disimpan ke website.','Connect GitHub first in the Media menu so changes can be saved to the website.')}</div>`)+
+  `<div class="panel"><div class="ph"><div><h3>${L('Daftar produk','Products')}</h3><p>${PRODS.length} ${L('produk','products')}</p></div></div><div class="aplist">${rows}</div></div><div class="mprog" id="mprog"></div>`;
+}
+let PRF_PHOTO=null;
+function openProdForm(i){
+  const p=i>=0?PRODS[i]:{name:'',nameEn:'',size:'',price:'',usage:'',usageEn:'',color:'#3a9fc4',photo:'',active:true};PRF_PHOTO=null;
+  $('#mbox').classList.add('wide');
+  $('#mbox').innerHTML=`<h3>${i>=0?L('Ubah produk','Edit product'):L('Tambah produk','Add product')}</h3><form class="pform" id="prform" onsubmit="return false">
+    <div class="fx"><div><label>${L('Nama produk (ID)','Product name (ID)')}</label><input name="name" required value="${esc(p.name)}"></div><div><label>${L('Nama produk (EN)','Product name (EN)')}</label><input name="nameEn" value="${esc(p.nameEn||'')}"></div></div>
+    <div class="fx"><div><label>${L('Kemasan / ukuran','Pack / size')}</label><input name="size" value="${esc(p.size||'')}" placeholder="Jerigen 5 L"></div><div><label>${L('Harga (Rp)','Price (Rp)')}</label><input name="price" type="number" min="0" step="500" value="${p.price||''}"></div></div>
+    <label>${L('Kegunaan (ID)','Usage (ID)')}</label><textarea name="usage" rows="2">${esc(p.usage||'')}</textarea>
+    <label>${L('Kegunaan (EN)','Usage (EN)')}</label><textarea name="usageEn" rows="2">${esc(p.usageEn||'')}</textarea>
+    <div class="fx"><div><label>${L('Warna ilustrasi (jika tanpa foto)','Illustration colour (if no photo)')}</label><input name="color" type="color" value="${esc(p.color||'#3a9fc4')}" style="height:44px"></div>
+      <div><label>${L('Foto produk','Product photo')}</label><input type="file" accept="image/*" onchange="prfPhoto(this.files[0])"></div></div>
+    <div class="pthumbs" id="prthumb">${p.photo?`<div><img src="${pUrl(p.photo)}" alt=""></div>`:''}</div>
+    ${p.photo?`<label><input type="checkbox" name="rmphoto" style="width:auto;margin-right:8px">${L('Hapus foto (pakai ilustrasi)','Remove photo (use illustration)')}</label>`:''}
+    <label><input type="checkbox" name="active" ${p.active!==false?'checked':''} style="width:auto;margin-right:8px">${L('Tampilkan di website','Show on website')}</label>
+  </form><div class="mprog" id="mprog"></div>
+  <div class="mact"><button class="abtn light" onclick="closeModal();$('#mbox').classList.remove('wide')">${L('Batal','Cancel')}</button><button class="abtn" onclick="saveProd(${i})">${L('Simpan ke website','Save to website')}</button></div>`;
+  $('#modal').classList.add('on');
+}
+async function prfPhoto(f){if(!f)return;const b=await resizeImage(f,1200,.85);PRF_PHOTO={blob:b,url:URL.createObjectURL(b)};$('#prthumb').innerHTML=`<div><img src="${PRF_PHOTO.url}" alt=""></div>`}
+async function saveProd(i){
+  const f=$('#prform');if(!f.reportValidity())return;const d=new FormData(f),old=i>=0?PRODS[i]:null;
+  const id=old?old.id:(d.get('name').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,30)||'produk')+'-'+Date.now().toString(36).slice(-4);
+  await mRun(async()=>{
+    const files=[];let photo=old?old.photo||'':'';
+    if(d.get('rmphoto')&&photo){files.push({path:photo,del:true});photo=''}
+    if(PRF_PHOTO){if(photo)files.push({path:photo,del:true});photo=`images/produk/${id}-${Date.now().toString(36)}.jpg`;files.push({path:photo,b64:await blobB64(PRF_PHOTO.blob)})}
+    const item={id,name:d.get('name').trim(),nameEn:d.get('nameEn').trim(),size:d.get('size').trim(),price:+d.get('price')||0,usage:d.get('usage').trim(),usageEn:d.get('usageEn').trim(),color:d.get('color'),photo,active:!!d.get('active')};
+    const snap=JSON.stringify(PRODS);if(old)PRODS[i]=item;else PRODS.push(item);
+    try{await gh.commit([...files,...saveProdFiles()],`Produk: ${old?'ubah':'tambah'} ${item.name}`,mProg)}catch(e){PRODS=JSON.parse(snap);throw e}
+    if(PRF_PHOTO)LOCALURL[photo]=PRF_PHOTO.url;
+    closeModal();$('#mbox').classList.remove('wide');renderPortal()});
+}
+async function delProd(i){
+  const p=PRODS[i];if(!p)return;
+  if(window.__delPr!==p.id){window.__delPr=p.id;mProg(L(`Klik ✕ sekali lagi untuk menghapus “${p.name}”.`,`Click ✕ again to delete “${p.name}”.`),'err');return}
+  window.__delPr=null;
+  await mRun(async()=>{const snap=JSON.stringify(PRODS);PRODS.splice(i,1);
+    try{await gh.commit([...(p.photo?[{path:p.photo,del:true}]:[]),...saveProdFiles()],`Produk: hapus ${p.name}`,mProg)}catch(e){PRODS=JSON.parse(snap);throw e}
+    renderPortal()});
 }
 
 /* ================= ADMIN: kelola properti ================= */
@@ -2312,7 +2433,7 @@ function renderLogin(){
 }
 function applyRole(){
   const coord=USER.role!=='admin';
-  $('#navMedia').style.display=coord?'none':'';$('#navProps').style.display=coord?'none':'';
+  $('#navMedia').style.display=coord?'none':'';$('#navProps').style.display=coord?'none':'';$('#navProd').style.display=coord?'none':'';
   if(coord)P.reg=USER.region;
   $$('#pnav a.regf').forEach(a=>{a.style.display=coord&&a.dataset.reg!==USER.region?'none':'';a.classList.toggle('on',a.dataset.reg===P.reg)});
   const ini=USER.name.split(' ').map(x=>x[0]).slice(0,2).join('');
@@ -2329,7 +2450,7 @@ function logout(expired){USER=null;clearInterval(POLL);tokSet('');if(ONLINE())S=
 
 
 /* ===== initial render ===== */
-loadMedia();loadProps();
+loadMedia();loadProps();loadProducts();
 applyStatic();renderSite();
 $$('.reveal').forEach(el=>io.observe(el));
 
