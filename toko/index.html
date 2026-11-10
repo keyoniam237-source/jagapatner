@@ -465,6 +465,12 @@ a.sellbtn{text-decoration:none}
   .sfoot{grid-template-columns:1fr}
   .hide-m{display:none!important}
 }
+
+.sharebox{margin-top:16px;border:1.5px solid #bcd0ff;background:linear-gradient(160deg,#f6f9ff,#eaf1ff);border-radius:16px;padding:14px 16px}
+.sharebox b .ic{color:#2f6bff;margin-right:4px}
+.sharebox p{margin:6px 0 0;font-size:13.5px;color:#45526b}
+.sharenote{margin-top:14px;font-size:13px;color:#45526b;background:#f4f7fc;border-radius:12px;padding:10px 12px}
+.sharenote .ic{color:#2f6bff}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -505,6 +511,8 @@ const STATUS = {
   selesai:{l:"Selesai",c:""},
   dibatalkan:{l:"Dibatalkan",c:"red"}
 };
+const BAGI_HASIL = 0.03; // bagi hasil Jaga Toko dari setiap penjualan selesai
+const shareOf = o => Math.round((o.total||0) * BAGI_HASIL);
 const FLOW = ["menunggu_pembayaran","menunggu_konfirmasi","diproses","diantar","selesai"];
 const FLOW_COD = ["diproses","diantar","selesai"];
 
@@ -797,7 +805,7 @@ function prodCard(x){
 const SLIDES = [
   {c:"s1", pill:"Promo setiap hari", t:"Gratis ongkir ke depan pintu, semua toko.", d:"Makanan, minuman, fashion, sampai gadget — tanpa biaya kirim.", art:I("truck")},
   {c:"s2", pill:"Tanpa biaya tambahan", t:"0% biaya admin. Bayar langsung ke toko.", d:"Transfer, e-wallet, QRIS, atau bayar di tempat.", art:I("card")},
-  {c:"s3", pill:"Untuk pemilik toko", t:"Punya toko? Gabung jadi Mitra Jaga Toko.", d:"Gratis, tanpa potongan. Hubungi tim kami untuk info pendaftaran.", art:I("store"), act:"mitra-info", v:""}
+  {c:"s3", pill:"Untuk pemilik toko", t:"Punya toko? Gabung jadi Mitra Jaga Toko.", d:"Daftar gratis, bagi hasil hanya 3% per penjualan. Hubungi tim kami untuk info.", art:I("store"), act:"mitra-info", v:""}
 ];
 function viewHome(){
   const q = S.q.trim().toLowerCase();
@@ -834,11 +842,11 @@ function viewHome(){
 function waMitra(){ return waLink(CONTACT.wa, "Halo Jaga Toko, saya ingin informasi untuk mendaftarkan toko saya sebagai mitra."); }
 function mitraBand(){
   return '<section class="mband"><div class="mtext"><span class="pill">'+I("store")+' Jaga Toko Mitra</span><h2>Punya toko? Jualan di Jaga Toko.</h2>'+
-    '<p>Daftar gratis, tanpa potongan admin. Pembayaran pembeli langsung masuk ke rekening, e-wallet, atau QRIS toko Anda.</p>'+
+    '<p>Daftar gratis, tanpa biaya bulanan. Pembayaran pembeli langsung masuk ke rekening, e-wallet, atau QRIS toko Anda — Jaga Toko hanya mengambil bagi hasil 3% dari penjualan yang selesai.</p>'+
     '<div class="mbtns"><a class="btn wa" target="_blank" rel="noopener" href="'+esc(waMitra())+'">'+I("chat")+' Tanya via WhatsApp</a>'+
     '<a class="btn ghost" target="_blank" rel="noopener" href="'+MITRA_URL+'">Daftarkan toko ↗</a></div>'+
     '<div class="mcontact">WhatsApp '+esc(CONTACT.wa)+(CONTACT.email?' · '+esc(CONTACT.email):'')+'</div></div>'+
-    '<div class="mperks"><div>'+I("percent")+'<b>0% potongan</b><span>Uang langsung ke toko</span></div><div>'+I("truck")+'<b>Gratis ongkir</b><span>Untuk semua pembeli</span></div><div>'+I("chart")+'<b>Dashboard toko</b><span>Pesanan & laporan</span></div></div></section>';
+    '<div class="mperks"><div>'+I("percent")+'<b>Bagi hasil 3%</b><span>Hanya dari penjualan yang selesai</span></div><div>'+I("truck")+'<b>Gratis ongkir</b><span>Untuk semua pembeli</span></div><div>'+I("chart")+'<b>Dashboard toko</b><span>Pesanan & laporan</span></div></div></section>';
 }
 function siteFooter(){
   return '<footer class="sfoot"><div class="fcol"><div class="logo" style="cursor:default">'+document.querySelector(".jmark").outerHTML+'<span class="lsep"></span><span class="wm">JAGA <b>TOKO</b></span></div><p class="small muted" style="max-width:320px">Semua toko di satu tempat. Gratis ongkir, tanpa biaya admin, bayar langsung ke toko.</p></div>'+
@@ -848,7 +856,7 @@ function siteFooter(){
 }
 function openMitraModal(){
   document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal mmodal"><div class="mhead">'+I("store")+'</div><h2 class="sec" style="margin-bottom:6px">Jadi Mitra Jaga Toko</h2>'+
-    '<p class="muted" style="margin-top:0">Untuk usaha makanan, minuman, sembako, sayur & buah, rumah tangga, fashion, serta toko handphone, laptop, dan game. Gratis, tanpa potongan admin.</p>'+
+    '<p class="muted" style="margin-top:0">Untuk usaha makanan, minuman, sembako, sayur & buah, rumah tangga, fashion, serta toko handphone, laptop, dan game. Daftar gratis — Jaga Toko hanya mengambil bagi hasil 3% dari setiap penjualan yang selesai.</p>'+
     '<div class="mlist"><div>'+I("checkc")+' Daftar dan kelola toko di halaman mitra</div><div>'+I("checkc")+' Pembayaran langsung ke akun toko Anda</div><div>'+I("checkc")+' Tim kami bantu proses pendaftaran</div></div>'+
     '<a class="btn wa block" target="_blank" rel="noopener" href="'+esc(waMitra())+'">'+I("chat")+' Hubungi via WhatsApp</a>'+
     '<a class="btn ghost block" style="margin-top:8px" target="_blank" rel="noopener" href="'+MITRA_URL+'">Buka halaman pendaftaran toko ↗</a>'+
@@ -1012,10 +1020,10 @@ function viewOrder(){
 function viewSeller(){
   const ms = myStores();
   if(!S.ready.stores) return '<div class="empty">'+I("loader")+' Memuat…</div>';
-  if(!ms.length) return '<div class="welcome" style="margin-top:10px"><span class="tag">Jaga Toko Mitra</span><h1>Buka toko online Anda<br><em>dalam 2 menit.</em></h1><p class="lead">Gratis selamanya. Tanpa potongan admin — setiap rupiah dari pembeli langsung masuk ke rekening, e-wallet, atau QRIS Anda.</p>'+
+  if(!ms.length) return '<div class="welcome" style="margin-top:10px"><span class="tag">Jaga Toko Mitra</span><h1>Buka toko online Anda<br><em>dalam 2 menit.</em></h1><p class="lead">Daftar gratis, tanpa biaya bulanan. Bagi hasil hanya 3% dari penjualan yang selesai — uang pembeli langsung masuk ke rekening, e-wallet, atau QRIS Anda.</p>'+
     '<div class="quick" style="text-align:left;max-width:760px;margin:0 auto 24px">'+
     '<div class="card qa"><div class="ico">'+I("store")+'</div><div><b>Semua jenis toko</b><span class="small muted">Kuliner, fashion, sampai gadget</span></div></div>'+
-    '<div class="card qa"><div class="ico">'+I("percent")+'</div><div><b>0% potongan</b><span class="small muted">Uang langsung ke Anda</span></div></div>'+
+    '<div class="card qa"><div class="ico">'+I("percent")+'</div><div><b>Bagi hasil 3%</b><span class="small muted">Uang langsung ke Anda</span></div></div>'+
     '<div class="card qa"><div class="ico">'+I("chart")+'</div><div><b>Laporan otomatis</b><span class="small muted">Omzet & produk terlaris</span></div></div></div>'+
     '<button class="btn" style="padding:15px 26px;font-size:16px" data-act="go" data-v="register">Daftarkan toko sekarang →</button></div>';
   const s = storeById(S.sellerStoreId) || ms[0];
@@ -1047,7 +1055,7 @@ function sellerDashboard(s, orders){
     '<div class="card stat"><div class="l">Omzet hari ini</div><div class="v">'+rp(todayRev)+'</div></div>'+
     '<div class="card stat"><div class="l">Pesanan hari ini</div><div class="v">'+todayOrders.length+'</div></div>'+
     '<div class="card stat"><div class="l">Perlu tindakan</div><div class="v" style="color:'+(need.length?"#3b74ff":"inherit")+'">'+need.length+'</div></div>'+
-    '<div class="card stat"><div class="l">Produk aktif</div><div class="v">'+prods.filter(p=>p.active!==false).length+'</div>'+(low.length?'<div class="small" style="color:var(--warn);font-weight:700">'+low.length+' stok menipis</div>':'')+'</div></div>';
+    '<div class="card stat" data-act="nav" data-v="seller" data-t="laporan" style="cursor:pointer"><div class="l">Bagi hasil 3% bulan ini</div><div class="v">'+rp(monthShare(orders, new Date()))+'</div><div class="small muted">'+prods.filter(p=>p.active!==false).length+' produk aktif'+(low.length?' · <span style="color:var(--warn);font-weight:700">'+low.length+' stok menipis</span>':'')+'</div></div></div>';
   const p = s.pay || {};
   const steps = [
     ["Lengkapi profil toko", !!(s.name && s.address && s.wa)],
@@ -1090,7 +1098,7 @@ function orderCard(s, o){
       '<div class="small" style="margin-top:8px">'+o.items.map(i=>'<b>'+i.qty+'×</b> '+esc(i.name)).join(" · ")+'</div>'+
       '<div class="small muted" style="margin-top:4px">'+I("pin")+' '+esc(o.buyer.address)+(o.buyer.maps?' · <a target="_blank" rel="noopener" href="'+esc(o.buyer.maps)+'">peta</a>':'')+'</div>'+
       (o.buyer.note?'<div class="small muted">'+I("note")+' '+esc(o.buyer.note)+'</div>':'')+
-      '<div style="margin-top:6px"><b>'+rp(o.total)+'</b> <span class="small muted">· '+esc(o.pay?o.pay.type:"")+'</span></div>'+
+      '<div style="margin-top:6px"><b>'+rp(o.total)+'</b> <span class="small muted">· '+esc(o.pay?o.pay.type:"")+' · bagi hasil 3%: '+rp(typeof o.share==="number"?o.share:shareOf(o))+'</span></div>'+
       (o.proof?'<details style="margin-top:6px"><summary class="small" style="cursor:pointer;font-weight:700">Lihat bukti pembayaran</summary><img class="proof" alt="Bukti pembayaran" src="'+esc(o.proof)+'"></details>':'')+
       '<div class="actions">'+acts+'</div></div>';
   }
@@ -1103,6 +1111,24 @@ function sellerProducts(s){
   return h + '<div class="card pad">'+prods.map(p =>
     '<div class="line-item"><div class="thumb">'+(p.img?'<img alt="" src="'+esc(p.img)+'">':I("package"))+'</div><div class="grow"><div style="font-weight:700">'+esc(p.name)+' '+(p.active===false?'<span class="tag gray">Disembunyikan</span>':'')+'</div><div class="small muted">'+rp(p.price)+(typeof p.stock==="number"?' · stok '+p.stock:' · stok tidak dibatasi')+'</div></div>'+
     '<button class="btn ghost sm" data-act="edit-prod" data-id="'+esc(p.id)+'">Ubah</button></div>').join("")+'</div>';
+}
+function monthKey(t){ const d = new Date(t); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
+function monthShare(orders, date){ const k = monthKey(date); return orders.filter(o => o.status==="selesai" && monthKey(o.doneAt||o.createdAt)===k).reduce((a,o)=>a+(typeof o.share==="number"?o.share:shareOf(o)),0); }
+function shareTable(s, orders){
+  const done = orders.filter(o => o.status === "selesai");
+  const m = {};
+  done.forEach(o => { const k = monthKey(o.doneAt||o.createdAt); m[k] = m[k] || {n:0, sales:0, share:0}; m[k].n++; m[k].sales += o.total; m[k].share += (typeof o.share==="number"?o.share:shareOf(o)); });
+  const keys = Object.keys(m).sort().reverse();
+  const nowK = monthKey(Date.now());
+  const label = k => { const [y,mo] = k.split("-"); return new Date(+y, +mo-1, 1).toLocaleDateString("id-ID",{month:"long", year:"numeric"}); };
+  const msg = k => "Halo Jaga Toko, saya dari "+s.name+". Konfirmasi pembayaran bagi hasil 3% bulan "+label(k)+": "+rp(m[k].share)+" ("+m[k].n+" pesanan, penjualan "+rp(m[k].sales)+").";
+  let h = '<div class="card pad" style="margin-top:16px"><h3 class="sub" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span>'+I("percent")+' Bagi hasil Jaga Toko (3%)</span><span class="small muted" style="font-weight:600">dihitung dari pesanan selesai</span></h3>';
+  if(!keys.length) return h + '<div class="muted small">Belum ada penjualan selesai. Bagi hasil hanya dihitung dari pesanan yang selesai.</div></div>';
+  h += '<table class="t"><tr><th>Bulan</th><th class="num">Pesanan</th><th class="num">Penjualan</th><th class="num">Bagi hasil 3%</th><th></th></tr>'+
+    keys.map(k => '<tr><td>'+esc(label(k))+(k===nowK?' <span class="tag gray">berjalan</span>':'')+'</td><td class="num">'+m[k].n+'</td><td class="num">'+rp(m[k].sales)+'</td><td class="num"><b>'+rp(m[k].share)+'</b></td><td class="num">'+
+      (k===nowK?'<span class="small muted">ditagih awal bulan depan</span>':'<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, msg(k)))+'">'+I("chat")+' Konfirmasi bayar</a>')+'</td></tr>').join("")+'</table>';
+  h += '<div class="hint" style="margin-top:10px">Bagi hasil dibayarkan ke Jaga Toko setiap awal bulan. Hubungi WhatsApp '+esc(CONTACT.wa)+' untuk info rekening pembayaran.</div></div>';
+  return h;
 }
 function sellerReport(s, orders){
   const done = orders.filter(o => o.status === "selesai");
@@ -1125,6 +1151,7 @@ function sellerReport(s, orders){
     '<div class="card stat"><div class="l">Pesanan aktif</div><div class="v">'+active.length+'</div><div class="small muted">'+rp(pending)+' belum selesai</div></div></div>';
   h += '<div class="two"><div class="card pad"><h3 class="sub">Omzet 7 hari terakhir</h3><div class="bars">'+days.map(x=>'<div class="b" title="'+rp(x.v)+'"><span>'+(x.v?(x.v>=1e6?(x.v/1e6).toFixed(1)+"jt":Math.round(x.v/1e3)+"rb"):"")+'</span><i style="height:'+(x.v/max*100)+'%"></i>'+x.d.toLocaleDateString("id-ID",{weekday:"short"})+'</div>').join("")+'</div></div>';
   h += '<div class="card pad"><h3 class="sub">Per metode pembayaran</h3>'+(Object.keys(byPay).length?'<table class="t">'+Object.entries(byPay).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td class="num">'+rp(v)+'</td></tr>').join("")+'</table>':'<div class="muted small">Belum ada data.</div>')+'</div></div>';
+  h += shareTable(s, orders);
   h += '<div class="card pad" style="margin-top:16px"><h3 class="sub">Produk terlaris</h3>'+(topList.length?'<table class="t"><tr><th>Produk</th><th class="num">Terjual</th><th class="num">Pendapatan</th></tr>'+topList.map(([n,x])=>'<tr><td>'+esc(n)+'</td><td class="num">'+x.q+'</td><td class="num">'+rp(x.v)+'</td></tr>').join("")+'</table>':'<div class="muted small">Belum ada penjualan selesai.</div>')+'</div>';
   return h;
 }
@@ -1133,7 +1160,7 @@ function viewWelcome(){
   return '<div class="welcome"><span class="tag">'+I("sparkles")+' Selamat datang di Jaga Toko</span><h1>Mau <em>belanja</em> atau<br><em>jualan</em> hari ini?</h1><p class="lead">Pilih peran Anda. Anda bisa berganti kapan saja lewat tombol di bagian atas.</p>'+
     '<div class="roles">'+
     '<div class="rolecard buyer" data-act="role" data-v="buyer"><div><div class="big-ic">'+I("bag")+'</div><h3>Saya pengunjung</h3><div class="muted">Cari kebutuhan dari'+(n?' '+n:'')+' toko di sekitar Anda.</div><ul><li>Gratis ongkir ke lokasi</li><li>Tanpa biaya admin</li><li>Bayar langsung ke toko</li></ul></div><div class="go">Mulai belanja →</div></div>'+
-    '<div class="rolecard seller" data-act="role" data-v="seller"><div><div class="big-ic">'+I("store")+'</div><h3>Saya pemilik toko</h3><div class="muted">Daftarkan toko dan terima pesanan online.</div><ul><li>Daftar gratis, tanpa potongan</li><li>Pembayaran masuk ke akun Anda</li><li>Dashboard & laporan penjualan</li></ul></div><div class="go">Buka dashboard toko →</div></div>'+
+    '<div class="rolecard seller" data-act="role" data-v="seller"><div><div class="big-ic">'+I("store")+'</div><h3>Saya pemilik toko</h3><div class="muted">Daftarkan toko dan terima pesanan online.</div><ul><li>Daftar gratis, bagi hasil 3%</li><li>Pembayaran masuk ke akun Anda</li><li>Dashboard & laporan penjualan</li></ul></div><div class="go">Buka dashboard toko →</div></div>'+
     '</div></div>';
 }
 function viewRegister(){
@@ -1152,12 +1179,14 @@ function storeForm(s){
     '<label class="f">Alamat toko *</label><input class="in" name="address" required value="'+esc(s.address||"")+'">'+
     '<div class="cols2"><div><label class="f">No. WhatsApp toko *</label><input class="in" name="wa" required inputmode="tel" placeholder="08xxxxxxxxxx" value="'+esc(s.wa||"")+'"></div>'+
     '<div><label class="f">Jam buka</label><input class="in" name="hours" placeholder="08.00–21.00" value="'+esc(s.hours||"")+'"></div></div></fieldset>'+
-    '<fieldset class="fieldset"><legend>Akun pembayaran toko</legend><div class="hint">Isi minimal satu. Uang dari pembeli langsung masuk ke akun ini — Jaga Toko tidak memotong apa pun.</div>'+
+    '<fieldset class="fieldset"><legend>Akun pembayaran toko</legend><div class="hint">Isi minimal satu. Uang dari pembeli langsung masuk ke akun ini. Bagi hasil 3% untuk Jaga Toko ditagih terpisah setiap bulan.</div>'+
     '<div class="cols2"><div><label class="f">Bank</label><input class="in" name="bankName" placeholder="BCA / BRI / Mandiri / BNI…" value="'+esc(bank.name||"")+'"></div><div><label class="f">No. rekening</label><input class="in" name="bankNo" inputmode="numeric" value="'+esc(bank.no||"")+'"></div></div>'+
     '<label class="f">Atas nama rekening</label><input class="in" name="bankHolder" value="'+esc(bank.holder||"")+'">'+
     ewRow(0)+ewRow(1)+
     '<label class="f">QRIS toko</label><div class="imgpick"><div class="prev" id="qrisPrev">'+(p.qris?'<img alt="" src="'+esc(p.qris)+'">':I("qr"))+'</div><input type="file" accept="image/*" id="qrisFile">'+(p.qris?'<label class="small"><input type="checkbox" name="qrisRemove"> hapus</label>':'')+'</div>'+
     '<label class="check"><input type="checkbox" name="cod" '+(p.cod?"checked":"")+'> Terima bayar di tempat (COD)</label></fieldset>'+
+    (s.id ? '<div class="sharenote">'+I("percent")+' Bagi hasil Jaga Toko: <b>3%</b> dari setiap penjualan selesai'+(s.shareAgreedAt?' · disetujui '+esc(new Date(s.shareAgreedAt).toLocaleDateString("id-ID")):'')+'</div>'
+      : '<div class="sharebox"><b>'+I("percent")+' Bagi hasil 3%</b><p>Pembeli tidak dikenai biaya admin. Sebagai gantinya, toko membayar bagi hasil <b>3% dari setiap penjualan yang selesai</b> kepada Jaga Toko, ditagih setiap awal bulan. Pesanan yang dibatalkan tidak dihitung.</p><label class="check" style="margin-top:8px"><input type="checkbox" name="agreeShare" required> Saya setuju dengan bagi hasil 3% per penjualan</label></div>')+
     '<button class="btn block" style="margin-top:16px">'+(s.id?"Simpan perubahan":"Daftarkan toko")+'</button>'+
     (s.id?'<button type="button" class="btn danger block" style="margin-top:8px" data-act="del-store">Hapus toko</button>':'')+
     '</form>';
@@ -1229,7 +1258,7 @@ async function placeOrder(form){
   const code = "JT-" + new Date().toISOString().slice(2,10).replace(/-/g,"") + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
   const order = {code, storeId:s.id, storeName:s.name, buyerId:ME, buyer,
     items:t2.items.map(i=>({pid:i.pid, name:i.name, price:i.price, qty:i.qty})),
-    subtotal:t2.subtotal, ongkir:0, admin:0, total:t2.total, pay,
+    subtotal:t2.subtotal, ongkir:0, admin:0, total:t2.total, shareRate:BAGI_HASIL, share:Math.round(t2.total*BAGI_HASIL), pay,
     status: k === "cod" ? "diproses" : "menunggu_pembayaran", createdAt:now, updatedAt:now};
   const btn = form.querySelector("button"); if(btn) btn.disabled = true;
   const ok = await safe(() => store.set("orders/"+id, order));
@@ -1259,12 +1288,13 @@ async function saveStore(form){
     logo: pending.logo !== undefined ? pending.logo : (old ? old.logo || "" : ""), pay
   };
   if(!payMethodsOf(data).length) return toast("Isi minimal satu metode pembayaran (rekening, e-wallet, QRIS, atau COD).");
+  if(!old && !fd.get("agreeShare")) return toast("Centang persetujuan bagi hasil 3% untuk mendaftar.");
   if(old){
     const ok = await safe(() => store.update("stores/"+id, Object.assign(data, {updatedAt:Date.now()})), "Perubahan disimpan");
     if(ok){ pending.logo = pending.qris = undefined; }
   } else {
     const nid = uid("s");
-    const ok = await safe(() => store.set("stores/"+nid, Object.assign(data, {ownerId:ME, open:true, active:true, color:COLORS[Math.floor(Math.random()*COLORS.length)], createdAt:Date.now()})), "Toko berhasil didaftarkan!");
+    const ok = await safe(() => store.set("stores/"+nid, Object.assign(data, {ownerId:ME, open:true, active:true, shareRate:BAGI_HASIL, shareAgreedAt:Date.now(), color:COLORS[Math.floor(Math.random()*COLORS.length)], createdAt:Date.now()})), "Toko berhasil didaftarkan!");
     if(ok){ pending.logo = pending.qris = undefined; S.sellerStoreId = nid; go("seller", {sellerTab:"ringkasan"}); }
   }
 }
