@@ -220,6 +220,19 @@ h2.t em{font-style:italic;color:var(--green)}
 .f input:focus,.f select:focus,.f textarea:focus{border-color:var(--gold)}
 .f textarea{resize:vertical;min-height:80px}
 .offices{display:grid;gap:22px;margin-top:40px}
+.cinfo{display:grid;gap:14px;margin-top:36px}
+.ci{display:flex;align-items:center;gap:16px;padding:14px 16px;border:1px solid rgba(255,255,255,.1);border-radius:14px;color:#fff;transition:.25s}
+a.ci:hover{border-color:var(--gold);background:rgba(255,255,255,.04)}
+.cic{flex:none;width:44px;height:44px;border-radius:50%;background:rgba(201,169,106,.14);display:grid;place-items:center;color:var(--gold2)}
+.cic svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ci small{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.ci b{display:block;font-size:15.5px;font-weight:500;margin-top:2px;line-height:1.45}
+.creg{font-size:13px;color:rgba(255,255,255,.55);margin-top:6px}.creg b{color:rgba(255,255,255,.85);font-weight:500}
+.fcontact{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center}
+.fcontact a,.fcontact>span{display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,.7);font-size:13px}
+.fcontact a:hover{color:var(--gold2)}
+.fcontact svg{width:17px;height:17px;fill:none;stroke:var(--gold2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+footer .fcopy{margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08);justify-content:center;font-size:12px;color:rgba(255,255,255,.4)}
 .office{border-left:1px solid var(--gold);padding-left:18px}
 .office b{font-family:var(--serif);font-size:24px;font-weight:500}
 .office p{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;margin-top:4px}
@@ -973,17 +986,6 @@ tr:hover td{background:#fbf8f2}
     </div>
   </section>
 
-  <!-- KARIER -->
-  <section class="s" id="karier">
-    <div class="wrap">
-      <div class="split reveal">
-        <div><div class="kicker">Karier</div><h2 class="t" data-en="Join our <em>team</em>.">Bergabung dengan <em>tim</em> kami.</h2></div>
-        <p class="lead">Kami membuka lowongan di Bali, Lombok, dan Yogyakarta. Pelatihan SOP disediakan untuk semua posisi.</p>
-      </div>
-      <div class="jobs reveal" id="jobs"></div>
-    </div>
-  </section>
-
   <!-- CONTACT -->
   <section class="s contact" id="kontak">
     <div class="wrap split" style="align-items:start">
@@ -991,7 +993,7 @@ tr:hover td{background:#fbf8f2}
         <div class="kicker">Kontak &amp; Pemesanan</div>
         <h2 class="t" data-en="Let's care for your property <em>together</em>.">Mari rawat properti Anda <em>bersama</em>.</h2>
         <p class="lead">Isi formulir, dan koordinator wilayah akan menghubungi Anda untuk survei dan penawaran.</p>
-        <div class="offices" id="offices"></div>
+        <div class="cinfo" id="offices"></div>
       </div>
       <form class="form reveal" id="bookForm">
         <div class="f"><label>Nama</label><input name="nama" required placeholder="Nama lengkap"></div>
@@ -1013,9 +1015,10 @@ tr:hover td{background:#fbf8f2}
   <footer>
     <div class="wrap">
       <a class="brand" href="#beranda"><span class="mono"><svg><use href="#mono"/></svg></span><span class="bar"></span><span class="wm"><b>JAGA</b><small>Management &amp; Operations</small></span></a>
-      <div>Bali · Lombok · Yogyakarta &nbsp;—&nbsp; © 2026 JAGA</div>
+      <div class="fcontact" id="fcontact"></div>
       <a href="#portal" style="color:var(--gold2)">Portal Operasional →</a>
     </div>
+    <div class="wrap fcopy">Bali · Lombok · Yogyakarta &nbsp;—&nbsp; © 2026 JAGA · Management &amp; Operations</div>
   </footer>
 </div>
 
@@ -1273,8 +1276,21 @@ Yogyakarta:`<svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice"><def
 function renderRegions(){
   const REGPHOTO={Bali:'images/wilayah/bali.jpg',Lombok:'images/wilayah/lombok.jpg',Yogyakarta:'images/wilayah/yogyakarta.jpg'};
   $('#regions').innerHTML=Object.entries(REG).map(([k,v],i)=>`<div class="reg reveal vis" onclick="pickRegion('${k}')"><div class="art">${ART[k]}${REGPHOTO[k]?`<img src="${REGPHOTO[k]}" alt="${k}" loading="lazy" onerror="this.remove()">`:''}</div><div class="c"><small>${L('Wilayah','Region')} 0${i+1}</small><h3>${k}</h3><p>${L(...v.desc)}<br><br><span style="color:var(--gold2)">${v.areas}</span></p><div class="meta"><span>${L('Pesan layanan →','Book a service →')}</span></div></div></div>`).join('');
-  $('#offices').innerHTML=Object.entries(REG).map(([k,v])=>`<div class="office"><b>${k}</b><p>${v.areas}</p></div>`).join('');
+  $('#offices').innerHTML=contactList();
 }
+const OFFICE='Jl. Gatot Subroto Tengah, Denpasar, Bali, Indonesia';
+const ICO={map:'<svg viewBox="0 0 24 24"><path d="M12 22s7-7.6 7-13a7 7 0 0 0-14 0c0 5.4 7 13 7 13z"/><circle cx="12" cy="9" r="2.6"/></svg>',
+  wa:'<svg viewBox="0 0 24 24"><path d="M20.5 3.5A11 11 0 0 0 3.3 17.1L2 22l5-1.3A11 11 0 0 0 20.5 3.5zM12 20a8.9 8.9 0 0 1-4.6-1.3l-.3-.2-3 .8.8-2.9-.2-.3A9 9 0 1 1 12 20zm4.9-6.7c-.3-.1-1.6-.8-1.8-.9s-.4-.1-.6.1-.7.9-.8 1-.3.2-.6.1a7.3 7.3 0 0 1-3.6-3.2c-.3-.5.3-.4.8-1.4.1-.2 0-.3 0-.5l-.8-2c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7.5-.1 1.6-.7 1.8-1.3s.2-1.2.2-1.3-.2-.2-.5-.3z" fill="currentColor" stroke="none"/></svg>',
+  mail:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>',
+  ig:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg>'};
+const waNice=n=>{n=(n||'').replace(/\D/g,'');return n?'+'+n.slice(0,2)+' '+n.slice(2,5)+'-'+n.slice(5,9)+'-'+n.slice(9):''};
+function contactItems(){const wa=(SETTINGS.whatsapp||'62882005837975').replace(/\D/g,''),mail=SETTINGS.email||'jagamanajemen@gmail.com',ig=SETTINGS.instagram||'';
+  return [['map',L('Kantor','Office'),OFFICE,'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(OFFICE)],
+    ['wa','WhatsApp',waNice(wa),'https://wa.me/'+wa],['mail','Email',mail,'mailto:'+mail],
+    ['ig','Instagram','Jaga Management',ig?(/^https?:/.test(ig)?ig:'https://www.instagram.com/'+ig.replace(/^@/,'')+'/'):'']]}
+function contactList(){return contactItems().map(([k,t,v,u])=>`${u?`<a class="ci" href="${u}" target="_blank" rel="noopener">`:'<div class="ci">'}<span class="cic">${ICO[k]}</span><span><small>${t}</small><b>${esc(v)}</b></span>${u?'</a>':'</div>'}`).join('')+
+  `<div class="creg">${L('Wilayah layanan','Service areas')}: <b>Bali · Lombok · Yogyakarta</b></div>`}
+function renderFootContact(){const f=$('#fcontact');if(f)f.innerHTML=contactItems().map(([k,t,v,u])=>u?`<a href="${u}" target="_blank" rel="noopener" title="${esc(t)}">${ICO[k]}<span>${esc(v)}</span></a>`:`<span title="${esc(t)}">${ICO[k]}<span>${esc(v)}</span></span>`).join('')}
 function pickRegion(r){$('#fWil').value=r;location.hash='kontak';}
 function updateSiteCounts(){
   /* angka publik tidak diambil dari data portal */
@@ -1309,12 +1325,20 @@ function renderPosts(){
   $('#posts').innerHTML=POSTS.map(p=>`<div class="post" onclick="toast(L('Artikel lengkap akan tersedia segera','The full article is coming soon'))"><div class="cv" style="background:linear-gradient(135deg,${p[3]},#1a1f1c)"><span>${L(...p[0])}</span></div><small>${new Date().toLocaleDateString(LOC(),{month:'long',year:'numeric'})}</small><h4>${L(...p[1])}</h4><p>${L(...p[2])}</p></div>`).join('');
 }
 const JOBS=[[['Housekeeper','Housekeeper'],'Bali',1],[['Supervisor Housekeeping','Housekeeping Supervisor'],'Lombok',1],[['Teknisi Kolam & Taman','Pool & Garden Technician'],'Bali',1],[['Staf Laundry','Laundry Staff'],'Yogyakarta',0],[['Koordinator Operasional','Operations Coordinator'],'Yogyakarta',1]];
-function renderJobs(){
+function renderJobs(){if(!$('#jobs'))return;
   $('#jobs').innerHTML=JOBS.map((j,i)=>`<div class="job-row"><h4>${L(...j[0])}</h4><span><span class="dot" style="background:${REG[j[1]].color}"></span>${j[1]}</span><span>${j[2]?L('Penuh waktu','Full time'):L('Shift','Shift work')}</span><button class="btn ghost" onclick="applyJob(${i})">${L('Lamar →','Apply →')}</button></div>`).join('');
 }
-function applyJob(i){const j=JOBS[i];$('#fWil').value=j[1];document.querySelector('#bookForm textarea').value=L('Lamaran posisi: ','Application for: ')+L(...j[0])+' ('+j[1]+')';location.hash='kontak';toast(L('Isi nama & telepon, lalu kirim lamaran Anda','Enter your name & phone, then send your application'))}
+function applyJob(i){const j=JOBS[i],wa=(SETTINGS.whatsapp||'62882005837975').replace(/\D/g,'');
+  window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Halo JAGA, saya ingin melamar posisi ${j[0][0]} (${j[1]}).\nNama: \nDomisili: \nPengalaman: `)}`,'_blank','noopener')}
+function careerPage(){
+  $('#propPage').innerHTML=`<div class="pbanner"><div class="wrap"><div class="kicker">${L('Karier','Careers')}</div>
+    <h1>${L('Bergabung dengan tim kami.','Join our team.')}</h1>
+    <p>${L('Kami membuka lowongan di Bali, Lombok, dan Yogyakarta. Pelatihan SOP disediakan untuk semua posisi.','We are hiring in Bali, Lombok and Yogyakarta. SOP training is provided for every role.')}</p></div></div>
+  <div class="svwrap"><div class="kicker">${L('Lowongan','Open positions')}</div><div class="jobs" id="jobs" style="margin-top:20px"></div>
+  <p class="svsub" style="margin-top:26px">${L('Klik “Lamar” untuk mengirim lamaran lewat WhatsApp. Lampirkan CV atau foto KTP bila diminta tim kami.','Click “Apply” to send your application on WhatsApp. Attach your CV when our team asks.')}</p></div>`;
+  renderJobs()}
 
-function renderSite(){renderGallery();renderCards();renderRegions();renderHomeProps();if($('#site').classList.contains('pmode'))renderPropRoute();renderPosts();renderJobs();renderServiceSelect();updateSiteCounts()}
+function renderSite(){renderGallery();renderCards();renderRegions();renderHomeProps();if($('#site').classList.contains('pmode'))renderPropRoute();renderPosts();renderJobs();renderServiceSelect();renderFootContact();updateSiteCounts()}
 
 /* ===== Language switch ===== */
 function setLang(l){
@@ -1327,7 +1351,7 @@ $('#langBtn').onclick=()=>{setLang(LANG==='ID'?'EN':'ID');toast(L('Bahasa Indone
 /* nav: solid on scroll, active link, reveal, counters */
 const nav=$('#nav');
 addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>60||$('#site').classList.contains('pmode'));
-  let cur='beranda';if($('#site').classList.contains('pmode'))cur=/^(cleaning|manajemen|chemical)$/.test(location.hash.slice(1))?'layanan':'properti';else ['beranda','layanan','unggulan','mitra','cerita','blog','karier','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id==='unggulan'?'properti':id});
+  let cur='beranda';if($('#site').classList.contains('pmode'))cur=location.hash==='#karier'?'karier':/^(cleaning|manajemen|chemical)$/.test(location.hash.slice(1))?'layanan':'properti';else ['beranda','layanan','unggulan','mitra','cerita','blog','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id==='unggulan'?'properti':id});
   $$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
 },{passive:true});
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');
@@ -1811,7 +1835,7 @@ async function loadProps(){
   SET_READY=(async()=>{try{const r=await fetch('settings.json?v='+Date.now(),{cache:'no-store'});if(r.ok)SETTINGS={...SETTINGS,...await r.json()}}catch(e){}})();
   try{const r=await fetch('properties.json?v='+Date.now(),{cache:'no-store'});if(r.ok)PROPS=(await r.json()).properties||[]}catch(e){}
   await SET_READY;
-  renderHomeProps();if($('#site').classList.contains('pmode'))renderPropRoute();
+  renderRegions();renderFootContact();renderHomeProps();if($('#site').classList.contains('pmode'))renderPropRoute();
 }
 const pUrl=src=>LOCALURL[src]||src;
 const PIN='<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>';
@@ -1951,7 +1975,7 @@ function bkSubmit(id){
     <p>${L('WhatsApp terbuka dengan detail pesanan Anda. Tekan <b>Kirim</b> di WhatsApp untuk menyelesaikan.','WhatsApp has opened with your booking details. Press <b>Send</b> in WhatsApp to complete it.')}<br><br>${L('No. pesanan','Order no.')}: <b>${oid}</b><br>${esc(p.name)} · ${c.label}<br>${rp(c.total)}</p>
     <p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('Buka WhatsApp lagi','Open WhatsApp again')}</a> · <a style="cursor:pointer;color:var(--muted)" onclick="renderBooking(PROPS.find(x=>x.id==='${p.id}'))">${L('Ubah pesanan','Edit request')}</a></p></div>`;
 }
-function renderPropRoute(){const h=location.hash.slice(1);if(h==='chemical')return chemPage();if(h==='cleaning'||h==='manajemen')svcPage(h);else if(h.startsWith('p-'))renderPropDetail(h.slice(2));else renderPropList()}
+function renderPropRoute(){const h=location.hash.slice(1);if(h==='chemical')return chemPage();if(h==='karier')return careerPage();if(h==='cleaning'||h==='manajemen')svcPage(h);else if(h.startsWith('p-'))renderPropDetail(h.slice(2));else renderPropList()}
 
 
 /* ================= HALAMAN LAYANAN: #cleaning & #manajemen ================= */
@@ -2299,6 +2323,7 @@ function apropsPage(){
   <div class="panel"><div class="ph"><div><h3>${L('Pengaturan pemesanan','Booking settings')}</h3><p>${L('Pesanan dari halaman properti dikirim ke WhatsApp ini. Tanpa nomor, tombol pesan nonaktif.','Bookings from the property pages are sent to this WhatsApp. Without a number, the book button is disabled.')}</p></div></div>
     <div class="mrow"><div class="f"><label>${L('Nomor WhatsApp bisnis','Business WhatsApp number')}</label><input id="setWa" inputmode="tel" placeholder="6281234567890" value="${esc(SETTINGS.whatsapp||'')}"></div>
     <div class="f"><label>Email</label><input id="setMail" type="email" placeholder="info@…" value="${esc(SETTINGS.email||'')}"></div>
+    <div class="f"><label>Instagram (@username)</label><input id="setIg" placeholder="@jagamanagement" value="${esc(SETTINGS.instagram||'')}"></div>
     <div class="f"><label>${L('Alamat server portal (Helipod)','Portal server URL (Helipod)')}</label><input id="setApi" type="url" placeholder="https://….helipod.app" value="${esc(SETTINGS.api||'')}"></div>
     <button class="abtn" onclick="saveSettings()">${L('Simpan','Save')}</button></div>
     <p class="rg" style="margin-top:8px">${L('Format: kode negara tanpa + atau 0 di depan, mis. 6281234567890.','Format: country code without + or leading 0, e.g. 6281234567890.')}</p>
@@ -2315,7 +2340,7 @@ async function saveSettings(){
   if(wa&&wa.length<10){mProg(L('Nomor WhatsApp terlalu pendek.','WhatsApp number too short.'),'err');return}
   const apiUrl=$('#setApi').value.trim().replace(/\/+$/,'');
   if(apiUrl&&!/^https:\/\/[^\s/]+$/.test(apiUrl)){mProg(L('Alamat server harus diawali https:// tanpa garis miring di akhir.','The server URL must start with https:// with no trailing path.'),'err');return}
-  await mRun(async()=>{const old={...SETTINGS};SETTINGS={...SETTINGS,whatsapp:wa,email:$('#setMail').value.trim(),api:apiUrl};
+  await mRun(async()=>{const old={...SETTINGS};SETTINGS={...SETTINGS,whatsapp:wa,email:$('#setMail').value.trim(),instagram:$('#setIg').value.trim(),api:apiUrl};
     try{await gh.commit([{path:'settings.json',b64:txtB64(JSON.stringify(SETTINGS,null,2)+'\n')}],'Pengaturan: kontak pemesanan',mProg)}catch(e){SETTINGS=old;throw e}
     renderPortal()});
 }
@@ -2455,12 +2480,12 @@ $$('.reveal').forEach(el=>io.observe(el));
 
 
 /* ================= ROUTING ================= */
-const SITE_IDS=['beranda','cerita','layanan','unggulan','galeri','mitra','wilayah','proses','aplikasi','blog','karier','kontak'];
+const SITE_IDS=['beranda','cerita','layanan','unggulan','galeri','mitra','wilayah','proses','aplikasi','blog','kontak'];
 function route(){
   const h=location.hash.slice(1);
   if(h==='portal'){$('#site').classList.remove('on');$('#portal').classList.add('on');scrollTo(0,0);if(USER)enterPortal();else{$('#portal').classList.add('locked');renderLogin()}return}
   $('#portal').classList.remove('on');$('#site').classList.add('on');updateSiteCounts();
-  if(h==='properti'||h.startsWith('p-')||h==='cleaning'||h==='manajemen'||h==='chemical'){$('#site').classList.add('pmode');renderPropRoute();scrollTo(0,0);nav.classList.add('solid');const k=(h==='cleaning'||h==='manajemen'||h==='chemical')?'#layanan':'#properti';$$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')===k));return}
+  if(h==='properti'||h.startsWith('p-')||h==='cleaning'||h==='manajemen'||h==='chemical'||h==='karier'){$('#site').classList.add('pmode');renderPropRoute();scrollTo(0,0);nav.classList.add('solid');const k=h==='karier'?'#karier':(h==='cleaning'||h==='manajemen'||h==='chemical')?'#layanan':'#properti';$$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')===k));return}
   if($('#site').classList.contains('pmode')){$('#site').classList.remove('pmode');$('#propPage').innerHTML=''}
   const el=document.getElementById(SITE_IDS.includes(h)?h:'beranda');
   requestAnimationFrame(()=>el.scrollIntoView({behavior:h?'smooth':'auto'}));
