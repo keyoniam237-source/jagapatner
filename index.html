@@ -1301,6 +1301,55 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
 @media(max-width:1000px){.jh .jx-endcard{grid-template-columns:1fr}}
 @media(max-width:560px){.jh .jx-fslot{padding:20px 16px}.jh .jx-fslot .form{grid-template-columns:1fr}.jh .jx-lamp{top:84px}.jh .jblog{padding:80px 0}}
 
+
+/* ===== Pintu kayu natural + efek masuk ===== */
+.jh .jx-stage{perspective:1600px}
+.jh .jx-door{position:relative;gap:18px;--wd:color-mix(in srgb,var(--w) 70%,#000)}
+.jh .jx-wall{position:absolute;left:-12%;right:-12%;top:-6%;height:40%;background:radial-gradient(ellipse 60% 70% at 50% 0%,rgba(255,214,150,.38),transparent 70%);pointer-events:none;opacity:.8;transition:opacity .6s}
+.jh .jx-door:hover .jx-wall{opacity:1}
+.jh .jx-frame{aspect-ratio:1/2.05;padding:12px 12px 0;border-radius:6px 6px 0 0;perspective:1200px;
+  background:linear-gradient(90deg,#d9cfbd,#f4ede0 18%,#fbf7ef 50%,#efe6d6 82%,#cfc3ad);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),0 40px 50px -34px rgba(40,25,10,.55),0 2px 0 rgba(255,255,255,.6) inset}
+.jh.jx-dark .jx-frame{background:linear-gradient(90deg,#2a2622,#3a342d 50%,#2a2622)}
+.jh .jx-frame::before{content:"";position:absolute;inset:12px 12px 0;box-shadow:inset 0 0 0 3px #3b2a1c,inset 0 10px 18px rgba(0,0,0,.55);z-index:3;pointer-events:none;border-radius:2px 2px 0 0}
+.jh .jx-frame::after{content:"";position:absolute;left:-4%;right:-4%;bottom:-10px;height:12px;border-radius:2px;background:linear-gradient(#8f7a5e,#5d4b36);box-shadow:0 8px 16px -6px rgba(0,0,0,.45);z-index:4}
+.jh .jx-room{inset:12px 12px 0;background:#2b1d10;border-radius:2px 2px 0 0}
+.jh .jx-room img{width:100%;height:100%;object-fit:cover;transform:scale(1.15);filter:saturate(1.05) brightness(.9);transition:transform 1.6s var(--ease),filter 1s}
+.jh .jx-rlight{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 55%,rgba(255,220,160,.35),transparent 70%),linear-gradient(180deg,rgba(0,0,0,.35),transparent 40%,rgba(0,0,0,.25))}
+.jh .jx-leaf{inset:12px 12px 0;border-radius:2px 2px 0 0;transform-style:preserve-3d;transform-origin:left center;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='520'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9 0.014' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.09 0 0 0 0 0.04 0 0 0 1.1 -0.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E") center/100% 100%,linear-gradient(90deg,var(--wd),var(--w) 8%,color-mix(in srgb,var(--w) 88%,#fff) 50%,var(--w) 92%,var(--wd));
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.35),inset -6px 0 10px -6px rgba(0,0,0,.5);transition:transform 1.25s cubic-bezier(.6,.05,.25,1),filter .5s;filter:none}
+.jh .jx-face{position:absolute;inset:0}
+.jh .jx-plate{top:6.5%;width:62%;padding:6px 4px;font-size:clamp(7px,.78vw,9.5px);border-radius:2px;color:#3a2a10;
+  background:linear-gradient(160deg,#f6e6b8,#d4b06a 45%,#a37b35 75%,#d8bb7a);box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 3px 6px rgba(0,0,0,.4)}
+.jh .jx-pn{position:absolute;border-radius:2px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='520'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9 0.014' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.09 0 0 0 0 0.04 0 0 0 1.1 -0.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E") center/100% 100%,linear-gradient(135deg,color-mix(in srgb,var(--w) 80%,#fff),var(--w) 45%,var(--wd));
+  box-shadow:inset 2px 2px 0 rgba(255,255,255,.14),inset -2px -2px 0 rgba(0,0,0,.28),0 0 0 3px color-mix(in srgb,var(--w) 92%,#000),0 0 0 4px rgba(0,0,0,.25),2px 3px 5px rgba(0,0,0,.25)}
+.jh .jx-pn.jx-a{left:12%;right:auto;width:33%;top:17%;height:39%}.jh .jx-pn.jx-b{left:auto;right:17%;width:33%;top:17%;height:39%}
+.jh .jx-pn.jx-c{left:12%;right:auto;width:33%;top:62%;height:31%}.jh .jx-pn.jx-d{left:auto;right:17%;width:33%;top:62%;height:31%}
+.jh .jx-lever{position:absolute;right:5%;top:53%;width:clamp(9px,.9vw,12px);height:clamp(34px,3.4vw,46px);border-radius:6px;
+  background:linear-gradient(90deg,#8a6a2c,#f0d58f 45%,#b8913f);box-shadow:0 3px 6px rgba(0,0,0,.45);transform:translateY(-50%)}
+.jh .jx-lever i{position:absolute;top:22%;right:40%;width:clamp(22px,2.3vw,30px);height:clamp(6px,.6vw,8px);border-radius:4px;background:linear-gradient(#f3dc9c,#a67f34);box-shadow:0 3px 4px rgba(0,0,0,.4);transform-origin:right center;transition:transform .35s var(--ease)}
+.jh .jx-door:hover .jx-lever i{transform:rotate(-14deg)}
+.jh .jx-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.55));opacity:0;transition:opacity 1.2s;pointer-events:none}
+.jh .jx-spill{position:absolute;left:12px;right:12px;bottom:-1px;height:10px;background:linear-gradient(90deg,transparent,rgba(255,214,150,.9) 30%,rgba(255,214,150,.9) 70%,transparent);filter:blur(4px);opacity:.55;z-index:5;transition:opacity .6s}
+.jh .jx-door:hover .jx-leaf{transform:rotateY(-20deg);filter:brightness(1.05)}
+.jh .jx-door:hover .jx-shade{opacity:.35}
+.jh .jx-door:hover .jx-room img{transform:scale(1.08)}
+.jh .jx-door:hover .jx-spill{opacity:1}
+.jh .jx-door.jx-open .jx-leaf{transform:rotateY(-104deg)}
+.jh .jx-door.jx-open .jx-shade{opacity:1}
+.jh .jx-door.jx-open .jx-room img{transform:scale(1.02);filter:saturate(1.1) brightness(1.08)}
+.jh .jx-door:first-child .jx-leaf{animation:jx-ajar2 4s 2s ease-in-out infinite}
+@keyframes jx-ajar2{0%,72%,100%{transform:none}84%{transform:rotateY(-12deg)}}
+.jh .jx-door.jx-open .jx-leaf,.jh .jx-door:hover .jx-leaf{animation:none}
+/* kamera "masuk" */
+.jh .jx-stage.jx-walk{transition:transform 1.3s cubic-bezier(.55,0,.3,1),opacity 1s .4s;transform:scale(2.2);opacity:.0}
+.jxwalk{position:fixed;z-index:500;overflow:hidden;pointer-events:none;border-radius:2px;background:#000;will-change:transform,left,top,width,height}
+.jxwalk img{width:100%;height:100%;object-fit:cover;filter:brightness(1.05)}
+.jxwalk i{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(255,226,170,.35),transparent 65%)}
+@media(prefers-reduced-motion:reduce){.jh .jx-door .jx-leaf{transition:none}.jh .jx-stage.jx-walk{transform:none}}
+
 /* ================= PENYEMPURNAAN TAMPILAN HP ================= */
 @media(max-width:600px){
   section.s{padding:72px 6vw}
@@ -1476,10 +1525,10 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
       <p data-en="Four services, one standard. Open a door to see the service and its prices.">Empat layanan, satu standar. Pilih pintu untuk melihat detail layanan dan harganya.</p>
     </div>
     <div class="jx-stage jx-rv" id="jx-stage">
-      <button class="jx-door" data-go="#cleaning" style="--c:#3d5f83"><span class="jx-frame"><span class="jx-room"></span><span class="jx-leaf"><span class="jx-plate">CLEANING<br>SERVICE</span><span class="jx-pn jx-p1"></span><span class="jx-pn jx-p2"></span><span class="jx-knob"></span></span></span><span class="jx-cap" data-en='<small>01</small><b>Cleaning Service</b>Basic, Regular, Deep &amp; Special. From Rp 55k/hour.<br><u>Open the door →</u>'><small>01</small><b>Cleaning Service</b>Basic, Regular, Deep &amp; Special. Mulai Rp 55rb/jam.<br><u>Buka pintu →</u></span></button>
-      <button class="jx-door" data-go="#manajemen" style="--c:#5a4a6b"><span class="jx-frame"><span class="jx-room"></span><span class="jx-leaf"><span class="jx-plate">MANAJEMEN<br>OPERASIONAL</span><span class="jx-pn jx-p1"></span><span class="jx-pn jx-p2"></span><span class="jx-knob"></span></span></span><span class="jx-cap" data-en='<small>02</small><b>Operations Management</b>Staff, SOPs, maintenance &amp; owner reports.<br><u>Open the door →</u>'><small>02</small><b>Manajemen Operasional</b>Staf, SOP, maintenance &amp; laporan pemilik.<br><u>Buka pintu →</u></span></button>
-      <button class="jx-door" data-go="#chemical" style="--c:#3f6b52"><span class="jx-frame"><span class="jx-room"></span><span class="jx-leaf"><span class="jx-plate">CLEANING<br>CHEMICALS</span><span class="jx-pn jx-p1"></span><span class="jx-pn jx-p2"></span><span class="jx-knob"></span></span></span><span class="jx-cap" data-en='<small>03</small><b>Chemical Supplier</b>Professional-grade chemicals for business.<br><u>Open the door →</u>'><small>03</small><b>Chemical Supplier</b>Chemical kelas profesional untuk bisnis.<br><u>Buka pintu →</u></span></button>
-      <button class="jx-door" data-go="#properti" style="--c:#a8483f"><span class="jx-frame"><span class="jx-room"></span><span class="jx-leaf"><span class="jx-plate">PROPERTI<br>DI-JAGA</span><span class="jx-pn jx-p1"></span><span class="jx-pn jx-p2"></span><span class="jx-knob"></span></span></span><span class="jx-cap" data-en='<small>04</small><b>Exclusive Properties</b>Villas &amp; apartments, daily or monthly stays.<br><u>Open the door →</u>'><small>04</small><b>Properti Eksklusif</b>Villa &amp; apartemen, sewa harian/bulanan.<br><u>Buka pintu →</u></span></button>
+      <button class="jx-door" data-go="#cleaning" style="--w:#b98b58"><span class="jx-wall"></span><span class="jx-frame"><span class="jx-room"><img src="images/cleaning/kasur-rapi.jpg" alt="" loading="lazy"><i class="jx-rlight"></i></span><span class="jx-leaf"><span class="jx-face"><span class="jx-plate">CLEANING<br>SERVICE</span><span class="jx-pn jx-a"></span><span class="jx-pn jx-b"></span><span class="jx-pn jx-c"></span><span class="jx-pn jx-d"></span><span class="jx-lever"><i></i></span></span><span class="jx-shade"></span></span><span class="jx-spill"></span></span><span class="jx-cap" data-en='<small>01</small><b>Cleaning Service</b>Basic, Regular, Deep &amp; Special. From Rp 55k/hour.<br><u>Open the door →</u>'><small>01</small><b>Cleaning Service</b>Basic, Regular, Deep &amp; Special. Mulai Rp 55rb/jam.<br><u>Buka pintu →</u></span></button>
+      <button class="jx-door" data-go="#manajemen" style="--w:#6f4b33"><span class="jx-wall"></span><span class="jx-frame"><span class="jx-room"><img src="images/cleaning/qc.jpg" alt="" loading="lazy"><i class="jx-rlight"></i></span><span class="jx-leaf"><span class="jx-face"><span class="jx-plate">MANAJEMEN<br>OPERASIONAL</span><span class="jx-pn jx-a"></span><span class="jx-pn jx-b"></span><span class="jx-pn jx-c"></span><span class="jx-pn jx-d"></span><span class="jx-lever"><i></i></span></span><span class="jx-shade"></span></span><span class="jx-spill"></span></span><span class="jx-cap" data-en='<small>02</small><b>Operations Management</b>Staff, SOPs, maintenance &amp; owner reports.<br><u>Open the door →</u>'><small>02</small><b>Manajemen Operasional</b>Staf, SOP, maintenance &amp; laporan pemilik.<br><u>Buka pintu →</u></span></button>
+      <button class="jx-door" data-go="#chemical" style="--w:#9a6639"><span class="jx-wall"></span><span class="jx-frame"><span class="jx-room"><img src="images/cleaning/lap-meja.jpg" alt="" loading="lazy"><i class="jx-rlight"></i></span><span class="jx-leaf"><span class="jx-face"><span class="jx-plate">CLEANING<br>CHEMICALS</span><span class="jx-pn jx-a"></span><span class="jx-pn jx-b"></span><span class="jx-pn jx-c"></span><span class="jx-pn jx-d"></span><span class="jx-lever"><i></i></span></span><span class="jx-shade"></span></span><span class="jx-spill"></span></span><span class="jx-cap" data-en='<small>03</small><b>Chemical Supplier</b>Professional-grade chemicals for business.<br><u>Open the door →</u>'><small>03</small><b>Chemical Supplier</b>Chemical kelas profesional untuk bisnis.<br><u>Buka pintu →</u></span></button>
+      <button class="jx-door" data-go="#properti" style="--w:#7d412d"><span class="jx-wall"></span><span class="jx-frame"><span class="jx-room"><img src="images/wilayah/bali.jpg" alt="" loading="lazy"><i class="jx-rlight"></i></span><span class="jx-leaf"><span class="jx-face"><span class="jx-plate">PROPERTI<br>DI-JAGA</span><span class="jx-pn jx-a"></span><span class="jx-pn jx-b"></span><span class="jx-pn jx-c"></span><span class="jx-pn jx-d"></span><span class="jx-lever"><i></i></span></span><span class="jx-shade"></span></span><span class="jx-spill"></span></span><span class="jx-cap" data-en='<small>04</small><b>Exclusive Properties</b>Villas &amp; apartments, daily or monthly stays.<br><u>Open the door →</u>'><small>04</small><b>Properti Eksklusif</b>Villa &amp; apartemen, sewa harian/bulanan.<br><u>Buka pintu →</u></span></button>
     </div>
   </div>
 </section>
@@ -3446,8 +3495,19 @@ JM.init();
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>setSeg(si));
   if(!RM)auto=setInterval(()=>{if(jh.offsetParent)setSeg((si+1)%btns.length)},2200);
   /* pintu layanan -> buka halaman masing-masing */
-  jh.querySelectorAll('.jx-door').forEach(d=>d.addEventListener('click',()=>{if(d.classList.contains('jx-open'))return;d.classList.add('jx-open');
-    setTimeout(()=>{location.hash=d.dataset.go;setTimeout(()=>d.classList.remove('jx-open'),900)},RM?0:850)}));
+  const stage=$('#jx-stage');let walking=false;
+  jh.querySelectorAll('.jx-door').forEach(d=>d.addEventListener('click',()=>{
+    if(walking)return;if(RM){location.hash=d.dataset.go;return}walking=true;d.classList.add('jx-open');
+    setTimeout(()=>{ /* masuk ke dalam ruangan: bingkai pintu membesar memenuhi layar */
+      const room=d.querySelector('.jx-room'),r=room.getBoundingClientRect(),img=room.querySelector('img');
+      const ov=document.createElement('div');ov.className='jxwalk';ov.innerHTML=`<img src="${img.getAttribute('src')}" alt=""><i></i>`;
+      Object.assign(ov.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});document.body.appendChild(ov);
+      const ox=r.left+r.width/2,oy=r.top+r.height/2,sr=stage.getBoundingClientRect();stage.style.transformOrigin=`${ox-sr.left}px ${oy-sr.top}px`;stage.classList.add('jx-walk');
+      ov.animate([{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',borderRadius:'2px'},{left:'0px',top:'0px',width:innerWidth+'px',height:innerHeight+'px',borderRadius:'0px'}],{duration:1150,easing:'cubic-bezier(.55,0,.3,1)',fill:'forwards'});
+      ov.querySelector('img').animate([{transform:'scale(1.02)'},{transform:'scale(1.12)'}],{duration:1500,easing:'ease-out',fill:'forwards'});
+      setTimeout(()=>{location.hash=d.dataset.go;
+        setTimeout(()=>{ov.animate([{opacity:1},{opacity:0}],{duration:650,easing:'ease',fill:'forwards'}).onfinish=()=>ov.remove();
+          d.classList.remove('jx-open');stage.classList.remove('jx-walk');stage.style.transformOrigin='';walking=false},560)},1050)},650)}));
   /* sebelum/sesudah */
   const ba=$('#jx-ba'),rg=ba.querySelector('input');rg.addEventListener('input',()=>ba.style.setProperty('--p',rg.value+'%'));
   /* reveal + angka */
