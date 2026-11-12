@@ -19,7 +19,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"JAGA","description":"JAGA — mitra operasional perhotelan: cleaning service, housekeeping, dan manajemen operasional hotel, villa & apartemen di Bali, Lombok, dan Yogyakarta.","url":"https://jagapatner.my.id/","image":"https://jagapatner.my.id/videos/yogyakarta-borobudur.jpg","areaServed":["Bali","Lombok","Yogyakarta"],"slogan":"Management & Operations"}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='30 24 136 178'%3E%3Cmask id='m'%3E%3Crect width='200' height='220' fill='%23fff'/%3E%3Cpath d='M36 172 L156 106 V126 L36 192 Z'/%3E%3C/mask%3E%3Cg mask='url%28%23m%29'%3E%3Cpath d='M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z' fill='%230f1b2d'/%3E%3Cpath d='M74 132 V84 L96 72 V132 Z' fill='%230f1b2d'/%3E%3Cpath d='M104 132 V64 L120 55 V132 Z' fill='%23c9a96a'/%3E%3C/g%3E%3Cpath d='M40 176 L152 114.4 V126.4 L40 188 Z' fill='%23c9a96a'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#0e1210; --ink2:#161b18; --ink3:#1f2621; --line:rgba(255,255,255,.1);
@@ -871,6 +871,436 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   body.pt-in #site>*,body.pt-in #portal{animation:none!important}
   .nav.hide,.nav.pre{transform:none}.jcur,.jdot{display:none}}
 
+.jh{
+  --bg:#f6f2ea; --bg2:#ece5d7; --card:#ffffff; --ink:#0f1b2d; --text:#2b2f36; --muted:#6b6f78;
+  --line:rgba(15,27,45,.1); --gold:#b08d4f; --gold2:#e2c98f; --navy:#0f1b2d;
+  --head:'Plus Jakarta Sans',system-ui,sans-serif; --sans:'Inter',system-ui,sans-serif; --serif:'Cormorant Garamond',Georgia,serif;
+  --ease:cubic-bezier(.16,1,.3,1); --sh:0 24px 60px -30px rgba(15,27,45,.35);
+}
+.jh.jx-dark{
+  --bg:#0c1118; --bg2:#121a24; --card:#17202c; --ink:#f3efe7; --text:#d4d2cc; --muted:#8e939c;
+  --line:rgba(255,255,255,.09); --sh:0 24px 60px -30px rgba(0,0,0,.8);
+}
+.jh{font-family:var(--sans);background:var(--bg);color:var(--text);transition:background .6s var(--ease),color .6s var(--ease);overflow-x:clip;-webkit-font-smoothing:antialiased;line-height:1.5}
+.jh a{color:inherit;text-decoration:none}
+.jh button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.jh img{display:block;max-width:100%}
+.jh .jx-wrap{width:min(1200px,92vw);margin:0 auto}
+.jh h1,.jh h2,.jh h3,.jh h4{font-family:var(--head);color:var(--ink);letter-spacing:-.025em}
+.jh .jx-acc{font-family:var(--serif);font-style:italic;font-weight:600;color:var(--gold);letter-spacing:0}
+.jh .jx-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.jh .jx-eyebrow::before{content:"";width:22px;height:1.5px;background:currentColor}
+.jh .jx-sec{padding:110px 0;position:relative;z-index:1}
+.jh .jx-sh{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap;margin-bottom:52px}
+.jh .jx-sh h2{font-size:clamp(32px,4.4vw,54px);line-height:1.05;margin-top:14px;font-weight:700}
+.jh .jx-sh p{max-width:430px;color:var(--muted);font-size:15.5px;line-height:1.65}
+.jh .jx-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 22px;border-radius:12px;font-size:14.5px;font-weight:600;transition:transform .3s var(--ease),box-shadow .3s,background .3s;white-space:nowrap}
+.jh .jx-btn:hover{transform:translateY(-2px)}
+.jh .jx-btn-pri{background:var(--navy);color:#fff;box-shadow:0 12px 26px -12px rgba(15,27,45,.6)}
+.jh.jx-dark .jx-btn-pri{background:var(--gold2);color:#0f1b2d}
+.jh .jx-btn-wa{background:#1f9d55;color:#fff;box-shadow:0 12px 26px -12px rgba(31,157,85,.7)}
+.jh .jx-btn-ghost{border:1.5px solid var(--line);color:var(--ink);background:var(--card)}
+.jh .jx-ico{width:18px;height:18px;flex:none}
+.jh nav{position:fixed;inset:0 0 auto;z-index:50;transition:background .4s,box-shadow .4s,border-color .4s;border-bottom:1px solid transparent}
+.jh nav.jx-solid{background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.jh nav .jx-wrap{display:flex;align-items:center;gap:30px;height:70px}
+.jh .jx-logo{display:flex;align-items:center;gap:10px;color:var(--ink)}
+.jh .jx-logo svg{height:32px;width:auto}
+.jh .jx-logo b{font-family:var(--head);font-weight:800;letter-spacing:.14em;font-size:17px;display:block;line-height:1.1}
+.jh .jx-logo small{display:block;font-size:8.5px;letter-spacing:.22em;color:var(--muted);font-weight:600}
+.jh .jx-links{display:flex;gap:26px;font-size:14px;font-weight:500;color:var(--muted)}
+.jh .jx-links a:hover{color:var(--ink)}
+.jh .jx-nr{margin-left:auto;display:flex;align-items:center;gap:18px;padding-right:46px}
+.jh .jx-clock{font-size:11.5px;color:var(--muted);text-align:right;line-height:1.35}
+.jh .jx-clock b{color:var(--ink)}
+.jh nav .jx-btn{padding:10px 16px;font-size:13.5px;border-radius:10px}
+.jh .jx-lamp{position:fixed;top:0;right:26px;z-index:60;display:flex;flex-direction:column;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.jh .jx-lamp .jx-cord{width:1.5px;height:92px;background:linear-gradient(var(--gold),var(--gold2));transition:height .35s var(--ease)}
+.jh .jx-lamp .jx-bob{width:13px;height:21px;border-radius:7px 7px 9px 9px;background:linear-gradient(160deg,var(--gold2),var(--gold));box-shadow:0 4px 10px rgba(0,0,0,.25)}
+.jh .jx-lamp.jx-pull .jx-cord{height:118px}
+.jh .jx-lamp .jx-hint{position:absolute;top:120px;right:-4px;white-space:nowrap;font-size:10.5px;color:var(--muted);animation:jx-bob 2.4s ease-in-out infinite}
+@keyframes jx-bob{50%{transform:translateY(5px)}}
+.jh .jx-glow{position:fixed;top:-200px;right:-180px;width:560px;height:560px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(226,201,143,.2),transparent 65%);opacity:0;transition:opacity .8s}
+.jh.jx-dark .jx-glow{opacity:1}
+.jh .jx-hero{padding:140px 0 70px;position:relative;z-index:1;overflow:hidden}
+.jh .jx-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(900px 500px at 85% 20%,rgba(176,141,79,.13),transparent 60%),radial-gradient(700px 400px at 0% 100%,rgba(61,95,131,.09),transparent 60%);pointer-events:none}
+.jh .jx-hero .jx-wrap{display:grid;grid-template-columns:1.12fr .88fr;gap:60px;align-items:center;position:relative}
+.jh .jx-pill{display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px 7px 8px;font-size:12.5px;font-weight:500;color:var(--ink);box-shadow:0 6px 20px -12px rgba(0,0,0,.25)}
+.jh .jx-pill i{display:inline-flex;align-items:center;gap:6px;background:rgba(31,157,85,.12);color:#1f9d55;font-style:normal;font-weight:600;border-radius:999px;padding:3px 9px;font-size:11.5px}
+.jh .jx-pill i::before{content:"";width:6px;height:6px;border-radius:50%;background:#1f9d55;animation:jx-pulse 1.8s infinite}
+@keyframes jx-pulse{50%{opacity:.3}}
+.jh .jx-hero h1{font-size:clamp(40px,5vw,70px);line-height:1.02;font-weight:800;margin:24px 0 20px}
+.jh .jx-hero h1 .jx-acc{font-size:1.12em;line-height:.8}
+.jh .jx-who{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-family:var(--head);font-size:clamp(17px,1.7vw,21px);font-weight:600;color:var(--muted);margin-bottom:22px}
+.jh .jx-flip{position:relative;perspective:700px}
+.jh .jx-rings{display:flex;gap:10px;justify-content:center;height:12px;position:relative;z-index:2;margin-bottom:-6px}
+.jh .jx-rings span{width:5px;height:12px;border:1.5px solid var(--muted);border-bottom:0;border-radius:5px 5px 0 0}
+.jh .jx-flip-card{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 20px;font-weight:700;box-shadow:0 12px 26px -14px rgba(0,0,0,.35),0 2px 0 var(--line);min-width:250px;text-align:center;transform-origin:top center}
+.jh .jx-flip-card.jx-out{animation:jx-fout .3s ease-in forwards}
+.jh .jx-flip-card.jx-in{animation:jx-fin .42s var(--ease) forwards}
+@keyframes jx-fout{to{transform:rotateX(-88deg);opacity:.4}}
+@keyframes jx-fin{from{transform:rotateX(88deg);opacity:.4}to{transform:none;opacity:1}}
+.jh .jx-hero .jx-lead{font-size:17px;color:var(--muted);max-width:520px;line-height:1.65;margin-bottom:30px}
+.jh .jx-cta{display:flex;gap:12px;flex-wrap:wrap}
+.jh .jx-checks{display:flex;gap:20px;flex-wrap:wrap;margin-top:30px;font-size:13.5px;color:var(--text);font-weight:500}
+.jh .jx-checks span{display:inline-flex;align-items:center;gap:7px}
+.jh .jx-checks svg{color:#1f9d55}
+.jh .jx-visual{position:relative;height:600px}
+.jh .jx-vmain{position:absolute;right:0;top:0;width:78%;height:100%;border-radius:26px;overflow:hidden;box-shadow:var(--sh)}
+.jh .jx-vmain img{width:100%;height:100%;object-fit:cover}
+.jh .jx-vmain::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(15,27,45,.55))}
+.jh .jx-vmain .jx-loc{position:absolute;left:20px;bottom:18px;z-index:2;color:#fff;font-size:12.5px;display:flex;align-items:center;gap:6px}
+.jh .jx-fc{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh);padding:16px 18px;z-index:2;animation:jx-float 6s ease-in-out infinite}
+@keyframes jx-float{50%{transform:translateY(-8px)}}
+.jh .jx-fc small{display:block;font-size:11.5px;color:var(--muted);font-weight:500}
+.jh .jx-fc b{font-family:var(--head);color:var(--ink);font-size:24px;font-weight:800;letter-spacing:-.02em}
+.jh .jx-fc b em{font-style:normal;font-size:13px;color:var(--muted);font-weight:600}
+.jh .jx-fc1{left:0;top:70px}
+.jh .jx-fc2{left:4%;bottom:70px;display:flex;gap:12px;align-items:center;width:270px;animation-delay:-3s}
+.jh .jx-fc2 img{width:64px;height:64px;border-radius:12px;object-fit:cover}
+.jh .jx-fc2 b{font-size:15px;display:block}
+.jh .jx-fc3{right:-14px;top:44%;padding:12px 14px;display:flex;align-items:center;gap:10px;animation-delay:-1.5s}
+.jh .jx-fc3 .jx-dot{width:38px;height:38px;border-radius:10px;background:rgba(176,141,79,.15);color:var(--gold);display:grid;place-items:center}
+.jh .jx-fc3 b{font-size:17px;display:block;line-height:1.1}
+.jh .jx-stats{position:relative;z-index:3}
+.jh .jx-stats .jx-wrap{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--sh)}
+.jh .jx-st{padding:28px 30px;border-right:1px solid var(--line)}
+.jh .jx-st:last-child{border-right:0}
+.jh .jx-st b{font-family:var(--head);font-size:clamp(30px,3.4vw,44px);font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1}
+.jh .jx-st span{display:block;font-size:13.5px;color:var(--muted);margin-top:8px}
+.jh .jx-doors{background:var(--bg2);transition:background .6s;overflow:hidden;margin-top:-60px;padding-top:170px}
+.jh .jx-stage{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2.4vw,32px);transition:opacity .5s,transform .6s var(--ease)}
+.jh .jx-stage.jx-hide{opacity:0;transform:scale(1.06);pointer-events:none}
+.jh .jx-door{display:flex;flex-direction:column;gap:16px;text-align:left}
+.jh .jx-frame{position:relative;aspect-ratio:1/1.85;border-radius:10px 10px 4px 4px;padding:9px 9px 0;background:linear-gradient(#2a2622,#1a1714);box-shadow:0 34px 50px -28px rgba(0,0,0,.65);perspective:1100px}
+.jh .jx-room{position:absolute;inset:9px 9px 0;border-radius:4px 4px 0 0;background:radial-gradient(ellipse at 50% 70%,#fff3d6,#e9c27a 45%,#7a5a2a);overflow:hidden}
+.jh .jx-leaf{position:absolute;inset:9px 9px 0;border-radius:4px 4px 0 0;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 12%,transparent 88%,rgba(0,0,0,.22)),repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 2px,transparent 2px 7px),var(--c);transform-origin:left center;transition:transform 1s var(--ease),filter .4s;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.jh .jx-pn{position:absolute;left:14%;right:14%;border-radius:3px;box-shadow:inset 3px 3px 6px rgba(0,0,0,.28),inset -2px -2px 4px rgba(255,255,255,.08)}
+.jh .jx-pn.jx-p1{top:30%;height:26%}
+.jh .jx-pn.jx-p2{top:62%;height:30%}
+.jh .jx-plate{position:absolute;top:9%;left:50%;transform:translateX(-50%);width:70%;padding:7px 4px;border-radius:3px;text-align:center;font-family:var(--head);font-size:clamp(7.5px,.85vw,10px);font-weight:700;letter-spacing:.12em;line-height:1.3;color:#3b2a10;background:linear-gradient(160deg,#f3dfaa,#c9a35a 55%,#a8813c);box-shadow:0 2px 4px rgba(0,0,0,.35)}
+.jh .jx-knob{position:absolute;right:11%;top:52%;width:clamp(10px,1.2vw,15px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff1c4,#c9a35a 50%,#7d5d24);box-shadow:0 2px 3px rgba(0,0,0,.4)}
+.jh .jx-knob::after{content:"";position:absolute;left:-90%;top:35%;width:110%;height:30%;border-radius:4px;background:linear-gradient(#e9cf8e,#a8813c)}
+.jh .jx-door:hover .jx-leaf{transform:rotateY(-16deg);filter:brightness(1.08)}
+.jh .jx-door.jx-open .jx-leaf{transform:rotateY(-108deg)}
+.jh .jx-door:first-child .jx-leaf{animation:jx-ajar 3.5s 1.5s ease-in-out infinite}
+@keyframes jx-ajar{0%,70%,100%{transform:none}80%{transform:rotateY(-14deg)}}
+.jh .jx-door.jx-open .jx-leaf,.jh .jx-door:hover .jx-leaf{animation:none}
+.jh .jx-cap{font-size:13.5px;color:var(--muted);line-height:1.5}
+.jh .jx-cap small{font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--gold)}
+.jh .jx-cap b{display:block;font-family:var(--head);color:var(--ink);font-size:17px;font-weight:700;margin:3px 0 4px;letter-spacing:-.01em}
+.jh .jx-cap u{display:inline-block;text-decoration:none;font-weight:600;color:var(--ink);margin-top:8px;font-size:13px}
+.jh .jx-door:hover .jx-cap u{color:var(--gold)}
+.jh .jx-view{display:none;opacity:0;transform:translateY(20px);transition:opacity .6s var(--ease),transform .7s var(--ease)}
+.jh .jx-view.jx-on{display:block}
+.jh .jx-view.jx-show{opacity:1;transform:none}
+.jh .jx-back{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;border:1.5px solid var(--line);border-radius:10px;padding:9px 16px;color:var(--ink);margin-bottom:34px;background:var(--card)}
+.jh .jx-vhead{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:36px}
+.jh .jx-vhead small{font-size:12px;font-weight:600;letter-spacing:.16em;color:var(--gold);text-transform:uppercase}
+.jh .jx-vhead h3{font-size:clamp(34px,4.4vw,56px);line-height:1.02;font-weight:800;margin-top:10px}
+.jh .jx-vhead p{color:var(--muted);line-height:1.65;font-size:15.5px}
+.jh .jx-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.jh .jx-pk{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:14px;transition:transform .4s var(--ease),border-color .4s,box-shadow .4s;position:relative}
+.jh .jx-pk:hover{transform:translateY(-5px);box-shadow:var(--sh)}
+.jh .jx-pk.jx-hl{border-color:var(--gold);box-shadow:var(--sh)}
+.jh .jx-badge{position:absolute;top:-11px;left:22px;background:var(--gold);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:999px}
+.jh .jx-pk h4{font-size:16.5px;font-weight:700}
+.jh .jx-pk .jx-pr{font-family:var(--head);font-size:32px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-.03em}
+.jh .jx-pk .jx-pr small{font-family:var(--sans);font-size:13px;color:var(--muted);font-weight:500;letter-spacing:0}
+.jh .jx-pk .jx-note{font-size:12px;color:var(--muted)}
+.jh .jx-pk ul{list-style:none;font-size:13.5px;line-height:1.5;display:grid;gap:8px;padding-top:14px;border-top:1px solid var(--line)}
+.jh .jx-pk li{display:flex;gap:9px}
+.jh .jx-pk li::before{content:"✓";color:#1f9d55;font-weight:700}
+.jh .jx-pk .jx-btn{margin-top:auto;padding:12px;font-size:13.5px}
+.jh .jx-feat{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+.jh .jx-shot{border-radius:20px;overflow:hidden;position:relative;min-height:320px}
+.jh .jx-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.jh .jx-chips{display:flex;flex-wrap:wrap;gap:8px}
+.jh .jx-chips span{font-size:12.5px;font-weight:500;background:var(--bg2);border-radius:8px;padding:6px 11px;color:var(--ink)}
+.jh .jx-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:s}
+.jh .jx-step{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 24px;position:relative;transition:transform .4s var(--ease),box-shadow .4s}
+.jh .jx-step:hover{transform:translateY(-4px);box-shadow:var(--sh)}
+.jh .jx-step .jx-n{width:44px;height:44px;border-radius:12px;background:var(--navy);color:var(--gold2);display:grid;place-items:center;font-family:var(--head);font-weight:800;margin-bottom:22px}
+.jh.jx-dark .jx-step .jx-n{background:var(--gold2);color:#0f1b2d}
+.jh .jx-step h4{font-size:18px;font-weight:700;margin-bottom:8px}
+.jh .jx-step p{font-size:14px;color:var(--muted);line-height:1.6}
+.jh .jx-step:not(:last-child)::after{content:"";position:absolute;top:50px;right:-18px;width:18px;height:1.5px;background:var(--gold)}
+.jh .jx-res{display:grid;grid-template-columns:1.35fr 1fr;gap:18px}
+.jh .jx-ba{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:16/10;user-select:none;touch-action:pan-y;box-shadow:var(--sh)}
+.jh .jx-ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.jh .jx-ba .jx-after{clip-path:inset(0 0 0 var(--p,50%))}
+.jh .jx-ba .jx-hd{position:absolute;top:0;bottom:0;left:var(--p,50%);width:2px;background:#fff;transform:translateX(-1px)}
+.jh .jx-ba .jx-hd::after{content:"⟷";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:#fff;color:var(--navy);display:grid;place-items:center;font-size:18px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.jh .jx-ba .jx-lb{position:absolute;top:14px;background:rgba(15,27,45,.75);color:#fff;font-size:11px;font-weight:600;letter-spacing:.12em;padding:6px 11px;border-radius:999px}
+.jh .jx-ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.jh .jx-gal{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.jh .jx-gal .jx-shot{min-height:0}
+.jh .jx-gal .jx-shot span,.jh .jx-cap2{position:absolute;left:12px;bottom:12px;background:rgba(15,27,45,.72);color:#fff;font-size:11.5px;font-weight:500;padding:5px 10px;border-radius:8px}
+.jh .jx-jr .jx-wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+.jh .jx-sticky{position:sticky;top:110px;height:calc(100svh - 160px);display:flex;flex-direction:column;justify-content:center}
+.jh .jx-big{font-family:var(--head);font-weight:800;color:var(--ink);font-size:clamp(64px,9.5vw,140px);line-height:.9;margin:22px 0 18px;letter-spacing:-.05em;transition:opacity .35s}
+.jh .jx-big.jx-fade{opacity:0}
+.jh .jx-meta{display:flex;align-items:center;gap:14px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.1em}
+.jh .jx-bar{flex:0 0 120px;height:2px;background:var(--line);position:relative;overflow:hidden}
+.jh .jx-bar i{position:absolute;inset:0 auto 0 0;width:33%;background:var(--gold);transition:width .6s var(--ease)}
+.jh .jx-items{display:flex;flex-direction:column;gap:20vh;padding:10vh 0 16vh;border-left:1px solid var(--line);padding-left:40px}
+.jh .jx-it{opacity:.35;transition:opacity .6s}
+.jh .jx-it.jx-act{opacity:1}
+.jh .jx-it .jx-ph{border-radius:20px;overflow:hidden;aspect-ratio:4/3;margin-bottom:22px}
+.jh .jx-it .jx-ph img{width:100%;height:100%;object-fit:cover}
+.jh .jx-it small{font-size:11px;font-weight:600;letter-spacing:.16em;color:var(--gold);text-transform:uppercase}
+.jh .jx-it h3{font-size:24px;font-weight:700;margin:6px 0 10px}
+.jh .jx-it p{color:var(--muted);line-height:1.65;font-size:15px}
+.jh .jx-partners{padding:70px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;z-index:1}
+.jh .jx-partners .jx-wrap{display:flex;align-items:center;gap:40px;flex-wrap:wrap;justify-content:space-between}
+.jh .jx-partners p{font-size:14px;color:var(--muted);max-width:260px}
+.jh .jx-plogos{display:flex;gap:14px;flex-wrap:wrap}
+.jh .jx-plogos span{height:54px;padding:0 18px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line)}
+.jh .jx-plogos img{height:24px;width:auto}
+.jh .jx-faq .jx-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:60px}
+.jh .jx-qa{border-bottom:1px solid var(--line)}
+.jh .jx-qa summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;padding:22px 0;font-family:var(--head);font-weight:700;font-size:17px;color:var(--ink)}
+.jh .jx-qa summary::-webkit-details-marker{display:none}
+.jh .jx-qa summary::after{content:"+";font-size:22px;color:var(--gold);transition:transform .3s}
+.jh .jx-qa[open] summary::after{transform:rotate(45deg)}
+.jh .jx-qa p{padding:0 0 22px;color:var(--muted);line-height:1.7;font-size:15px;max-width:620px}
+.jh .jx-endcard{border-radius:30px;padding:clamp(36px,6vw,80px);background:#0f1b2d;color:#e9e3d6;position:relative;overflow:hidden;display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:end}
+.jh .jx-endcard::before{content:"";position:absolute;top:-40%;right:-10%;width:70%;height:150%;background:radial-gradient(circle,rgba(226,201,143,.2),transparent 60%)}
+.jh .jx-endcard>*{position:relative}
+.jh .jx-endcard h2{color:#fff;font-size:clamp(34px,4.6vw,60px);line-height:1.03;font-weight:800}
+.jh .jx-endcard p{max-width:520px;color:#b9b3a6;line-height:1.65;margin:20px 0 30px;font-size:16px}
+.jh .jx-endcard .jx-btn-ghost{background:transparent;border-color:rgba(255,255,255,.22);color:#fff}
+.jh .jx-clist{display:grid;gap:14px}
+.jh .jx-clist div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;font-size:12.5px;color:#9fa6b2}
+.jh .jx-clist b{display:block;color:#fff;font-size:15px;font-weight:600;margin-top:2px}
+.jh footer{padding:60px 0 40px;position:relative;z-index:1}
+.jh .jx-fg{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px;padding-bottom:40px;border-bottom:1px solid var(--line)}
+.jh .jx-fg p{font-size:14px;color:var(--muted);margin-top:14px;max-width:300px;line-height:1.6}
+.jh .jx-fg h5{font-family:var(--head);font-size:13px;color:var(--ink);margin-bottom:14px}
+.jh .jx-fg a,.jh .jx-fg span{display:block;font-size:14px;color:var(--muted);margin-bottom:9px}
+.jh .jx-fg a:hover{color:var(--ink)}
+.jh .jx-fg a.jx-logo{display:flex;margin:0;color:var(--ink)}
+.jh .jx-fb{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-top:24px;font-size:12.5px;color:var(--muted)}
+.jh .jx-types{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.jh .jx-ty{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 26px;transition:transform .4s var(--ease),box-shadow .4s,border-color .4s}
+.jh .jx-ty:hover{transform:translateY(-4px);box-shadow:var(--sh);border-color:var(--gold)}
+.jh .jx-ti{width:48px;height:48px;border-radius:14px;background:rgba(176,141,79,.13);color:var(--gold);display:grid;place-items:center;margin-bottom:20px}
+.jh .jx-ti svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.jh .jx-ty h4{font-size:19px;font-weight:700;margin-bottom:8px}
+.jh .jx-ty p{font-size:14.5px;color:var(--muted);line-height:1.6}
+.jh .jx-mani{background:#0f1b2d;color:#e9e3d6;padding:110px 0;position:relative;z-index:1;overflow:hidden;margin-top:70px}
+.jh .jx-mani::before{content:"";position:absolute;right:-15%;top:-40%;width:60%;height:160%;background:radial-gradient(circle,rgba(226,201,143,.16),transparent 60%)}
+.jh .jx-mani .jx-wrap{position:relative}
+.jh .jx-mq{font-family:var(--head);font-weight:700;color:#fff;font-size:clamp(26px,3.6vw,48px);line-height:1.18;letter-spacing:-.025em;margin:22px 0 60px;max-width:1050px}
+.jh .jx-mq em{font-style:normal;color:var(--gold2)}
+.jh .jx-mq u{text-decoration:none;font-family:var(--serif);font-style:italic;font-weight:600;color:var(--gold2);font-size:1.12em}
+.jh .jx-trio{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.14)}
+.jh .jx-trio div{padding:28px 28px 0 0}
+.jh .jx-trio div+div{padding-left:28px;border-left:1px solid rgba(255,255,255,.14)}
+.jh .jx-trio b{display:block;font-family:var(--head);font-size:clamp(22px,2.4vw,30px);color:#fff;letter-spacing:-.02em;margin-bottom:8px}
+.jh .jx-trio span{color:#9fa6b2;font-size:14.5px;line-height:1.6}
+.jh .jx-doors{margin-top:0!important;padding-top:110px!important}
+@media (max-width:1000px){.jh .jx-types{grid-template-columns:1fr 1fr}
+.jh .jx-trio{grid-template-columns:1fr}
+.jh .jx-trio div,.jh .jx-trio div+div{padding:22px 0;border-left:0;border-bottom:1px solid rgba(255,255,255,.14)}
+}
+@media (max-width:560px){.jh .jx-types{grid-template-columns:1fr}
+.jh .jx-mani{padding:80px 0;margin-top:40px}
+}
+.jh .jx-hx{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
+.jh .jx-hx-l{width:28px;height:1.5px;background:var(--gold)}
+.jh .jx-hx-d{color:var(--gold)}
+.jh .jx-hx-s{color:var(--muted)}
+.jh .jx-hero h1{margin:26px 0 22px!important;line-height:1.04!important}
+.jh .jx-hero h1 .jx-h1b{color:var(--ink)}
+.jh .jx-hero h1 .jx-acc{font-size:1.08em}
+.jh .jx-hero .jx-lead{margin-bottom:28px!important;max-width:500px}
+.jh .jx-ptype{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:34px}
+.jh .jx-pt-lbl{font-size:13px;font-weight:500;color:var(--muted)}
+.jh .jx-seg{position:relative;display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;box-shadow:0 8px 24px -16px rgba(15,27,45,.35)}
+.jh .jx-seg button{position:relative;z-index:1;font-size:13.5px;font-weight:600;color:var(--muted);padding:8px 15px;border-radius:9px;transition:color .35s}
+.jh .jx-seg button.jx-on{color:#fff}
+.jh.jx-dark .jx-seg button.jx-on{color:#0f1b2d}
+.jh .jx-seg-ind{position:absolute;top:4px;bottom:4px;left:0;border-radius:9px;background:var(--navy);transition:transform .5s var(--ease),width .5s var(--ease)}
+.jh.jx-dark .jx-seg-ind{background:var(--gold2)}
+.jh .jx-btn-lg{padding:16px 26px;font-size:15px;border-radius:12px}
+.jh .jx-cta{align-items:center}
+.jh .jx-tlink{font-size:14.5px;font-weight:600;color:var(--ink);padding:10px 6px;border-bottom:1.5px solid var(--gold);display:inline-flex;gap:8px;transition:gap .3s}
+.jh .jx-tlink:hover{gap:12px}
+.jh .jx-trust{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:0;margin-top:38px;padding-top:26px;border-top:1px solid var(--line);max-width:520px}
+.jh .jx-trust div{padding-right:28px;margin-right:28px;border-right:1px solid var(--line)}
+.jh .jx-trust div:last-child{border:0;margin:0;padding:0}
+.jh .jx-trust b{display:block;font-family:var(--head);font-size:19px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.jh .jx-trust span{font-size:12.5px;color:var(--muted)}
+@media (max-width:560px){.jh .jx-hx-s,.jh .jx-hx-d{display:none}
+.jh .jx-ptype{flex-direction:column;align-items:flex-start;gap:10px}
+.jh .jx-seg{max-width:100%;overflow:hidden}
+.jh .jx-seg button{padding:8px 11px;font-size:12.5px}
+.jh .jx-tlink{align-self:center}
+.jh .jx-trust{grid-template-columns:repeat(3,1fr)}
+.jh .jx-trust div{padding-right:10px;margin-right:10px}
+.jh .jx-trust b{font-size:15px}
+.jh .jx-trust span{font-size:11px}
+}
+.jh .jx-links a{white-space:nowrap}
+.jh .jx-logo small,.jh .jx-logo b{white-space:nowrap}
+.jh nav .jx-wrap{gap:24px}
+@media (max-width:1240px){.jh .jx-logo .jx-lx{display:none}
+.jh .jx-links{gap:20px}
+}
+@media (max-width:1080px){.jh .jx-links a:nth-child(4){display:none}
+}
+.jh .jx-jnav{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 4vw;background:rgba(12,16,15,.92);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);box-shadow:0 1px 0 rgba(255,255,255,.06);transition:padding .4s}
+.jh .jx-jnav.jx-solid{padding-top:10px;padding-bottom:10px}
+.jh .jx-brand{display:flex;align-items:center;gap:14px;color:#fff;flex:none}
+.jh .jx-brand .jx-mk svg{width:40px;height:52px;display:block;color:#fff}
+.jh .jx-brand .jx-br{width:1.5px;height:46px;background:#fff;opacity:.9}
+.jh .jx-brand .jx-wm{font-family:'Montserrat',var(--sans);line-height:1;display:flex;flex-direction:column;gap:6px}
+.jh .jx-brand .jx-wm b{font-weight:600;font-size:26px;letter-spacing:.22em;color:#fff}
+.jh .jx-brand .jx-wm small{font-size:9.5px;font-weight:500;letter-spacing:.14em;white-space:nowrap;text-transform:uppercase;color:rgba(255,255,255,.85)}
+.jh .jx-jlinks{display:flex;align-items:center;gap:clamp(0px,.3vw,6px)}
+.jh .jx-jlinks a:not(.jx-vip){position:relative;color:rgba(255,255,255,.82);font-size:12.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;padding:12px clamp(8px,.9vw,15px);white-space:nowrap;transition:color .25s}
+.jh .jx-jlinks a:not(.jx-vip)::after{content:"";position:absolute;left:clamp(8px,.9vw,15px);right:clamp(8px,.9vw,15px);bottom:5px;height:1.5px;background:var(--gold2);transform:scaleX(0);transition:transform .35s var(--ease)}
+.jh .jx-jlinks a:not(.jx-vip):hover{color:#fff}
+.jh .jx-jlinks a.jx-act{color:var(--gold2)!important}
+.jh .jx-jlinks a.jx-act::after{transform:scaleX(1)}
+.jh .jx-lang{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.85);font-size:12.5px;font-weight:500;letter-spacing:.16em;padding:10px 18px 10px 14px}
+.jh .jx-vip{display:inline-flex;align-items:center;gap:12px;background:#161616;color:#fff;border:1px solid rgba(255,255,255,.14);padding:13px 28px;border-radius:999px;font-size:12.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;transition:.25s;box-shadow:0 10px 28px rgba(0,0,0,.3)}
+.jh .jx-vip:hover{background:#000;border-color:var(--gold2)}
+.jh .jx-vip svg{color:var(--gold2)}
+.jh .jx-burger{display:none;color:#fff;width:42px;height:42px}
+.jh .jx-mnav{position:fixed;inset:0;z-index:80;background:rgba(12,16,15,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0;pointer-events:none;transition:opacity .35s}
+.jh .jx-mnav.jx-on{opacity:1;pointer-events:auto}
+.jh .jx-mnav a:not(.jx-vip){color:#fff;font-size:15px;letter-spacing:.18em;text-transform:uppercase;padding:12px}
+.jh .jx-mnav .jx-vip{margin-top:20px}
+.jh .jx-mnav .jx-x{position:absolute;top:22px;right:24px;color:#fff;font-size:24px}
+.jh .jx-lamp{top:82px}
+.jh .jx-lamp .jx-cord{height:54px}
+.jh .jx-lamp.jx-pull .jx-cord{height:78px}
+.jh .jx-lamp .jx-hint{top:82px}
+.jh .jx-hero{padding-top:160px}
+@media (max-width:1360px){.jh .jx-jnav{padding-left:3vw;padding-right:3vw}
+.jh .jx-lang{padding:10px 8px}
+.jh .jx-vip{padding:12px 18px;gap:9px}
+.jh .jx-brand .jx-wm b{font-size:22px}
+.jh .jx-brand .jx-wm small{font-size:8.5px}
+.jh .jx-jlinks a:not(.jx-vip){padding:12px 8px;letter-spacing:.12em;font-size:12px}
+.jh .jx-jlinks a:not(.jx-vip)::after{left:8px;right:8px}
+}
+@media (max-width:1180px){.jh .jx-jlinks{display:none}
+.jh .jx-burger{display:block}
+}
+@media (max-width:560px){.jh .jx-brand .jx-mk svg{width:32px;height:42px}
+.jh .jx-brand .jx-br{height:38px}
+.jh .jx-brand .jx-wm b{font-size:20px}
+.jh .jx-brand .jx-wm small{font-size:7.5px;letter-spacing:.1em}
+.jh .jx-lamp{top:72px}
+.jh .jx-hero{padding-top:130px}
+}
+.jh .jx-fwa{position:fixed;right:22px;bottom:22px;z-index:70;width:58px;height:58px;border-radius:50%;background:#1f9d55;color:#fff;display:grid;place-items:center;box-shadow:0 14px 30px -10px rgba(31,157,85,.8);transition:transform .3s var(--ease)}
+.jh .jx-fwa:hover{transform:scale(1.08)}
+.jh .jx-fwa svg{width:28px;height:28px}
+.jh .jx-rv{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.jh .jx-rv.jx-in{opacity:1;transform:none}
+@media (max-width:1000px){.jh .jx-links,.jh .jx-clock{display:none}
+.jh .jx-hero{padding-top:110px}
+.jh .jx-hero .jx-wrap{grid-template-columns:1fr;gap:44px}
+.jh .jx-visual{height:440px}
+.jh .jx-vmain{width:86%}
+.jh .jx-fc3{right:0}
+.jh .jx-stats .jx-wrap{grid-template-columns:1fr 1fr}
+.jh .jx-st:nth-child(2){border-right:0}
+.jh .jx-st:nth-child(-n+2){border-bottom:1px solid var(--line)}
+.jh .jx-stage{grid-template-columns:repeat(2,1fr);row-gap:34px}
+.jh .jx-plate{font-size:8.5px}
+.jh .jx-vhead,.jh .jx-feat,.jh .jx-res,.jh .jx-faq .jx-wrap,.jh .jx-endcard{grid-template-columns:1fr;gap:20px}
+.jh .jx-grid4,.jh .jx-steps{grid-template-columns:1fr 1fr}
+.jh .jx-step::after{display:none}
+.jh .jx-jr .jx-wrap{grid-template-columns:1fr;gap:0}
+.jh .jx-sticky{top:70px;height:auto;padding:14px 0;background:var(--bg);z-index:3;transition:background .6s}
+.jh .jx-sticky .jx-eyebrow,.jh .jx-sticky h2{display:none}
+.jh .jx-big{font-size:54px;margin:0 0 10px}
+.jh .jx-items{border-left:0;padding-left:0;gap:56px;padding-top:24px}
+.jh .jx-it{opacity:1}
+.jh .jx-fg{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){.jh .jx-nr{padding-right:34px;gap:10px}
+.jh nav .jx-btn span{display:none}
+.jh .jx-lamp{right:16px}
+.jh .jx-grid4,.jh .jx-steps,.jh .jx-gal{grid-template-columns:1fr}
+.jh .jx-fc1{top:20px}
+.jh .jx-fc2{width:230px;bottom:24px}
+.jh .jx-vmain .jx-loc{display:none}
+.jh .jx-lx{display:none}
+.jh .jx-lamp .jx-hint{display:none}
+.jh .jx-fc b{font-size:20px}
+.jh .jx-sec{padding:80px 0}
+.jh .jx-doors{padding-top:140px}
+.jh .jx-st{padding:20px}
+.jh .jx-btn{width:100%}
+.jh .jx-cta{flex-direction:column}
+.jh nav .jx-btn{width:auto}
+}
+@media (prefers-reduced-motion:reduce){}
+.jh{--head:'Plus Jakarta Sans',system-ui,sans-serif;--sans:'Plus Jakarta Sans',system-ui,sans-serif;--serif:'Plus Jakarta Sans',system-ui,sans-serif}
+.jh{font-size:16px;line-height:1.65;font-weight:400}
+.jh h1,.jh h2,.jh h3,.jh h4{letter-spacing:-.02em;font-weight:700!important}
+.jh .jx-acc{font-family:inherit!important;font-style:normal!important;font-weight:inherit!important;font-size:inherit!important;color:var(--gold);letter-spacing:inherit}
+.jh .jx-hero h1 .jx-acc{font-size:inherit!important}
+.jh .jx-hero h1{font-size:clamp(36px,4.4vw,60px)!important;line-height:1.1!important;letter-spacing:-.03em}
+.jh .jx-hero .jx-lead,.jh .jx-sh p,.jh .jx-vhead p{font-size:16.5px;line-height:1.7}
+.jh .jx-sh h2,.jh .jx-faq h2{font-size:clamp(28px,3.3vw,42px)!important;line-height:1.15!important}
+.jh .jx-vhead h3{font-size:clamp(28px,3.3vw,42px)!important;line-height:1.15!important}
+.jh .jx-endcard h2{font-size:clamp(28px,3.4vw,44px)!important;line-height:1.15!important}
+.jh .jx-mq{font-size:clamp(22px,2.6vw,34px)!important;font-weight:600!important;line-height:1.35!important;letter-spacing:-.015em!important}
+.jh .jx-mq u{font-family:inherit!important;font-style:normal!important;font-size:inherit!important;font-weight:inherit!important}
+.jh .jx-trio b{font-size:clamp(20px,1.9vw,24px)!important;font-weight:700}
+.jh .jx-big{font-size:clamp(52px,7vw,96px)!important;font-weight:700!important;letter-spacing:-.04em!important}
+.jh .jx-st b{font-size:clamp(28px,2.8vw,36px)!important;font-weight:700!important}
+.jh .jx-st span,.jh .jx-trust span{font-size:13px}
+.jh .jx-trust b{font-size:18px!important;font-weight:700!important}
+.jh .jx-pk .jx-pr{font-size:28px!important;font-weight:700!important}
+.jh .jx-pk h4,.jh .jx-ty h4,.jh .jx-step h4{font-size:17px!important;font-weight:700!important}
+.jh .jx-pk ul,.jh .jx-ty p,.jh .jx-step p{font-size:14px!important;line-height:1.65!important}
+.jh .jx-cap b{font-size:16px!important}
+.jh .jx-it h3{font-size:22px!important}
+.jh .jx-qa summary{font-size:16px!important;font-weight:600!important}
+.jh .jx-qa p,.jh .jx-it p{font-size:15px!important}
+.jh .jx-eyebrow,.jh .jx-hx,.jh .jx-vhead small,.jh .jx-it small,.jh .jx-cap small{font-size:11.5px!important;letter-spacing:.16em!important;font-weight:600!important}
+.jh .jx-links{font-size:14px;font-weight:500}
+.jh .jx-logo b{font-weight:700!important;letter-spacing:.16em}
+.jh .jx-btn{font-weight:600;font-size:14.5px}
+.jh .jx-fc b{font-weight:700!important;font-size:22px}
+.jh .jx-fc2 b{font-size:15px!important}
+.jh .jx-plate{font-weight:700}
+@media (max-width:560px){.jh .jx-hero h1{font-size:34px!important}
+.jh .jx-sh h2,.jh .jx-faq h2,.jh .jx-vhead h3,.jh .jx-endcard h2{font-size:28px!important}
+.jh .jx-big{font-size:48px!important}
+.jh .jx-mq{font-size:21px!important}
+.jh .jx-hero .jx-lead,.jh .jx-sh p,.jh .jx-vhead p{font-size:15.5px}
+}
+
+/* integrasi template beranda */
+#site .legacy{display:none!important}
+#site .nav{background:rgba(12,16,15,.92);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.jh .jblog .wrap{width:min(1200px,92vw);margin:0 auto;padding:0}
+.jh #kontak{padding-top:90px!important}
+#site.pmode>.jh{display:none!important}
+.jh .jblog{background:var(--bg2);padding:110px 0}
+.jh .jblog .kicker{color:var(--gold)}.jh .jblog h2.t{font-family:var(--head);font-weight:700;font-size:clamp(28px,3.3vw,42px);letter-spacing:-.02em}
+.jh .jblog h2.t em{font-style:normal;color:var(--gold)}
+.jh .jblog .lead{color:var(--muted)}
+.jh .jblog .post h3{font-family:var(--head);font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.jh .jx-fslot{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:26px}
+.jh .jx-fslot .btn{border-radius:12px;font-family:var(--head);letter-spacing:.06em}
+.jh .jx-endcard{align-items:center}
+.jh .jx-plogos .jx-pl{height:54px;padding:0 18px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line)}
+.jh .jx-plogos .jx-pl img{height:24px;width:auto}
+.jh .jx-door{cursor:pointer}
+.jh .jx-lamp{top:96px}
+@media(max-width:1000px){.jh .jx-endcard{grid-template-columns:1fr}}
+@media(max-width:560px){.jh .jx-fslot{padding:20px 16px}.jh .jx-fslot .form{grid-template-columns:1fr}.jh .jx-lamp{top:84px}.jh .jblog{padding:80px 0}}
+
 /* ================= PENYEMPURNAAN TAMPILAN HP ================= */
 @media(max-width:600px){
   section.s{padding:72px 6vw}
@@ -964,7 +1394,212 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </div>
 
   <!-- HERO -->
-  <section class="hero" id="beranda">
+<div class="jh" id="jh">
+<div class="jx-glow"></div>
+<div class="jx-lamp" id="jx-lamp" role="button" tabindex="0" aria-label="Ganti tema terang/gelap">
+  <div class="jx-cord"></div><div class="jx-bob"></div><div class="jx-hint" id="jx-hint" data-en="pull ↓">tarik ↓</div>
+</div>
+
+<!-- HERO -->
+<header class="jx-hero" id="beranda">
+  <div class="jx-wrap">
+    <div>
+      <div class="jx-hx jx-rv"><span class="jx-hx-l"></span>Jaga Partner<span class="jx-hx-d">·</span><span class="jx-hx-s">Property Care &amp; Management</span></div>
+      <h1 class="jx-rv" data-en='You own it.<br><span class="jx-h1b">We <span class="jx-acc">look after it.</span></span>'>Anda pemiliknya.<br><span class="jx-h1b">Kami yang <span class="jx-acc">menjaganya.</span></span></h1>
+      <p class="jx-lead jx-rv" data-en="Cleaning, housekeeping, maintenance and property management with one partner. You don't have to handle it all yourself.">Kebersihan, housekeeping, maintenance, hingga pengelolaan properti dalam satu mitra. Anda tidak perlu mengurus semuanya sendiri.</p>
+      <div class="jx-ptype jx-rv" id="jx-ptype">
+        <span class="jx-pt-lbl" data-en="We look after">Kami menjaga</span>
+        <div class="jx-seg" id="jx-seg"><i class="jx-seg-ind" id="jx-segInd"></i><button class="jx-on" data-en="Boarding">Kosan</button><button>Villa</button><button>Hotel</button><button data-en="Office">Kantor</button><button data-en="Home">Rumah</button></div>
+      </div>
+      <div class="jx-cta jx-rv">
+        <a class="jx-btn jx-btn-pri jx-btn-lg jx-wa" data-m="Halo Jaga Partner, saya mau konsultasi untuk properti saya." href="#" target="_blank" rel="noopener"><svg class="jx-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.1c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1a15 15 0 0 1-6.2-5.5c-.5-.8-.9-1.8-.9-2.7 0-1 .5-1.5.7-1.7.2-.2.4-.3.6-.3h.4c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.6-.1 1.2z"/></svg><span data-en="Free consultation">Konsultasi Gratis</span></a>
+        <a class="jx-tlink" href="#layanan"><span data-en="See services &amp; prices">Lihat layanan &amp; harga</span> <span>→</span></a>
+      </div>
+      <div class="jx-trust jx-rv">
+        <div><b>Rp 55rb</b><span data-en="From, per hour">Mulai per jam</span></div>
+        <div><b data-en="Included">Termasuk</b><span data-en="Tools &amp; chemicals">Alat &amp; chemical</span></div>
+        <div><b data-en="3 Regions">3 Wilayah</b><span>Bali · Lombok · Yogya</span></div>
+      </div>
+    </div>
+    <div class="jx-visual jx-rv">
+      <div class="jx-vmain"><img src="images/cleaning/kasur-rapi.jpg" alt="Kamar villa yang rapi dan bersih"></div>
+      <div class="jx-fc jx-fc1"><small data-en="Basic Cleaning from">Basic Cleaning mulai</small><b>Rp 55rb <em data-en="/ hour">/ jam</em></b></div>
+      <div class="jx-fc jx-fc3"><span class="jx-dot"><svg class="jx-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>24/7</b><small data-en="Emergency service">Layanan darurat</small></div></div>
+      <div class="jx-fc jx-fc2"><img src="images/cleaning/tim.jpg" alt="Tim JAGA"><div><b data-en="Trained team">Tim terlatih</b><small data-en="Working to SOPs &amp; a digital room-by-room checklist">Bekerja dengan SOP &amp; checklist digital per ruangan</small></div></div>
+    </div>
+  </div>
+</header>
+
+<!-- STATS -->
+<section class="jx-stats">
+  <div class="jx-wrap jx-rv">
+    <div class="jx-st"><b data-c="3">0</b><span data-en="Operating regions">Wilayah operasi</span></div>
+    <div class="jx-st"><b data-c="24" data-s="/7">0</b><span data-en="Emergency service">Layanan darurat</span></div>
+    <div class="jx-st"><b data-c="11">0</b><span data-en="Service types">Jenis layanan</span></div>
+    <div class="jx-st"><b data-c="100" data-s="%">0</b><span data-en="Work logged digitally">Pekerjaan tercatat digital</span></div>
+  </div>
+</section>
+
+<!-- UNTUK SIAPA -->
+<section class="jx-sec" id="untuk" style="padding-bottom:40px">
+  <div class="jx-wrap">
+    <div class="jx-sh jx-rv"><div><span class="jx-eyebrow" data-en="Properties we look after">Properti yang kami jaga</span><h2 data-en='Whatever the property,<br>we are <span class="jx-acc">ready to care.</span>'>Apa pun propertinya,<br>kami <span class="jx-acc">siap menjaga.</span></h2></div><p data-en="Boarding houses, villas, hotels, offices and private homes. Every property has different needs, and we adapt to them.">Kosan, villa, hotel, kantor, hingga rumah pribadi. Setiap properti punya kebutuhan berbeda, dan kami menyesuaikannya.</p></div>
+    <div class="jx-types jx-rv">
+      <div class="jx-ty"><span class="jx-ti"><svg viewBox="0 0 24 24"><path d="M4 21V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v16M16 10h3a1 1 0 0 1 1 1v10M8 8h4M8 12h4M8 16h4M2 21h20"/></svg></span><h4 data-en="Boarding houses">Kosan</h4><p data-en="Rooms and shared areas stay clean, so residents are comfortable and stay longer.">Kebersihan kamar dan area bersama terjaga, penghuni nyaman dan betah lebih lama.</p></div>
+      <div class="jx-ty"><span class="jx-ti"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 9.5V20h14V9.5M9 20v-6h6v6"/></svg></span><h4>Villa</h4><p data-en="Always clean, well kept and ready for the next guest, even when you are not there.">Selalu bersih, terawat, dan siap menyambut tamu berikutnya, bahkan saat Anda tidak di lokasi.</p></div>
+      <div class="jx-ty"><span class="jx-ti"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M8 21v-4h8v4M8 10h.01M12 10h.01M16 10h.01M8 13.5h.01M12 13.5h.01M16 13.5h.01"/></svg></span><h4>Hotel</h4><p data-en="Housekeeping and operations support to keep your service and hospitality standards high.">Dukungan housekeeping dan operasional untuk menjaga standar pelayanan dan kualitas hospitality.</p></div>
+      <div class="jx-ty"><span class="jx-ti"><svg viewBox="0 0 24 24"><path d="M3 7h18v13H3zM8 7V4h8v3M3 12h18"/></svg></span><h4 data-en="Offices">Kantor</h4><p data-en="A tidy, clean and professional workspace that impresses your team and clients.">Ruang kerja tetap rapi, bersih, dan profesional, memberi kesan baik untuk tim dan klien Anda.</p></div>
+      <div class="jx-ty"><span class="jx-ti"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg></span><h4 data-en="Private homes">Rumah Pribadi</h4><p data-en="A home that stays comfortable and cared for, so your time goes to your family.">Rumah selalu nyaman dan terjaga, sehingga waktu Anda bisa dipakai untuk keluarga.</p></div>
+      <div class="jx-ty"><span class="jx-ti"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><h4 data-en="Property management">Pengelolaan Properti</h4><p data-en="More organised, efficient operations — from staff and maintenance to owner reports.">Operasional lebih terorganisir dan efisien, dari staf dan maintenance hingga laporan ke pemilik.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="jx-mani" id="cerita">
+  <div class="jx-wrap">
+    <span class="jx-eyebrow" style="color:var(--gold2)">Jaga Partner</span>
+    <p class="jx-mq jx-rv" data-en='One partner for <em>cleaning, housekeeping, maintenance</em> and <em>property management</em>, protecting the quality, comfort and <u>investment value</u> of your property.'>Satu mitra untuk <em>kebersihan, housekeeping, maintenance,</em> hingga <em>pengelolaan properti</em>, demi menjaga kualitas, kenyamanan, dan <u>nilai investasi</u> properti Anda.</p>
+    <div class="jx-trio jx-rv">
+      <div><b>We Care.</b><span data-en="We care about every detail, as if it were our own.">Kami peduli pada setiap detail, seperti merawat milik sendiri.</span></div>
+      <div><b>We Maintain.</b><span data-en="Routine care keeps your property in top shape and valuable.">Perawatan rutin agar properti tetap prima dan bernilai.</span></div>
+      <div><b>We Manage.</b><span data-en="Organised operations — you just receive the reports.">Operasional terorganisir, Anda cukup menerima laporannya.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- LAYANAN -->
+<section class="jx-sec jx-doors" id="layanan">
+  <div class="jx-wrap">
+    <div class="jx-sh jx-rv">
+      <div><span class="jx-eyebrow" data-en="Our services">Layanan kami</span><h2 data-en='The magic happens<br><span class="jx-acc">behind the door.</span>'>Keajaiban terjadi<br><span class="jx-acc">di balik pintu.</span></h2></div>
+      <p data-en="Four services, one standard. Open a door to see the service and its prices.">Empat layanan, satu standar. Pilih pintu untuk melihat detail layanan dan harganya.</p>
+    </div>
+    <div class="jx-stage jx-rv" id="jx-stage">
+      <button class="jx-door" data-go="#cleaning" style="--c:#3d5f83"><span class="jx-frame"><span class="jx-room"></span><span class="jx-leaf"><span class="jx-plate">CLEANING<br>SERVICE</span><span class="jx-pn jx-p1"></span><span class="jx-pn jx-p2"></span><span class="jx-knob"></span></span></span><span class="jx-cap" data-en='<small>01</small><b>Cleaning Service</b>Basic, Regular, Deep &amp; Special. From Rp 55k/hour.<br><u>Open the door →</u>'><small>01</small><b>Cleaning Service</b>Basic, Regular, Deep &amp; Special. Mulai Rp 55rb/jam.<br><u>Buka pintu →</u></span></button>
+      <button class="jx-door" data-go="#manajemen" style="--c:#5a4a6b"><span class="jx-frame"><span class="jx-room"></span><span class="jx-leaf"><span class="jx-plate">MANAJEMEN<br>OPERASIONAL</span><span class="jx-pn jx-p1"></span><span class="jx-pn jx-p2"></span><span class="jx-knob"></span></span></span><span class="jx-cap" data-en='<small>02</small><b>Operations Management</b>Staff, SOPs, maintenance &amp; owner reports.<br><u>Open the door →</u>'><small>02</small><b>Manajemen Operasional</b>Staf, SOP, maintenance &amp; laporan pemilik.<br><u>Buka pintu →</u></span></button>
+      <button class="jx-door" data-go="#chemical" style="--c:#3f6b52"><span class="jx-frame"><span class="jx-room"></span><span class="jx-leaf"><span class="jx-plate">CLEANING<br>CHEMICALS</span><span class="jx-pn jx-p1"></span><span class="jx-pn jx-p2"></span><span class="jx-knob"></span></span></span><span class="jx-cap" data-en='<small>03</small><b>Chemical Supplier</b>Professional-grade chemicals for business.<br><u>Open the door →</u>'><small>03</small><b>Chemical Supplier</b>Chemical kelas profesional untuk bisnis.<br><u>Buka pintu →</u></span></button>
+      <button class="jx-door" data-go="#properti" style="--c:#a8483f"><span class="jx-frame"><span class="jx-room"></span><span class="jx-leaf"><span class="jx-plate">PROPERTI<br>DI-JAGA</span><span class="jx-pn jx-p1"></span><span class="jx-pn jx-p2"></span><span class="jx-knob"></span></span></span><span class="jx-cap" data-en='<small>04</small><b>Exclusive Properties</b>Villas &amp; apartments, daily or monthly stays.<br><u>Open the door →</u>'><small>04</small><b>Properti Eksklusif</b>Villa &amp; apartemen, sewa harian/bulanan.<br><u>Buka pintu →</u></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- CARA KERJA -->
+<section class="jx-sec" id="cara-kerja">
+  <div class="jx-wrap">
+    <div class="jx-sh jx-rv"><div><span class="jx-eyebrow" data-en="How it works">Cara kerja</span><h2 data-en='From request<br>to <span class="jx-acc">report.</span>'>Dari permintaan<br>hingga <span class="jx-acc">laporan.</span></h2></div><p data-en="Every job is scheduled, checked against a checklist and reported digitally.">Setiap pekerjaan dijadwalkan, diperiksa dengan checklist, dan dilaporkan secara digital.</p></div>
+    <div class="jx-steps jx-rv">
+      <div class="jx-step"><div class="jx-n">01</div><h4 data-en="Survey &amp; Quote">Survei &amp; Penawaran</h4><p data-en="A regional coordinator reviews your property and needs, then sends a transparent quote.">Koordinator wilayah meninjau properti dan kebutuhan Anda, lalu mengirim penawaran yang transparan.</p></div>
+      <div class="jx-step"><div class="jx-n">02</div><h4 data-en="Scheduling">Penjadwalan</h4><p data-en="The team is assigned by region, skills and availability.">Tim ditugaskan sesuai wilayah, keahlian, dan ketersediaan.</p></div>
+      <div class="jx-step"><div class="jx-n">03</div><h4 data-en="Execution + Checklist">Eksekusi + Checklist</h4><p data-en="The team works to SOPs with a digital room-by-room checklist, including before–after photos.">Tim bekerja sesuai SOP dengan checklist digital per ruangan, termasuk foto sebelum–sesudah.</p></div>
+      <div class="jx-step"><div class="jx-n">04</div><h4 data-en="Inspection &amp; Report">Inspeksi &amp; Laporan</h4><p data-en="A supervisor runs a quality check, then the report and invoice go to the owner.">Supervisor melakukan quality check, lalu laporan dan tagihan dikirim ke pemilik.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HASIL -->
+<section class="jx-sec" id="hasil" style="padding-top:0">
+  <div class="jx-wrap">
+    <div class="jx-sh jx-rv"><div><span class="jx-eyebrow" data-en="Our results">Hasil kerja</span><h2 data-en='See the<br><span class="jx-acc">difference.</span>'>Lihat sendiri<br><span class="jx-acc">bedanya.</span></h2></div><p data-en="Drag the line on the photo to compare before and after the JAGA team.">Geser garis di foto untuk membandingkan kondisi sebelum dan sesudah dikerjakan tim JAGA.</p></div>
+    <div class="jx-res jx-rv">
+      <div class="jx-ba" id="jx-ba">
+        <img src="images/cleaning/sebelum.jpg" alt="Sebelum" loading="lazy">
+        <img class="jx-after" src="images/cleaning/sesudah.jpg" alt="Sesudah" loading="lazy">
+        <span class="jx-lb" style="left:14px" data-en="BEFORE">SEBELUM</span><span class="jx-lb" style="right:14px" data-en="AFTER">SESUDAH</span>
+        <div class="jx-hd"></div>
+        <input type="range" min="0" max="100" value="50" aria-label="Geser sebelum/sesudah">
+      </div>
+      <div class="jx-gal">
+        <div class="jx-shot"><img src="images/cleaning/tim.jpg" alt="Tim JAGA" loading="lazy"><span data-en="Field team">Tim lapangan</span></div>
+        <div class="jx-shot"><img src="images/cleaning/qc.jpg" alt="Quality control" loading="lazy"><span>Quality control</span></div>
+        <div class="jx-shot"><img src="images/cleaning/lap-meja.jpg" alt="Detail pembersihan" loading="lazy"><span data-en="Surface detail">Detail permukaan</span></div>
+        <div class="jx-shot"><img src="images/cleaning/kasur-rapi.jpg" alt="Kamar siap huni" loading="lazy"><span data-en="Ready for guests">Siap huni</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WILAYAH -->
+<section class="jx-sec jx-jr" id="wilayah" style="padding-top:20px">
+  <div class="jx-wrap">
+    <div class="jx-sticky">
+      <span class="jx-eyebrow" data-en="Our regions">Wilayah kami</span>
+      <h2 style="margin-top:14px;font-size:clamp(26px,2.8vw,38px);font-weight:700" data-en="Present in three key destinations.">Hadir di tiga destinasi utama.</h2>
+      <div class="jx-big" id="jx-big">Bali</div>
+      <div class="jx-meta"><span id="jx-cnt">01 / 03</span><div class="jx-bar"><i id="jx-barI"></i></div></div>
+    </div>
+    <div class="jx-items">
+      <div class="jx-it jx-act" data-n="Bali"><div class="jx-ph"><img src="images/wilayah/bali.jpg" alt="Bali" loading="lazy"></div><small data-en="Head office">Kantor pusat</small><h3>Bali</h3><p data-en="Our office is on Jl. Gatot Subroto Tengah, Denpasar. From here we serve villas, hotels, apartments, homes, offices and restaurants across Bali.">Kantor kami di Jl. Gatot Subroto Tengah, Denpasar. Dari sini kami melayani villa, hotel, apartemen, rumah, kantor, dan restoran di Bali.</p></div>
+      <div class="jx-it" data-n="Lombok"><div class="jx-ph"><img src="images/wilayah/lombok.jpg" alt="Lombok" loading="lazy"></div><small data-en="Service region">Wilayah layanan</small><h3>Lombok</h3><p data-en="Cleaning service and operations management for properties in Lombok, to the same standard as Bali.">Cleaning service dan manajemen operasional untuk properti di Lombok, dengan standar yang sama seperti di Bali.</p></div>
+      <div class="jx-it" data-n="Yogya"><div class="jx-ph"><img src="images/wilayah/yogyakarta.jpg" alt="Yogyakarta" loading="lazy"></div><small data-en="Service region">Wilayah layanan</small><h3>Yogyakarta</h3><p data-en="From boarding houses to hotels, the JAGA team is ready to look after your property in Yogyakarta.">Dari kosan hingga hotel, tim JAGA siap menjaga kebersihan dan operasional properti Anda di Yogyakarta.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MITRA -->
+<section class="jx-partners" id="mitra">
+  <div class="jx-wrap jx-rv">
+    <p data-en="The properties we manage are listed on leading booking platforms.">Properti yang kami kelola tersedia di platform pemesanan terkemuka.</p>
+    <div class="jx-plogos" id="jx-jlogos"></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="jx-sec jx-faq" id="faq">
+  <div class="jx-wrap">
+    <div class="jx-rv"><span class="jx-eyebrow">FAQ</span><h2 style="font-size:clamp(32px,4vw,50px);line-height:1.05;margin-top:14px;font-weight:700" data-en='Frequently asked<br><span class="jx-acc">questions.</span>'>Pertanyaan yang<br>sering <span class="jx-acc">ditanyakan.</span></h2><p style="color:var(--muted);margin-top:18px;max-width:340px" data-en="Can't find your answer? Ask us directly on WhatsApp.">Belum menemukan jawabannya? Tanyakan langsung lewat WhatsApp.</p></div>
+    <div class="jx-rv">
+      <details class="jx-qa" open><summary data-en="Are tools and chemicals included?">Apakah alat dan chemical sudah termasuk?</summary><p data-en="Yes. Every cleaning package includes tools and chemicals, so you don't need to prepare anything.">Ya. Semua paket cleaning sudah termasuk alat dan chemical, jadi Anda tidak perlu menyiapkan apa pun.</p></details>
+      <details class="jx-qa"><summary data-en="How is the price calculated?">Bagaimana harga dihitung?</summary><p data-en="Prices are per hour: Basic Rp 55k, Regular Rp 77k and Deep Rp 88k. Cleaning Special (glass, offices, restaurants) is priced by scope.">Harga dihitung per jam: Basic Rp 55rb, Regular Rp 77rb, dan Deep Rp 88rb. Untuk Cleaning Special (kaca, kantor, restoran), harga disesuaikan dengan lingkup pekerjaan.</p></details>
+      <details class="jx-qa"><summary data-en="Which regions do you serve?">Wilayah mana saja yang dilayani?</summary><p data-en="We currently serve Bali, Lombok and Yogyakarta. Our office is on Jl. Gatot Subroto Tengah, Denpasar.">Saat ini kami melayani Bali, Lombok, dan Yogyakarta. Kantor kami berada di Jl. Gatot Subroto Tengah, Denpasar.</p></details>
+      <details class="jx-qa"><summary data-en="What kinds of property can you clean?">Properti apa saja yang bisa dibersihkan?</summary><p data-en="Boarding houses, villas, hotels, apartments, offices, restaurants and private homes.">Kosan, villa, hotel, apartemen, kantor, restoran, hingga rumah pribadi.</p></details>
+      <details class="jx-qa"><summary data-en="How do I book?">Bagaimana cara memesan?</summary><p data-en="Open the Cleaning Service page, choose a package, date and address, then send it — it opens WhatsApp with your order filled in. You can also use the form at the bottom of this page.">Buka halaman Cleaning Service, pilih paket, jadwal, dan alamat, lalu kirim — WhatsApp akan terbuka dengan pesanan Anda. Bisa juga lewat formulir di bagian bawah halaman ini.</p></details>
+    </div>
+  </div>
+</section>
+
+  <section class="s jblog" id="blog">
+    <div class="wrap">
+      <div class="split reveal">
+        <div><div class="kicker">Blog</div><h2 class="t" data-en="Insights &amp; <em>tips</em>.">Wawasan &amp; <em>tips</em>.</h2></div>
+        <p class="lead">Catatan praktis seputar perawatan properti dan operasional perhotelan.</p>
+      </div>
+      <div class="posts reveal" id="posts"></div>
+    </div>
+  </section>
+<!-- KONTAK -->
+<section class="jx-sec" id="kontak" style="padding-top:0">
+  <div class="jx-wrap">
+    <div class="jx-endcard jx-rv">
+      <div>
+        <span class="jx-eyebrow" style="color:var(--gold2)">Your Property, Our Care.</span>
+        <h2 style="margin-top:16px" data-en='You don&#39;t have to handle <span class="jx-acc" style="color:var(--gold2)">it all yourself.</span>'>Anda tidak perlu mengurus <span class="jx-acc" style="color:var(--gold2)">semuanya sendiri.</span></h2>
+        <p data-en="Entrust it to Jaga Partner and enjoy peace of mind as a property owner. Tell us what you need — free consultation, no commitment.">Percayakan kepada Jaga Partner, dan nikmati ketenangan sebagai pemilik properti. Ceritakan kebutuhan Anda, konsultasi gratis tanpa komitmen.</p>
+        <div class="jx-cta">
+          <a class="jx-btn jx-btn-wa jx-wa" data-m="Halo JAGA, saya mau konsultasi untuk properti saya." href="#" target="_blank" rel="noopener"><span data-en="Chat on WhatsApp now">Chat WhatsApp sekarang</span></a>
+          <a class="jx-btn jx-btn-ghost" href="#layanan"><span data-en="See services">Lihat layanan</span></a>
+        </div>
+      </div>
+      <div class="jx-fslot">
+      <form class="form" id="bookForm">
+        <div class="f"><label>Nama</label><input name="nama" required placeholder="Nama lengkap"></div>
+        <div class="f"><label>Telepon / WhatsApp</label><input name="telp" required placeholder="08xx"></div>
+        <div class="f"><label>Wilayah</label><select name="wilayah" id="fWil"><option>Bali</option><option>Lombok</option><option>Yogyakarta</option></select></div>
+        <div class="f"><label>Jenis Properti</label><select name="properti"><option value="Villa">Villa</option><option value="Hotel">Hotel</option><option value="Apartemen">Apartemen</option><option value="Rumah">Rumah</option><option value="Kantor / Komersial">Kantor / Komersial</option></select></div>
+        <div class="f"><label>Layanan</label><select name="layanan" id="fLay"></select></div>
+        <div class="f"><label>Tanggal</label><input type="date" name="tanggal" required></div>
+        <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <div class="f full"><label>Lokasi / Catatan</label><textarea name="catatan" placeholder="Alamat, luas area, kebutuhan khusus…"></textarea></div>
+        <div class="f full"><button class="btn" style="background:var(--gold);color:#111;align-self:flex-start">Kirim Permintaan →</button></div>
+      </form>
+      </div>
+    </div>
+  </div>
+</section>
+<a class="jx-fwa jx-wa" data-m="Halo JAGA, saya mau tanya layanan." href="#" target="_blank" rel="noopener" aria-label="Chat WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.1c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1a15 15 0 0 1-6.2-5.5c-.5-.8-.9-1.8-.9-2.7 0-1 .5-1.5.7-1.7.2-.2.4-.3.6-.3h.4c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.6-.1 1.2z"/></svg></a>
+</div>
+
+  <section class="legacy hero" id="x-beranda">
     <div class="scene">
       <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
         <defs>
@@ -1026,7 +1661,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </section>
 
   <!-- SERVICES -->
-  <section class="s svc-dark" id="layanan">
+  <section class="legacy s svc-dark" id="x-layanan">
     <div class="wrap">
       <div class="split reveal">
         <div><div class="kicker">Layanan</div><h2 class="t" data-en="Four services, <em>one standard</em>.">Empat layanan, <em>satu standar</em>.</h2></div>
@@ -1037,7 +1672,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </section>
 
   <!-- PROPERTI KAMI (cuplikan di beranda) -->
-  <section class="s" id="unggulan" style="background:var(--cream2)">
+  <section class="legacy s" id="x-unggulan" style="background:var(--cream2)">
     <div class="wrap">
       <div class="split reveal">
         <div><div class="kicker">Properti Kami</div><h2 class="t" data-en="Stay with <em>us</em>.">Menginap bersama <em>kami</em>.</h2></div>
@@ -1049,7 +1684,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </section>
 
   <!-- GALERI (tampil otomatis jika ada foto di daftar GALLERY) -->
-  <section class="s" id="galeri" hidden>
+  <section class="legacy s" id="galeri" hidden>
     <div class="wrap">
       <div class="split reveal">
         <div><div class="kicker">Galeri</div><h2 class="t" data-en="Our work, <em>up close</em>.">Hasil kerja kami, <em>dari dekat</em>.</h2></div>
@@ -1060,7 +1695,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </section>
 
   <!-- MITRA KAMI -->
-  <section class="s mitra" id="mitra">
+  <section class="legacy s mitra" id="x-mitra">
     <div class="mbg" id="mitraBg"></div>
     <div class="wrap" style="position:relative">
       <div class="mhead reveal"><div class="mk">Mitra Kami</div>
@@ -1072,7 +1707,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </section>
 
   <!-- ABOUT -->
-  <section class="s" id="cerita">
+  <section class="legacy s" id="x-cerita">
     <div class="wrap">
       <div class="split reveal">
         <div>
@@ -1091,7 +1726,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </section>
 
   <!-- REGIONS -->
-  <section class="s" id="wilayah">
+  <section class="legacy s" id="x-wilayah">
     <div class="wrap">
       <div class="split reveal">
         <div><div class="kicker">Wilayah Layanan</div><h2 class="t" data-en="Present in three key <em>destinations</em>.">Hadir di tiga <em>destinasi</em> utama.</h2></div>
@@ -1102,7 +1737,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </section>
 
   <!-- PROCESS -->
-  <section class="s" id="proses" style="background:var(--cream2)">
+  <section class="legacy s" id="x-proses" style="background:var(--cream2)">
     <div class="wrap">
       <div class="reveal"><div class="kicker">Cara Kerja</div><h2 class="t" data-en="From request to <em>report</em>.">Dari permintaan hingga <em>laporan</em>.</h2></div>
       <div class="steps reveal">
@@ -1115,7 +1750,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </section>
 
   <!-- APP TEASER -->
-  <section class="s teaser" id="aplikasi" style="background:var(--cream)">
+  <section class="legacy s teaser" id="x-aplikasi" style="background:var(--cream)">
     <div class="wrap split" style="align-items:center">
       <div class="reveal">
         <div class="kicker">Aplikasi Web</div>
@@ -1144,18 +1779,10 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   </section>
 
   <!-- BLOG -->
-  <section class="s" id="blog" style="background:var(--cream2)">
-    <div class="wrap">
-      <div class="split reveal">
-        <div><div class="kicker">Blog</div><h2 class="t" data-en="Insights &amp; <em>tips</em>.">Wawasan &amp; <em>tips</em>.</h2></div>
-        <p class="lead">Catatan praktis seputar perawatan properti dan operasional perhotelan.</p>
-      </div>
-      <div class="posts reveal" id="posts"></div>
-    </div>
-  </section>
+
 
   <!-- CONTACT -->
-  <section class="s contact" id="kontak">
+  <section class="legacy s contact" id="x-kontak">
     <div class="wrap split" style="align-items:start">
       <div class="reveal">
         <div class="kicker">Kontak &amp; Pemesanan</div>
@@ -1163,17 +1790,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
         <p class="lead">Isi formulir, dan koordinator wilayah akan menghubungi Anda untuk survei dan penawaran.</p>
         <div class="cinfo" id="offices"></div>
       </div>
-      <form class="form reveal" id="bookForm">
-        <div class="f"><label>Nama</label><input name="nama" required placeholder="Nama lengkap"></div>
-        <div class="f"><label>Telepon / WhatsApp</label><input name="telp" required placeholder="08xx"></div>
-        <div class="f"><label>Wilayah</label><select name="wilayah" id="fWil"><option>Bali</option><option>Lombok</option><option>Yogyakarta</option></select></div>
-        <div class="f"><label>Jenis Properti</label><select name="properti"><option value="Villa">Villa</option><option value="Hotel">Hotel</option><option value="Apartemen">Apartemen</option><option value="Rumah">Rumah</option><option value="Kantor / Komersial">Kantor / Komersial</option></select></div>
-        <div class="f"><label>Layanan</label><select name="layanan" id="fLay"></select></div>
-        <div class="f"><label>Tanggal</label><input type="date" name="tanggal" required></div>
-        <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-        <div class="f full"><label>Lokasi / Catatan</label><textarea name="catatan" placeholder="Alamat, luas area, kebutuhan khusus…"></textarea></div>
-        <div class="f full"><button class="btn" style="background:var(--gold);color:#111;align-self:flex-start">Kirim Permintaan →</button></div>
-      </form>
+
     </div>
   </section>
 
@@ -1526,7 +2143,7 @@ $('#langBtn').onclick=()=>{setLang(LANG==='ID'?'EN':'ID');toast(L('Bahasa Indone
 /* nav: solid on scroll, active link, reveal, counters */
 const nav=$('#nav');
 addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>60||$('#site').classList.contains('pmode'));
-  let cur='beranda';if($('#site').classList.contains('pmode'))cur=location.hash==='#karier'?'karier':/^(cleaning|manajemen|chemical)$/.test(location.hash.slice(1))?'layanan':'properti';else ['beranda','layanan','unggulan','mitra','cerita','blog','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id==='unggulan'?'properti':id});
+  let cur='beranda';if($('#site').classList.contains('pmode'))cur=location.hash==='#karier'?'karier':/^(cleaning|manajemen|chemical)$/.test(location.hash.slice(1))?'layanan':'properti';else ['beranda','cerita','layanan','mitra','blog','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id});
   $$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
 },{passive:true});
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');
@@ -1719,7 +2336,7 @@ let HV=0,HVt=null;
 let HVvis=false;
 function initHero(){
   clearTimeout(HVt);HV=0;
-  const hero=$('#beranda');
+  const hero=$('#x-beranda');if(!hero||!hero.offsetParent)return;
   if(!HERO_VIDEOS.length){hero.classList.remove('has-video');$('#hvids').innerHTML='';$$('.regions-tag a').forEach(a=>a.classList.remove('cur'));return}
   hero.classList.add('has-video');
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1787,7 +2404,8 @@ function renderPartners(){
   const bg=MEDIA.partnersBg||'videos/lombok-pantai.jpg';$('#mitraBg').style.backgroundImage=`url('${mUrl(bg)}')`;
   $('#plogos').innerHTML=(MEDIA.partners||[]).map(p=>{const inner=p.logo?`<img src="${mUrl(p.logo)}" alt="${esc(p.name)}" loading="lazy">`:`<span>${esc(p.name)}</span>`,st=p.bg&&/^#[0-9a-f]{3,8}$/i.test(p.bg)?` style="background:${p.bg}"`:'';return `<div class="plogo"${st} title="${esc(p.name)}">${inner}</div>`}).join('');
 }
-function applyMedia(){renderPartners();HERO_VIDEOS=MEDIA.hero.map(v=>({...v,src:mUrl(v.src),poster:v.poster?mUrl(v.poster):''}));GALLERY=MEDIA.gallery.map(g=>({...g,src:mUrl(g.src)}));initHero();renderGallery()}
+function renderJPartners(){const el=$('#jx-jlogos');if(!el)return;el.innerHTML=(MEDIA.partners||[]).map(p=>{const st=p.bg&&/^#[0-9a-f]{3,8}$/i.test(p.bg)?` style="background:${p.bg}"`:'';return `<span class="jx-pl"${st} title="${esc(p.name)}">${p.logo?`<img src="${mUrl(p.logo)}" alt="${esc(p.name)}" loading="lazy">`:esc(p.name)}</span>`}).join('')}
+function applyMedia(){renderPartners();renderJPartners();HERO_VIDEOS=MEDIA.hero.map(v=>({...v,src:mUrl(v.src),poster:v.poster?mUrl(v.poster):''}));GALLERY=MEDIA.gallery.map(g=>({...g,src:mUrl(g.src)}));initHero();renderGallery()}
 
 /* ---- GitHub API (token disimpan hanya di browser admin) ---- */
 const gh={
@@ -2682,7 +3300,7 @@ $$('.reveal').forEach(el=>io.observe(el));
 
 
 /* ================= ROUTING ================= */
-const SITE_IDS=['beranda','cerita','layanan','unggulan','galeri','mitra','wilayah','proses','aplikasi','blog','kontak'];
+const SITE_IDS=['beranda','untuk','cerita','layanan','cara-kerja','hasil','wilayah','mitra','faq','blog','kontak'];
 function route(){
   const h=location.hash.slice(1);
   if(h==='portal'){$('#site').classList.remove('on');$('#portal').classList.add('on');scrollTo(0,0);if(USER)enterPortal();else{$('#portal').classList.add('locked');renderLogin()}return}
@@ -2751,7 +3369,7 @@ const JM=(()=>{
         const off=(r.top+r.height/2-vh/2)*sp*(small?.5:1);el.style.transform=`translate3d(0,${off.toFixed(1)}px,0)${base}`})}};
   /* ---------- hero: entrance + scroll + pointer ---------- */
   const hero=$('#beranda'),hin=hero&&hero.querySelector('.in'),hv=$('#hvids');let mx=0,my=0,tx=0,ty=0;
-  function heroIntro(){if(!hero)return;const h1=hero.querySelector('h1');h1._jmBase=380;h1._jmHTML=null;h1.classList.remove('tr','in');split(h1);
+  function heroIntro(){if(!hero||!hin)return;const h1=hero.querySelector('h1');h1._jmBase=380;h1._jmHTML=null;h1.classList.remove('tr','in');split(h1);
     requestAnimationFrame(()=>requestAnimationFrame(()=>{hero.classList.remove('pre');h1.classList.add('in')}))}
   function heroRun(){if(!hero||!hero.offsetParent)return;const y=scrollY,vh=innerHeight;if(y>vh*1.2)return;
     tx+=(mx-tx)*.06;ty+=(my-ty)*.06;
@@ -2774,7 +3392,7 @@ const JM=(()=>{
       if(hero&&scrollY<innerHeight){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;req()}},{passive:true});
     document.addEventListener('mouseleave',()=>{ring.classList.remove('on');dot.classList.remove('on')});
     /* magnetic */
-    const MAG='[data-mag], .hbtn, .pillar .ar, .fvip, #site .btn, .cgo, .cfab, .chcartTop';
+    const MAG='[data-mag], .hbtn, .pillar .ar, .fvip, #site .btn, .cgo, .cfab, .chcartTop, .jx-btn, .jx-tlink';
     document.addEventListener('pointermove',e=>{const m=e.target.closest?.(MAG);if(!m)return;const r=m.getBoundingClientRect();
       const dx=(e.clientX-r.left-r.width/2)/r.width,dy=(e.clientY-r.top-r.height/2)/r.height;m.style.transform=`translate3d(${(dx*12).toFixed(1)}px,${(dy*10).toFixed(1)}px,0)`;m._mg=1},{passive:true});
     document.addEventListener('pointerout',e=>{const m=e.target.closest?.(MAG);if(m&&m._mg&&!m.contains(e.relatedTarget)){m.style.transform='';m._mg=0}});
@@ -2810,6 +3428,42 @@ const JM=(()=>{
 })();
 {const _sl=setLang;setLang=function(l){_sl(l);JM.refresh()}}
 JM.init();
+/* ================= BERANDA (template Jaga Partner) ================= */
+(function(){
+  const jh=$('#jh');if(!jh)return;const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const waLinks=()=>{const wa=(SETTINGS.whatsapp||'62882005837975').replace(/\D/g,'');jh.querySelectorAll('.jx-wa').forEach(a=>a.href='https://wa.me/'+wa+'?text='+encodeURIComponent(a.dataset.m))};
+  waLinks();if(typeof SET_READY!=='undefined'&&SET_READY)SET_READY.then(waLinks);
+  /* lampu: tema terang/gelap */
+  const lamp=$('#jx-lamp');let hint=$('#jx-hint');
+  try{if(localStorage.getItem('jaga-theme')==='dark')jh.classList.add('jx-dark')}catch(e){}
+  const pull=()=>{lamp.classList.add('jx-pull');setTimeout(()=>{jh.classList.toggle('jx-dark');try{localStorage.setItem('jaga-theme',jh.classList.contains('jx-dark')?'dark':'light')}catch(e){}lamp.classList.remove('jx-pull')},220);if(hint){hint.remove();hint=null}};
+  lamp.addEventListener('click',pull);lamp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pull()}});
+  /* segmen jenis properti */
+  const seg=$('#jx-seg'),btns=[...seg.querySelectorAll('button')],ind=$('#jx-segInd');let si=0,auto;
+  const setSeg=n=>{si=n;btns.forEach((x,k)=>x.classList.toggle('jx-on',k===n));const b=btns[n];if(!b.offsetWidth)return;ind.style.width=b.offsetWidth+'px';ind.style.transform='translateX('+b.offsetLeft+'px)'};
+  btns.forEach((b,k)=>b.addEventListener('click',()=>{setSeg(k);clearInterval(auto)}));
+  ind.style.transition='none';setSeg(0);void ind.offsetWidth;ind.style.transition='';addEventListener('resize',()=>setSeg(si));addEventListener('load',()=>setSeg(si));setTimeout(()=>setSeg(si),600);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>setSeg(si));
+  if(!RM)auto=setInterval(()=>{if(jh.offsetParent)setSeg((si+1)%btns.length)},2200);
+  /* pintu layanan -> buka halaman masing-masing */
+  jh.querySelectorAll('.jx-door').forEach(d=>d.addEventListener('click',()=>{if(d.classList.contains('jx-open'))return;d.classList.add('jx-open');
+    setTimeout(()=>{location.hash=d.dataset.go;setTimeout(()=>d.classList.remove('jx-open'),900)},RM?0:850)}));
+  /* sebelum/sesudah */
+  const ba=$('#jx-ba'),rg=ba.querySelector('input');rg.addEventListener('input',()=>ba.style.setProperty('--p',rg.value+'%'));
+  /* reveal + angka */
+  const count=el=>{const t=+el.dataset.c,s=el.dataset.s||'';if(RM){el.textContent=t+s;return}let st=null;const f=ts=>{st??=ts;const p=Math.min((ts-st)/1600,1);el.textContent=Math.round(t*(1-Math.pow(2,-10*p)))+s;if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)};
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('jx-in');e.target.querySelectorAll('[data-c]').forEach(count);io.unobserve(e.target)}}),{threshold:.15});
+  jh.querySelectorAll('.jx-rv').forEach(el=>RM?(el.classList.add('jx-in'),el.querySelectorAll('[data-c]').forEach(count)):io.observe(el));
+  /* wilayah: judul besar mengikuti foto */
+  const big=$('#jx-big'),cnt=$('#jx-cnt'),barI=$('#jx-barI'),items=[...jh.querySelectorAll('.jx-it')];let cur=0;
+  const jo=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const n=items.indexOf(e.target);if(n===cur)return;cur=n;
+    items.forEach((x,k)=>x.classList.toggle('jx-act',k===n));big.classList.add('jx-fade');setTimeout(()=>{big.textContent=e.target.dataset.n;big.classList.remove('jx-fade')},300);
+    cnt.textContent='0'+(n+1)+' / 0'+items.length;barI.style.width=((n+1)/items.length*100)+'%'}),{rootMargin:'-45% 0px -45% 0px'});
+  items.forEach(x=>jo.observe(x));
+  /* setelah ganti bahasa: segmen & link WA tetap benar */
+  const _sl=setLang;setLang=function(l){_sl(l);setTimeout(()=>{setSeg(si);waLinks()},50)};
+})();
+
 
 
 </script>
