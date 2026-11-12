@@ -768,6 +768,26 @@ tr:hover td{background:#fbf8f2}
   .main{padding:22px 16px 60px}.ring{display:none}
 }
 @media(max-width:600px){section.s{padding:84px 6vw}.form,.mf{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.eyebrow{font-size:11px;gap:14px}.eyebrow:before,.eyebrow:after{width:30px}.brand .bt span{display:none}}
+.cshow{background:#fff;padding:90px 6vw 100px}
+.cshow-in{max-width:1180px;margin:0 auto;text-align:center}
+.cshow .kicker{justify-content:center}.cshow .svsub{margin:10px auto 0;max-width:620px}
+.ba{position:relative;margin:36px auto 0;max-width:1000px;aspect-ratio:2/1;border-radius:20px;overflow:hidden;user-select:none;box-shadow:0 30px 60px -36px rgba(15,43,58,.55);background:#ddd}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.ba-b{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--p)) 0 0)}
+.ba-h{position:absolute;top:0;bottom:0;left:var(--p);width:2px;margin-left:-1px;background:#fff;pointer-events:none}
+.ba-h i{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:#fff;color:#0f2b3a;display:grid;place-items:center;font-style:normal;font-size:18px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.ba-l,.ba-r{position:absolute;bottom:16px;padding:7px 16px;border-radius:999px;background:rgba(15,20,18,.6);backdrop-filter:blur(6px);color:#fff;font-size:12px;letter-spacing:.16em;text-transform:uppercase;pointer-events:none}
+.ba-l{left:16px}.ba-r{right:16px}
+.cphotos{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px;text-align:left}
+.cphotos figure{margin:0}
+.cphotos .ph{aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:#e3f1f5}
+.cphotos .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.cphotos figure:hover .ph img{transform:scale(1.06)}
+.cphotos figcaption{padding:14px 2px 0}.cphotos b{display:block;font-size:15px;color:#0f2b3a}.cphotos span{display:block;font-size:13px;color:#5d7882;line-height:1.55;margin-top:4px}
+.cshow-cta{margin-top:44px;display:flex;justify-content:center}
+@media(max-width:900px){.cphotos{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.ba{aspect-ratio:4/3}.cphotos{gap:12px}.cshow{padding:70px 5vw 80px}}
 /* ================= JAGA MOTION (scroll, transitions, interactions) ================= */
 :root{--ease:cubic-bezier(.16,1,.3,1);--ease-io:cubic-bezier(.65,0,.35,1)}
 .reveal{transition:opacity 1.1s var(--ease),transform 1.2s var(--ease)}
@@ -2245,7 +2265,27 @@ function cleanPage(){
       <div class="err" id="cerr"></div>
       <p class="cnote">${L('Harga per jam; total final dikonfirmasi tim JAGA sesuai luas & kondisi. Melayani rumah, kosan, apartemen, villa, hotel, kantor, dan restoran.','Hourly rates; the final total is confirmed by JAGA based on size & condition. We serve homes, boarding houses, apartments, villas, hotels, offices and restaurants.')}</p>
     </form>
-  </div>`;
+  </div>
+  <section class="cshow">
+    <div class="cshow-in">
+      <div class="kicker">${L('Hasil kerja kami','Our results')}</div>
+      <h2 class="svh">${L('Bedanya terlihat, terasa, dan tercatat.','A difference you can see, feel and verify.')}</h2>
+      <p class="svsub">${L('Geser untuk membandingkan kamar sebelum dan sesudah dirapikan tim JAGA.','Drag to compare a room before and after the JAGA team.')}</p>
+      <div class="ba" id="ba" style="--p:50%">
+        <img src="images/cleaning/sesudah.jpg" alt="${L('Sesudah dibersihkan','After cleaning')}" loading="lazy" draggable="false">
+        <div class="ba-b"><img src="images/cleaning/sebelum.jpg" alt="${L('Sebelum dibersihkan','Before cleaning')}" loading="lazy" draggable="false"></div>
+        <span class="ba-l">${L('Sebelum','Before')}</span><span class="ba-r">${L('Sesudah','After')}</span>
+        <div class="ba-h" aria-hidden="true"><i>‹ ›</i></div>
+        <input type="range" min="0" max="100" value="50" aria-label="${L('Geser perbandingan sebelum dan sesudah','Before/after comparison slider')}" oninput="$('#ba').style.setProperty('--p',this.value+'%')">
+      </div>
+      <div class="cphotos">${[['lap-meja','Permukaan bersih mengilap','Spotless, gleaming surfaces','Meja, kaca & permukaan dilap dengan kain mikrofiber.','Tables, glass & surfaces wiped with microfibre.'],
+        ['kasur-rapi','Kamar rapi standar hotel','Hotel-standard rooms','Linen dirapikan rapi seperti kamar hotel.','Linen made up just like a hotel room.'],
+        ['tim','Tim terlatih & berseragam','Trained, uniformed team','Setiap petugas mengikuti SOP dan checklist digital.','Every cleaner follows SOPs and a digital checklist.'],
+        ['qc','Quality check setiap kunjungan','Quality check every visit','Hasil diperiksa sebelum tim meninggalkan lokasi.','Work is inspected before the team leaves.']]
+        .map(x=>`<figure><div class="ph"><img src="images/cleaning/${x[0]}.jpg" alt="${L(x[1],x[2])}" loading="lazy"></div><figcaption><b>${L(x[1],x[2])}</b><span>${L(x[3],x[4])}</span></figcaption></figure>`).join('')}</div>
+      <div class="cshow-cta"><a class="hbtn pri" href="javascript:void 0" onclick="$('#cform').scrollIntoView({behavior:'smooth',block:'start'})"><span>${L('Pesan sekarang','Book now')}</span><i>↑</i></a></div>
+    </div>
+  </section>`;
   cleanSum();$('#cform').addEventListener('change',cleanSum);cMap();
 }
 const idr=n=>'Rp '+n.toLocaleString('id-ID');
@@ -2620,10 +2660,10 @@ const JM=(()=>{
   const FINE=matchMedia('(hover: hover) and (pointer: fine)').matches;
   const SMALL=()=>innerWidth<768;
   const TXT='#site h2.t, .pbanner h1, .chero h1';
-  const FU='#propPage .pbanner .kicker, #propPage .pbanner p, #propPage .pbanner .chcartTop, #propPage .svwrap>.kicker, #propPage .svh, #propPage .svsub, #propPage .cform, #propPage .chero p, #propPage .chero .cbad, #propPage .pdet, #propPage .bk';
+  const FU='#propPage .pbanner .kicker, #propPage .pbanner p, #propPage .pbanner .chcartTop, #propPage .svwrap>.kicker, #propPage .svh, #propPage .svsub, #propPage .cform, #propPage .chero p, #propPage .chero .cbad, #propPage .pdet, #propPage .bk, #propPage .cshow .kicker, #propPage .cshow .svh, #propPage .cshow .svsub, #propPage .cphotos figcaption';
   const STG='#cards, #regions, .steps, .stats, .prgrid, .chwhy, #jobs, #posts, #hprops, #plogos, .cpkgs, .pgrid, .fgrid';
-  const CLIP='.reg .art, .pcard .ph, .gal figure, .post .ph, .hp .ph';
-  const ZOOM='.pcard .ph, .gal figure, .post .ph, .hp .ph';
+  const CLIP='.reg .art, .pcard .ph, .gal figure, .post .ph, .hp .ph, .cphotos .ph, .ba';
+  const ZOOM='.pcard .ph, .gal figure, .post .ph, .hp .ph, .cphotos .ph';
   /* ---------- pecah teks menjadi kata (mempertahankan <em>, <br>) ---------- */
   function split(el){
     if(el._jmHTML===el.innerHTML&&el.classList.contains('tr'))return;
