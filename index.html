@@ -871,6 +871,48 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   body.pt-in #site>*,body.pt-in #portal{animation:none!important}
   .nav.hide,.nav.pre{transform:none}.jcur,.jdot{display:none}}
 
+/* ================= PENYEMPURNAAN TAMPILAN HP ================= */
+@media(max-width:600px){
+  section.s{padding:72px 6vw}
+  .split{gap:16px!important}.split .lead{margin-top:0}
+  .t{font-size:clamp(32px,8.6vw,40px)!important;line-height:1.12}
+  /* hero */
+  .hero{min-height:600px;height:100svh}
+  .hero .in{padding:0 7vw}
+  .hero h1{font-size:clamp(34px,9.6vw,44px);line-height:1.1;margin:22px 0 6px}
+  .eyebrow{font-size:10.5px;letter-spacing:.24em;gap:12px}.eyebrow:before,.eyebrow:after{width:22px}
+  .regions-tag{margin-top:20px}.regions-tag a{padding:6px 11px;font-size:10.5px;letter-spacing:.24em}
+  .hact{flex-direction:column;align-items:stretch;max-width:300px;margin:32px auto 0;gap:10px}
+  .hbtn{justify-content:center;padding:16px 22px}
+  .vcap{bottom:24px}
+  /* layanan */
+  .pillar{padding:26px 2px}.pillar h3{font-size:25px}.pillar p{font-size:14px;line-height:1.7}
+  .stats{margin-top:44px}.stats b{font-size:42px}.stats div{padding:24px 16px}
+  .steps{gap:26px;margin-top:44px}.step:before{font-size:44px;margin-bottom:10px}.step h4{font-size:22px}
+  .regions{gap:14px}.reg{height:440px}
+  /* cleaning: paket jadi daftar ringkas */
+  .cpkgs{grid-template-columns:1fr!important;gap:10px}
+  .cpkg{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px;row-gap:2px;padding:14px 16px}
+  .cpkg{grid-template-columns:minmax(0,1fr) auto}.cpkg strong{grid-column:1;font-size:15px}.cpkg .cpr{grid-column:2;grid-row:1;font-size:17px;text-align:right;white-space:nowrap}.cpkg .cpr:not(:has(i)){font-size:13.5px;white-space:normal;max-width:120px;line-height:1.2}
+  .cpkg small{grid-column:1/-1;font-size:12.5px}
+  .chero h1{font-size:clamp(32px,9vw,40px)}
+  .cbadges{gap:6px}.cbadges span{font-size:12px;padding:6px 11px}
+  /* chemical */
+  .chwhy{grid-template-columns:1fr 1fr!important;gap:10px;margin-bottom:40px}
+  .chwhy div{padding:14px}.chwhy h4{font-size:13.5px}.chwhy p{font-size:12px;line-height:1.5}
+  .prb h3{font-size:14.5px}.prpr{font-size:17px}.prb p{font-size:12.5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .prbuy .padd{flex:none;height:42px}
+  .cfab{right:16px;bottom:16px;padding:13px 15px}
+  /* banner halaman */
+  .pbanner h1{font-size:clamp(32px,8.8vw,40px)!important;line-height:1.12}
+  .pbanner .btn{flex:1 1 100%;justify-content:center}
+  /* footer lebih ringkas */
+  footer{padding:52px 6vw 26px}
+  .fgrid{gap:30px}.fcol h5{margin:0 0 14px}.fbrand p{margin:16px 0 18px;font-size:14px}
+  .flinks{gap:10px 20px}.flinks a,.fcon a,.fcon>span{font-size:14.5px}.fcon{gap:12px}
+  .fvip{margin-top:16px}.fcopy{margin-top:30px;line-height:1.6}
+}
+
 </style>
 </head>
 <body>
