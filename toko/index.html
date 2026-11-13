@@ -1029,6 +1029,21 @@ body.is-owner .dtop{z-index:20}
 .cform{display:flex;gap:8px;padding:8px 10px calc(10px + env(safe-area-inset-bottom));background:#fff}
 .cform .in{flex:1;margin:0}
 .cform .btn{width:48px;padding:0;display:grid;place-items:center;font-size:19px;flex-shrink:0}
+.livemap{margin:12px 0;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:0 10px 24px -20px rgba(10,22,51,.5)}
+.lmap{height:230px;width:100%;background:#e8eef8;position:relative;z-index:0;isolation:isolate}
+.lmeta{display:flex;gap:10px;align-items:center;padding:10px 14px}
+.lmeta b{display:block;font-size:14px}
+.lmeta small{display:block;color:#6a7894;font-size:12px}
+.livedot{width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:livep 1.6s infinite;flex-shrink:0}
+@keyframes livep{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 10px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.lmwait{display:flex;gap:10px;align-items:center;margin:12px 0;padding:12px 14px;border-radius:16px;background:#f5f8fe;color:#5b6a86;font-size:13px}
+.lmwait .e3d{width:26px;height:26px}
+.mk{background:none;border:0}
+.mk .mkin{width:40px;height:40px;border-radius:50% 50% 50% 6px;transform:rotate(-45deg);background:#fff;display:grid;place-items:center;box-shadow:0 6px 14px -4px rgba(10,22,51,.45);border:2px solid #2f6bff}
+.mk .mkin .e3d{width:24px;height:24px;transform:rotate(45deg)}
+.mk-drv .mkin{border-color:#16a34a;border-radius:50%;transform:none}
+.mk-drv .mkin .e3d{transform:none}
+.mk-store .mkin{border-color:#b08d4f}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1076,9 +1091,13 @@ const shareOf = o => Math.round((o.total||0) * BAGI_HASIL);
 const FLOW = ["menunggu_pembayaran","menunggu_konfirmasi","mencari_driver","driver_ke_toko","diantar","selesai"];
 const FLOW_COD = ["menunggu_konfirmasi","mencari_driver","driver_ke_toko","diantar","selesai"];
 const STEP_L = {menunggu_pembayaran:"Bayar", menunggu_konfirmasi:"Konfirmasi toko", mencari_driver:"Cari driver", driver_ke_toko:"Ke toko", diantar:"Diantar", selesai:"Selesai"};
-const ONGKIR_RATE = 0.025; // patokan ongkir driver: 2,5% dari belanja (bisa nego)
-const ongkirOf = sub => Math.ceil((Number(sub)||0) * ONGKIR_RATE / 100) * 100;
-const ongkirEstOf = o => typeof o.ongkirEst === "number" ? o.ongkirEst : ongkirOf(o.subtotal || o.total);
+const ONGKIR_PER = 2000, ONGKIR_STEP = 500; // ongkir driver: Rp2.000 per 500 m dari toko ke pembeli (bisa nego)
+const ONGKIR_LBL = "Rp2.000/500 m";
+const ongkirByDist = m => Math.max(1, Math.ceil((Number(m)||0) / ONGKIR_STEP)) * ONGKIR_PER;
+const locOk = x => !!x && typeof x.lat === "number" && typeof x.lng === "number";
+const ongkirEstOf = o => typeof o.ongkirEst === "number" ? o.ongkirEst : (locOk(o.storeLoc) && locOk(o.buyer) ? ongkirByDist(distM(o.storeLoc, o.buyer)) : null);
+const ongkirDistOf = o => typeof o.ongkirDist === "number" ? o.ongkirDist : (locOk(o.storeLoc) && locOk(o.buyer) ? Math.round(distM(o.storeLoc, o.buyer)) : null);
+const kmTxt = m => m == null ? "" : m < 1000 ? Math.round(m) + " m" : (m/1000).toFixed(1).replace(".", ",") + " km";
 
 /* ============ State ============ */
 const S = {
@@ -1405,7 +1424,7 @@ function restoreForms(snap){
   }
   app.dataset.sig = sig;
 }
-function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); }
+function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); try{ mountMaps(); }catch(e){} }
 function renderInner(){
   renderNav();
   const app = document.getElementById("app");
@@ -1471,7 +1490,7 @@ function prodCard(x){
     '<div class="st">'+I("pin")+' <b>'+esc(s.area||"-")+'</b><span>· '+esc(s.name)+'</span></div>'+(sold?'<div class="sold">'+sold+' terjual</div>':'')+'</div></div>';
 }
 const SLIDES = [
-  {c:"s1", pill:"Driver terdekat", t:"Diantar driver terdekat, langsung dari toko.", d:"Ongkir hanya 2,5% dari belanja — bisa nego langsung dengan driver.", art:I("truck")},
+  {c:"s1", pill:"Driver terdekat", t:"Diantar driver terdekat, langsung dari toko.", d:"Ongkir cuma Rp2.000 per 500 m — bisa nego langsung dengan driver.", art:I("truck")},
   {c:"s2", pill:"Tanpa biaya tambahan", t:"0% biaya admin. Bayar langsung ke toko.", d:"Transfer, e-wallet, QRIS, atau bayar di tempat.", art:I("card")},
   {c:"s3", pill:"Untuk pemilik toko", t:"Punya toko? Gabung jadi Mitra Jaga Toko.", d:"Daftar gratis, bagi hasil hanya 3% per penjualan. Hubungi tim kami untuk info.", art:I("store"), act:"mitra-info", v:""}
 ];
@@ -1551,7 +1570,7 @@ function viewProduct(){
   h += '<div class="pdp"><div class="gal">'+(p.img?'<img alt="" src="'+esc(p.img)+'">':(CAT_ICON[s.category]||I("package")))+'</div><div>'+
     '<h1>'+esc(p.name)+'</h1><div class="small muted">'+(sold?sold+' terjual · ':'')+(typeof p.stock==="number"?'Stok '+p.stock:'Stok tersedia')+'</div>'+
     '<div class="bigprice">'+rp(p.price)+'</div>'+
-    '<div class="meta"><span class="tag">'+I("truck")+' Ongkir 2,5%</span><span class="tag">0% biaya admin</span>'+payMethodsOf(s).map(m=>'<span class="tag gray">'+esc(m.l)+'</span>').join("")+'</div>'+
+    '<div class="meta"><span class="tag">'+I("truck")+' Ongkir Rp2rb/500 m</span><span class="tag">0% biaya admin</span>'+payMethodsOf(s).map(m=>'<span class="tag gray">'+esc(m.l)+'</span>').join("")+'</div>'+
     (p.desc?'<h3 class="sub" style="margin-top:4px">Deskripsi</h3><p style="margin:0 0 16px;white-space:pre-line">'+esc(p.desc)+'</p>':'')+
     '<div class="buybox">'+(out?'<b style="color:var(--danger)">Stok habis</b>':!isOpen?'<b style="color:var(--danger)">Toko sedang tutup</b>':
       '<div class="small muted" style="font-weight:700">Atur jumlah</div><div class="qty">'+(inCart?'<button data-act="qty" data-id="'+esc(p.id)+'" data-d="-1">−</button><b>'+inCart+'</b><button data-act="qty" data-id="'+esc(p.id)+'" data-d="1">+</button><span class="small muted">di keranjang · subtotal <b style="color:var(--ink)">'+rp(inCart*p.price)+'</b></span>':'<span class="small muted">Belum di keranjang</span>')+'</div>'+
@@ -1572,7 +1591,7 @@ function viewStore(){
   h += '<div class="sbanner">'+avatarHtml(s)+'<div class="grow"><h2>'+esc(s.name)+'</h2>'+
     '<div class="small muted">'+(isOpen?'<span style="color:#86efac;font-weight:700">● Buka</span>':'<span style="color:#fca5a5;font-weight:700">Tutup</span>')+' · '+(CAT_ICON[s.category]||"")+' '+esc(s.category)+' · '+I("pin")+' '+esc(s.address||"")+(s.area?', '+esc(s.area):'')+(s.hours?' · '+I("clock")+' '+esc(s.hours):'')+'</div>'+
     (s.desc?'<p style="margin:8px 0 0;color:#dce6fb">'+esc(s.desc)+'</p>':'')+
-    '<div class="paylist"><span class="tag">'+I("truck")+' Ongkir 2,5%</span><span class="tag">0% admin</span>'+payMethodsOf(s).map(p=>'<span class="tag gray">'+esc(p.l)+'</span>').join("")+'</div></div>'+
+    '<div class="paylist"><span class="tag">'+I("truck")+' Ongkir Rp2rb/500 m</span><span class="tag">0% admin</span>'+payMethodsOf(s).map(p=>'<span class="tag gray">'+esc(p.l)+'</span>').join("")+'</div></div>'+
     (s.wa?'<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", saya lihat toko Anda di Jaga Toko."))+'">'+I("chat")+' Chat WhatsApp</a>':'')+'</div>';
   if(!S.products[s.id]) return h + '<div class="empty">'+I("loader")+' Memuat produk…</div>';
   if(!prods.length) return h + '<div class="empty card"><div class="big">'+I("package")+'</div>Toko ini belum menambahkan produk.</div>';
@@ -1584,7 +1603,9 @@ function viewStore(){
 function cartTotals(){
   const items = Object.values(S.cart.items);
   const subtotal = items.reduce((a,i)=>a+i.price*i.qty,0);
-  return {items, subtotal, ongkir:0, ongkirEst:ongkirOf(subtotal), admin:0, total:subtotal};
+  const cs = storeById(S.cart.storeId), pf = getProf();
+  const dist = cs && locOk(cs) && locOk(pf) ? distM(cs, pf) : null;
+  return {items, subtotal, ongkir:0, ongkirEst: dist == null ? null : ongkirByDist(dist), ongkirDist: dist, admin:0, total:subtotal};
 }
 function renderCartBar(){
   if(S.role !== "seller") return renderMiniCart();
@@ -1592,7 +1613,7 @@ function renderCartBar(){
   const n = cartCount();
   if(!n || !["store","home","product"].includes(S.view)){ el.innerHTML=""; return; }
   const s = storeById(S.cart.storeId); const t = cartTotals();
-  el.innerHTML = '<div class="cartbar"><div class="inner"><div><div style="font-weight:800">'+n+' barang · '+rp(t.total)+'</div><div class="small" style="opacity:.75">dari '+esc(s?s.name:"toko")+' · ongkir ±'+rp(t.ongkirEst)+'</div></div><button class="btn lime" data-act="go" data-v="cart">Checkout →</button></div></div>';
+  el.innerHTML = '<div class="cartbar"><div class="inner"><div><div style="font-weight:800">'+n+' barang · '+rp(t.total)+'</div><div class="small" style="opacity:.75">dari '+esc(s?s.name:"toko")+' · ongkir '+(t.ongkirEst==null?ONGKIR_LBL:'±'+rp(t.ongkirEst))+'</div></div><button class="btn lime" data-act="go" data-v="cart">Checkout →</button></div></div>';
 }
 
 function viewCart(){
@@ -1624,7 +1645,8 @@ function viewCart(){
     '<div style="margin-top:10px"><div class="row"><span>Subtotal</span><span>'+rp(t.subtotal)+'</span></div>'+
     '<div class="row"><span>Biaya admin</span><span class="free">Rp0</span></div>'+
     '<div class="row total"><span>Total belanja</span><span>'+rp(t.total)+'</span></div>'+
-    '<div class="ongkirbox">'+E("scooter")+'<div><b>Ongkir ±'+rp(t.ongkirEst)+'</b><small>2,5% dari belanja, dibayar langsung ke driver. Bisa nego dengan driver saat pesanan diantar.</small></div></div></div>'+
+    '<div class="ongkirbox">'+E("scooter")+'<div>'+(t.ongkirEst==null ? '<b>Ongkir '+ONGKIR_LBL+'</b><small>Dihitung dari jarak toko ke alamatmu'+(locOk(s)?' — ketuk “Pakai lokasi saya sekarang” di bawah untuk melihat perkiraan.':'.')+' Dibayar langsung ke driver, bisa nego.</small>'
+      : '<b>Ongkir ±'+rp(t.ongkirEst)+'</b><small>Jarak ±'+kmTxt(t.ongkirDist)+' dari toko · '+ONGKIR_LBL+'. Dibayar langsung ke driver, bisa nego saat pesanan diantar.</small>')+'</div></div></div>'+
     '<button class="btn ghost sm" style="margin-top:8px" data-act="clear-cart">Kosongkan keranjang</button></div></div>';
   return h;
 }
@@ -1676,9 +1698,9 @@ function viewOrder(){
   } else if(o.status === "mencari_driver"){
     h += searchBox(o, "Toko sudah mengonfirmasi. Mencari driver terdekat dari toko…");
   } else if(o.status === "driver_ke_toko"){
-    h += driverBox(o, "Driver sedang menuju toko untuk mengambil pesanan Anda.");
+    h += driverBox(o, "Driver sedang menuju toko untuk mengambil pesanan Anda.") + liveMap(o, "pembeli");
   } else if(o.status === "diantar" && o.driverId){
-    h += driverBox(o, "Pesanan sedang diantar ke alamat Anda.") + ongkirNego(o);
+    h += driverBox(o, "Pesanan sedang diantar ke alamat Anda.") + liveMap(o, "pembeli") + ongkirNego(o);
   } else if(o.status === "diantar"){
     h += '<div class="paybox">'+I("truck")+' Pesanan sedang diantar oleh toko ke alamat Anda.'+(o.pay&&o.pay.k==="cod"?' Siapkan <b>'+rp(o.total)+'</b> tunai.':'')+'</div><button class="btn block" data-act="buyer-done" data-id="'+esc(o.id)+'">Pesanan sudah saya terima</button>';
   } else if(o.status === "diproses"){
@@ -1695,7 +1717,7 @@ function viewOrder(){
   h += '</div>';
   h += '<div class="card pad"><h3 class="sub">Rincian</h3>'+o.items.map(i=>'<div class="row"><span>'+esc(i.name)+' ×'+i.qty+'</span><span>'+rp(i.price*i.qty)+'</span></div>').join("")+
     '<div class="row"><span>Biaya admin</span><span class="free">Rp0</span></div><div class="row total"><span>Total belanja</span><span>'+rp(o.total)+'</span></div>'+
-    (o.selfDelivery ? '' : '<div class="row"><span>Ongkir (ke driver)</span><span>'+(typeof o.ongkirFinal==="number" ? rp(o.ongkirFinal) : '±'+rp(ongkirEstOf(o))+' <small class="muted">nego</small>')+'</span></div>')+
+    (o.selfDelivery ? '' : '<div class="row"><span>Ongkir (ke driver)</span><span>'+(typeof o.ongkirFinal==="number" ? rp(o.ongkirFinal) : ongkirEstOf(o)==null ? ONGKIR_LBL : '±'+rp(ongkirEstOf(o))+' <small class="muted">nego</small>')+'</span></div>')+
     '<h3 class="sub" style="margin-top:16px">Dikirim ke</h3><div><b>'+esc(o.buyer.name)+'</b> · '+esc(o.buyer.wa)+'</div><div class="small">'+esc(o.buyer.address)+'</div>'+
     (o.buyer.maps?'<div class="small"><a target="_blank" rel="noopener" href="'+esc(o.buyer.maps)+'">Lihat di peta</a></div>':'')+
     (o.buyer.note?'<div class="small muted" style="margin-top:6px">Catatan: '+esc(o.buyer.note)+'</div>':'')+'</div></div>';
@@ -1785,7 +1807,7 @@ function orderCard(s, o){
       : '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">✓ Pembayaran diterima, cari driver</button><button class="btn danger sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="menunggu_pembayaran">Bukti tidak valid</button>';
     if(o.status==="diproses") acts = '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">'+I("truck")+' Cari driver</button>'+selfBtn;
     if(o.status==="mencari_driver"){ info = searchBox(o, "Mencari driver terdekat dari toko Anda…", true); acts = (searchElapsed(o) >= 210 ? '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">Cari ulang</button>' : '')+selfBtn; }
-    if(o.status==="driver_ke_toko"){ info = driverBox(o, "Driver menuju toko Anda. Siapkan pesanan."+(cod?" (COD — atur pembayaran barang dengan driver)":""), true); }
+    if(o.status==="driver_ke_toko"){ info = driverBox(o, "Driver menuju toko Anda. Siapkan pesanan."+(cod?" (COD — atur pembayaran barang dengan driver)":""), true) + liveMap(o, "toko"); }
     if(o.status==="diantar"){ if(o.driverId) info = driverBox(o, "Pesanan sedang diantar driver ke pembeli.", true); else acts = '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="selesai">Tandai selesai</button>'; }
     if(!["selesai","dibatalkan","diantar"].includes(o.status)) acts += '<button class="btn danger sm" data-act="seller-cancel" data-id="'+esc(o.id)+'">Tolak / batalkan</button>';
     if(o.status==="menunggu_konfirmasi" && s && typeof s.lat !== "number") info += '<div class="small" style="margin-top:8px;color:var(--warn);font-weight:600">'+I("pin")+' Lokasi toko belum diatur — driver dicari dari semua yang online. Atur di Pengaturan agar dapat driver terdekat.</div>';
@@ -1958,10 +1980,11 @@ async function placeOrder(form){
   const code = "JT-" + new Date().toISOString().slice(2,10).replace(/-/g,"") + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
   const order = {code, storeId:s.id, storeName:s.name, buyerId:ME, buyer,
     items:t2.items.map(i=>({pid:i.pid, name:i.name, price:i.price, qty:i.qty})),
-    subtotal:t2.subtotal, ongkir:0, ongkirRate:ONGKIR_RATE, ongkirEst:ongkirOf(t2.subtotal), admin:0, total:t2.total, shareRate:BAGI_HASIL, share:Math.round(t2.total*BAGI_HASIL), pay,
+    subtotal:t2.subtotal, ongkir:0, ongkirPer500:ONGKIR_PER, admin:0, total:t2.total, shareRate:BAGI_HASIL, share:Math.round(t2.total*BAGI_HASIL), pay,
     storeAddress:s.address||"", storeWa:s.wa||"",
     status: k === "cod" ? "menunggu_konfirmasi" : "menunggu_pembayaran", createdAt:now, updatedAt:now};
   if(typeof s.lat === "number" && typeof s.lng === "number") order.storeLoc = {lat:s.lat, lng:s.lng};
+  if(locOk(order.storeLoc) && locOk(buyer)){ order.ongkirDist = Math.round(distM(order.storeLoc, buyer)); order.ongkirEst = ongkirByDist(order.ongkirDist); }
   const btn = form.querySelector("button"); if(btn) btn.disabled = true;
   const ok = await safe(() => store.set("orders/"+id, order));
   if(btn) btn.disabled = false;
@@ -2193,7 +2216,7 @@ function renderMiniCart(){
   document.body.classList.toggle("has-mcart", !!show);
   if(!show){ el.innerHTML = ""; return; }
   const s = storeById(S.cart.storeId); const t = cartTotals();
-  el.innerHTML = '<div class="mcart">'+E("cart")+'<div class="grow"><b>'+n+' barang · '+rp(t.total)+'</b><small>'+esc(s?s.name:"")+' · ongkir ±'+rp(t.ongkirEst)+'</small></div><button class="btn lime press" data-act="nav" data-v="cart">Lihat</button></div>';
+  el.innerHTML = '<div class="mcart">'+E("cart")+'<div class="grow"><b>'+n+' barang · '+rp(t.total)+'</b><small>'+esc(s?s.name:"")+' · ongkir '+(t.ongkirEst==null?ONGKIR_LBL:'±'+rp(t.ongkirEst))+'</small></div><button class="btn lime press" data-act="nav" data-v="cart">Lihat</button></div>';
 }
 
 /* ---------- kartu produk ---------- */
@@ -2210,7 +2233,7 @@ function skeletonGrid(n){ let h = '<div class="agrid">'; for(let i=0;i<n;i++) h 
 
 /* ---------- beranda ---------- */
 const ASLIDES = [
-  {c:"b1", pill:"Driver terdekat", t:"Diantar langsung dari toko", d:"Ongkir cuma 2,5% dari belanja & bisa nego.", art:"scooter", cta:"Belanja sekarang", act:"scroll-prod"},
+  {c:"b1", pill:"Driver terdekat", t:"Diantar langsung dari toko", d:"Ongkir Rp2.000 per 500 m & bisa nego.", art:"scooter", cta:"Belanja sekarang", act:"scroll-prod"},
   {c:"b2", pill:"Tanpa biaya tambahan", t:"Rp0 biaya admin", d:"Bayar langsung ke toko: QRIS, transfer, e-wallet, atau COD.", art:"money"},
   {c:"b3", pill:"Untuk pemilik toko", t:"Punya toko? Jadi Mitra", d:"Daftar gratis, bagi hasil hanya 3% per penjualan.", art:"store", cta:"Info mitra", act:"mitra-info"}
 ];
@@ -2268,7 +2291,7 @@ function appHomeBody(){
       }).join("")+'</div>';
     }
     h += '<div class="ash"><h2>Promo untukmu</h2></div><div class="hscroll">'+
-      '<div class="deal d1'+ra(1)+'"><div><small>Ongkir cuma</small><b>2,5%<br>bisa nego</b></div><span class="chip2">Driver terdekat</span><span class="art">'+E("truck")+'</span></div>'+
+      '<div class="deal d1'+ra(1)+'"><div><small>Ongkir cuma</small><b>Rp2rb<br>/500 m</b></div><span class="chip2">Driver terdekat</span><span class="art">'+E("truck")+'</span></div>'+
       '<div class="deal d2'+ra(2)+'"><div><small>Untuk pembeli</small><b>Rp0 biaya<br>admin</b></div><span class="chip2">Bayar langsung ke toko</span><span class="art">'+E("money")+'</span></div>'+
       '<div class="deal d3'+ra(3)+'"><div><small>Bayar mudah</small><b>QRIS, transfer<br>& COD</b></div><span class="chip2">Pilih saat checkout</span><span class="art">'+E("card")+'</span></div></div>';
   }
@@ -2299,7 +2322,7 @@ function appStore(){
   let h = '<section class="scover" style="background:linear-gradient(140deg,'+esc(c)+' 0%,#12306f 100%)"><button class="ibtn press" data-act="back" aria-label="Kembali">'+I("back")+'</button>'+
     '<span class="art">'+E(catE(s.category))+'</span>'+
     '<div class="who'+ra(0)+'">'+avatarHtml(s)+'<div><h2>'+esc(s.name)+'</h2><small>'+(s.open===false?'Tutup sementara':'● Buka')+' · '+esc(s.category)+(s.hours?' · '+esc(s.hours):'')+'</small></div></div>'+
-    '<div class="tags'+ra(1)+'"><span>Ongkir 2,5%</span><span>Rp0 admin</span>'+payMethodsOf(s).map(m=>'<span>'+esc(m.l)+'</span>').join("")+'</div></section>';
+    '<div class="tags'+ra(1)+'"><span>Ongkir Rp2rb/500 m</span><span>Rp0 admin</span>'+payMethodsOf(s).map(m=>'<span>'+esc(m.l)+'</span>').join("")+'</div></section>';
   h += '<div class="sec-pad" style="margin-top:14px">'+(s.desc?'<div class="pcard'+ra(2)+'"><div class="small" style="color:#45526b">'+esc(s.desc)+'</div><div class="small muted" style="margin-top:6px">'+esc(s.address||"")+(s.area?', '+esc(s.area):'')+'</div></div>':'')+
     (s.wa?'<button class="btn ghost block press" style="margin-bottom:4px" data-act="chat-seller" data-id="'+esc(s.id)+'">'+I("chat")+' Chat penjual via WhatsApp</button>':'')+'</div>';
   if(!S.products[s.id]) return h + skeletonGrid(4);
@@ -2322,7 +2345,7 @@ function appProduct(){
     '<button class="ibtn r fav'+(FAV.has(p.id)?" on":"")+'" data-act="fav" data-id="'+esc(p.id)+'" aria-label="Favorit" style="position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px;width:40px;height:40px;border-radius:13px">'+I("heart")+'</button></div>';
   h += '<div class="psheet"><h1 class="'+ra(0)+'">'+esc(p.name)+'</h1><div class="small muted">'+(sold?sold+' terjual · ':'')+(typeof p.stock==="number"?'Stok '+p.stock:'Stok tersedia')+(inCart?' · <b style="color:#1f4fd1">'+inCart+' di keranjang</b>':'')+'</div>'+
     '<div class="bp">'+rp(p.price)+'</div>'+
-    '<div class="pinfo'+ra(1)+'"><span class="pchip">'+E("truck")+' Ongkir 2,5%</span><span class="pchip">'+E("money")+' Rp0 admin</span><span class="pchip">'+E("card")+' Bayar ke toko</span></div>'+
+    '<div class="pinfo'+ra(1)+'"><span class="pchip">'+E("truck")+' Ongkir Rp2rb/500 m</span><span class="pchip">'+E("money")+' Rp0 admin</span><span class="pchip">'+E("card")+' Bayar ke toko</span></div>'+
     (p.desc?'<div class="pcard'+ra(2)+'"><h3>Deskripsi</h3><div class="small" style="white-space:pre-line;color:#45526b">'+esc(p.desc)+'</div></div>':'')+
     '<div class="pcard'+ra(3)+'" style="display:flex;gap:12px;align-items:center">'+avatarHtml(s)+'<div class="grow" style="min-width:0"><b>'+esc(s.name)+'</b><div class="small muted">'+(closed?'<span class="closedt">Tutup</span>':'<span class="open">● Buka</span>')+' · '+esc(s.area||"")+'</div></div>'+
     '<button class="btn ghost sm press" data-act="open-store" data-id="'+esc(s.id)+'">Kunjungi</button></div>'+
@@ -2642,7 +2665,7 @@ const localDrv = {
       else if(act === "done"){
         if(o.status !== "diantar") throw srvErr("Status pesanan tidak sesuai");
         const v = Math.round(Number(data && data.ongkir));
-        patch = {status:"selesai", ongkirFinal: isFinite(v) && v >= 0 ? v : ongkirEstOf(o), doneAt:now, updatedAt:now};
+        patch = {status:"selesai", ongkirFinal: isFinite(v) && v >= 0 ? v : (ongkirEstOf(o) || 0), doneAt:now, updatedAt:now};
       } else throw srvErr("Aksi tidak valid");
     }
     await store.update("orders/" + id, patch);
@@ -2690,7 +2713,8 @@ function startGeo(){
     const c = {lat:+p.coords.latitude.toFixed(6), lng:+p.coords.longitude.toFixed(6)};
     const first = !S.drv.loc; S.drv.loc = c; S.drv.locErr = "";
     const moved = lastSent.t ? distM(lastSent, c) : 1e9;
-    if(Date.now() - lastSent.t > 60000 || moved > 40) sendLoc(c);
+    const busy = (S.drv.mine || []).some(o => ["driver_ke_toko","diantar"].includes(o.status));
+    if(Date.now() - lastSent.t > (busy ? 15000 : 60000) || moved > (busy ? 20 : 40)) sendLoc(c);
     if(first && S.role === "driver" && !typing()) scheduleRender();
   }, err => {
     S.drv.locErr = err.code === 1 ? "Izin lokasi ditolak. Aktifkan lokasi untuk Jaga Toko di pengaturan browser agar bisa menerima order terdekat." : "Lokasi belum ditemukan. Pastikan GPS menyala.";
@@ -2738,7 +2762,8 @@ function driverBox(o, text, compact){
 }
 function ongkirNego(o){
   const est = ongkirEstOf(o), cod = o.pay && o.pay.k === "cod";
-  return '<div class="ongkirbox big">'+E("money")+'<div><small>Biaya antar (patokan 2,5% dari '+rp(o.subtotal || o.total)+')</small><b>'+rp(est)+'</b>'+
+  const dist = ongkirDistOf(o);
+  return '<div class="ongkirbox big">'+E("money")+'<div><small>Biaya antar ('+(dist!=null?'jarak ±'+kmTxt(dist)+' · ':'')+ONGKIR_LBL+')</small><b>'+(est==null?'Dihitung driver':rp(est))+'</b>'+
     '<small>Bayar langsung ke driver. Harga antar <b>bisa dinego</b> dengan driver saat pesanan tiba.</small>'+
     (cod ? '<small class="codline">COD: siapkan '+rp(o.total)+' (barang) + ongkir yang disepakati.</small>' : '')+'</div></div>';
 }
@@ -2757,7 +2782,9 @@ function driverForm(me){
   '</form>';
 }
 function drvJob(o, offer){
-  const cod = o.pay && o.pay.k === "cod", est = ongkirEstOf(o);
+  const cod = o.pay && o.pay.k === "cod";
+  let est = ongkirEstOf(o), estNote = ongkirDistOf(o) != null ? "jarak toko–pembeli ±" + kmTxt(ongkirDistOf(o)) : "";
+  if(est == null && !offer && o.status === "diantar" && locOk(o.storeLoc) && S.drv.loc){ const dd = distM(o.storeLoc, S.drv.loc); est = ongkirByDist(dd); estNote = "dari jarak toko ke posisimu sekarang (±" + kmTxt(dd) + ")"; }
   const items = o.items.map(i => i.qty+'× '+esc(i.name)).join(", ");
   let h = '<div class="card djob'+(offer?' offer':'')+'">';
   if(offer){
@@ -2774,7 +2801,7 @@ function drvJob(o, offer){
       (o.buyer.note ? '<span class="note">'+I("note")+' '+esc(o.buyer.note)+'</span>' : '')+
     '</div></div></div>';
   h += '<div class="small" style="margin:8px 0 2px">'+items+'</div>';
-  h += '<div class="dj-money"><div><small>Belanja</small><b>'+rp(o.total)+'</b></div><div><small>Ongkir 2,5%</small><b>±'+rp(est)+'</b></div><div><small>Bayar barang</small><b>'+(cod?"COD":"Lunas ke toko")+'</b></div></div>';
+  h += '<div class="dj-money"><div><small>Belanja</small><b>'+rp(o.total)+'</b></div><div><small>Ongkir'+(ongkirDistOf(o)!=null?' · '+kmTxt(ongkirDistOf(o)):'')+'</small><b>'+(est==null?ONGKIR_LBL:'±'+rp(est))+'</b></div><div><small>Bayar barang</small><b>'+(cod?"COD":"Lunas ke toko")+'</b></div></div>';
   if(offer){
     h += '<div class="actions"><button class="btn press grow" data-act="drv-accept" data-id="'+esc(o.id)+'">Ambil pesanan</button><button class="btn ghost press" data-act="drv-decline" data-id="'+esc(o.id)+'">Lewati</button></div>';
   } else if(o.status === "driver_ke_toko"){
@@ -2782,9 +2809,9 @@ function drvJob(o, offer){
     h += '<div class="actions">'+chatBtn(o, "driver", "Chat toko & pembeli", "ghost")+'</div>';
     h += '<div class="actions"><button class="btn press grow" data-act="drv-pickup" data-id="'+esc(o.id)+'">'+I("package")+' Sudah ambil di toko</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
   } else if(o.status === "diantar"){
-    const v = S.drv.draft[o.id] != null ? S.drv.draft[o.id] : est;
+    const v = S.drv.draft[o.id] != null ? S.drv.draft[o.id] : (est == null ? "" : est);
     h += '<div class="negobox"><label class="f">Ongkir yang disepakati dengan pembeli</label><div class="rpin"><span>Rp</span><input class="in" inputmode="numeric" id="ongkir-'+esc(o.id)+'" data-ongkir="'+esc(o.id)+'" value="'+esc(v)+'"></div>'+
-      '<div class="hint">Patokan 2,5% = '+rp(est)+'. Boleh nego langsung dengan pembeli.'+(cod?' Tagih tunai: <b>'+rp(o.total)+'</b> + ongkir.':' Barang sudah dibayar ke toko, tagih ongkir saja.')+'</div></div>'+
+      '<div class="hint">'+(est==null?'Tarif '+ONGKIR_LBL+' dari toko ke pembeli.':'Patokan '+ONGKIR_LBL+' = '+rp(est)+(estNote?' ('+esc(estNote)+')':'')+'.')+' Boleh nego langsung dengan pembeli.'+(cod?' Tagih tunai: <b>'+rp(o.total)+'</b> + ongkir.':' Barang sudah dibayar ke toko, tagih ongkir saja.')+'</div></div>'+
       '<div class="actions">'+chatBtn(o, "driver", "Chat pembeli & toko", "ghost")+'</div>'+
       '<div class="actions"><button class="btn press grow" data-act="drv-done" data-id="'+esc(o.id)+'">'+I("checkc")+' Pesanan sudah sampai</button></div>';
   } else if(o.status === "selesai"){
@@ -2802,7 +2829,7 @@ function appDriver(){
   if(!me){
     return h + '<section class="dhero">'+COURIER_SVG+'<h1>Jadi Driver Jaga Toko</h1><p>Antar pesanan dari toko di sekitarmu.</p></section>'+
       '<div class="dperks"><div>'+E("pin")+'<b>Order terdekat</b><span>Dicari dari radius 1 km, melebar sampai 5 km</span></div>'+
-      '<div>'+E("money")+'<b>Ongkir 100% untukmu</b><span>Patokan 2,5% dari belanja, bisa nego</span></div>'+
+      '<div>'+E("money")+'<b>Ongkir 100% untukmu</b><span>Rp2.000 per 500 m, bisa nego</span></div>'+
       '<div>'+E("check")+'<b>Tanpa potongan</b><span>Daftar langsung aktif</span></div></div>'+ driverForm(null);
   }
   if(S.drv.editing) return h + '<h2 class="sec" style="margin:8px 16px">Ubah data driver</h2>' + driverForm(me);
@@ -2883,7 +2910,7 @@ document.addEventListener("click", async e => {
       const pre = a === "buyer-loc" ? "b" : "s";
       f.querySelector('[name="'+pre+'lat"]').value = c.lat; f.querySelector('[name="'+pre+'lng"]').value = c.lng;
       if(txt) txt.textContent = "Lokasi tersimpan ✓ ("+c.lat.toFixed(5)+", "+c.lng.toFixed(5)+")";
-      if(a === "buyer-loc") setProf(Object.assign(getProf(), c));
+      if(a === "buyer-loc"){ setProf(Object.assign(getProf(), c)); render(); }
       toast(a === "store-loc" ? "Lokasi toko diambil — tekan Simpan" : "Lokasi pengantaran disimpan");
     }catch(err){ if(txt) txt.textContent = "Coba lagi ambil lokasi"; toast(err.message); }
   }
@@ -3244,7 +3271,7 @@ function startChatPoll(){ if(chatTimer) return; chatPoll(); chatTimer = setInter
 const chatOpen = {oid:null, role:null, msgs:[], last:0, timer:null};
 function chatOrder(oid){ return S.orders.find(o => o.id === oid) || (S.drv.mine||[]).find(o => o.id === oid) || null; }
 function chatQuick(o, role){
-  const est = o ? rp(ongkirEstOf(o)) : "";
+  const est = o && ongkirEstOf(o) != null ? rp(ongkirEstOf(o)) : "Rp…";
   if(role === "driver") return ["Saya menuju toko", "Pesanan sudah saya ambil, otw ke lokasi", "Saya sudah di depan", "Ongkirnya "+est+" ya, bisa?", "Alamatnya sesuai titik di peta?"];
   if(role === "toko") return ["Pesanan sedang disiapkan", "Pesanan sudah siap diambil", "Maaf, ada barang yang habis", "Terima kasih sudah belanja!"];
   return ["Pesanan saya sudah diproses?", "Saya tunggu di rumah ya", "Tolong kabari kalau sudah dekat", "Ongkirnya bisa "+est+"?"];
@@ -3311,6 +3338,77 @@ document.addEventListener("submit", e => {
   const inp = e.target.querySelector("input"); const v = inp.value; inp.value = ""; inp.focus();
   chatSend(v);
 });
+
+/* ============ Peta live posisi driver ============ */
+let LEAF_P = null;
+function loadLeaflet(){
+  if(window.L && window.L.map) return Promise.resolve();
+  if(LEAF_P) return LEAF_P;
+  LEAF_P = new Promise((res, rej) => {
+    const c = document.createElement("link"); c.rel = "stylesheet"; c.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"; document.head.appendChild(c);
+    const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"; s.onload = () => res(); s.onerror = () => { LEAF_P = null; rej(new Error("peta")); }; document.head.appendChild(s);
+  });
+  return LEAF_P;
+}
+const MAPS = {};
+function etaTxt(m){ const min = Math.max(1, Math.round(m / 1000 / 22 * 60)); return min < 60 ? "±" + min + " menit" : "±" + Math.round(min / 60) + " jam"; }
+function liveMap(o, viewer){
+  if(!locOk(o.driverLoc)) return '<div class="lmwait">'+E("scooter")+'<span>Menunggu lokasi GPS driver…</span></div>';
+  const toStore = o.status === "driver_ke_toko";
+  const target = toStore ? o.storeLoc : (locOk(o.buyer) ? o.buyer : null);
+  let meta = "";
+  if(locOk(target)){
+    const d = distM(o.driverLoc, target);
+    meta = '<b>'+(d < 80 ? (toStore ? "Driver sudah di toko" : "Driver sudah dekat sekali!") : (toStore ? "Driver " + kmTxt(d) + " dari toko" : "Driver " + kmTxt(d) + " dari " + (viewer === "pembeli" ? "lokasimu" : "pembeli")) + ' · ' + etaTxt(d))+'</b>';
+  } else meta = '<b>'+(toStore ? "Driver menuju toko" : "Driver sedang mengantar")+'</b>';
+  meta += '<small>Lokasi diperbarui '+ago(o.driverLoc.at || Date.now())+'</small>';
+  return '<div class="livemap"><div class="lmap" data-map="'+esc(o.id)+'"></div><div class="lmeta"><span class="livedot"></span><div>'+meta+'</div></div></div>';
+}
+function mkIcon(name, cls){ return L.divIcon({html:'<div class="mkin">'+E(name)+'</div>', className:"mk " + (cls||""), iconSize:[40,40], iconAnchor:[20,36]}); }
+function mountMaps(){
+  const els = [...document.querySelectorAll("[data-map]")];
+  Object.keys(MAPS).forEach(id => { if(!els.some(e => e.dataset.map === id) && !MAPS[id].node.isConnected){ /* simpan untuk dipakai lagi */ } });
+  if(!els.length) return;
+  loadLeaflet().then(() => {
+    els.forEach(ph => {
+      if(!ph.isConnected) return;
+      const oid = ph.dataset.map;
+      const o = S.orders.find(x => x.id === oid) || (S.drv && S.drv.mine || []).find(x => x.id === oid);
+      if(!o) return;
+      let m = MAPS[oid];
+      if(!m){
+        const node = document.createElement("div"); node.className = "lmap";
+        ph.replaceWith(node);
+        const map = L.map(node, {zoomControl:false, attributionControl:true, scrollWheelZoom:false});
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(map);
+        m = MAPS[oid] = {node, map, mk:{}, line:null, fitKey:""};
+      } else ph.replaceWith(m.node);
+      const pts = [];
+      const put = (key, loc, icon, cls) => {
+        if(!locOk(loc)){ if(m.mk[key]){ m.map.removeLayer(m.mk[key]); delete m.mk[key]; } return; }
+        const ll = [loc.lat, loc.lng]; pts.push(ll);
+        if(m.mk[key]) m.mk[key].setLatLng(ll); else m.mk[key] = L.marker(ll, {icon:mkIcon(icon, cls), zIndexOffset: key === "drv" ? 1000 : 0}).addTo(m.map);
+      };
+      put("store", o.storeLoc, "store", "mk-store");
+      put("buyer", o.buyer, "pin", "mk-buyer");
+      put("drv", o.driverLoc, "scooter", "mk-drv");
+      const target = o.status === "driver_ke_toko" ? o.storeLoc : o.buyer;
+      if(m.line){ m.map.removeLayer(m.line); m.line = null; }
+      if(locOk(o.driverLoc) && locOk(target)) m.line = L.polyline([[o.driverLoc.lat, o.driverLoc.lng], [target.lat, target.lng]], {color:"#2f6bff", weight:4, dashArray:"6 8", opacity:.8}).addTo(m.map);
+      const fk = o.status + "|" + pts.length;
+      setTimeout(() => {
+        m.map.invalidateSize();
+        if(m.fitKey !== fk){ m.fitKey = fk; if(pts.length > 1) m.map.fitBounds(pts, {padding:[40, 40], maxZoom:17}); else if(pts.length) m.map.setView(pts[0], 16); }
+      }, 30);
+    });
+  }).catch(() => { els.forEach(ph => { if(ph.isConnected) ph.innerHTML = '<div class="small muted" style="padding:16px;text-align:center">Peta tidak bisa dimuat. Periksa koneksi internet.</div>'; }); });
+}
+/* pembeli/toko yang sedang membuka pesanan dalam perjalanan: segarkan lebih sering */
+setInterval(() => {
+  if(document.hidden || !SB || !ORD_REFRESH) return;
+  const live = S.orders.some(o => ["driver_ke_toko","diantar"].includes(o.status) && (S.view === "order" ? o.id === S.orderId : S.role === "seller"));
+  if(live) ORD_REFRESH();
+}, 5000);
 
 /* ============ Mulai ============ */
 function startListening(){
