@@ -16,17 +16,15 @@ Kategori: Makanan, Minuman, Sembako, Sayur & Buah, Rumah Tangga, Fashion, Handph
 | `config.js` | Alamat & kunci publik database Supabase |
 | `supabase.sql` | Skema database — dijalankan sekali di Supabase |
 
-## Menghubungkan database (gratis)
-Tanpa database, aplikasi berjalan dalam **mode demo**: data hanya tersimpan di browser masing-masing.
+## Database
+Sudah terhubung ke Supabase proyek **jaga-toko** (Singapura, paket gratis) — lihat `config.js` dan `supabase.sql`.
 
-1. Daftar di https://supabase.com → **New project** (pilih region Singapore).
-2. Buka **SQL Editor** → tempel isi `supabase.sql` → **Run**.
-3. Buka **Project Settings → API**, salin **Project URL** dan **anon public key**.
-4. Isi keduanya di `toko/config.js`, simpan, lalu commit.
+- Toko & produk tampil untuk semua orang dan berubah langsung (realtime).
+- Pesanan hanya bisa dilihat pembeli dan pemilik toko yang bersangkutan.
+- Harga, stok, dan bagi hasil 3% dihitung di server.
+- Penjual bisa membuka dashboard di perangkat lain lewat **Pengaturan → Kode akses toko**.
 
-Setelah itu toko, produk, dan pesanan tersimpan di satu database dan tampil untuk semua orang.
+Catatan: paket gratis Supabase berhenti sementara bila 7 hari tanpa aktivitas (data tetap aman, bisa diaktifkan lagi dari dashboard Supabase).
 
-## Catatan tahap 1
-- Keamanan masih terbuka (siapa pun bisa menulis) — khusus uji coba. Tahap berikutnya: login penjual & kurir, persetujuan toko oleh admin JAGA, aturan per pemilik toko.
-- Foto dikompres di browser lalu disimpan di database; nanti dipindah ke Supabase Storage.
-- Paket gratis Supabase berhenti sementara jika 7 hari tidak ada aktivitas (data tetap aman).
+## Ikon
+Ikon 3D di `emoji/` dari Fluent Emoji (Microsoft, lisensi MIT) — lihat `emoji/LICENSE.md`.

@@ -1,9 +1,7 @@
-// Konfigurasi Jaga Toko
-// Isi dua nilai di bawah dari Supabase (Project Settings → API):
-//   supabaseUrl     = "Project URL"      contoh: https://abcdxyz.supabase.co
-//   supabaseAnonKey = "anon public key"  (kunci publik, aman ditaruh di sini)
-// Jika dikosongkan, Jaga Toko berjalan dalam mode demo (data hanya di browser masing-masing).
+// Konfigurasi Jaga Toko — database Supabase proyek "jaga-toko" (Singapura)
+// Kunci di bawah adalah kunci PUBLIK (publishable) — aman ditaruh di sini.
+// Keamanan data dijaga oleh fungsi di server (lihat supabase.sql).
 window.JAGA_TOKO_CONFIG = {
-  supabaseUrl: "",
-  supabaseAnonKey: ""
+  supabaseUrl: "https://flwajaadllviewenerya.supabase.co",
+  supabaseAnonKey: "sb_publishable_1zd0fWLLIKEIABemgeyj6g_3rZssbCq"
 };
