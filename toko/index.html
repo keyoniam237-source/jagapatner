@@ -1044,6 +1044,40 @@ body.is-owner .dtop{z-index:20}
 .mk-drv .mkin{border-color:#16a34a;border-radius:50%;transform:none}
 .mk-drv .mkin .e3d{transform:none}
 .mk-store .mkin{border-color:#b08d4f}
+.wchip{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:14px;cursor:pointer;box-shadow:0 10px 24px -20px rgba(10,22,51,.5)}
+.wchip .e3d{width:34px;height:34px}
+.wchip small{display:block;color:#6a7894;font-size:12px}
+.wchip b{font-size:18px}
+.wchip span{display:block;color:#6a7894;font-size:12px}
+.wchip .go{font-size:13px;color:#1f4fd1;white-space:nowrap}
+.wchip.low{background:#fff6f5;border-color:#ffc9c4}
+.wchip.low span{color:#b42318;font-weight:600}
+.wbig{background:linear-gradient(130deg,#1f4fd1,#5a8cff);color:#fff;border-radius:22px;padding:18px 20px;margin-bottom:14px}
+.wbig.low{background:linear-gradient(130deg,#b42318,#ef6a5b)}
+.wbig small{display:block;opacity:.85;font-size:13px}
+.wbig b{display:block;font-size:32px;letter-spacing:-.03em;margin:2px 0}
+.wbig span{display:block;opacity:.9;font-size:12.5px}
+.whow ol{margin:0;padding-left:20px;color:#3b4a66;font-size:13.5px;line-height:1.55}
+.wchips{display:flex;gap:6px;flex-wrap:wrap}
+.wpay{background:#f5f8fe;border-radius:14px;padding:12px;margin-top:12px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.wpay small{color:#6a7894;font-size:12px}
+.wpay b{font-size:16px}
+.wpay span{font-size:13px;color:#5b6a86}
+.wpay .qris{max-width:220px;border-radius:12px;margin-top:6px}
+.txr{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eef1f6}
+.txr:last-child{border-bottom:0}
+.txr .e3d{width:26px;height:26px;flex-shrink:0;margin-top:2px}
+.txr small{display:block;color:#6a7894;font-size:12px}
+.txr .r{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.pos{color:#15803d}.neg{color:#b42318}.dim{opacity:.55}
+.wlowbox{display:flex;gap:10px;align-items:center;background:#fff6f5;border:1px solid #ffc9c4;border-radius:14px;padding:10px 12px;margin-top:10px}
+.wlowbox .e3d{width:28px;height:28px}
+.wlowbox b{display:block;color:#b42318;font-size:14px}
+.wlowbox small{display:block;color:#7a4b45;font-size:12px}
+.wpend{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #eef1f6}
+.wpend:last-child{border-bottom:0}
+.wpend small{display:block;color:#6a7894;font-size:12px}
+.wproof{width:96px;height:120px;object-fit:cover;border-radius:12px;cursor:zoom-in;border:1px solid var(--line);flex-shrink:0}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1316,6 +1350,7 @@ const NAV_SELLER = [
   {v:"seller", t:"pesanan", l:"Pesanan", ic:I("receipt")},
   {v:"seller", t:"produk", l:"Produk", ic:I("package")},
   {v:"seller", t:"laporan", l:"Laporan", ic:I("chart")},
+  {v:"seller", t:"saldo", l:"Saldo", ic:I("cash")},
   {v:"seller", t:"pengaturan", l:"Pengaturan", ic:I("settings")}
 ];
 function cartCount(){ return Object.values(S.cart.items).reduce((a,b)=>a+b.qty,0); }
@@ -1356,7 +1391,7 @@ function go(v, extra, opts){
   }
   S.preview = false; S.justOrdered = false; Object.assign(S, extra||{}); S.view = v;
   if(v === "store" || v === "cart" || v === "checkout") watchProducts(v==="store" ? S.storeId : S.cart.storeId);
-  if(v === "seller"){ const ms = myStores(); if(!S.sellerStoreId || !ms.find(s=>s.id===S.sellerStoreId)) S.sellerStoreId = ms[0] ? ms[0].id : null; if(S.sellerStoreId) watchProducts(S.sellerStoreId); }
+  if(v === "seller"){ const ms = myStores(); if(!S.sellerStoreId || !ms.find(s=>s.id===S.sellerStoreId)) S.sellerStoreId = ms[0] ? ms[0].id : null; if(S.sellerStoreId){ watchProducts(S.sellerStoreId); if(typeof loadWallet === "function") loadWallet(S.sellerStoreId); } }
   closeModal(); render(); window.scrollTo(0,0);
 }
 const allSubs = {};
@@ -1426,6 +1461,8 @@ function restoreForms(snap){
 }
 function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); try{ mountMaps(); }catch(e){} }
 function renderInner(){
+  document.body.classList.toggle("is-driver", S.role === "driver" || S.role === "owner");
+  document.body.classList.toggle("is-owner", S.role === "owner");
   renderNav();
   const app = document.getElementById("app");
   const v = S.view;
@@ -1437,8 +1474,6 @@ function renderInner(){
     const key = [v, S.cat, S.storeId, S.prodId, S.orderId].join("|"); RISE = key !== _lastKey; _lastKey = key;
     if(S.role !== "driver" && S.role !== "owner") html += PREVIEW_BANNER();
     if(S.mode === "local" && v !== "login" && S.role !== "driver" && S.role !== "owner") html += '<div class="notice">Mode demo: data hanya tersimpan di perangkat ini sampai database dihubungkan.</div>';
-    document.body.classList.toggle("is-driver", S.role === "driver" || S.role === "owner");
-    document.body.classList.toggle("is-owner", S.role === "owner");
     if(S.role === "driver") html += appDriver();
     else if(S.role === "owner") html += appOwner();
     else if(v === "login") html += appLogin();
@@ -1739,7 +1774,7 @@ function viewSeller(){
   S.sellerStoreId = s.id;
   if(prodUnsubFor !== s.id) setTimeout(() => watchProducts(s.id), 0);
   const orders = S.orders.filter(o => o.storeId === s.id);
-  const titles = {ringkasan:"Ringkasan", pesanan:"Pesanan masuk", produk:"Produk", laporan:"Laporan penjualan", pengaturan:"Pengaturan & pembayaran"};
+  const titles = {ringkasan:"Ringkasan", pesanan:"Pesanan masuk", produk:"Produk", laporan:"Laporan penjualan", saldo:"Saldo & bagi hasil", pengaturan:"Pengaturan & pembayaran"};
   let h = '<div class="dash-hero">'+avatarHtml(s)+'<div class="grow"><div class="small muted">'+esc(titles[S.sellerTab]||"")+'</div><h2>'+esc(s.name)+'</h2><div class="small muted">'+esc(s.category)+' · '+esc(s.area||"")+'</div></div>'+
     '<div class="actions" style="margin:0;align-items:center">'+(ms.length>1?'<select class="in" style="width:auto" data-act="pick-store">'+ms.map(m=>'<option value="'+esc(m.id)+'" '+(m.id===s.id?"selected":"")+'>'+esc(m.name)+'</option>').join("")+'</select>':'')+
     '<span class="switch '+(s.open===false?"":"on")+'" data-act="toggle-open"><i></i>'+(s.open===false?"Toko tutup":"Toko buka")+'</span>'+
@@ -1749,6 +1784,7 @@ function viewSeller(){
   else if(S.sellerTab === "pesanan") h += sellerOrders(s, orders);
   else if(S.sellerTab === "produk") h += sellerProducts(s);
   else if(S.sellerTab === "laporan") h += sellerReport(s, orders);
+  else if(S.sellerTab === "saldo") h += sellerWallet(s);
   else h += storeForm(s) + storeLoginSettings(s) + (SB ? '<div class="card pad" style="margin-top:16px"><h3 class="sub">'+I("settings")+' Kode akses toko</h3><p class="small muted" style="margin:0 0 12px">Kode ini membuktikan bahwa Anda pemilik toko. Gunakan untuk membuka dashboard di HP/laptop lain. <b>Jangan bagikan ke siapa pun.</b></p><div class="actions"><button class="btn ghost sm" data-act="akses-copy">Salin kode akses</button><button class="btn ghost sm" data-act="akses">Masuk dengan kode lain</button></div></div>' : '');
   return h;
 }
@@ -1760,7 +1796,7 @@ function sellerDashboard(s, orders){
   const need = orders.filter(o => ["menunggu_konfirmasi","diproses","mencari_driver","driver_ke_toko","diantar"].includes(o.status)).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
   const prods = S.products[s.id] || [];
   const low = prods.filter(p => p.active !== false && typeof p.stock === "number" && p.stock <= 3);
-  let h = '<div class="stats">'+
+  let h = walletChip(s) + '<div class="stats">'+
     '<div class="card stat"><div class="l">Omzet hari ini</div><div class="v">'+rp(todayRev)+'</div></div>'+
     '<div class="card stat"><div class="l">Pesanan hari ini</div><div class="v">'+todayOrders.length+'</div></div>'+
     '<div class="card stat"><div class="l">Perlu tindakan</div><div class="v" style="color:'+(need.length?"#3b74ff":"inherit")+'">'+need.length+'</div></div>'+
@@ -1792,7 +1828,7 @@ function sellerOrders(s, orders){
     batal: orders.filter(o => o.status === "dibatalkan")
   };
   const list = (groups[S.orderFilter]||[]).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  let h = '<div class="tabs">'+[["aktif","Aktif"],["selesai","Selesai"],["batal","Dibatalkan"]].map(t=>'<button class="chip '+(S.orderFilter===t[0]?"on":"")+'" data-act="ofilter" data-v="'+t[0]+'">'+t[1]+' ('+groups[t[0]].length+')</button>').join("")+'</div>';
+  let h = (walletLow(s.id, 0) ? walletChip(s) : '') + '<div class="tabs">'+[["aktif","Aktif"],["selesai","Selesai"],["batal","Dibatalkan"]].map(t=>'<button class="chip '+(S.orderFilter===t[0]?"on":"")+'" data-act="ofilter" data-v="'+t[0]+'">'+t[1]+' ('+groups[t[0]].length+')</button>').join("")+'</div>';
   if(!list.length) return h + '<div class="empty card"><div class="big">'+I("inbox")+'</div>Belum ada pesanan di sini.</div>';
   return h + list.map(o => orderCard(s,o)).join("");
 }
@@ -1806,6 +1842,10 @@ function orderCard(s, o){
     if(o.status==="menunggu_konfirmasi") acts = cod ? '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">✓ Terima pesanan & cari driver</button>'
       : '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">✓ Pembayaran diterima, cari driver</button><button class="btn danger sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="menunggu_pembayaran">Bukti tidak valid</button>';
     if(o.status==="diproses") acts = '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">'+I("truck")+' Cari driver</button>'+selfBtn;
+    if(["menunggu_konfirmasi","menunggu_pembayaran"].includes(o.status) && walletLow(o.storeId, typeof o.share==="number"?o.share:shareOf(o))){
+      info += '<div class="wlowbox">'+E("money")+'<div><b>Saldo toko kurang</b><small>Butuh minimal '+rp(walletNeed(o.storeId, o.share))+' untuk menerima pesanan ini. Saldo sekarang '+rp((S.wallet[o.storeId]||{}).balance||0)+'.</small></div><button class="btn sm" data-act="nav" data-v="seller" data-t="saldo">Isi saldo</button></div>';
+      if(o.status==="menunggu_konfirmasi") acts = "";
+    }
     if(o.status==="mencari_driver"){ info = searchBox(o, "Mencari driver terdekat dari toko Anda…", true); acts = (searchElapsed(o) >= 210 ? '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">Cari ulang</button>' : '')+selfBtn; }
     if(o.status==="driver_ke_toko"){ info = driverBox(o, "Driver menuju toko Anda. Siapkan pesanan."+(cod?" (COD — atur pembayaran barang dengan driver)":""), true) + liveMap(o, "toko"); }
     if(o.status==="diantar"){ if(o.driverId) info = driverBox(o, "Pesanan sedang diantar driver ke pembeli.", true); else acts = '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="selesai">Tandai selesai</button>'; }
@@ -1843,8 +1883,8 @@ function shareTable(s, orders){
   if(!keys.length) return h + '<div class="muted small">Belum ada penjualan selesai. Bagi hasil hanya dihitung dari pesanan yang selesai.</div></div>';
   h += '<table class="t"><tr><th>Bulan</th><th class="num">Pesanan</th><th class="num">Penjualan</th><th class="num">Bagi hasil 3%</th><th></th></tr>'+
     keys.map(k => '<tr><td>'+esc(label(k))+(k===nowK?' <span class="tag gray">berjalan</span>':'')+'</td><td class="num">'+m[k].n+'</td><td class="num">'+rp(m[k].sales)+'</td><td class="num"><b>'+rp(m[k].share)+'</b></td><td class="num">'+
-      (k===nowK?'<span class="small muted">ditagih awal bulan depan</span>':'<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, msg(k)))+'">'+I("chat")+' Konfirmasi bayar</a>')+'</td></tr>').join("")+'</table>';
-  h += '<div class="hint" style="margin-top:10px">Bagi hasil dibayarkan ke Jaga Toko setiap awal bulan. Hubungi WhatsApp '+esc(CONTACT.wa)+' untuk info rekening pembayaran.</div></div>';
+      '<span class="small muted">dipotong dari saldo</span>'+'</td></tr>').join("")+'</table>';
+  h += '<div class="hint" style="margin-top:10px">Bagi hasil dipotong otomatis dari saldo toko setiap pesanan selesai. Lihat rinciannya di <a style="cursor:pointer;font-weight:700" data-act="nav" data-v="seller" data-t="saldo">menu Saldo</a>.</div></div>';
   return h;
 }
 function sellerReport(s, orders){
@@ -1899,14 +1939,14 @@ function storeForm(s){
     '<label class="f">Titik lokasi toko (untuk mencari driver terdekat)</label><input type="hidden" name="slat" value="'+esc(s.lat??"")+'"><input type="hidden" name="slng" value="'+esc(s.lng??"")+'">'+
     '<button type="button" class="btn ghost locbtn" data-act="store-loc">'+I("pin")+' <span id="sLocTxt">'+(typeof s.lat==="number"?"Lokasi tersimpan ✓ ("+s.lat.toFixed(5)+", "+s.lng.toFixed(5)+") — ketuk untuk perbarui":"Ambil lokasi toko sekarang")+'</span></button>'+
     '<div class="hint">Tekan saat Anda berada di toko. Driver dalam radius 1 km dari titik ini dicari lebih dulu.</div></fieldset>'+
-    '<fieldset class="fieldset"><legend>Akun pembayaran toko</legend><div class="hint">Isi minimal satu. Uang dari pembeli langsung masuk ke akun ini. Bagi hasil 3% untuk Jaga Toko ditagih terpisah setiap bulan.</div>'+
+    '<fieldset class="fieldset"><legend>Akun pembayaran toko</legend><div class="hint">Isi minimal satu. Uang dari pembeli langsung masuk ke akun ini. Bagi hasil 3% untuk Jaga Toko dipotong otomatis dari saldo toko (menu Saldo).</div>'+
     '<div class="cols2"><div><label class="f">Bank</label><input class="in" name="bankName" placeholder="BCA / BRI / Mandiri / BNI…" value="'+esc(bank.name||"")+'"></div><div><label class="f">No. rekening</label><input class="in" name="bankNo" inputmode="numeric" value="'+esc(bank.no||"")+'"></div></div>'+
     '<label class="f">Atas nama rekening</label><input class="in" name="bankHolder" value="'+esc(bank.holder||"")+'">'+
     ewRow(0)+ewRow(1)+
     '<label class="f">QRIS toko</label><div class="imgpick"><div class="prev" id="qrisPrev">'+(p.qris?'<img alt="" src="'+esc(p.qris)+'">':I("qr"))+'</div><input type="file" accept="image/*" id="qrisFile">'+(p.qris?'<label class="small"><input type="checkbox" name="qrisRemove"> hapus</label>':'')+'</div>'+
     '<label class="check"><input type="checkbox" name="cod" '+(p.cod?"checked":"")+'> Terima bayar di tempat (COD)</label></fieldset>'+
     (s.id ? '<div class="sharenote">'+I("percent")+' Bagi hasil Jaga Toko: <b>3%</b> dari setiap penjualan selesai'+(s.shareAgreedAt?' · disetujui '+esc(new Date(s.shareAgreedAt).toLocaleDateString("id-ID")):'')+'</div>'
-      : '<div class="sharebox"><b>'+I("percent")+' Bagi hasil 3%</b><p>Pembeli tidak dikenai biaya admin. Sebagai gantinya, toko membayar bagi hasil <b>3% dari setiap penjualan yang selesai</b> kepada Jaga Toko, ditagih setiap awal bulan. Pesanan yang dibatalkan tidak dihitung.</p><label class="check" style="margin-top:8px"><input type="checkbox" name="agreeShare" required> Saya setuju dengan bagi hasil 3% per penjualan</label></div>')+
+      : '<div class="sharebox"><b>'+I("percent")+' Bagi hasil 3%</b><p>Pembeli tidak dikenai biaya admin. Sebagai gantinya, toko membayar bagi hasil <b>3% dari setiap penjualan yang selesai</b> kepada Jaga Toko, dipotong otomatis dari saldo toko setiap pesanan selesai. Pesanan yang dibatalkan tidak dipotong. Toko baru mendapat saldo gratis untuk mulai.</p><label class="check" style="margin-top:8px"><input type="checkbox" name="agreeShare" required> Saya setuju dengan bagi hasil 3% per penjualan</label></div>')+
     '<button class="btn block" style="margin-top:16px">'+(s.id?"Simpan perubahan":"Daftarkan toko")+'</button>'+
     (s.id?'<button type="button" class="btn danger block" style="margin-top:8px" data-act="del-store">Hapus toko</button>':'')+
     '</form>';
@@ -2024,7 +2064,7 @@ async function saveStore(form){
   } else {
     const nid = uid("s");
     const ok = await safe(() => store.set("stores/"+nid, Object.assign(data, {ownerId:ME, open:true, active:true, shareRate:BAGI_HASIL, shareAgreedAt:Date.now(), color:COLORS[Math.floor(Math.random()*COLORS.length)], createdAt:Date.now()})), "Toko berhasil didaftarkan!");
-    if(ok){ pending.logo = pending.qris = undefined; S.sellerStoreId = nid; go("seller", {sellerTab:"ringkasan"}); }
+    if(ok){ pending.logo = pending.qris = undefined; S.sellerStoreId = nid; await localBonus(nid); loadWallet(nid); go("seller", {sellerTab:"ringkasan"}); }
   }
 }
 
@@ -2045,11 +2085,18 @@ async function saveProduct(form){
 
 async function setStatus(oid, status, extra){
   const o = S.orders.find(x=>x.id===oid); if(!o) return;
+  if(!SB && S.role === "seller" && ["diproses","mencari_driver","diantar","selesai"].includes(status) && ["menunggu_pembayaran","menunggu_konfirmasi"].includes(o.status)){
+    const need = Math.max(wCfgLocal().minBalance || 0, typeof o.share === "number" ? o.share : shareOf(o));
+    if(balLocal(o.storeId) < need){ toast("Saldo toko kurang (minimal "+rp(need)+"). Isi saldo dulu di menu Saldo."); return false; }
+  }
   const data = Object.assign({status, updatedAt:Date.now()}, extra||{});
   if(status === "selesai") data.doneAt = Date.now();
   if(status === "menunggu_pembayaran") data.proof = "";
   if(status === "mencari_driver"){ data.searchAt = Date.now(); data.declined = []; }
-  return await safe(() => store.update("orders/"+oid, data), "Status: "+STATUS[status].l);
+  const ok = await safe(() => store.update("orders/"+oid, data), "Status: "+STATUS[status].l);
+  if(ok && status === "selesai") await localChargeFee(o);
+  if(S.role === "seller") loadWallet(o.storeId);
+  return ok;
 }
 async function restock(o){
   if(SB) return; // server mengembalikan stok otomatis
@@ -2669,6 +2716,7 @@ const localDrv = {
       } else throw srvErr("Aksi tidak valid");
     }
     await store.update("orders/" + id, patch);
+    if(act === "done") await localChargeFee(o);
     return Object.assign({}, o, patch);
   }
 };
@@ -3031,7 +3079,7 @@ async function ownRefresh(){
 function startOwner(){
   if(ownTimer) return;
   ownRefresh();
-  ownTimer = setInterval(() => { if(!document.hidden && S.role === "owner") ownRefresh(); }, 15000);
+  ownTimer = setInterval(() => { if(!document.hidden && S.role === "owner"){ ownRefresh(); if(["saldo","toko"].includes(S.own.tab) && !typing()) loadOwnerWallet(); } }, 15000);
 }
 const dayKey = t => { const d = new Date(t); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
 function rangeStart(r){
@@ -3095,7 +3143,7 @@ function appOwner(){
   if(!S.own.loaded) return h + '<div class="empty">'+I("loader")+' Memuat…</div>';
   if(!S.own.authed) return h + (S.own.err ? '<div class="notice">'+esc(S.own.err)+'</div>' : '') + ownLogin();
   const D = (SB ? S.own.data : null) || (SB ? {stores:[], orders:[], drivers:[]} : {stores:S.stores.map(s => Object.assign({}, s, {products:(S.products[s.id]||[]).length})), orders:S.orders.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), drivers:S.drivers});
-  const tabs = [["ringkasan","Ringkasan"],["pesanan","Pesanan"],["toko","Toko"],["driver","Driver"],["akun","Akun"]];
+  const tabs = [["ringkasan","Ringkasan"],["pesanan","Pesanan"],["toko","Toko"],["saldo","Saldo"],["driver","Driver"],["akun","Akun"]];
   h += '<div class="otabs">'+tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+t[1]+'</button>').join("")+'</div>';
   const ranges = [["hari","Hari ini"],["7hari","7 hari"],["bulan","Bulan ini"],["semua","Semua"]];
   const rangeBar = '<div class="oranges">'+ranges.map(r => '<button class="chip '+(S.own.range===r[0]?"on":"")+'" data-act="own-range" data-v="'+r[0]+'">'+r[1]+'</button>').join("")+'</div>';
@@ -3153,8 +3201,10 @@ function appOwner(){
         '<small>'+(off?'<span class="warnc">Dinonaktifkan</span>':s.open===false?'Tutup':'Buka')+(s.hasLogin===false?' · belum ada login':'')+(r.last?' · pesanan terakhir '+ago(r.last):'')+'</small></div>'+
         '<button class="btn ghost sm" data-act="own-store-active" data-id="'+esc(s.id)+'" data-v="'+(off?"1":"0")+'">'+(off?"Aktifkan":"Nonaktifkan")+'</button></div>'+
         '<div class="om"><div><small>Pesanan</small><b>'+r.n+'</b></div><div><small>Penjualan</small><b>'+rp(r.gmv)+'</b></div><div><small>Bagi hasil</small><b>'+rp(r.share)+'</b></div></div>'+
-        '<div class="obill"><span>Tagihan bagi hasil '+esc(month)+': <b>'+rp(r.billM)+'</b></span>'+(s.wa && r.billM ? '<a class="btn sm" target="_blank" rel="noopener" href="'+esc(waLink(s.wa, "Halo "+s.name+", ini dari Jaga Toko. Bagi hasil 3% bulan "+month+" sebesar "+rp(r.billM)+". Terima kasih sudah berjualan di Jaga Toko!"))+'">'+I("chat")+' Tagih via WA</a>' : (s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", ini dari Jaga Toko."))+'">WA toko</a>' : ''))+'</div></div>';
+        '<div class="obill"><span>Saldo toko: <b class="'+(S.ownW && S.ownW.balances && (S.ownW.balances[s.id]||0) < ((S.ownW.cfg||{}).minBalance||0) ? 'neg' : '')+'">'+(S.ownW && S.ownW.balances ? rp(S.ownW.balances[s.id]||0) : '…')+'</b></span>'+(s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", ini dari Jaga Toko."))+'">WA toko</a>' : '')+'</div></div>';
     }).join("") : '<div class="card pad muted small">Belum ada toko terdaftar.</div>')+'</div>';
+  } else if(S.own.tab === "saldo"){
+    h += ownerWalletTab(D);
   } else if(S.own.tab === "driver"){
     const ds = drivers.map(d => {
       const mine = (D.orders||[]).filter(o => o.driverId === d.id);
@@ -3177,7 +3227,7 @@ document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
   const a = el.dataset.act, v = el.dataset.v;
   if(a === "ver-tap"){ S._vt = (S._vtT && Date.now() - S._vtT < 1500 ? (S._vt||0) : 0) + 1; S._vtT = Date.now(); if(S._vt >= 5){ S._vt = 0; location.hash = "owner"; } return; }
-  if(a === "own-tab"){ S.own.tab = v; render(); window.scrollTo(0,0); return; }
+  if(a === "own-tab"){ S.own.tab = v; if(v === "saldo" || v === "toko") loadOwnerWallet(); render(); window.scrollTo(0,0); return; }
   if(a === "own-range"){ S.own.range = v; render(); return; }
   if(a === "own-ofilter"){ S.own.ofilter = v; render(); return; }
   if(a === "own-refresh"){ S.own.sig = ""; await ownRefresh(); toast("Data diperbarui"); return; }
@@ -3410,6 +3460,192 @@ setInterval(() => {
   if(live) ORD_REFRESH();
 }, 5000);
 
+/* ============ Saldo toko (top-up, potong bagi hasil 3% otomatis) ============ */
+S.wallet = {}; S.walletTx = []; S.walletCfg = null; S.ownW = null;
+const WCFG_DEF = {minBalance:10000, bonus:20000, bank:{name:"", no:"", holder:""}, qris:""};
+const wCfgLocal = () => Object.assign({}, WCFG_DEF, S.walletCfg || {});
+const balLocal = sid => S.walletTx.filter(t => t.storeId === sid && t.status === "ok").reduce((a, t) => a + (t.amount || 0), 0);
+const WAL = {
+  async get(sid){
+    if(SB) return await sbStore.rpc("jt_wallet", {p_store:sid});
+    const c = wCfgLocal();
+    const txs = S.walletTx.filter(t => t.storeId === sid).sort((a, b) => (b.at||0) - (a.at||0)).map(t => Object.assign({}, t, {hasProof:!!t.proof, proof:undefined}));
+    return {balance:balLocal(sid), pending:S.walletTx.filter(t => t.storeId === sid && t.status === "pending").reduce((a,t)=>a+t.amount,0), cfg:{minBalance:c.minBalance, bank:c.bank, qris:c.qris}, txs};
+  },
+  async topup(sid, amount, proof){
+    if(SB) return sbStore.rpc("jt_wallet_topup", {p_store:sid, p_amount:amount, p_proof:proof});
+    if(!(amount >= 10000)) throw srvErr("Jumlah isi saldo minimal Rp10.000");
+    const id = "t" + Date.now();
+    await store.set("wallettx/" + id, {storeId:sid, kind:"topup", amount:Math.round(amount), status:"pending", note:"Isi saldo", proof, at:Date.now()});
+  }
+};
+async function localTx(id, data){ await store.set("wallettx/" + id, Object.assign({status:"ok", at:Date.now()}, data)); }
+async function localChargeFee(o){
+  if(SB || !o || S.walletTx.some(t => t.id === "fee_" + o.id)) return;
+  const share = typeof o.share === "number" ? o.share : Math.round((o.total||0) * BAGI_HASIL);
+  if(share > 0) await localTx("fee_" + o.id, {storeId:o.storeId, kind:"fee", amount:-share, orderId:o.id, note:"Bagi hasil 3% pesanan " + (o.code||"") + " (" + rp(o.total) + ")"});
+}
+async function localBonus(sid){ const b = wCfgLocal().bonus || 0; if(!SB && b > 0 && !S.walletTx.some(t => t.storeId === sid && t.kind === "bonus")) await localTx("bonus_" + sid, {storeId:sid, kind:"bonus", amount:b, note:"Saldo gratis toko baru"}); }
+async function loadWallet(sid, quiet){
+  if(!sid) return;
+  try{ S.wallet[sid] = Object.assign(await WAL.get(sid) || {}, {loaded:true}); }
+  catch(e){ S.wallet[sid] = Object.assign(S.wallet[sid] || {}, {loaded:true, err:e.message}); }
+  if(S.role === "seller" && !quiet && !typing()) scheduleRender();
+}
+setInterval(() => { if(!document.hidden && S.role === "seller" && S.sellerStoreId && !typing()) loadWallet(S.sellerStoreId); }, 20000);
+document.addEventListener("visibilitychange", () => { if(!document.hidden && S.role === "seller" && S.sellerStoreId) loadWallet(S.sellerStoreId); });
+function walletNeed(sid, share){ const w = S.wallet[sid]; if(!w || !w.loaded || w.balance == null) return null; return Math.max((w.cfg && w.cfg.minBalance) || 0, share || 0); }
+function walletLow(sid, share){ const w = S.wallet[sid]; const need = walletNeed(sid, share); return need != null && w.balance < need; }
+function walletChip(s){
+  const w = S.wallet[s.id];
+  if(!w || !w.loaded){ if(!w) loadWallet(s.id); return ""; }
+  const low = walletLow(s.id, 0);
+  return '<div class="wchip'+(low?' low':'')+'" data-act="nav" data-v="seller" data-t="saldo">'+E("money")+'<div class="grow"><small>Saldo toko</small><b>'+rp(w.balance)+'</b>'+
+    (low ? '<span>Saldo di bawah minimum '+rp(w.cfg.minBalance)+' — isi saldo agar bisa menerima pesanan</span>' : '<span>Bagi hasil 3% dipotong otomatis saat pesanan selesai</span>')+'</div><b class="go">'+(low?'Isi saldo':'Lihat')+' ›</b></div>';
+}
+const TX_L = {topup:["Isi saldo","money"], fee:["Bagi hasil 3%","receipt"], bonus:["Bonus","gift"], adjust:["Penyesuaian","bell"]};
+function txRow(t, withStore){
+  const st = t.status === "pending" ? '<span class="tag warn">Menunggu dicek</span>' : t.status === "rejected" ? '<span class="tag red">Ditolak</span>' : '';
+  const sname = withStore ? ((storeById(t.storeId)||{}).name || ((S.own.data && (S.own.data.stores||[]).find(x => x.id === t.storeId)) || {}).name || t.storeId) : "";
+  return '<div class="txr">'+E((TX_L[t.kind]||["","money"])[1])+'<div class="grow"><b>'+esc(withStore ? sname : (TX_L[t.kind]||[t.kind])[0])+'</b><small>'+esc(t.note||"")+'</small><small>'+fmtDate(t.at)+'</small></div>'+
+    '<div class="r"><b class="'+(t.amount<0?'neg':'pos')+(t.status!=="ok"?' dim':'')+'">'+(t.amount<0?'−':'+')+rp(Math.abs(t.amount))+'</b>'+st+'</div></div>';
+}
+function sellerWallet(s){
+  const w = S.wallet[s.id];
+  if(!w || !w.loaded){ loadWallet(s.id); return '<div class="empty">'+I("loader")+' Memuat saldo…</div>'; }
+  if(w.err && w.balance == null) return '<div class="notice">'+esc(w.err)+'</div>';
+  const c = w.cfg || {}, bank = c.bank || {}, low = walletLow(s.id, 0);
+  let h = '<div class="wbig'+(low?' low':'')+'"><small>Saldo toko</small><b>'+rp(w.balance)+'</b>'+
+    '<span>Minimal saldo untuk menerima pesanan: '+rp(c.minBalance||0)+(w.pending ? ' · '+rp(w.pending)+' menunggu dicek' : '')+'</span></div>';
+  h += '<div class="card pad whow"><h3 class="sub">Cara kerja bagi hasil</h3><ol>'+
+    '<li>Isi saldo ke rekening/QRIS Jaga Toko, lalu unggah bukti transfer.</li>'+
+    '<li>Saldo masuk setelah dicek tim Jaga Toko.</li>'+
+    '<li>Setiap pesanan <b>selesai</b>, bagi hasil 3% dipotong otomatis dari saldo. Pesanan batal tidak dipotong.</li>'+
+    '<li>Jika saldo di bawah '+rp(c.minBalance||0)+', toko tidak bisa menerima pesanan baru sampai saldo diisi.</li></ol></div>';
+  h += '<form class="card pad" id="topupForm" data-id="'+esc(s.id)+'"><h3 class="sub">'+I("plus")+' Isi saldo</h3>'+
+    '<div class="wchips">'+[25000,50000,100000,200000].map(v => '<button type="button" class="chip" data-act="topup-amt" data-v="'+v+'">'+rp(v)+'</button>').join("")+'</div>'+
+    '<label class="f">Jumlah (Rp)</label><input class="in" name="amount" inputmode="numeric" required placeholder="Minimal 10000">'+
+    '<div class="wpay"><small>Transfer ke rekening Jaga Toko</small>'+
+      (bank.no ? '<b>'+esc(bank.name||"Bank")+' · '+esc(bank.no)+'</b><span>a.n. '+esc(bank.holder||"-")+'</span><button type="button" class="btn ghost sm" data-act="copy" data-v="'+esc(bank.no)+'">Salin nomor</button>' : '')+
+      (c.qris ? '<img class="qris" alt="QRIS Jaga Toko" src="'+esc(c.qris)+'">' : '')+
+      (!bank.no && !c.qris ? '<span>Rekening Jaga Toko belum diatur. Hubungi <a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo Jaga Toko, saya mau isi saldo toko "+s.name+"."))+'">WhatsApp Jaga Toko</a> untuk info rekening.</span>' : '')+'</div>'+
+    '<label class="f">Foto bukti transfer</label><input type="file" accept="image/*" class="in" id="topupProof" required>'+
+    '<button class="btn block" style="margin-top:12px">Kirim pengisian saldo</button></form>';
+  const txs = w.txs || [];
+  h += '<div class="card pad"><h3 class="sub">Riwayat saldo</h3>'+(txs.length ? txs.map(t => txRow(t)).join("") : '<div class="muted small">Belum ada mutasi.</div>')+'</div>';
+  return h;
+}
+/* ---------- owner ---------- */
+const OWAL = {
+  async get(){
+    if(SB) return await sbStore.rpc("jt_owner_wallet", {});
+    const ok = S.walletTx.filter(t => t.status === "ok");
+    const sum = (arr) => arr.reduce((a, t) => a + (t.amount||0), 0);
+    const m0 = rangeStart("bulan");
+    const by = (f) => { const o = {}; ok.filter(f).forEach(t => { o[t.storeId] = (o[t.storeId]||0) + t.amount; }); return o; };
+    const fees = {}; Object.entries(by(t => t.kind === "fee")).forEach(([k, v]) => fees[k] = -v);
+    return {cfg:wCfgLocal(), pending:S.walletTx.filter(t => t.status === "pending").sort((a,b)=>a.at-b.at), balances:by(() => true), fees,
+      totals:{fee:-sum(ok.filter(t => t.kind === "fee")), feeMonth:-sum(ok.filter(t => t.kind === "fee" && t.at >= m0)), topup:sum(ok.filter(t => t.kind === "topup")), bonus:sum(ok.filter(t => t.kind === "bonus")), saldo:sum(ok)},
+      recent:S.walletTx.filter(t => t.status !== "pending").sort((a,b)=>b.at-a.at).slice(0,60)};
+  },
+  async decide(id, okk){ if(SB) return sbStore.rpc("jt_owner_topup_decide", {p_id:id, p_ok:okk}); await store.update("wallettx/" + id, {status: okk ? "ok" : "rejected", note: okk ? "Isi saldo (disetujui)" : "Isi saldo ditolak — hubungi Jaga Toko"}); },
+  async cfg(d){ if(SB) return sbStore.rpc("jt_owner_wallet_cfg", {p_data:d}); await store.set("settings/wallet", Object.assign(wCfgLocal(), d)); },
+  async adjust(sid, amt, note){ if(SB) return sbStore.rpc("jt_owner_wallet_adjust", {p_store:sid, p_amount:amt, p_note:note}); await localTx("a" + Date.now(), {storeId:sid, kind:"adjust", amount:Math.round(amt), note:note || "Penyesuaian oleh Jaga Toko"}); }
+};
+async function loadOwnerWallet(){
+  try{ S.ownW = await OWAL.get(); S.ownW.err = ""; }catch(e){ S.ownW = {err:e.message}; }
+  if(S.role === "owner" && !typing()) scheduleRender();
+}
+function ownerWalletTab(D){
+  const W = S.ownW;
+  if(!W){ loadOwnerWallet(); return '<div class="empty">'+I("loader")+' Memuat…</div>'; }
+  if(W.err && !W.totals) return '<div class="notice">'+esc(W.err)+'</div>';
+  const T = W.totals || {}, c = Object.assign({}, WCFG_DEF, W.cfg || {}), bank = c.bank || {};
+  const sname = id => ((D.stores||[]).find(s => s.id === id) || storeById(id) || {}).name || id;
+  let h = '<div class="okpi">'+
+    '<div class="k main"><small>Bagi hasil terpotong bulan ini</small><b>'+rp(T.feeMonth||0)+'</b><span>Total sejak awal: '+rp(T.fee||0)+'</span></div>'+
+    '<div class="k"><small>Top-up masuk (disetujui)</small><b>'+rp(T.topup||0)+'</b></div>'+
+    '<div class="k"><small>Saldo seluruh toko</small><b>'+rp(T.saldo||0)+'</b><span>uang titipan toko</span></div>'+
+    '<div class="k"><small>Bonus diberikan</small><b>'+rp(T.bonus||0)+'</b></div>'+
+    '<div class="k"><small>Menunggu dicek</small><b>'+(W.pending||[]).length+'</b></div></div>';
+  h += '<div class="card pad"><h3 class="sub">Pengisian saldo menunggu dicek</h3>'+((W.pending||[]).length ? W.pending.map(t =>
+    '<div class="wpend"><div class="grow"><b>'+esc(sname(t.storeId))+'</b><small>'+fmtDate(t.at)+'</small><b class="pos" style="font-size:18px">'+rp(t.amount)+'</b>'+
+    '<div class="actions"><button class="btn sm" data-act="own-topup" data-id="'+esc(t.id)+'" data-v="1">✓ Setujui</button><button class="btn danger sm" data-act="own-topup" data-id="'+esc(t.id)+'" data-v="0">Tolak</button></div>'+
+    '<div class="hint">Cek dulu mutasi rekening Jaga Toko sebelum menyetujui.</div></div>'+
+    (t.proof ? '<img class="wproof" alt="Bukti transfer" src="'+esc(t.proof)+'" data-act="own-proof" data-v="'+esc(t.proof)+'">' : '')+'</div>').join("") : '<div class="muted small">Tidak ada pengisian yang menunggu.</div>')+'</div>';
+  const stores = (D.stores||[]).slice().sort((a, b) => ((W.balances||{})[a.id]||0) - ((W.balances||{})[b.id]||0));
+  h += '<div class="card pad"><h3 class="sub">Saldo per toko</h3>'+(stores.length ? stores.map(s => {
+    const b = (W.balances||{})[s.id] || 0, f = (W.fees||{})[s.id] || 0, low = b < (c.minBalance||0);
+    return '<div class="orow"><div class="grow"><b>'+esc(s.name)+'</b><small>Bagi hasil terpotong: '+rp(f)+'</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">di bawah minimum</small>':'')+
+      '<button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Sesuaikan</button>'+(low && s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa, "Halo "+s.name+", saldo toko Anda di Jaga Toko tinggal "+rp(b)+". Isi saldo di menu Saldo agar tetap bisa menerima pesanan."))+'">Ingatkan via WA</a>':'')+'</div></div>';
+  }).join("") : '<div class="muted small">Belum ada toko.</div>')+'</div>';
+  h += '<form class="card pad" id="walletCfg"><h3 class="sub">Pengaturan saldo</h3>'+
+    '<div class="cols2"><div><label class="f">Minimal saldo (Rp)</label><input class="in" name="minBalance" inputmode="numeric" value="'+esc(c.minBalance)+'"></div><div><label class="f">Bonus toko baru (Rp)</label><input class="in" name="bonus" inputmode="numeric" value="'+esc(c.bonus)+'"></div></div>'+
+    '<label class="f">Rekening Jaga Toko — nama bank</label><input class="in" name="bname" placeholder="BRI / BCA / Mandiri / DANA" value="'+esc(bank.name||"")+'">'+
+    '<div class="cols2"><div><label class="f">Nomor rekening</label><input class="in" name="bno" inputmode="numeric" value="'+esc(bank.no||"")+'"></div><div><label class="f">Atas nama</label><input class="in" name="bholder" value="'+esc(bank.holder||"")+'"></div></div>'+
+    '<label class="f">QRIS Jaga Toko (opsional)</label>'+(c.qris ? '<img class="qris" alt="QRIS" src="'+esc(c.qris)+'"><label class="check"><input type="checkbox" name="qrisRemove"> Hapus QRIS</label>' : '')+'<input type="file" accept="image/*" class="in" id="wQris">'+
+    '<button class="btn sm" style="margin-top:12px">Simpan pengaturan</button></form>';
+  h += '<div class="card pad"><h3 class="sub">Mutasi terbaru</h3>'+((W.recent||[]).length ? W.recent.map(t => txRow(t, true)).join("") : '<div class="muted small">Belum ada mutasi.</div>')+'</div>';
+  return h;
+}
+/* ---------- aksi ---------- */
+document.addEventListener("click", async e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const a = el.dataset.act;
+  if(a === "topup-amt"){ const f = el.closest("form"); f.querySelector('[name=amount]').value = el.dataset.v; return; }
+  if(a === "own-topup"){
+    const okk = el.dataset.v === "1", id = el.dataset.id;
+    confirmModal(okk ? "Setujui pengisian saldo ini? Pastikan uangnya sudah masuk ke rekening Jaga Toko." : "Tolak pengisian saldo ini?", okk ? "Setujui" : "Tolak", async () => {
+      try{ await OWAL.decide(isNaN(+id) ? id : +id, okk); toast(okk ? "Saldo toko ditambahkan" : "Pengisian ditolak"); }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
+      await loadOwnerWallet(); render();
+    });
+    return;
+  }
+  if(a === "own-proof"){
+    document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><img alt="Bukti transfer" src="'+esc(el.dataset.v)+'" style="width:100%;border-radius:12px"><button class="btn block" style="margin-top:12px" onclick="closeModal()">Tutup</button></div></div>';
+    return;
+  }
+  if(a === "own-adjust"){
+    const sid = el.dataset.id;
+    document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><form class="modal" id="adjForm" data-id="'+esc(sid)+'"><h2 class="sec">Sesuaikan saldo</h2><p class="muted" style="margin-top:0">'+esc(el.dataset.v)+'</p>'+
+      '<label class="f">Jumlah (pakai minus untuk mengurangi, contoh -5000)</label><input class="in" name="amt" required inputmode="numeric">'+
+      '<label class="f">Keterangan</label><input class="in" name="note" placeholder="Contoh: koreksi, hadiah, promo">'+
+      '<div class="actions"><button class="btn">Simpan</button><button type="button" class="btn ghost" onclick="closeModal()">Batal</button></div></form></div>';
+  }
+});
+document.addEventListener("submit", async e => {
+  const f = e.target;
+  if(f.id === "topupForm"){
+    e.preventDefault();
+    const amt = parseInt(String(new FormData(f).get("amount")||"").replace(/\D/g, ""), 10);
+    if(!(amt >= 10000)) return toast("Jumlah isi saldo minimal Rp10.000.");
+    const file = document.getElementById("topupProof").files[0];
+    if(!file) return toast("Unggah foto bukti transfer.");
+    const btn = f.querySelector("button.btn.block"); btn.disabled = true;
+    try{ const img = await compressImage(file, 1000); await WAL.topup(f.dataset.id, amt, img); toast("Pengisian terkirim. Saldo masuk setelah dicek Jaga Toko."); f.reset(); }
+    catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
+    btn.disabled = false; await loadWallet(f.dataset.id); render();
+  }
+  if(f.id === "walletCfg"){
+    e.preventDefault();
+    const fd = new FormData(f); const num = k => parseInt(String(fd.get(k)||"0").replace(/\D/g,""), 10) || 0;
+    const d = {minBalance:num("minBalance"), bonus:num("bonus"), bank:{name:(fd.get("bname")||"").trim(), no:(fd.get("bno")||"").trim(), holder:(fd.get("bholder")||"").trim()}};
+    const q = document.getElementById("wQris").files[0];
+    try{
+      if(q) d.qris = await compressImage(q, 900); else if(fd.get("qrisRemove")) d.qris = "";
+      await OWAL.cfg(d); toast("Pengaturan saldo disimpan");
+    }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
+    await loadOwnerWallet(); render();
+  }
+  if(f.id === "adjForm"){
+    e.preventDefault();
+    const fd = new FormData(f); const amt = parseInt(String(fd.get("amt")||"").replace(/[^\d-]/g, ""), 10);
+    if(!amt) return toast("Isi jumlah penyesuaian.");
+    try{ await OWAL.adjust(f.dataset.id, amt, (fd.get("note")||"").trim()); closeModal(); toast("Saldo disesuaikan"); }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
+    await loadOwnerWallet(); render();
+  }
+});
+
 /* ============ Mulai ============ */
 function startListening(){
   const slowT = setTimeout(() => { S.slow = true; render(); }, 10000);
@@ -3419,6 +3655,8 @@ function startListening(){
     else if(rows && rows.length) S.ready.stores = true;
     render();
   });
+  if(!SB) store.listen("wallettx", rows => { if(rows){ S.walletTx = rows; if(S.sellerStoreId) loadWallet(S.sellerStoreId, S.role !== "seller"); } });
+  if(!SB) store.listen("settings", rows => { if(rows){ S.walletCfg = rows.find(r => r.id === "wallet") || null; } });
   if(!SB) store.listen("chatmsgs", rows => { if(rows) S.chatMsgs = rows; });
   if(!SB) store.listen("drivers", rows => { if(rows) S.drivers = rows; if(S.role === "driver") drvRefresh(); });
   store.listen("orders", (rows, fromCache) => {
