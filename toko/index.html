@@ -1001,6 +1001,34 @@ body.is-driver .slogin{margin:12px 14px 20px}
 .ost .om b{font-size:14px}
 .obill{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:13px;flex-wrap:wrap}
 body.is-owner .dtop{z-index:20}
+.chatbtn{position:relative}
+.chatbtn .cdot{position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;background:#ef4444;border:2px solid #fff}
+.chatbtn.unread{animation:pop .5s}
+.chatbg{z-index:80}
+.modal.chatwin{padding:0;display:flex;flex-direction:column;height:min(640px,88vh);max-height:88vh;overflow:hidden}
+.chead{display:flex;align-items:center;gap:10px;padding:12px 12px;border-bottom:1px solid #eef1f6;background:linear-gradient(120deg,#0b1a3d,#18337a);color:#fff}
+.chead b{display:block;font-size:15px}
+.chead small{display:block;color:#b8c7ea;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chead .grow{min-width:0}
+.chead .ibtn{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.12);border:0;color:#fff;display:grid;place-items:center;font-size:19px;flex-shrink:0;cursor:pointer}
+.clist{flex:1;overflow-y:auto;padding:14px 12px;background:#f3f6fc;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain}
+.cm{max-width:82%;display:flex;flex-direction:column}
+.cm small{font-size:11px;color:#6a7894;font-weight:700;margin:0 0 2px 4px}
+.cm .bub{padding:9px 12px;border-radius:16px;font-size:14.5px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;box-shadow:0 2px 6px -4px rgba(10,22,51,.35)}
+.cm time{font-size:10.5px;color:#9aa6bd;margin:2px 6px 0}
+.cm.me{align-self:flex-end;align-items:flex-end}
+.cm.me .bub{background:linear-gradient(130deg,#2f6bff,#5a8cff);color:#fff;border-bottom-right-radius:5px}
+.cm.them .bub{border-bottom-left-radius:5px}
+.cm.them.r-driver small{color:#15803d}.cm.them.r-toko small{color:#b08d4f}
+.cempty{margin:auto;text-align:center;color:#6a7894;padding:20px}
+.cempty .e3d{width:44px;height:44px}
+.cempty b{display:block;color:#0f1b2d;margin-top:6px}
+.cempty small{display:block;font-size:12.5px}
+.cquick{display:flex;gap:6px;overflow-x:auto;padding:8px 10px 2px;scrollbar-width:none;background:#fff}
+.cquick button{flex-shrink:0;border:1px solid #d6e2fb;background:#f3f7ff;color:#1f4fd1;font-weight:600;font-size:12.5px;border-radius:99px;padding:7px 11px;cursor:pointer}
+.cform{display:flex;gap:8px;padding:8px 10px calc(10px + env(safe-area-inset-bottom));background:#fff}
+.cform .in{flex:1;margin:0}
+.cform .btn{width:48px;padding:0;display:grid;place-items:center;font-size:19px;flex-shrink:0}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1661,7 +1689,7 @@ function viewOrder(){
     h += '<div class="paybox">'+I("badge")+' Pesanan selesai. Terima kasih sudah belanja!'+(typeof o.ongkirFinal==="number"?'<div class="small" style="margin-top:6px">Ongkir dibayar ke driver'+(o.driver?' '+esc(o.driver.name):'')+': <b>'+rp(o.ongkirFinal)+'</b></div>':'')+'</div>';
   }
   if(o.proof && o.status !== "menunggu_pembayaran") h += '<div class="small muted" style="margin-top:10px">Bukti pembayaran Anda:</div><img class="proof" alt="Bukti pembayaran" src="'+esc(o.proof)+'">';
-  h += '<div class="actions">'+(s&&s.wa?'<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+o.storeName+", saya ingin menanyakan pesanan "+o.code))+'">'+I("chat")+' Chat toko</a>':'')+
+  h += '<div class="actions">'+chatBtn(o, "pembeli", "Chat toko & driver", "ghost sm")+
     (["menunggu_pembayaran","menunggu_konfirmasi"].includes(o.status) || (o.status==="diproses" && o.pay && o.pay.k==="cod" && false) ?'<button class="btn danger sm" data-act="buyer-cancel" data-id="'+esc(o.id)+'">Batalkan pesanan</button>':'')+'</div>';
   if(s && s.wa) h += '<div class="hint">WhatsApp toko: '+esc(s.wa)+'</div>';
   h += '</div>';
@@ -1767,7 +1795,7 @@ function orderCard(s, o){
       (o.buyer.note?'<div class="small muted">'+I("note")+' '+esc(o.buyer.note)+'</div>':'')+
       '<div style="margin-top:6px"><b>'+rp(o.total)+'</b> <span class="small muted">· '+esc(o.pay?o.pay.type:"")+' · bagi hasil 3%: '+rp(typeof o.share==="number"?o.share:shareOf(o))+'</span></div>'+
       (o.proof?'<details style="margin-top:6px"><summary class="small" style="cursor:pointer;font-weight:700">Lihat bukti pembayaran</summary><img class="proof" alt="Bukti pembayaran" src="'+esc(o.proof)+'"></details>':'')+
-      info+'<div class="actions">'+acts+'</div></div>';
+      info+'<div class="actions">'+acts+chatBtn(o, "toko", "Chat", "ghost sm")+'</div></div>';
   }
 }
 function sellerProducts(s){
@@ -2706,7 +2734,7 @@ function driverBox(o, text, compact){
   }
   return '<div class="drvbox"><div class="drv-av">'+E("scooter")+'</div><div class="grow"><small>'+esc(text)+'</small><b>'+esc(d.name || "Driver")+'</b>'+
     '<div class="small muted">'+esc([d.vehicle, d.plate].filter(Boolean).join(" · "))+(near ? ' · <b class="near">'+near+'</b>' : '')+'</div></div>'+
-    (d.wa ? '<a class="btn sm press" target="_blank" rel="noopener" href="'+esc(waLink(d.wa, "Halo "+(d.name||"")+", saya "+(compact?"dari toko "+o.storeName:o.buyer.name)+" tentang pesanan "+o.code))+'">'+I("chat")+' Chat</a>' : '')+'</div>';
+    chatBtn(o, compact ? "toko" : "pembeli", "Chat")+'</div>';
 }
 function ongkirNego(o){
   const est = ongkirEstOf(o), cod = o.pay && o.pay.k === "cod";
@@ -2739,10 +2767,10 @@ function drvJob(o, offer){
   }
   h += '<div class="dj-route">'+
     '<div class="pt a"><i></i><div><small>Ambil di toko</small><b>'+esc(o.storeName)+'</b><span>'+esc(o.storeAddress || "")+'</span>'+
-      (!offer && o.status==="driver_ke_toko" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(dirLink(o.storeLoc, (o.storeAddress||"")+" "+(o.storeName||"")))+'">'+I("pin")+' Rute ke toko</a>'+(o.storeWa?'<a target="_blank" rel="noopener" href="'+esc(waLink(o.storeWa, "Halo "+o.storeName+", saya driver Jaga Toko untuk pesanan "+o.code+"."))+'">'+I("chat")+' Chat toko</a>':'')+'</div>' : '')+
+      (!offer && o.status==="driver_ke_toko" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(dirLink(o.storeLoc, (o.storeAddress||"")+" "+(o.storeName||"")))+'">'+I("pin")+' Rute ke toko</a>'+(o.storeWa?'<a target="_blank" rel="noopener" href="'+esc(waLink(o.storeWa, "Halo "+o.storeName+", saya driver Jaga Toko untuk pesanan "+o.code+"."))+'">WA toko</a>':'')+'</div>' : '')+
     '</div></div>'+
     '<div class="pt b"><i></i><div><small>Antar ke</small><b>'+esc(offer ? (o.buyer.address||"").split(",")[0] : o.buyer.name)+'</b><span>'+esc(o.buyer.address||"")+'</span>'+
-      (!offer && o.status==="diantar" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(hasLoc(o.buyer) ? dirLink(o.buyer) : (o.buyer.maps || dirLink(null, o.buyer.address)))+'">'+I("pin")+' Rute ke pembeli</a>'+(o.buyer.wa?'<a target="_blank" rel="noopener" href="'+esc(waLink(o.buyer.wa, "Halo "+o.buyer.name+", saya driver Jaga Toko mengantar pesanan "+o.code+" dari "+o.storeName+"."))+'">'+I("chat")+' Chat pembeli</a>':'')+'</div>' : '')+
+      (!offer && o.status==="diantar" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(hasLoc(o.buyer) ? dirLink(o.buyer) : (o.buyer.maps || dirLink(null, o.buyer.address)))+'">'+I("pin")+' Rute ke pembeli</a>'+(o.buyer.wa?'<a target="_blank" rel="noopener" href="'+esc(waLink(o.buyer.wa, "Halo "+o.buyer.name+", saya driver Jaga Toko mengantar pesanan "+o.code+" dari "+o.storeName+"."))+'">WA pembeli</a>':'')+'</div>' : '')+
       (o.buyer.note ? '<span class="note">'+I("note")+' '+esc(o.buyer.note)+'</span>' : '')+
     '</div></div></div>';
   h += '<div class="small" style="margin:8px 0 2px">'+items+'</div>';
@@ -2751,11 +2779,13 @@ function drvJob(o, offer){
     h += '<div class="actions"><button class="btn press grow" data-act="drv-accept" data-id="'+esc(o.id)+'">Ambil pesanan</button><button class="btn ghost press" data-act="drv-decline" data-id="'+esc(o.id)+'">Lewati</button></div>';
   } else if(o.status === "driver_ke_toko"){
     if(cod) h += '<div class="hint">COD: atur pembayaran barang '+rp(o.total)+' dengan toko (talangi dulu atau setor setelah diantar).</div>';
+    h += '<div class="actions">'+chatBtn(o, "driver", "Chat toko & pembeli", "ghost")+'</div>';
     h += '<div class="actions"><button class="btn press grow" data-act="drv-pickup" data-id="'+esc(o.id)+'">'+I("package")+' Sudah ambil di toko</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
   } else if(o.status === "diantar"){
     const v = S.drv.draft[o.id] != null ? S.drv.draft[o.id] : est;
     h += '<div class="negobox"><label class="f">Ongkir yang disepakati dengan pembeli</label><div class="rpin"><span>Rp</span><input class="in" inputmode="numeric" id="ongkir-'+esc(o.id)+'" data-ongkir="'+esc(o.id)+'" value="'+esc(v)+'"></div>'+
       '<div class="hint">Patokan 2,5% = '+rp(est)+'. Boleh nego langsung dengan pembeli.'+(cod?' Tagih tunai: <b>'+rp(o.total)+'</b> + ongkir.':' Barang sudah dibayar ke toko, tagih ongkir saja.')+'</div></div>'+
+      '<div class="actions">'+chatBtn(o, "driver", "Chat pembeli & toko", "ghost")+'</div>'+
       '<div class="actions"><button class="btn press grow" data-act="drv-done" data-id="'+esc(o.id)+'">'+I("checkc")+' Pesanan sudah sampai</button></div>';
   } else if(o.status === "selesai"){
     h += '<div class="small" style="margin-top:6px">Ongkir diterima: <b>'+rp(o.ongkirFinal || 0)+'</b> · '+fmtDate(o.doneAt || o.updatedAt)+'</div>';
@@ -3157,6 +3187,131 @@ document.addEventListener("submit", async e => {
   }
 });
 
+/* ============ Chat di dalam aplikasi (per pesanan: pembeli · toko · driver) ============ */
+S.chatMsgs = []; S.chatCounts = {};
+let CHAT_SEEN = {}; try{ CHAT_SEEN = JSON.parse(localStorage.getItem("jt_chat_seen") || "{}") || {}; }catch(e){}
+function saveSeen(){ try{ localStorage.setItem("jt_chat_seen", JSON.stringify(CHAT_SEEN)); }catch(e){} }
+const ROLE_L = {pembeli:"Pembeli", toko:"Toko", driver:"Driver"};
+const CHAT = {
+  async list(oid, after){
+    if(SB){ const r = await sbStore.rpc("jt_chat_list", {p_order:oid, p_after:after||0}); return r.msgs || []; }
+    return S.chatMsgs.filter(m => m.orderId === oid && m.id > (after||0)).sort((a,b) => a.id - b.id);
+  },
+  async send(oid, role, name, body){
+    if(SB) return sbStore.rpc("jt_chat_send", {p_order:oid, p_role:role, p_name:name, p_body:body});
+    const id = Date.now();
+    await store.set("chatmsgs/m" + id + Math.random().toString(36).slice(2,5), {orderId:oid, id, role, name, body:String(body).slice(0,500), at:id});
+  },
+  async counts(){
+    if(SB) return await sbStore.rpc("jt_chat_counts", {}) || {};
+    const out = {};
+    S.chatMsgs.forEach(m => { const c = out[m.orderId] || (out[m.orderId] = {n:0, last:0}); c.n++; if(m.id > c.last){ c.last = m.id; c.role = m.role; c.body = m.body; } });
+    return out;
+  }
+};
+function myChatRole(){ return S.role === "seller" ? "toko" : S.role === "driver" ? "driver" : "pembeli"; }
+function chatUnread(oid, role){
+  const c = S.chatCounts[oid]; role = role || myChatRole();
+  return !!(c && c.last > (CHAT_SEEN[oid] || 0) && c.role !== role);
+}
+function chatBtn(o, role, label, cls){
+  const un = chatUnread(o.id, role);
+  return '<button class="btn '+(cls||"sm")+' press chatbtn'+(un?' unread':'')+'" data-act="open-chat" data-id="'+esc(o.id)+'" data-role="'+role+'">'+I("chat")+' '+esc(label||"Chat")+(un?'<span class="cdot"></span>':'')+'</button>';
+}
+/* notifikasi pesan baru saat chat tidak dibuka */
+let chatTimer = null, chatFirst = true;
+async function chatPoll(){
+  if(document.hidden) return;
+  const role = myChatRole();
+  const relevant = S.role === "driver" ? (S.drv.mine||[]).length : S.role === "owner" ? 0 : S.orders.length;
+  if(!relevant) return;
+  try{
+    const c = await CHAT.counts();
+    const prev = S.chatCounts; S.chatCounts = c || {};
+    if(!chatFirst){
+      Object.entries(S.chatCounts).forEach(([oid, x]) => {
+        const old = prev[oid];
+        if(x.role !== role && (!old || x.last > old.last) && chatOpen.oid !== oid){ try{ ding(); }catch(_){} toast("💬 " + (ROLE_L[x.role]||"") + ": " + (x.body||"pesan baru")); }
+      });
+    }
+    chatFirst = false;
+    if(JSON.stringify(prev) !== JSON.stringify(S.chatCounts) && !typing()) scheduleRender();
+  }catch(e){}
+}
+function startChatPoll(){ if(chatTimer) return; chatPoll(); chatTimer = setInterval(chatPoll, 8000); }
+
+/* ---------- jendela chat ---------- */
+const chatOpen = {oid:null, role:null, msgs:[], last:0, timer:null};
+function chatOrder(oid){ return S.orders.find(o => o.id === oid) || (S.drv.mine||[]).find(o => o.id === oid) || null; }
+function chatQuick(o, role){
+  const est = o ? rp(ongkirEstOf(o)) : "";
+  if(role === "driver") return ["Saya menuju toko", "Pesanan sudah saya ambil, otw ke lokasi", "Saya sudah di depan", "Ongkirnya "+est+" ya, bisa?", "Alamatnya sesuai titik di peta?"];
+  if(role === "toko") return ["Pesanan sedang disiapkan", "Pesanan sudah siap diambil", "Maaf, ada barang yang habis", "Terima kasih sudah belanja!"];
+  return ["Pesanan saya sudah diproses?", "Saya tunggu di rumah ya", "Tolong kabari kalau sudah dekat", "Ongkirnya bisa "+est+"?"];
+}
+function chatName(o, role){
+  if(role === "driver") return (S.drv.me && S.drv.me.name) || "Driver";
+  if(role === "toko") return (o && o.storeName) || "Toko";
+  return (o && o.buyer && o.buyer.name) || getProf().name || "Pembeli";
+}
+function renderChatMsgs(){
+  const box = document.getElementById("chatList"); if(!box) return;
+  const near = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+  box.innerHTML = chatOpen.msgs.length ? chatOpen.msgs.map(m => {
+    const mine = m.role === chatOpen.role;
+    return '<div class="cm '+(mine?"me":"them")+' r-'+esc(m.role)+'">'+(mine?'':'<small>'+esc(ROLE_L[m.role]||m.role)+(m.name?' · '+esc(m.name):'')+'</small>')+'<div class="bub">'+esc(m.body)+'</div><time>'+new Date(m.at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+'</time></div>';
+  }).join("") : '<div class="cempty">'+E("bell")+'<b>Belum ada pesan</b><small>Chat ini terlihat oleh pembeli, toko, dan driver pesanan ini.</small></div>';
+  if(near || chatOpen.first){ box.scrollTop = box.scrollHeight; chatOpen.first = false; }
+}
+async function chatLoad(){
+  if(!chatOpen.oid) return;
+  try{
+    const add = await CHAT.list(chatOpen.oid, chatOpen.last);
+    if(add.length){
+      const ids = new Set(chatOpen.msgs.map(m => m.id));
+      add.forEach(m => { if(!ids.has(m.id)) chatOpen.msgs.push(m); });
+      chatOpen.last = Math.max(chatOpen.last, ...add.map(m => m.id));
+      CHAT_SEEN[chatOpen.oid] = chatOpen.last; saveSeen();
+      renderChatMsgs();
+    } else if(chatOpen.first) renderChatMsgs();
+  }catch(e){ const box = document.getElementById("chatList"); if(box && !chatOpen.msgs.length) box.innerHTML = '<div class="cempty"><small>'+esc(String(e.message||"Chat belum bisa dimuat").replace(/^.*?:\s*/,""))+'</small></div>'; }
+}
+function openChat(oid, role){
+  const o = chatOrder(oid);
+  chatOpen.oid = oid; chatOpen.role = role; chatOpen.msgs = []; chatOpen.last = 0; chatOpen.first = true;
+  const who = [];
+  if(o){ who.push("Toko " + (o.storeName||"")); if(o.driver && o.driver.name) who.push("Driver " + o.driver.name); if(o.buyer && o.buyer.name && role !== "driver") who.push("Pembeli " + o.buyer.name); else if(o.buyer && o.buyer.name) who.push("Pembeli " + o.buyer.name); }
+  const wa = !o ? "" : role === "pembeli" ? (o.driver && o.driver.wa ? o.driver.wa : o.storeWa) : role === "toko" ? (o.driver && o.driver.wa ? o.driver.wa : o.buyer && o.buyer.wa) : (o.status === "driver_ke_toko" ? o.storeWa : o.buyer && o.buyer.wa);
+  document.getElementById("modal").innerHTML = '<div class="modal-bg chatbg" data-act="modal-bg"><div class="modal chatwin" role="dialog" aria-label="Chat pesanan">'+
+    '<div class="chead"><button class="ibtn" data-act="close-chat" aria-label="Tutup">'+I("back")+'</button><div class="grow"><b>Chat pesanan '+esc(o ? o.code : "")+'</b><small>'+esc(who.join(" · "))+'</small></div>'+
+      (wa ? '<a class="ibtn" target="_blank" rel="noopener" href="'+esc(waLink(wa))+'" aria-label="WhatsApp">'+I("phone")+'</a>' : '')+'</div>'+
+    '<div class="clist" id="chatList"><div class="empty">'+I("loader")+'</div></div>'+
+    '<div class="cquick">'+chatQuick(o, role).map(q => '<button type="button" data-act="chat-quick" data-v="'+esc(q)+'">'+esc(q)+'</button>').join("")+'</div>'+
+    '<form class="cform" id="chatForm"><input class="in" name="body" maxlength="500" autocomplete="off" placeholder="Tulis pesan…"><button class="btn press" aria-label="Kirim">'+I("send")+'</button></form></div></div>';
+  chatLoad();
+  clearInterval(chatOpen.timer); chatOpen.timer = setInterval(() => { if(!document.getElementById("chatList")){ clearInterval(chatOpen.timer); chatOpen.oid = null; return; } if(!document.hidden) chatLoad(); }, 3000);
+}
+async function chatSend(body){
+  body = String(body||"").trim(); if(!body || !chatOpen.oid) return;
+  const o = chatOrder(chatOpen.oid);
+  try{ await CHAT.send(chatOpen.oid, chatOpen.role, chatName(o, chatOpen.role), body); await chatLoad(); chatPoll(); }
+  catch(e){ toast(String(e.message||"Gagal mengirim").replace(/^.*?:\s*/,"")); }
+}
+ICONS.send = '<path d="M14.5 21.5 22 2 2.5 9.5l8 3.5z"/><path d="m22 2-11.5 10.5"/>';
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const a = el.dataset.act;
+  if(a === "open-chat"){ e.stopPropagation(); openChat(el.dataset.id, el.dataset.role); return; }
+  if(a === "close-chat"){ clearInterval(chatOpen.timer); chatOpen.oid = null; closeModal(); scheduleRender(); return; }
+  if(a === "chat-quick"){ chatSend(el.dataset.v); return; }
+}, true);
+document.addEventListener("submit", e => {
+  if(e.target.id !== "chatForm") return;
+  e.preventDefault();
+  const inp = e.target.querySelector("input"); const v = inp.value; inp.value = ""; inp.focus();
+  chatSend(v);
+});
+
 /* ============ Mulai ============ */
 function startListening(){
   const slowT = setTimeout(() => { S.slow = true; render(); }, 10000);
@@ -3166,6 +3321,7 @@ function startListening(){
     else if(rows && rows.length) S.ready.stores = true;
     render();
   });
+  if(!SB) store.listen("chatmsgs", rows => { if(rows) S.chatMsgs = rows; });
   if(!SB) store.listen("drivers", rows => { if(rows) S.drivers = rows; if(S.role === "driver") drvRefresh(); });
   store.listen("orders", (rows, fromCache) => {
     const sig = rows ? JSON.stringify(rows) : null;
@@ -3181,7 +3337,7 @@ function startListening(){
   if(SB){
     S.mode = "supabase";
     try{ ME = localStorage.getItem("jt_uid") || ""; if(!ME){ ME = uid("u"); localStorage.setItem("jt_uid", ME); } }catch(e){ ME = uid("u"); }
-    refreshMyStores(); startListening(); if(S.role === "driver") startDriver(); if(S.role === "owner") startOwner(); render(); return;
+    refreshMyStores(); startListening(); if(S.role === "driver") startDriver(); if(S.role === "owner") startOwner(); startChatPoll(); render(); return;
   }
   try{
     if(window.claude && typeof window.claude.use === "function"){
@@ -3199,6 +3355,7 @@ function startListening(){
   startListening();
   if(S.role === "driver") startDriver();
   if(S.role === "owner") startOwner();
+  startChatPoll();
   render();
 })();
 render();
