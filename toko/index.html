@@ -1273,7 +1273,44 @@ function watchProducts(storeId){
 
 const PREVIEW_BANNER = () => S.mode === "db" ? '<div class="notice" style="background:#fff1f0;border-color:#ffc9c4;color:#a1281c;font-weight:600">⚠️ Ini halaman <b>PRATINJAU desain</b>. Toko & pesanan di sini <b>tidak tampil</b> di aplikasi asli. Daftar & belanja di <a href="https://jagapatner.my.id/toko/" target="_blank" rel="noopener" style="color:#a1281c">jagapatner.my.id/toko</a></div>' : '';
 /* ============ Render ============ */
-function render(){
+/* simpan isian formulir agar tidak hilang saat data diperbarui otomatis */
+function viewSig(){ return [S.role, S.view, S.storeId, S.prodId, S.orderId, S.sellerTab, S.sellerStoreId, S.drv && S.drv.editing].join("|"); }
+function snapForms(){
+  const app = document.getElementById("app"); if(!app) return null;
+  const forms = [...app.querySelectorAll("form[id]")]; if(!forms.length) return null;
+  const ae = document.activeElement;
+  const snap = {sig: app.dataset.sig, forms: {}, focus: null};
+  forms.forEach(f => {
+    const vals = {};
+    [...f.elements].forEach((el, i) => {
+      if(!el.name || el.type === "file" || el.type === "submit" || el.tagName === "BUTTON") return;
+      const k = el.name + (el.type === "radio" ? "=" + el.value : "");
+      vals[k] = (el.type === "checkbox" || el.type === "radio") ? el.checked : el.value;
+      if(el === ae){ snap.focus = {form:f.id, name:k}; try{ snap.focus.s = el.selectionStart; snap.focus.e = el.selectionEnd; }catch(_){} }
+    });
+    snap.forms[f.id] = vals;
+  });
+  return snap;
+}
+function restoreForms(snap){
+  const app = document.getElementById("app"); if(!app) return;
+  const sig = viewSig();
+  if(snap && snap.sig === sig){
+    Object.entries(snap.forms).forEach(([id, vals]) => {
+      const f = document.getElementById(id); if(!f || f.tagName !== "FORM") return;
+      [...f.elements].forEach(el => {
+        if(!el.name || el.type === "file" || el.tagName === "BUTTON") return;
+        const k = el.name + (el.type === "radio" ? "=" + el.value : "");
+        if(!(k in vals)) return;
+        if(el.type === "checkbox" || el.type === "radio") el.checked = vals[k]; else if(el.value !== vals[k]) el.value = vals[k];
+        if(snap.focus && snap.focus.form === id && snap.focus.name === k){ try{ el.focus({preventScroll:true}); if(snap.focus.s != null) el.setSelectionRange(snap.focus.s, snap.focus.e); }catch(_){} }
+      });
+    });
+  }
+  app.dataset.sig = sig;
+}
+function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); }
+function renderInner(){
   renderNav();
   const app = document.getElementById("app");
   const v = S.view;
@@ -2761,9 +2798,11 @@ function startListening(){
   });
   if(!SB) store.listen("drivers", rows => { if(rows) S.drivers = rows; if(S.role === "driver") drvRefresh(); });
   store.listen("orders", (rows, fromCache) => {
-    if(rows) S.orders = rows;
+    const sig = rows ? JSON.stringify(rows) : null;
+    const same = sig !== null && sig === S._ordSig && S.ready.orders;
+    if(rows){ S.orders = rows; S._ordSig = sig; }
     if(!fromCache || (rows && rows.length)) S.ready.orders = true;
-    render();
+    if(!same) render();
   });
 }
 (async function init(){
