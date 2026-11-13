@@ -935,6 +935,9 @@ body.is-driver .notice{margin:10px 16px}
 
 .updbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:200;border:0;border-radius:99px;padding:10px 16px;background:#0b1a3d;color:#fff;font-weight:700;font-size:13px;box-shadow:0 10px 30px -8px rgba(0,0,0,.5);cursor:pointer;width:max-content;max-width:92vw}
 .slogin{max-width:460px;margin:12px auto 6px}
+body.is-driver .slogin{margin:12px 14px 20px}
+@media(min-width:500px){body.is-driver .slogin{margin:12px auto 20px}}
+.dhero>.e3d{width:76px;height:76px}
 .sl-head{display:flex;gap:12px;align-items:center;margin-bottom:6px}
 .sl-head .e3d{width:44px;height:44px}
 .sl-head h2{margin:0;font-size:20px;letter-spacing:-.02em}
@@ -942,6 +945,62 @@ body.is-driver .notice{margin:10px 16px}
 .pwrap{position:relative}
 .pwrap .in{padding-right:48px}
 .pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:20px;color:#6a7894;padding:8px;cursor:pointer}
+.otop{background:linear-gradient(120deg,#1a1033,#2d2370 55%,#18337a)}
+.otabs{display:flex;gap:4px;overflow-x:auto;padding:10px 12px 0;scrollbar-width:none;position:sticky;top:calc(64px + env(safe-area-inset-top));z-index:15;background:#f3f6fc}
+.otabs button{flex-shrink:0;border:0;background:none;padding:10px 11px;font-weight:700;font-size:14px;color:#6a7894;border-bottom:3px solid transparent;cursor:pointer}
+.otabs button.on{color:#1f4fd1;border-color:#2f6bff}
+.owrap{max-width:980px;margin:0 auto;padding:12px 12px 40px}
+.owrap>.card{margin-bottom:12px}
+.oranges{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 12px}
+.okpi{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+@media(min-width:760px){.okpi{grid-template-columns:repeat(4,1fr)}}
+.okpi .k{background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 8px 20px -18px rgba(10,22,51,.5)}
+.okpi .k small{display:block;color:#6a7894;font-size:12px;line-height:1.3}
+.okpi .k b{display:block;font-size:19px;letter-spacing:-.02em;margin-top:4px}
+.okpi .k b em{font-style:normal;color:#9aa6bd;font-size:14px}
+.okpi .k span{display:block;color:#7a869e;font-size:11.5px;margin-top:2px}
+.okpi .k.main{grid-column:1/-1;background:linear-gradient(130deg,#1f4fd1,#5a8cff);color:#fff}
+.okpi .k.main small,.okpi .k.main span{color:#dbe6ff}
+.okpi .k.main b{font-size:28px}
+.oflow .fl{display:flex;align-items:center;gap:6px}
+.oflow .fl>div{flex:1;background:#f5f8fe;border-radius:14px;padding:10px;text-align:center;min-width:0}
+.oflow .fl>i{font-style:normal;color:#9aa6bd;font-weight:800}
+.oflow .e3d{width:28px;height:28px}
+.oflow small{display:block;color:#6a7894;font-size:11px;margin-top:2px}
+.oflow b{display:block;font-size:13.5px;overflow-wrap:anywhere}
+.oflow .fl2{display:flex;gap:10px;align-items:center;margin-top:10px;background:linear-gradient(150deg,#eef4ff,#e3ecff);border-radius:14px;padding:10px 12px;text-align:left}
+.oflow .fl2 b{font-size:17px;color:#1f4fd1}
+.obars{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:6px}
+.ob{flex:1;display:flex;flex-direction:column;align-items:center;height:100%}
+.ob .col{flex:1;width:100%;position:relative;display:flex;align-items:flex-end;justify-content:center}
+.ob .col i{position:absolute;bottom:0;left:15%;right:15%;background:linear-gradient(180deg,#8fb2ff,#2f6bff);border-radius:6px 6px 2px 2px;min-height:2px}
+.ob .col b{position:absolute;bottom:0;left:30%;right:30%;background:#b08d4f;border-radius:4px 4px 1px 1px;min-height:0}
+.ob small{font-size:10px;color:#7a869e;margin-top:4px}
+.olegend{display:flex;gap:14px;font-size:12px;color:#6a7894;margin-top:8px}
+.olegend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.olegend .g{background:#2f6bff}.olegend .s{background:#b08d4f}
+.orow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eef1f6}
+.orow:last-child{border-bottom:0}
+.orow small{display:block;color:#6a7894;font-size:12px;margin-top:2px}
+.orow .r{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.orow.stuck{background:#fff8ec;margin:0 -10px;padding:10px;border-radius:12px}
+.warnc{color:#b45309}
+.ofeed .fe{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f0f2f7;font-size:13.5px}
+.ofeed .fe:last-child{border-bottom:0}
+.ofeed .e3d{width:24px;height:24px;flex-shrink:0}
+.ofeed small{display:block;color:#7a869e;font-size:11.5px}
+.ostores{display:grid;gap:10px}
+@media(min-width:760px){.ostores{grid-template-columns:1fr 1fr}}
+.ost{padding:14px}
+.ost.off{opacity:.65}
+.ost .oh{display:flex;gap:10px;align-items:flex-start}
+.ost .oh b{font-size:16px}
+.ost small{display:block;color:#6a7894;font-size:12px}
+.ost .om{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;background:#f5f8fe;border-radius:12px;padding:10px}
+.ost .om small{font-size:11px}
+.ost .om b{font-size:14px}
+.obill{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:13px;flex-wrap:wrap}
+body.is-owner .dtop{z-index:20}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1006,9 +1065,9 @@ S.slide = 0; S.prodId = null;
 const APP_URL = /claude|anthropic|usercontent|sandbox/i.test(location.hostname) ? "https://claude.ai/artifact/VyNRPTbnBxQvw5BAKSvwq8" : (location.href || "").split("#")[0];
 const MITRA_URL = APP_URL + "#mitra";
 const CONTACT = {wa:"0882005837975", email:"", office:""};
-function modeFromHash(){ let hsh = ""; try{ hsh = location.hash; }catch(e){} return hsh === "#mitra" ? "seller" : hsh === "#driver" ? "driver" : "buyer"; }
+function modeFromHash(){ let hsh = ""; try{ hsh = location.hash; }catch(e){} return hsh === "#mitra" ? "seller" : hsh === "#driver" ? "driver" : hsh === "#owner" ? "owner" : "buyer"; }
 S.role = modeFromHash();
-S.view = S.role === "seller" ? "seller" : S.role === "driver" ? "driver" : "home";
+S.view = S.role === "seller" ? "seller" : S.role === "driver" ? "driver" : S.role === "owner" ? "owner" : "home";
 if(S.role === "buyer"){ try{ if(!localStorage.getItem("jt_onb")) S.view = "login"; }catch(e){} }
 S.sellerTab = "ringkasan";
 let DB = null;
@@ -1240,7 +1299,7 @@ function renderNav(){
 function go(v, extra, opts){
   opts = opts || {};
   if(S.role !== "seller"){
-    const roots = ["home","fav","cart","orders","profile","login","driver"];
+    const roots = ["home","fav","cart","orders","profile","login","driver","owner"];
     if(!opts.back){
       if(roots.includes(v)) S.hist = [];
       else if(S.view !== "login" && !(S.view === v && v !== "product")) S.hist.push({view:S.view, storeId:S.storeId, prodId:S.prodId, orderId:S.orderId});
@@ -1329,10 +1388,12 @@ function renderInner(){
   document.body.className = document.body.className.replace(/\bv-[a-z]+\b/g, "").trim() + " v-" + v;
   if(buyer){
     const key = [v, S.cat, S.storeId, S.prodId, S.orderId].join("|"); RISE = key !== _lastKey; _lastKey = key;
-    if(S.role !== "driver") html += PREVIEW_BANNER();
-    if(S.mode === "local" && v !== "login" && S.role !== "driver") html += '<div class="notice">Mode demo: data hanya tersimpan di perangkat ini sampai database dihubungkan.</div>';
-    document.body.classList.toggle("is-driver", S.role === "driver");
+    if(S.role !== "driver" && S.role !== "owner") html += PREVIEW_BANNER();
+    if(S.mode === "local" && v !== "login" && S.role !== "driver" && S.role !== "owner") html += '<div class="notice">Mode demo: data hanya tersimpan di perangkat ini sampai database dihubungkan.</div>';
+    document.body.classList.toggle("is-driver", S.role === "driver" || S.role === "owner");
+    document.body.classList.toggle("is-owner", S.role === "owner");
     if(S.role === "driver") html += appDriver();
+    else if(S.role === "owner") html += appOwner();
     else if(v === "login") html += appLogin();
     else if(v === "store") html += appStore();
     else if(v === "product") html += appProduct();
@@ -2038,7 +2099,7 @@ function setSlide(i){
 }
 setInterval(() => { if(S.view === "home" && !document.hidden && document.getElementById("slides")) setSlide(S.slide + 1); }, 5000);
 
-window.addEventListener("hashchange", () => { const r = modeFromHash(); if(r !== S.role){ S.role = r; if(r === "driver") startDriver(); go(r === "seller" ? "seller" : r === "driver" ? "driver" : "home", r === "seller" ? {sellerTab:"ringkasan"} : {}); } });
+window.addEventListener("hashchange", () => { const r = modeFromHash(); if(r !== S.role){ S.role = r; if(r === "driver") startDriver(); if(r === "owner") startOwner(); go(r === "seller" ? "seller" : r === "driver" ? "driver" : r === "owner" ? "owner" : "home", r === "seller" ? {sellerTab:"ringkasan"} : {}); } });
 
 
 /* ================= JAGA TOKO — MODE APLIKASI (pembeli) ================= */
@@ -2090,7 +2151,7 @@ const NAV_APP = [
   {v:"orders", l:"Pesanan", ic:"receipt"}, {v:"profile", l:"Profil", ic:"user"}
 ];
 function renderAppNav(){
-  if(S.role === "driver"){ document.getElementById("bnav").style.display = "none"; document.getElementById("bnav").innerHTML = ""; return; }
+  if(S.role === "driver" || S.role === "owner"){ document.getElementById("bnav").style.display = "none"; document.getElementById("bnav").innerHTML = ""; return; }
   const on = {home:"home", store:"home", product:"home", fav:"fav", cart:"cart", checkout:"cart", orders:"orders", order:"orders", profile:"profile"}[S.view];
   const badge = v => { const c = v==="cart" ? cartCount() : v==="orders" ? myActiveOrders() : 0; return c ? '<span class="badge">'+c+'</span>' : ''; };
   const bn = document.getElementById("bnav");
@@ -2279,7 +2340,7 @@ function appProfile(){
       (!isStandalone() ? '<button data-act="install"><img class="e3d" src="icons/icon-192.png" alt="" style="border-radius:8px"><div class="grow">Pasang aplikasi di HP<small>Buka Jaga Toko langsung dari layar utama</small></div><span class="chev">'+I("chev")+'</span></button>' : '')+
       '<a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa,"Halo Jaga Toko, saya butuh bantuan."))+'">'+E("bell")+'<div class="grow">Bantuan<small>WhatsApp '+esc(CONTACT.wa)+'</small></div><span class="chev">'+I("chev")+'</span></a>'+
       (p.name?'<button data-act="logout">'+I("logout")+'<div class="grow">Keluar</div></button>':'<button data-act="nav" data-v="login">'+E("check")+'<div class="grow">Masuk<small>Simpan nama & alamat untuk checkout cepat</small></div><span class="chev">'+I("chev")+'</span></button>')+
-    '</div><div class="small muted" style="text-align:center;margin:8px 0 20px">Jaga Toko · versi 1.0</div>';
+    '</div><div class="small muted" style="text-align:center;margin:8px 0 20px;user-select:none" data-act="ver-tap">Jaga Toko · versi 1.0</div>';
 }
 function appLogin(){
   const p = getProf();
@@ -2892,6 +2953,210 @@ document.addEventListener("submit", async e => {
   }
 });
 
+/* ============ Portal Owner (pemilik aplikasi) ============ */
+S.own = {loaded:false, authed:false, data:null, tab:"ringkasan", range:"bulan", err:"", sig:""};
+let ownTimer = null;
+async function ownRefresh(){
+  try{
+    if(SB){
+      const { data, error } = await SB.rpc("jt_owner_data", {p_key: KEY});
+      if(error) throw sbErr(error);
+      S.own.authed = !!(data && data.ok); S.own.data = S.own.authed ? data : null;
+    } else {
+      S.own.authed = true; S.own.data = {ok:true, now:Date.now(), stores:S.stores.map(s => Object.assign({}, s, {products:(S.products[s.id]||[]).length})), orders:S.orders.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), drivers:S.drivers};
+    }
+    S.own.err = "";
+  }catch(e){ S.own.err = (e && e.message) || "Gagal memuat"; }
+  S.own.loaded = true;
+  const sig = JSON.stringify([S.own.authed, S.own.data, S.own.err]);
+  if(S.role === "owner" && sig !== S.own.sig && !typing()){ S.own.sig = sig; scheduleRender(); }
+}
+function startOwner(){
+  if(ownTimer) return;
+  ownRefresh();
+  ownTimer = setInterval(() => { if(!document.hidden && S.role === "owner") ownRefresh(); }, 15000);
+}
+const dayKey = t => { const d = new Date(t); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
+function rangeStart(r){
+  const d = new Date(); d.setHours(0,0,0,0);
+  if(r === "hari") return d.getTime();
+  if(r === "7hari") return d.getTime() - 6*864e5;
+  if(r === "bulan"){ d.setDate(1); return d.getTime(); }
+  return 0;
+}
+const doneT = o => o.doneAt || o.updatedAt || o.createdAt || 0;
+const shareVal = o => typeof o.share === "number" ? o.share : Math.round((o.total||0) * BAGI_HASIL);
+function ownStats(D, from){
+  const orders = D.orders || [];
+  const created = orders.filter(o => (o.createdAt||0) >= from);
+  const done = orders.filter(o => o.status === "selesai" && doneT(o) >= from);
+  const cancel = created.filter(o => o.status === "dibatalkan");
+  const sum = (arr, f) => arr.reduce((a, o) => a + (f(o) || 0), 0);
+  return {
+    created, done, cancel,
+    gmv: sum(done, o => o.total), share: sum(done, shareVal), ongkir: sum(done, o => o.ongkirFinal),
+    buyers: new Set(created.map(o => (o.buyer && o.buyer.wa || "").replace(/\D/g, "")).filter(Boolean)).size,
+    active: orders.filter(o => !["selesai","dibatalkan"].includes(o.status))
+  };
+}
+function ago(t){ const m = Math.max(0, Math.round((Date.now() - t) / 60000)); return m < 1 ? "baru saja" : m < 60 ? m + " mnt lalu" : m < 1440 ? Math.round(m/60) + " jam lalu" : Math.round(m/1440) + " hari lalu"; }
+function ownLogin(){
+  return '<section class="dhero" style="padding-top:26px">'+E("money")+'<h1>Portal Owner</h1><p>Pantau seluruh aplikasi Jaga Toko.</p></section>'+
+    '<form class="card pad slogin" id="ownerLogin"><label class="f">Login owner</label><input class="in" name="login" autocapitalize="none" autocomplete="username" required>'+
+    '<label class="f">Password</label><div class="pwrap"><input class="in" type="password" name="pass" autocomplete="current-password" required><button type="button" class="pw-eye" data-act="pw-toggle" aria-label="Lihat password">'+I("eye")+'</button></div>'+
+    '<button class="btn block press" style="margin-top:14px">Masuk</button><div class="hint" style="text-align:center">Halaman ini khusus pemilik aplikasi.</div></form>';
+}
+function bars(days){
+  const max = Math.max(1, ...days.map(d => d.gmv));
+  return '<div class="obars">'+days.map(d => '<div class="ob" title="'+esc(d.label+': '+rp(d.gmv)+' · bagi hasil '+rp(d.share))+'"><div class="col"><i style="height:'+Math.round(d.gmv/max*100)+'%"></i><b style="height:'+Math.round(d.share/max*100)+'%"></b></div><small>'+esc(d.short)+'</small></div>').join("")+'</div>'+
+    '<div class="olegend"><span><i class="g"></i>Penjualan selesai</span><span><i class="s"></i>Bagi hasil 3%</span></div>';
+}
+function ownFeed(orders){
+  const ev = [];
+  orders.slice(0, 200).forEach(o => {
+    const who = esc(o.storeName || "Toko");
+    ev.push({t:o.createdAt, ic:"cart", h:'<b>Pesanan baru</b> '+esc(o.code)+' di '+who+' · '+rp(o.total)});
+    if(o.acceptedAt && o.driver) ev.push({t:o.acceptedAt, ic:"scooter", h:'<b>'+esc(o.driver.name)+'</b> mengambil '+esc(o.code)});
+    if(o.pickedAt) ev.push({t:o.pickedAt, ic:"package", h:esc(o.code)+' diambil dari '+who+', sedang diantar'});
+    if(o.status === "selesai") ev.push({t:doneT(o), ic:"check", h:'<b>Selesai</b> '+esc(o.code)+' · '+rp(o.total)+(typeof o.ongkirFinal==="number"?' · ongkir '+rp(o.ongkirFinal):'')+' · bagi hasil '+rp(shareVal(o))});
+    if(o.status === "dibatalkan") ev.push({t:o.updatedAt||o.createdAt, ic:"bell", h:'<b>Dibatalkan</b> '+esc(o.code)+(o.cancelBy?' oleh '+esc(o.cancelBy):'')});
+  });
+  ev.sort((a, b) => (b.t||0) - (a.t||0));
+  if(!ev.length) return '<div class="muted small">Belum ada aktivitas.</div>';
+  return '<div class="ofeed">'+ev.slice(0, 25).map(e => '<div class="fe">'+E(e.ic)+'<div class="grow">'+e.h+'<small>'+fmtDate(e.t)+' · '+ago(e.t)+'</small></div></div>').join("")+'</div>';
+}
+function ownOrderRow(o){
+  const age = Date.now() - (o.status === "mencari_driver" ? (o.searchAt||o.updatedAt||o.createdAt) : (o.updatedAt||o.createdAt));
+  const stuck = (o.status === "mencari_driver" && age > 5*60000) || (o.status === "menunggu_konfirmasi" && age > 15*60000) || (o.status === "driver_ke_toko" && age > 30*60000);
+  return '<div class="orow'+(stuck?' stuck':'')+'"><div class="grow"><b>'+esc(o.code)+'</b> · '+esc(o.storeName)+'<small>'+esc(o.buyer ? o.buyer.name : "")+' · '+esc(o.items ? o.items.map(i => i.qty+'× '+i.name).join(", ") : "")+'</small>'+
+    '<small>'+fmtDate(o.createdAt)+(o.driver?' · driver '+esc(o.driver.name):'')+(stuck?' · <b class="warnc">perlu dicek ('+ago(o.updatedAt||o.createdAt)+')</b>':'')+'</small></div>'+
+    '<div class="r">'+statusTag(o.status)+'<b>'+rp(o.total)+'</b>'+(o.buyer && o.buyer.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(o.buyer.wa, "Halo "+o.buyer.name+", ini dari Jaga Toko tentang pesanan "+o.code+"."))+'">WA pembeli</a>' : '')+'</div></div>';
+}
+function appOwner(){
+  let h = '<div class="dtop otop">'+JMARK()+'<div class="grow"><b>JAGA TOKO</b><small>Portal Owner</small></div>'+(S.own.authed ? '<button class="ibtn" data-act="own-refresh" aria-label="Muat ulang">'+I("repeat")+'</button>' : '')+'</div>';
+  if(!SB) h += '<div class="notice">Pratinjau: angka di bawah memakai data pratinjau. Di website asli portal ini dikunci dengan login owner.</div>';
+  if(!S.own.loaded) return h + '<div class="empty">'+I("loader")+' Memuat…</div>';
+  if(!S.own.authed) return h + (S.own.err ? '<div class="notice">'+esc(S.own.err)+'</div>' : '') + ownLogin();
+  const D = (SB ? S.own.data : null) || (SB ? {stores:[], orders:[], drivers:[]} : {stores:S.stores.map(s => Object.assign({}, s, {products:(S.products[s.id]||[]).length})), orders:S.orders.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), drivers:S.drivers});
+  const tabs = [["ringkasan","Ringkasan"],["pesanan","Pesanan"],["toko","Toko"],["driver","Driver"],["akun","Akun"]];
+  h += '<div class="otabs">'+tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+t[1]+'</button>').join("")+'</div>';
+  const ranges = [["hari","Hari ini"],["7hari","7 hari"],["bulan","Bulan ini"],["semua","Semua"]];
+  const rangeBar = '<div class="oranges">'+ranges.map(r => '<button class="chip '+(S.own.range===r[0]?"on":"")+'" data-act="own-range" data-v="'+r[0]+'">'+r[1]+'</button>').join("")+'</div>';
+  const st = ownStats(D, rangeStart(S.own.range));
+  const stores = D.stores || [], drivers = D.drivers || [];
+  const now = Date.now();
+  const onlineDrv = drivers.filter(d => d.online && (d.locAt||0) > now - 20*60000).length;
+  h += '<div class="owrap">';
+  if(S.own.tab === "ringkasan"){
+    h += rangeBar;
+    h += '<div class="okpi">'+
+      '<div class="k main"><small>Pendapatan Jaga Toko (bagi hasil 3%)</small><b>'+rp(st.share)+'</b><span>dari '+st.done.length+' pesanan selesai</span></div>'+
+      '<div class="k"><small>Penjualan selesai (masuk ke toko)</small><b>'+rp(st.gmv)+'</b></div>'+
+      '<div class="k"><small>Ongkir diterima driver</small><b>'+rp(st.ongkir)+'</b></div>'+
+      '<div class="k"><small>Pesanan dibuat</small><b>'+st.created.length+'</b><span>'+st.cancel.length+' batal'+(st.created.length?' ('+Math.round(st.cancel.length/st.created.length*100)+'%)':'')+'</span></div>'+
+      '<div class="k"><small>Pembeli unik</small><b>'+st.buyers+'</b></div>'+
+      '<div class="k"><small>Toko aktif</small><b>'+stores.filter(s => s.active !== false).length+'<em>/'+stores.length+'</em></b><span>'+stores.filter(s => s.active !== false && s.open !== false).length+' sedang buka</span></div>'+
+      '<div class="k"><small>Driver online</small><b>'+onlineDrv+'<em>/'+drivers.length+'</em></b></div>'+
+      '<div class="k"><small>Pesanan berjalan</small><b>'+st.active.length+'</b></div></div>';
+    h += '<div class="card pad oflow"><h3 class="sub">Arus uang '+esc(ranges.find(r => r[0]===S.own.range)[1].toLowerCase())+'</h3>'+
+      '<div class="fl"><div>'+E("cart")+'<small>Pembeli membayar</small><b>'+rp(st.gmv + st.ongkir)+'</b></div><i>→</i>'+
+      '<div>'+E("store")+'<small>Masuk ke toko</small><b>'+rp(st.gmv)+'</b></div><i>+</i>'+
+      '<div>'+E("scooter")+'<small>Masuk ke driver</small><b>'+rp(st.ongkir)+'</b></div></div>'+
+      '<div class="fl2">'+E("money")+'<div><small>Toko menyetor bagi hasil 3% ke Jaga Toko</small><b>'+rp(st.share)+'</b></div></div></div>';
+    const days = [];
+    for(let i = 13; i >= 0; i--){
+      const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i);
+      const k = dayKey(d), dn = (D.orders||[]).filter(o => o.status === "selesai" && dayKey(doneT(o)) === k);
+      days.push({label:d.toLocaleDateString("id-ID",{day:"numeric",month:"short"}), short:String(d.getDate()), gmv:dn.reduce((a,o)=>a+(o.total||0),0), share:dn.reduce((a,o)=>a+shareVal(o),0)});
+    }
+    h += '<div class="card pad"><h3 class="sub">Penjualan 14 hari terakhir</h3>'+bars(days)+'</div>';
+    const live = st.active.slice(0, 8);
+    h += '<div class="card pad"><h3 class="sub">Sedang berjalan <span class="small muted" style="font-weight:600">· diperbarui otomatis</span></h3>'+(live.length ? live.map(ownOrderRow).join("") : '<div class="muted small">Tidak ada pesanan yang sedang berjalan.</div>')+'</div>';
+    h += '<div class="card pad"><h3 class="sub">Aktivitas terbaru</h3>'+ownFeed(D.orders || [])+'</div>';
+  } else if(S.own.tab === "pesanan"){
+    const f = S.own.ofilter || "aktif";
+    const all = D.orders || [];
+    const groups = {aktif: all.filter(o => !["selesai","dibatalkan"].includes(o.status)), selesai: all.filter(o => o.status === "selesai"), batal: all.filter(o => o.status === "dibatalkan"), semua: all};
+    h += '<div class="oranges">'+[["aktif","Berjalan"],["selesai","Selesai"],["batal","Batal"],["semua","Semua"]].map(t => '<button class="chip '+(f===t[0]?"on":"")+'" data-act="own-ofilter" data-v="'+t[0]+'">'+t[1]+' ('+groups[t[0]].length+')</button>').join("")+'</div>';
+    const list = groups[f].slice(0, 100);
+    h += '<div class="card pad">'+(list.length ? list.map(ownOrderRow).join("") : '<div class="muted small">Belum ada pesanan.</div>')+'</div>';
+  } else if(S.own.tab === "toko"){
+    h += rangeBar;
+    const mStart = rangeStart("bulan");
+    const rows = stores.map(s => {
+      const os = (D.orders||[]).filter(o => o.storeId === s.id);
+      const dn = os.filter(o => o.status === "selesai" && doneT(o) >= rangeStart(S.own.range));
+      const billM = os.filter(o => o.status === "selesai" && doneT(o) >= mStart).reduce((a,o)=>a+shareVal(o),0);
+      return {s, n:os.filter(o => (o.createdAt||0) >= rangeStart(S.own.range)).length, gmv:dn.reduce((a,o)=>a+(o.total||0),0), share:dn.reduce((a,o)=>a+shareVal(o),0), billM, last:os[0] ? os[0].createdAt : 0};
+    }).sort((a, b) => b.gmv - a.gmv);
+    h += '<div class="ostores">'+(rows.length ? rows.map(r => {
+      const s = r.s, off = s.active === false;
+      const month = new Date().toLocaleDateString("id-ID",{month:"long",year:"numeric"});
+      return '<div class="card ost'+(off?' off':'')+'"><div class="oh"><div class="grow"><b>'+esc(s.name)+'</b><small>'+esc(s.category||"")+' · '+esc(s.area||"")+' · '+(s.products||0)+' produk'+(typeof s.lat==="number"?' · 📍':' · <span class="warnc">lokasi belum diatur</span>')+'</small>'+
+        '<small>'+(off?'<span class="warnc">Dinonaktifkan</span>':s.open===false?'Tutup':'Buka')+(s.hasLogin===false?' · belum ada login':'')+(r.last?' · pesanan terakhir '+ago(r.last):'')+'</small></div>'+
+        '<button class="btn ghost sm" data-act="own-store-active" data-id="'+esc(s.id)+'" data-v="'+(off?"1":"0")+'">'+(off?"Aktifkan":"Nonaktifkan")+'</button></div>'+
+        '<div class="om"><div><small>Pesanan</small><b>'+r.n+'</b></div><div><small>Penjualan</small><b>'+rp(r.gmv)+'</b></div><div><small>Bagi hasil</small><b>'+rp(r.share)+'</b></div></div>'+
+        '<div class="obill"><span>Tagihan bagi hasil '+esc(month)+': <b>'+rp(r.billM)+'</b></span>'+(s.wa && r.billM ? '<a class="btn sm" target="_blank" rel="noopener" href="'+esc(waLink(s.wa, "Halo "+s.name+", ini dari Jaga Toko. Bagi hasil 3% bulan "+month+" sebesar "+rp(r.billM)+". Terima kasih sudah berjualan di Jaga Toko!"))+'">'+I("chat")+' Tagih via WA</a>' : (s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", ini dari Jaga Toko."))+'">WA toko</a>' : ''))+'</div></div>';
+    }).join("") : '<div class="card pad muted small">Belum ada toko terdaftar.</div>')+'</div>';
+  } else if(S.own.tab === "driver"){
+    const ds = drivers.map(d => {
+      const mine = (D.orders||[]).filter(o => o.driverId === d.id);
+      const dn = mine.filter(o => o.status === "selesai");
+      const on = d.online && (d.locAt||0) > now - 20*60000;
+      return {d, on, trips:dn.length, ongkir:dn.reduce((a,o)=>a+(o.ongkirFinal||0),0), today:dn.filter(o => doneT(o) >= rangeStart("hari")).length, busy:mine.some(o => ["driver_ke_toko","diantar"].includes(o.status))};
+    }).sort((a, b) => (b.on - a.on) || (b.trips - a.trips));
+    h += '<div class="card pad">'+(ds.length ? ds.map(x => '<div class="orow"><div class="drv-av">'+esc(initials(x.d.name))+'</div><div class="grow"><b>'+esc(x.d.name)+'</b><small>'+esc([x.d.vehicle, x.d.plate, x.d.area].filter(Boolean).join(" · "))+'</small>'+
+      '<small>'+(x.on ? '<b style="color:#15803d">● Online</b>'+(x.busy?' · sedang mengantar':'') : '<span class="muted">○ Offline</span>')+(x.d.locAt ? ' · lokasi '+ago(x.d.locAt) : '')+'</small></div>'+
+      '<div class="r"><b>'+x.trips+' antar</b><small>'+rp(x.ongkir)+'</small><small>hari ini '+x.today+'</small>'+(x.d.wa?'<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(x.d.wa,"Halo "+x.d.name+", ini dari Jaga Toko."))+'">WA</a>':'')+'</div></div>').join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/toko/#driver ke calon driver.</div>')+'</div>';
+  } else {
+    h += '<div class="card pad"><h3 class="sub">Link penting</h3>'+
+      [["Aplikasi pembeli",APP_URL],["Portal toko",APP_URL+"#mitra"],["Portal driver",APP_URL+"#driver"]].map(l => '<div class="orow"><div class="grow"><b>'+l[0]+'</b><small>'+esc(l[1])+'</small></div><button class="btn ghost sm" data-act="copy" data-v="'+esc(l[1])+'">Salin</button></div>').join("")+'</div>';
+    if(SB) h += '<form class="card pad" id="ownerPass"><h3 class="sub">Ganti password owner</h3><label class="f">Password baru (min. 8 karakter)</label><input class="in" type="password" name="pass" minlength="8" required autocomplete="new-password"><div class="hint">Setelah diganti, perangkat lain yang login owner otomatis keluar.</div><button class="btn sm" style="margin-top:10px">Simpan password</button></form>'+
+      '<div class="card pad"><button class="btn danger sm" data-act="own-logout">Keluar dari portal owner</button></div>';
+  }
+  return h + '</div>';
+}
+document.addEventListener("click", async e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const a = el.dataset.act, v = el.dataset.v;
+  if(a === "ver-tap"){ S._vt = (S._vtT && Date.now() - S._vtT < 1500 ? (S._vt||0) : 0) + 1; S._vtT = Date.now(); if(S._vt >= 5){ S._vt = 0; location.hash = "owner"; } return; }
+  if(a === "own-tab"){ S.own.tab = v; render(); window.scrollTo(0,0); return; }
+  if(a === "own-range"){ S.own.range = v; render(); return; }
+  if(a === "own-ofilter"){ S.own.ofilter = v; render(); return; }
+  if(a === "own-refresh"){ S.own.sig = ""; await ownRefresh(); toast("Data diperbarui"); return; }
+  if(a === "own-logout"){ confirmModal("Keluar dari portal owner di perangkat ini?", "Keluar", async () => { try{ await SB.rpc("jt_owner_logout", {p_key: KEY}); }catch(_){} S.own.sig = ""; await ownRefresh(); render(); }); return; }
+  if(a === "own-store-active"){
+    const id = el.dataset.id, on = v === "1";
+    confirmModal(on ? "Aktifkan kembali toko ini?" : "Nonaktifkan toko ini? Toko tidak akan tampil di aplikasi pembeli.", on ? "Aktifkan" : "Nonaktifkan", async () => {
+      try{
+        if(SB){ const { error } = await SB.rpc("jt_owner_store_active", {p_store:id, p_active:on, p_key:KEY}); if(error) throw sbErr(error); }
+        else await store.update("stores/"+id, {active:on});
+        toast(on ? "Toko diaktifkan" : "Toko dinonaktifkan");
+      }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/, "")); }
+      S.own.sig = ""; await ownRefresh(); render();
+    });
+  }
+});
+document.addEventListener("submit", async e => {
+  const f = e.target;
+  if(f.id === "ownerLogin"){
+    e.preventDefault();
+    const fd = new FormData(f), btn = f.querySelector("button.btn"); btn.disabled = true;
+    try{
+      const { data, error } = await SB.rpc("jt_owner_login", {p_login: fd.get("login"), p_pass: fd.get("pass"), p_key: KEY});
+      if(error) throw sbErr(error);
+      if(!data || !data.ok) throw new Error((data && data.error) || "Login atau password salah");
+      S.own.sig = ""; await ownRefresh(); render(); toast("Selamat datang, owner!");
+    }catch(err){ toast(String(err.message||"Gagal masuk").replace(/^.*?:\s*/, "")); btn.disabled = false; }
+  }
+  if(f.id === "ownerPass"){
+    e.preventDefault();
+    const p = new FormData(f).get("pass");
+    try{ const { error } = await SB.rpc("jt_owner_setpass", {p_pass:p, p_key:KEY}); if(error) throw sbErr(error); f.reset(); toast("Password owner diganti"); }
+    catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/, "")); }
+  }
+});
+
 /* ============ Mulai ============ */
 function startListening(){
   const slowT = setTimeout(() => { S.slow = true; render(); }, 10000);
@@ -2916,7 +3181,7 @@ function startListening(){
   if(SB){
     S.mode = "supabase";
     try{ ME = localStorage.getItem("jt_uid") || ""; if(!ME){ ME = uid("u"); localStorage.setItem("jt_uid", ME); } }catch(e){ ME = uid("u"); }
-    refreshMyStores(); startListening(); if(S.role === "driver") startDriver(); render(); return;
+    refreshMyStores(); startListening(); if(S.role === "driver") startDriver(); if(S.role === "owner") startOwner(); render(); return;
   }
   try{
     if(window.claude && typeof window.claude.use === "function"){
@@ -2933,6 +3198,7 @@ function startListening(){
   }
   startListening();
   if(S.role === "driver") startDriver();
+  if(S.role === "owner") startOwner();
   render();
 })();
 render();
