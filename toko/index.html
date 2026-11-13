@@ -32,7 +32,7 @@
   --r:22px; --shadow:0 1px 0 rgba(0,0,0,.03),0 12px 32px -12px rgba(15,20,18,.14);
 }
 *{box-sizing:border-box}
-html,body{overflow-x:hidden;margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
 body{background:radial-gradient(1400px 800px at 95% -25%,rgba(110,160,255,.26) 0%,rgba(110,160,255,.12) 35%,rgba(110,160,255,0) 70%),radial-gradient(1200px 800px at -15% -5%,rgba(130,205,255,.22) 0%,rgba(130,205,255,.08) 40%,rgba(130,205,255,0) 72%),linear-gradient(180deg,#f6f9fe 0%,#f2f5fb 100%);background-attachment:fixed}
 button,input,select,textarea{font:inherit;color:inherit}
 a{color:var(--ink)}
@@ -762,7 +762,8 @@ body.app .toast{top:auto;bottom:calc(150px + env(safe-area-inset-bottom))}
 html{-webkit-text-size-adjust:100%}
 *{-webkit-tap-highlight-color:transparent}
 button,a,label,select,[data-act]{touch-action:manipulation}
-body{overscroll-behavior-y:none}
+html,body{overflow-x:clip}
+body.app.has-mcart main{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
 .fieldset{min-width:0}
 .fieldset>*{max-width:100%}
 input[type=file]{max-width:100%}
@@ -1154,6 +1155,7 @@ function watchProducts(storeId){
   });
 }
 
+const PREVIEW_BANNER = () => S.mode === "db" ? '<div class="notice" style="background:#fff1f0;border-color:#ffc9c4;color:#a1281c;font-weight:600">⚠️ Ini halaman <b>PRATINJAU desain</b>. Toko & pesanan di sini <b>tidak tampil</b> di aplikasi asli. Daftar & belanja di <a href="https://jagapatner.my.id/toko/" target="_blank" rel="noopener" style="color:#a1281c">jagapatner.my.id/toko</a></div>' : '';
 /* ============ Render ============ */
 function render(){
   renderNav();
@@ -1165,6 +1167,7 @@ function render(){
   document.body.className = document.body.className.replace(/\bv-[a-z]+\b/g, "").trim() + " v-" + v;
   if(buyer){
     const key = [v, S.cat, S.storeId, S.prodId, S.orderId].join("|"); RISE = key !== _lastKey; _lastKey = key;
+    html += PREVIEW_BANNER();
     if(S.mode === "local" && v !== "login") html += '<div class="notice">Mode demo: data hanya tersimpan di perangkat ini sampai database dihubungkan.</div>';
     if(v === "login") html += appLogin();
     else if(v === "store") html += appStore();
@@ -1179,6 +1182,7 @@ function render(){
     renderCartBar();
     return;
   }
+  html += PREVIEW_BANNER();
   if(S.mode === "local") html += '<div class="notice">Mode demo: database belum dihubungkan, jadi data hanya tersimpan di browser ini. Isi <code>toko/config.js</code> (lihat README) agar toko & pesanan tampil untuk semua orang.</div>';
   if(S.slow && !(S.ready.stores)) html += '<div class="notice">Data belum bisa dimuat. Periksa koneksi Anda — halaman akan memperbarui sendiri.</div>';
   if(v==="welcome") html += viewWelcome();
@@ -1694,6 +1698,7 @@ async function placeOrder(form){
 }
 
 async function saveStore(form){
+  if(S.mode === "db" && !form.dataset.id){ toast("Pendaftaran toko hanya di jagapatner.my.id/toko/#mitra — ini halaman pratinjau."); return; }
   const fd = new FormData(form);
   const id = form.dataset.id;
   const old = id ? storeById(id) : null;
@@ -1901,7 +1906,9 @@ function renderAppNav(){
 function renderMiniCart(){
   const el = document.getElementById("cartbar");
   const n = cartCount();
-  if(!n || !["home","store","fav"].includes(S.view)){ el.innerHTML = ""; return; }
+  const show = n && ["home","store","fav"].includes(S.view);
+  document.body.classList.toggle("has-mcart", !!show);
+  if(!show){ el.innerHTML = ""; return; }
   const s = storeById(S.cart.storeId); const t = cartTotals();
   el.innerHTML = '<div class="mcart">'+E("cart")+'<div class="grow"><b>'+n+' barang · '+rp(t.total)+'</b><small>'+esc(s?s.name:"")+' · gratis ongkir</small></div><button class="btn lime press" data-act="nav" data-v="cart">Lihat</button></div>';
 }
