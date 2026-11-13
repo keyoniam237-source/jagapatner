@@ -823,6 +823,20 @@ body.app .v-wrap .opt{padding:14px}
 .installcard .btn{background:#fff;color:#1f4fd1;box-shadow:none;padding:9px 14px;min-height:0}
 .installcard .x{border:0;background:none;color:#fff;opacity:.6;font-size:20px;cursor:pointer;padding:4px}
 @media (display-mode: standalone){ .installcard{display:none!important} }
+
+.chatsheet{padding:20px 18px calc(18px + env(safe-area-inset-bottom))}
+.cs-head{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.cs-head .avatar{width:46px;height:46px;font-size:16px;border-radius:14px;box-shadow:none;border:1px solid #e8ecf3}
+.cs-head b{display:block;font-size:16px;letter-spacing:-.02em}
+.cs-head small{color:#7a869e;font-size:12.5px}
+.cs-head .x{border:0;background:#f1f4fa;width:36px;height:36px;border-radius:12px;font-size:20px;cursor:pointer;color:#45526b}
+.cs-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.cs-q{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:#f6f8fc;border:1px solid #e8ecf3;text-decoration:none;color:var(--ink);font-weight:700;font-size:14.5px;transition:.15s}
+.cs-q:hover,.cs-q:active{background:#eaf1ff;border-color:#bcd0ff}
+.cs-q.hl{background:#eaf1ff;border-color:#bcd0ff}
+.cs-q .e3d{font-size:28px}
+.cs-q small{display:block;font-weight:500;color:#7a869e;font-size:12px;margin-top:2px;line-height:1.35}
+.cs-q .ic{color:#9aa6bd}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2018,7 +2032,7 @@ function appStore(){
     '<div class="who'+ra(0)+'">'+avatarHtml(s)+'<div><h2>'+esc(s.name)+'</h2><small>'+(s.open===false?'Tutup sementara':'● Buka')+' · '+esc(s.category)+(s.hours?' · '+esc(s.hours):'')+'</small></div></div>'+
     '<div class="tags'+ra(1)+'"><span>Gratis ongkir</span><span>Rp0 admin</span>'+payMethodsOf(s).map(m=>'<span>'+esc(m.l)+'</span>').join("")+'</div></section>';
   h += '<div class="sec-pad" style="margin-top:14px">'+(s.desc?'<div class="pcard'+ra(2)+'"><div class="small" style="color:#45526b">'+esc(s.desc)+'</div><div class="small muted" style="margin-top:6px">'+esc(s.address||"")+(s.area?', '+esc(s.area):'')+'</div></div>':'')+
-    (s.wa?'<a class="btn ghost block press" style="margin-bottom:4px" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", saya lihat toko Anda di Jaga Toko."))+'">'+I("chat")+' Chat penjual via WhatsApp</a>':'')+'</div>';
+    (s.wa?'<button class="btn ghost block press" style="margin-bottom:4px" data-act="chat-seller" data-id="'+esc(s.id)+'">'+I("chat")+' Chat penjual via WhatsApp</button>':'')+'</div>';
   if(!S.products[s.id]) return h + skeletonGrid(4);
   if(!prods.length) return h + aEmpty("package", "Belum ada produk", "Toko ini belum menambahkan produk.");
   return h + '<div class="ash"><h2>Semua produk</h2><span class="small muted">'+prods.length+' produk</span></div><div class="agrid">'+prods.map((p,i)=>appProdCard({p, s}, i)).join("")+'</div>';
@@ -2042,7 +2056,8 @@ function appProduct(){
     '<div class="pinfo'+ra(1)+'"><span class="pchip">'+E("truck")+' Gratis ongkir</span><span class="pchip">'+E("money")+' Rp0 admin</span><span class="pchip">'+E("card")+' Bayar ke toko</span></div>'+
     (p.desc?'<div class="pcard'+ra(2)+'"><h3>Deskripsi</h3><div class="small" style="white-space:pre-line;color:#45526b">'+esc(p.desc)+'</div></div>':'')+
     '<div class="pcard'+ra(3)+'" style="display:flex;gap:12px;align-items:center">'+avatarHtml(s)+'<div class="grow" style="min-width:0"><b>'+esc(s.name)+'</b><div class="small muted">'+(closed?'<span class="closedt">Tutup</span>':'<span class="open">● Buka</span>')+' · '+esc(s.area||"")+'</div></div>'+
-    '<button class="btn ghost sm press" data-act="open-store" data-id="'+esc(s.id)+'">Kunjungi</button></div></div>';
+    '<button class="btn ghost sm press" data-act="open-store" data-id="'+esc(s.id)+'">Kunjungi</button></div>'+
+    (s.wa?'<button class="btn ghost block press" style="margin-bottom:12px" data-act="chat-seller" data-id="'+esc(s.id)+'" data-p="'+esc(p.id)+'">'+I("chat")+' Tanya penjual soal produk ini</button>':'')+'</div>';
   if(others.length) h += '<div class="ash"><h2>Lainnya dari toko ini</h2></div><div class="agrid">'+others.map((x,i)=>appProdCard(x,i)).join("")+'</div>';
   h += '<div style="height:90px"></div><div class="pbuy"><button class="ibtn press" data-act="nav" data-v="cart" aria-label="Keranjang" style="position:relative;background:#f1f4fa;box-shadow:none">'+I("cart")+(cartCount()?'<span class="badge" style="position:absolute;top:-4px;right:-4px;background:#ff4d6d;color:#fff;font-size:10px;font-weight:800;border-radius:99px;padding:0 5px;line-height:16px">'+cartCount()+'</span>':'')+'</button>';
   if(out || closed) h += '<button class="btn" disabled>'+(out?'Stok habis':'Toko sedang tutup')+'</button></div>';
@@ -2221,6 +2236,48 @@ document.addEventListener("click", e => {
 if("serviceWorker" in navigator && /(^|\.)jagapatner\.my\.id$|github\.io$|^localhost$|^127\./.test(location.hostname)){
   window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
 }
+
+
+/* ===== Chat penjual: pertanyaan siap kirim ===== */
+function chatQuestions(s, p){
+  const prof = getProf();
+  const first = (prof.name||"").trim();
+  const addr = prof.address ? " ke " + prof.address : " ke alamat saya";
+  const inCart = S.cart.storeId === s.id ? Object.values(S.cart.items) : [];
+  const cartTxt = inCart.length ? inCart.map(i => "- " + i.name + " x" + i.qty + " (" + rp(i.price * i.qty) + ")").join("\n") : "";
+  const head = "Halo " + s.name + ", " + (first ? "saya " + first + ". Saya" : "saya") + " lihat toko Anda di Jaga Toko.\n\n";
+  const q = [];
+  if(p){
+    const pn = '"' + p.name + '" (' + rp(p.price) + ")";
+    q.push({e:"check", t:"Apakah masih tersedia?", m:"Apakah " + pn + " masih tersedia hari ini?"});
+    q.push({e:"package", t:"Stok ada berapa?", m:"Untuk " + pn + ", stoknya masih ada berapa? Saya mau pesan beberapa."});
+    q.push({e:"search", t:"Tanya detail produk", m:"Boleh minta info lebih detail tentang " + pn + "? (ukuran/porsi, varian, kondisi barang)"});
+    q.push({e:"money", t:"Ada harga khusus?", m:"Kalau saya beli " + pn + " dalam jumlah banyak, apakah ada harga khusus?"});
+  } else {
+    q.push({e:"check", t:"Apa saja yang tersedia hari ini?", m:"Produk apa saja yang tersedia hari ini?"});
+    q.push({e:"search", t:"Cari barang tertentu", m:"Apakah ada barang yang saya cari: ...? Kalau ada, berapa harganya?"});
+  }
+  q.push({e:"truck", t:"Bisa diantar hari ini?", m:"Apakah pesanan bisa diantar hari ini" + addr + "? Kira-kira jam berapa sampai?"});
+  q.push({e:"card", t:"Cara bayar apa saja?", m:"Pembayarannya bisa lewat apa saja? Apakah bisa bayar di tempat (COD)?"});
+  q.push({e:"clock", t:"Jam buka toko", m:"Toko buka jam berapa sampai jam berapa? Hari ini buka?"});
+  if(cartTxt) q.unshift({e:"cart", t:"Konfirmasi isi keranjang saya", m:"Saya mau pesan:\n" + cartTxt + "\nTotal " + rp(cartTotals().total) + ". Apakah semuanya tersedia dan bisa diantar" + addr + "?"});
+  return q.map(x => Object.assign(x, {link: waLink(s.wa, head + x.m)}));
+}
+function openChatSheet(sid, pid){
+  const s = storeById(sid); if(!s || !s.wa) return;
+  const f = pid ? findProd(pid) : null; const p = f ? f.p : null;
+  const qs = chatQuestions(s, p);
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal chatsheet">'+
+    '<div class="cs-head">'+avatarHtml(s)+'<div class="grow"><b>Tanya '+esc(s.name)+'</b><small>'+(p?esc(p.name):'Pilih pertanyaan, lalu kirim lewat WhatsApp')+'</small></div><button class="x" data-act="close-modal" aria-label="Tutup">×</button></div>'+
+    '<div class="cs-list">'+qs.map((x,i) => '<a class="cs-q'+(i===0&&x.e==="cart"?' hl':'')+'" target="_blank" rel="noopener" href="'+esc(x.link)+'" data-act="close-modal">'+E(x.e)+'<span class="grow">'+esc(x.t)+'<small>'+esc(x.m.split("\n")[0].slice(0,70))+(x.m.length>70?'…':'')+'</small></span>'+I("chev")+'</a>').join("")+'</div>'+
+    '<a class="btn wa block" target="_blank" rel="noopener" href="'+esc(waLink(s.wa, "Halo "+s.name+", saya lihat toko Anda di Jaga Toko. "))+'" data-act="close-modal">'+I("chat")+' Tulis pesan sendiri</a>'+
+    '<div class="small muted" style="text-align:center;margin-top:10px">WhatsApp penjual: '+esc(s.wa)+'</div></div></div>';
+}
+document.addEventListener("click", e => {
+  const el = e.target.closest('[data-act="chat-seller"]'); if(!el) return;
+  e.stopPropagation(); openChatSheet(el.dataset.id, el.dataset.p);
+});
+document.addEventListener("click", e => { if(e.target.closest(".chatsheet a[href]")) setTimeout(closeModal, 300); });
 
 /* ============ Mulai ============ */
 function startListening(){
