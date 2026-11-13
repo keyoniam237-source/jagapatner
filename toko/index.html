@@ -933,6 +933,7 @@ body.is-driver main{padding-top:0}
 .dhist small{display:block;color:#7a869e;font-size:12px;font-weight:500}
 body.is-driver .notice{margin:10px 16px}
 
+.updbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:200;border:0;border-radius:99px;padding:10px 16px;background:#0b1a3d;color:#fff;font-weight:700;font-size:13px;box-shadow:0 10px 30px -8px rgba(0,0,0,.5);cursor:pointer;width:max-content;max-width:92vw}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2406,7 +2407,24 @@ document.addEventListener("click", e => {
   if(el.dataset.act === "install-hide"){ try{ localStorage.setItem("jt_inst_hide", "1"); }catch(_){} render(); }
 });
 if("serviceWorker" in navigator && /(^|\.)jagapatner\.my\.id$|github\.io$|^localhost$|^127\./.test(location.hostname)){
-  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+  const hadSW = !!navigator.serviceWorker.controller;
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      const chk = () => { if(!document.hidden) reg.update().catch(() => {}); };
+      setInterval(chk, 3 * 60 * 1000); document.addEventListener("visibilitychange", chk);
+    }).catch(() => {});
+  });
+  /* versi baru terpasang: muat ulang otomatis bila aman, kalau sedang mengisi formulir tampilkan tombol */
+  let swReloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if(!hadSW || swReloading) return;
+    const busy = typeof typing === "function" && (typing() || [...document.querySelectorAll("#app form input:not([type=hidden]), #app form textarea")].some(el => el.value && el.value !== el.defaultValue));
+    if(!busy){ swReloading = true; location.reload(); return; }
+    const bar = document.createElement("button");
+    bar.className = "updbar"; bar.textContent = "Versi baru Jaga Toko tersedia — ketuk untuk memperbarui";
+    bar.onclick = () => { swReloading = true; location.reload(); };
+    document.body.appendChild(bar);
+  });
 }
 
 
