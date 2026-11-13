@@ -934,6 +934,14 @@ body.is-driver main{padding-top:0}
 body.is-driver .notice{margin:10px 16px}
 
 .updbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:200;border:0;border-radius:99px;padding:10px 16px;background:#0b1a3d;color:#fff;font-weight:700;font-size:13px;box-shadow:0 10px 30px -8px rgba(0,0,0,.5);cursor:pointer;width:max-content;max-width:92vw}
+.slogin{max-width:460px;margin:12px auto 6px}
+.sl-head{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+.sl-head .e3d{width:44px;height:44px}
+.sl-head h2{margin:0;font-size:20px;letter-spacing:-.02em}
+.sl-head small{color:#6a7894;font-size:13px}
+.pwrap{position:relative}
+.pwrap .in{padding-right:48px}
+.pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:20px;color:#6a7894;padding:8px;cursor:pointer}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1609,7 +1617,7 @@ function viewOrder(){
 function viewSeller(){
   const ms = myStores();
   if(!S.ready.stores || (SB && !S.myStoreIds)) return '<div class="empty">'+I("loader")+' Memuat…</div>';
-  if(!ms.length) return '<div class="welcome" style="margin-top:10px"><span class="tag">Jaga Toko Mitra</span><h1>Buka toko online Anda<br><em>dalam 2 menit.</em></h1><p class="lead">Daftar gratis, tanpa biaya bulanan. Bagi hasil hanya 3% dari penjualan yang selesai — uang pembeli langsung masuk ke rekening, e-wallet, atau QRIS Anda.</p>'+
+  if(!ms.length) return storeLoginCard() + '<div class="welcome" style="margin-top:10px"><span class="tag">Jaga Toko Mitra</span><h1>Buka toko online Anda<br><em>dalam 2 menit.</em></h1><p class="lead">Daftar gratis, tanpa biaya bulanan. Bagi hasil hanya 3% dari penjualan yang selesai — uang pembeli langsung masuk ke rekening, e-wallet, atau QRIS Anda.</p>'+
     '<div class="quick" style="text-align:left;max-width:760px;margin:0 auto 24px">'+
     '<div class="card qa"><div class="ico">'+I("store")+'</div><div><b>Semua jenis toko</b><span class="small muted">Kuliner, fashion, sampai gadget</span></div></div>'+
     '<div class="card qa"><div class="ico">'+I("percent")+'</div><div><b>Bagi hasil 3%</b><span class="small muted">Uang langsung ke Anda</span></div></div>'+
@@ -1630,7 +1638,7 @@ function viewSeller(){
   else if(S.sellerTab === "pesanan") h += sellerOrders(s, orders);
   else if(S.sellerTab === "produk") h += sellerProducts(s);
   else if(S.sellerTab === "laporan") h += sellerReport(s, orders);
-  else h += storeForm(s) + (SB ? '<div class="card pad" style="margin-top:16px"><h3 class="sub">'+I("settings")+' Kode akses toko</h3><p class="small muted" style="margin:0 0 12px">Kode ini membuktikan bahwa Anda pemilik toko. Gunakan untuk membuka dashboard di HP/laptop lain. <b>Jangan bagikan ke siapa pun.</b></p><div class="actions"><button class="btn ghost sm" data-act="akses-copy">Salin kode akses</button><button class="btn ghost sm" data-act="akses">Masuk dengan kode lain</button></div></div>' : '');
+  else h += storeForm(s) + storeLoginSettings(s) + (SB ? '<div class="card pad" style="margin-top:16px"><h3 class="sub">'+I("settings")+' Kode akses toko</h3><p class="small muted" style="margin:0 0 12px">Kode ini membuktikan bahwa Anda pemilik toko. Gunakan untuk membuka dashboard di HP/laptop lain. <b>Jangan bagikan ke siapa pun.</b></p><div class="actions"><button class="btn ghost sm" data-act="akses-copy">Salin kode akses</button><button class="btn ghost sm" data-act="akses">Masuk dengan kode lain</button></div></div>' : '');
   return h;
 }
 function sellerDashboard(s, orders){
@@ -2266,6 +2274,7 @@ function appProfile(){
       '<button data-act="nav" data-v="fav">'+E("heart")+'<div class="grow">Favorit<small>'+FAV.size+' produk disimpan</small></div><span class="chev">'+I("chev")+'</span></button>'+
     '</div><div class="plist p2'+ra(2)+'">'+
       '<button data-act="mitra-info">'+E("store")+'<div class="grow">Jadi mitra toko<small>Daftar gratis · bagi hasil 3%</small></div><span class="chev">'+I("chev")+'</span></button>'+
+      '<button data-act="open-seller">'+E("store")+'<div class="grow">Masuk sebagai toko<small>Konfirmasi pesanan & kelola toko</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="open-driver">'+E("scooter")+'<div class="grow">Jadi driver Jaga Toko<small>Ongkir 100% untuk driver · jagapatner.my.id/toko/#driver</small></div><span class="chev">'+I("chev")+'</span></button>'+
       (!isStandalone() ? '<button data-act="install"><img class="e3d" src="icons/icon-192.png" alt="" style="border-radius:8px"><div class="grow">Pasang aplikasi di HP<small>Buka Jaga Toko langsung dari layar utama</small></div><span class="chev">'+I("chev")+'</span></button>' : '')+
       '<a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa,"Halo Jaga Toko, saya butuh bantuan."))+'">'+E("bell")+'<div class="grow">Bantuan<small>WhatsApp '+esc(CONTACT.wa)+'</small></div><span class="chev">'+I("chev")+'</span></a>'+
@@ -2744,6 +2753,7 @@ document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
   const a = el.dataset.act, id = el.dataset.id;
   if(a === "open-driver"){ location.hash = "driver"; return; }
+  if(a === "open-seller"){ location.hash = "mitra"; return; }
   if(a === "leave-driver"){ location.hash = ""; return; }
   if(a === "drv-edit"){ S.drv.editing = !S.drv.editing; render(); return; }
   if(a === "drv-online"){
@@ -2805,6 +2815,83 @@ setInterval(() => {
   if(S.orders.some(o => o.status === "mencari_driver") && ["order","seller","orders"].includes(S.view)) scheduleRender();
 }, 10000);
 
+
+/* ============ Login toko (nama + password) ============ */
+S.storeLogins = null;
+async function loadStoreLogins(){
+  if(!SB) return;
+  try{ const { data } = await SB.rpc("jt_store_logins", {p_key: KEY}); S.storeLogins = data || {}; }catch(e){ S.storeLogins = {}; }
+  if(S.role === "seller" && !typing()) scheduleRender();
+}
+function storeLoginCard(){
+  return '<form class="card pad slogin" id="storeLogin"><div class="sl-head">'+E("store")+'<div><h2>Masuk toko</h2><small>Untuk toko yang sudah terdaftar — konfirmasi pesanan langsung di aplikasi.</small></div></div>'+
+    '<label class="f">Nama toko / login</label><input class="in" name="login" autocomplete="username" autocapitalize="none" required placeholder="Contoh: wahyu">'+
+    '<label class="f">Password</label><div class="pwrap"><input class="in" type="password" name="pass" autocomplete="current-password" required><button type="button" class="pw-eye" data-act="pw-toggle" aria-label="Lihat password">'+I("eye")+'</button></div>'+
+    '<button class="btn block press" style="margin-top:14px">Masuk</button></form>';
+}
+function storeLoginSettings(s){
+  if(!SB) return '';
+  const cur = S.storeLogins ? S.storeLogins[s.id] : undefined;
+  if(S.storeLogins === null) loadStoreLogins();
+  return '<form class="card pad" id="storeSetPass" data-id="'+esc(s.id)+'" style="margin-top:16px"><h3 class="sub">'+I("store")+' Login toko</h3>'+
+    '<p class="small muted" style="margin:0 0 6px">'+(cur ? 'Login saat ini: <b>'+esc(cur)+'</b>. Siapa pun yang tahu login & password ini bisa membuka dashboard toko dari HP lain.' : 'Buat nama login & password agar toko bisa dibuka dari HP lain tanpa kode akses.')+'</p>'+
+    '<div class="cols2"><div><label class="f">Nama login</label><input class="in" name="login" autocapitalize="none" required value="'+esc(cur || (s.name||"").toLowerCase())+'"></div>'+
+    '<div><label class="f">Password baru</label><input class="in" type="password" name="pass" autocomplete="new-password" required minlength="4"></div></div>'+
+    '<div class="hint">Gunakan password yang sulit ditebak (minimal 6 karakter, campur huruf & angka).</div>'+
+    '<div class="actions"><button class="btn sm">Simpan login</button><button type="button" class="btn ghost sm" data-act="store-logout" data-id="'+esc(s.id)+'">Keluar dari toko di perangkat ini</button></div></form>';
+}
+let _ordSeen = null;
+function notifyNewOrders(){
+  if(S.role !== "seller" || (SB && !S.myStoreIds)) return;
+  const ids = new Set(myStores().map(s => s.id));
+  const pend = S.orders.filter(o => ids.has(o.storeId) && o.status === "menunggu_konfirmasi").map(o => o.id);
+  if(_ordSeen === null){ _ordSeen = new Set(pend); return; }
+  const fresh = pend.filter(id => !_ordSeen.has(id));
+  pend.forEach(id => _ordSeen.add(id));
+  if(fresh.length){ try{ ding(); }catch(_){} toast("🔔 " + fresh.length + " pesanan baru menunggu konfirmasi"); }
+}
+document.addEventListener("click", async e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  if(el.dataset.act === "pw-toggle"){ const i = el.parentElement.querySelector("input"); i.type = i.type === "password" ? "text" : "password"; return; }
+  if(el.dataset.act === "store-logout"){
+    const sid = el.dataset.id;
+    confirmModal("Keluar dari dashboard toko di perangkat ini? Anda bisa masuk lagi dengan login & password toko.", "Keluar", async () => {
+      try{ await SB.rpc("jt_store_logout", {p_store: sid, p_key: KEY}); }catch(_){}
+      S.myStoreIds = null; await refreshMyStores(); go("seller", {sellerTab:"ringkasan"});
+      if(myStores().some(s => s.id === sid)) toast("Perangkat ini adalah perangkat pendaftar toko, jadi tetap terhubung."); else toast("Sudah keluar dari toko");
+    });
+  }
+});
+document.addEventListener("click", () => { try{ if(S.role === "seller" && !audioCtx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC) audioCtx = new AC(); } }catch(_){} }, {once:true});
+document.addEventListener("submit", async e => {
+  const f = e.target;
+  if(f.id === "storeLogin"){
+    e.preventDefault();
+    if(!SB) return toast("Login toko hanya di jagapatner.my.id/toko/#mitra — ini halaman pratinjau.");
+    const fd = new FormData(f); const btn = f.querySelector("button.btn"); btn.disabled = true;
+    try{
+      const { data, error } = await SB.rpc("jt_store_login", {p_login: fd.get("login"), p_pass: fd.get("pass"), p_key: KEY});
+      if(error) throw sbErr(error);
+      if(!data || !data.ok) throw new Error((data && data.error) || "Nama toko atau password salah");
+      S.myStoreIds = null; await refreshMyStores(); if(ORD_REFRESH) await ORD_REFRESH();
+      S.sellerStoreId = data.storeId; go("seller", {sellerTab:"pesanan"});
+      toast("Berhasil masuk. Pesanan baru tampil di sini.");
+    }catch(err){ toast(String(err.message || "Gagal masuk").replace(/^.*?:\s*/, "")); btn.disabled = false; }
+  }
+  if(f.id === "storeSetPass"){
+    e.preventDefault();
+    const fd = new FormData(f); const btn = f.querySelector("button.btn"); btn.disabled = true;
+    try{
+      const { data, error } = await SB.rpc("jt_store_setpass", {p_store: f.dataset.id, p_login: fd.get("login"), p_pass: fd.get("pass"), p_key: KEY});
+      if(error) throw sbErr(error);
+      S.storeLogins = Object.assign({}, S.storeLogins, {[f.dataset.id]: data.login});
+      f.querySelector('[name=pass]').value = "";
+      toast("Login toko disimpan: " + data.login); render();
+    }catch(err){ toast(String(err.message || "Gagal").replace(/^.*?:\s*/, "")); }
+    btn.disabled = false;
+  }
+});
+
 /* ============ Mulai ============ */
 function startListening(){
   const slowT = setTimeout(() => { S.slow = true; render(); }, 10000);
@@ -2818,7 +2905,7 @@ function startListening(){
   store.listen("orders", (rows, fromCache) => {
     const sig = rows ? JSON.stringify(rows) : null;
     const same = sig !== null && sig === S._ordSig && S.ready.orders;
-    if(rows){ S.orders = rows; S._ordSig = sig; }
+    if(rows){ S.orders = rows; S._ordSig = sig; notifyNewOrders(); }
     if(!fromCache || (rows && rows.length)) S.ready.orders = true;
     if(!same) render();
   });
