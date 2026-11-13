@@ -10,10 +10,16 @@
   gtag('js', new Date());
   gtag('config', 'G-7SZ59PQSWK');
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Jaga Toko">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="description" content="Jaga Toko — belanja dari toko makanan, minuman, sembako, sayur & buah, rumah tangga, fashion, handphone, laptop dan game. Gratis ongkir, tanpa biaya admin.">
 <link rel="icon" href="../jaga-logo.svg" type="image/svg+xml">
-<meta name="theme-color" content="#0f1b2d">
+<meta name="theme-color" content="#2a5ccc">
 <title>Jaga Toko — Semua Toko, Satu Aplikasi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@300;500;600&display=swap" rel="stylesheet">
@@ -751,6 +757,71 @@ body.app .modal{border-radius:26px}
 body.app .toast{top:auto;bottom:calc(150px + env(safe-area-inset-bottom))}
 .scover .tags{max-width:290px}
 .abody.flat{margin-top:6px}
+
+/* ===== Nyaman di HP ===== */
+html{-webkit-text-size-adjust:100%}
+*{-webkit-tap-highlight-color:transparent}
+button,a,label,select,[data-act]{touch-action:manipulation}
+body{overscroll-behavior-y:none}
+.fieldset{min-width:0}
+.fieldset>*{max-width:100%}
+input[type=file]{max-width:100%}
+.in,select.in,textarea.in{max-width:100%}
+@media (max-width:760px){
+  input,select,textarea,.in{font-size:16px!important}
+  .sellbtn .lbl{display:none}
+  .sellbtn{padding:9px 11px}
+  body.is-seller header.top{top:calc(6px + env(safe-area-inset-top))}
+  body.is-seller .top .wrap{height:56px;padding:0 8px 0 12px}
+  body.is-seller .logo .wm{font-size:15px;letter-spacing:.18em}
+  body.is-seller .jmark{height:28px}
+  body.is-seller .mitra{display:none!important}
+  body.is-seller main{padding:14px 0 calc(120px + env(safe-area-inset-bottom))}
+  body.is-seller .wrap{padding:0 12px}
+  body.is-seller .stats{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  body.is-seller .stat{padding:14px}
+  body.is-seller .stat .v{font-size:19px}
+  body.is-seller .stat .l{font-size:11.5px}
+  .dash-hero{padding:16px;border-radius:22px;gap:12px}
+  .dash-hero .avatar{width:54px;height:54px;border-radius:16px}
+  .dash-hero h2{font-size:21px}
+  .dash-hero .actions{width:100%}
+  .dash-hero .actions>*{flex:1;justify-content:center;text-align:center}
+  .quick{grid-template-columns:1fr 1fr;gap:10px}
+  .qa{padding:12px;gap:10px}
+  .qa .ico{width:36px;height:36px;font-size:18px}
+  .qa b{font-size:13.5px}
+  .qa .small{font-size:11.5px}
+  .card.pad{padding:16px}
+  .order{padding:14px}
+  .order .actions .btn{flex:1;justify-content:center}
+  .tabs{width:100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab,.chip{white-space:nowrap}
+  .modal-bg{align-items:flex-end;padding:0}
+  .modal{border-radius:24px 24px 0 0;max-height:92vh;padding:22px 18px calc(22px + env(safe-area-inset-bottom));animation:sheet .35s cubic-bezier(.2,.8,.2,1)}
+  .imgpick{flex-wrap:wrap}
+  table.t{font-size:13px}
+  .bottomnav{bottom:calc(10px + env(safe-area-inset-bottom))!important}
+  body.app .bottomnav{bottom:0!important}
+  .btn{min-height:44px}
+  .btn.sm{min-height:38px}
+}
+@keyframes sheet{from{transform:translateY(100%)}}
+/* checkout di HP: ringkasan dulu, tombol pesan menempel di bawah */
+body.app .v-wrap .two{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+body.app .v-wrap .two>*{width:100%}
+body.app .v-wrap .two>.card:not(form){order:-1}
+body.app #checkout>button.btn.block{position:sticky;bottom:calc(86px + env(safe-area-inset-bottom));z-index:5;padding:16px;font-size:16px;box-shadow:0 14px 30px -10px rgba(47,107,255,.75)}
+body.app .v-wrap .opt{padding:14px}
+/* pasang aplikasi */
+.installcard{display:flex;gap:12px;align-items:center;margin:16px 16px 0;padding:14px;border-radius:20px;background:linear-gradient(120deg,#0b1a3d,#1a3e94);color:#fff;box-shadow:0 14px 30px -16px rgba(10,22,51,.6)}
+.installcard img.ico{width:46px;height:46px;border-radius:13px;flex-shrink:0}
+.installcard b{display:block;font-size:14.5px}
+.installcard small{opacity:.8;font-size:12px}
+.installcard .btn{background:#fff;color:#1f4fd1;box-shadow:none;padding:9px 14px;min-height:0}
+.installcard .x{border:0;background:none;color:#fff;opacity:.6;font-size:20px;cursor:pointer;padding:4px}
+@media (display-mode: standalone){ .installcard{display:none!important} }
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1032,7 +1103,7 @@ function renderNav(){
   document.getElementById("bnav").style.display = navs.length ? "" : "none";
   document.getElementById("roles").style.display = S.view === "welcome" ? "none" : "";
   document.getElementById("roles").innerHTML = seller
-    ? '<a class="sellbtn" href="'+APP_URL+'" target="_blank" rel="noopener">'+I("bag")+' Buka Jaga Toko ↗</a>'
+    ? '<a class="sellbtn" href="'+APP_URL+'" target="_blank" rel="noopener" aria-label="Buka Jaga Toko">'+I("bag")+'<span class="lbl"> Buka Jaga Toko ↗</span></a>'
     : '<button class="sellbtn hide-m" data-act="mitra-info">'+I("store")+' Jadi Mitra Toko</button>';
   const cc = cartCount(), oc = myActiveOrders();
   document.getElementById("hicons").innerHTML = (seller || S.view === "welcome") ? "" :
@@ -1889,6 +1960,7 @@ function appHomeBody(){
       '<div class="aslide '+x.c+'"'+(x.act?' data-act="'+x.act+'"':'')+'><div class="tx"><span class="pill">'+x.pill+'</span><h3>'+x.t+'</h3><p>'+x.d+'</p>'+(x.cta?'<span class="cta">'+x.cta+' →</span>':'')+'</div><div class="art">'+E(x.art)+'</div></div>').join("")+'</div>'+
       '<div class="adots" id="dots">'+ASLIDES.map((x,i)=>'<button class="'+(i===S.slide%ASLIDES.length?"on":"")+'" data-act="slide-to" data-v="'+i+'" aria-label="Banner '+(i+1)+'"></button>').join("")+'</div></div>';
   }
+  if(!filtering) h += installCard();
   h += '<div class="ash"><h2>Kategori</h2>'+(S.cat!=="Semua"?'<button data-act="cat" data-v="Semua">Lihat semua</button>':'')+'</div>';
   h += '<div class="hscroll">'+[["Semua","all"]].concat(CATS.map(c=>[c,catE(c)])).map((c,i) =>
     '<button class="acat press'+(S.cat===c[0]?" on":"")+ra(i+3)+'" data-act="cat" data-v="'+esc(c[0])+'">'+E(c[1])+'<span>'+esc(c[0])+'</span></button>').join("")+'</div>';
@@ -2000,6 +2072,7 @@ function appProfile(){
       '<button data-act="nav" data-v="fav">'+E("heart")+'<div class="grow">Favorit<small>'+FAV.size+' produk disimpan</small></div><span class="chev">'+I("chev")+'</span></button>'+
     '</div><div class="plist p2'+ra(2)+'">'+
       '<button data-act="mitra-info">'+E("store")+'<div class="grow">Jadi mitra toko<small>Daftar gratis · bagi hasil 3%</small></div><span class="chev">'+I("chev")+'</span></button>'+
+      (!isStandalone() ? '<button data-act="install"><img class="e3d" src="icons/icon-192.png" alt="" style="border-radius:8px"><div class="grow">Pasang aplikasi di HP<small>Buka Jaga Toko langsung dari layar utama</small></div><span class="chev">'+I("chev")+'</span></button>' : '')+
       '<a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa,"Halo Jaga Toko, saya butuh bantuan."))+'">'+E("bell")+'<div class="grow">Bantuan<small>WhatsApp '+esc(CONTACT.wa)+'</small></div><span class="chev">'+I("chev")+'</span></a>'+
       (p.name?'<button data-act="logout">'+I("logout")+'<div class="grow">Keluar</div></button>':'<button data-act="nav" data-v="login">'+E("check")+'<div class="grow">Masuk<small>Simpan nama & alamat untuk checkout cepat</small></div><span class="chev">'+I("chev")+'</span></button>')+
     '</div><div class="small muted" style="text-align:center;margin:8px 0 20px">Jaga Toko · versi 1.0</div>';
@@ -2117,6 +2190,30 @@ document.addEventListener("submit", e => {
 document.addEventListener("input", e => {
   if(e.target.id === "aq"){ S.q = e.target.value; renderHomeBody(); }
 });
+
+
+/* ===== Pasang di layar utama (PWA) ===== */
+let INSTALL_EVT = null;
+const isStandalone = () => { try{ return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; }catch(e){ return false; } };
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent || "");
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); INSTALL_EVT = e; if(S.role !== "seller") scheduleRender(); });
+window.addEventListener("appinstalled", () => { INSTALL_EVT = null; toast("Jaga Toko terpasang di HP Anda"); scheduleRender(); });
+function canInstall(){ if(isStandalone()) return false; let hid = false; try{ hid = localStorage.getItem("jt_inst_hide") === "1"; }catch(e){} return !hid && (INSTALL_EVT || isIOS()); }
+function installCard(){ return canInstall() ? '<div class="installcard'+ra(4)+'"><img class="ico" src="icons/icon-192.png" alt=""><div class="grow"><b>Pasang Jaga Toko di HP</b><small>Buka lebih cepat, seperti aplikasi</small></div><button class="btn sm press" data-act="install">Pasang</button><button class="x" data-act="install-hide" aria-label="Tutup">×</button></div>' : ''; }
+async function doInstall(){
+  if(INSTALL_EVT){ INSTALL_EVT.prompt(); try{ await INSTALL_EVT.userChoice; }catch(e){} INSTALL_EVT = null; render(); return; }
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec" style="display:flex;gap:10px;align-items:center"><img src="icons/icon-192.png" alt="" style="width:40px;height:40px;border-radius:11px"> Pasang di iPhone</h2>'+
+    '<ol style="padding-left:20px;line-height:1.9;margin:0 0 16px"><li>Ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas) di Safari</li><li>Pilih <b>Tambah ke Layar Utama</b></li><li>Ketuk <b>Tambah</b></li></ol>'+
+    '<button class="btn block" data-act="close-modal">Mengerti</button></div></div>';
+}
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  if(el.dataset.act === "install"){ doInstall(); }
+  if(el.dataset.act === "install-hide"){ try{ localStorage.setItem("jt_inst_hide", "1"); }catch(_){} render(); }
+});
+if("serviceWorker" in navigator && /(^|\.)jagapatner\.my\.id$|github\.io$|^localhost$|^127\./.test(location.hostname)){
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
 
 /* ============ Mulai ============ */
 function startListening(){
