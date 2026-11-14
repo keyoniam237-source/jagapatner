@@ -1265,6 +1265,49 @@ body.is-owner .dtop{z-index:20}
 .ddocs .actions{grid-column:1/-1}
 .orow.rep.done{opacity:.6}
 .tag.green{background:#dcfce7;color:#166534}
+
+/* beranda v2 */
+.ahero{padding-bottom:58px}
+.hub{margin:0 16px 12px;background:#fff;border-radius:24px;padding:14px 10px 10px;box-shadow:0 20px 40px -26px rgba(10,22,51,.55),0 2px 6px -3px rgba(10,22,51,.12);border:1px solid #edf1f8}
+.hgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.ht{position:relative;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:7px;font:inherit;color:#1b2740;cursor:pointer;padding:2px 0 4px}
+.ht .ib{width:60px;height:60px;border-radius:19px;display:grid;place-items:center;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.ht .ib .e3d{width:40px;height:40px}
+.ht:active .ib{transform:scale(.92)}
+.ht b{font-size:13px;font-weight:700;letter-spacing:-.01em}
+.ht .t1{background:linear-gradient(160deg,#fff3e2,#ffe4c2)}
+.ht .t2{background:linear-gradient(150deg,#16306e,#2f6bff)}
+.ht .t3{background:linear-gradient(160deg,#e6f7ee,#c9eed9)}
+.ht .t4{background:linear-gradient(160deg,#eaf1ff,#d4e2ff)}
+.ht .bd2{position:absolute;top:-6px;right:calc(50% - 38px);background:#ffd23f;color:#3d2c00;font-size:10px;font-weight:800;border-radius:99px;padding:2px 7px;border:2px solid #fff}
+.ht .bd2.ok{background:#16a34a;color:#fff}
+.ht .bd2.rd{background:#ff5a5f;color:#fff;min-width:20px;text-align:center}
+.hvoice{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;border:0;border-radius:18px;padding:10px 12px 10px 10px;background:linear-gradient(120deg,#15994a,#22c55e 70%,#3fd97a);color:#fff;font:inherit;text-align:left;cursor:pointer;box-shadow:0 12px 24px -16px rgba(22,163,74,.9)}
+.hvoice .vci{width:46px;height:46px;font-size:22px}
+.hvoice b{display:block;font-size:15.5px;letter-spacing:-.01em}
+.hvoice small{display:block;font-size:12px;opacity:.92;margin-top:1px}
+.hgo{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;flex-shrink:0;font-size:16px}
+.tstrip{margin:0 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tstrip .th{grid-column:1/-1;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#334063;padding:0 2px}
+.tstrip .th b{color:#1f4fd1}
+.tstrip .th .ic{color:#1f4fd1;font-size:16px}
+.tstrip .tc{display:flex;gap:9px;align-items:center;background:#fff;border:1px solid #e7ecf5;border-radius:16px;padding:10px}
+.tstrip .ti{width:34px;height:34px;border-radius:11px;background:#e7f7ee;color:#16a34a;display:grid;place-items:center;flex-shrink:0;font-size:18px}
+.tstrip .tc b{display:block;font-size:13.5px;color:#1f4fd1;letter-spacing:-.01em}
+.tstrip .tc small{display:block;font-size:11.5px;color:#5b6884;line-height:1.25}
+.abanner{height:142px}
+.aslide h3{font-size:19px}
+.aslide .art{font-size:84px}
+@media (min-width:700px){.ht .ib{width:68px;height:68px}.ht .ib .e3d{width:46px;height:46px}}
+.aql{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:100%;cursor:text}
+.asearch{padding:0 6px 0 14px}
+.amic{width:40px;height:40px;border-radius:12px;border:0;flex-shrink:0;display:grid;place-items:center;font-size:20px;color:#fff;cursor:pointer;background:linear-gradient(140deg,#16a34a,#22c55e);box-shadow:0 6px 14px -6px rgba(22,163,74,.8);position:relative}
+.amic::after{content:"";position:absolute;inset:0;border-radius:12px;animation:gpulse 2.2s infinite}
+@keyframes gpulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 10px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.hub{padding-bottom:12px}
+.tstrip .tc b.ab{color:#334063;font-weight:600}
+.tstrip .tc b.ab em,.tstrip .th .jg2 em{font-style:normal;font-weight:800;color:#fff;background:#1f4fd1;border-radius:6px;padding:1px 4px;margin-right:1px}
+.tstrip .th .jg2{display:inline-flex;gap:2px}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2487,7 +2530,7 @@ function appHome(){
     '<button class="aloc" data-act="edit-addr"><small>'+E("pin")+' Antar ke</small><b><span>'+esc(prof.address||"Atur alamat pengantaran")+'</span>'+I("down")+'</b></button>'+
     '<button class="abell press" data-act="nav" data-v="orders" aria-label="Pesanan aktif">'+E("bell")+(oc?'<span class="bdg">'+oc+'</span>':'')+'</button></div>'+
     '<div class="ahello'+ra(1)+'">'+greet()+(first?', '+esc(first):'')+'!<span>Mau belanja apa hari ini?</span></div>'+
-    '<label class="asearch'+ra(2)+'">'+E("search")+'<input id="aq" type="search" enterkeyhint="search" placeholder="Cari makanan, minuman, sembako…" value="'+esc(S.q)+'" autocomplete="off"></label></section>'+
+    '<div class="asearch'+ra(2)+'"><label class="aql">'+E("search")+'<input id="aq" type="search" enterkeyhint="search" placeholder="Cari makanan, minuman…" value="'+esc(S.q)+'" autocomplete="off"></label><button class="amic press" data-act="voice" aria-label="Pesan pakai suara">'+I("mic")+'</button></div></section>'+
     '<div class="abody'+(filtering?" flat":"")+'" id="hbody">'+appHomeBody()+'</div>';
 }
 function renderHomeBody(){
@@ -2512,10 +2555,15 @@ function appHomeBody(){
   if(!filtering){
     const ar = S.rides.find(r => RIDE_ACTIVE.includes(r.status));
     if(locOk(getProf()) && !inArea(getProf())) h += '<div style="margin:0 16px 12px">'+areaBanner()+'</div>';
-    h += '<button class="vcard press'+ra(2)+'" data-act="voice"><span class="vci">'+I("mic")+'</span><div class="grow"><b>Pesan pakai suara</b><small>Ketuk, lalu bicara: “mau ke pasar” atau “beli beras 5 kilo”</small></div></button>';
-    h += '<div class="svc'+ra(2)+'"><button class="sv press" data-act="scroll-prod">'+E("cart")+'<div><b>Belanja</b><small>Antar dari toko</small></div></button>'+
-      '<button class="sv jg press" data-act="nav" data-v="jago">'+E("scooter")+'<div><b>Jago</b><small>'+(ar ? esc((STATUS[ar.status]||{}).l||"Berjalan") : 'Ojek online')+'</small></div>'+(ar?'<span class="bdg">1</span>':'<span class="new">Baru</span>')+'</button></div>';
-    h += '<div class="trust'+ra(2)+'"><div class="tt">Kami <b>JAGA</b> Kepercayaan anda</div><div class="tg"><span>'+I("checkc")+'<i><b>JA</b>minan Driver dan toko Aman</i></span><span>'+I("checkc")+'<i><b>GA</b>ransi pesanan pasti sampai</i></span></div></div>';
+    const oc = myActiveOrders();
+    h += '<div class="hub'+ra(2)+'"><div class="hgrid">'+
+      '<button class="ht press" data-act="scroll-prod"><span class="ib t1">'+E("cart")+'</span><b>Belanja</b></button>'+
+      '<button class="ht jg press" data-act="nav" data-v="jago"><span class="ib t2">'+E("scooter")+'</span><b>Jago</b>'+(ar?'<span class="bd2 ok">Jalan</span>':'<span class="bd2">Baru</span>')+'</button>'+
+      '<button class="ht press" data-act="scroll-store"><span class="ib t3">'+E("store")+'</span><b>Toko</b></button>'+
+      '<button class="ht press" data-act="nav" data-v="orders"><span class="ib t4">'+E("receipt")+'</span><b>Pesanan</b>'+(oc?'<span class="bd2 rd">'+oc+'</span>':'')+'</button></div>'+'</div>';
+    h += '<div class="tstrip'+ra(3)+'"><div class="th">'+I("badge")+' Kami <b class="jg2"><em>JA</em><em>GA</em></b> Kepercayaan anda</div>'+
+      '<div class="tc"><span class="ti">'+I("checkc")+'</span><span><b class="ab"><em>JA</em>minan</b><small>Driver & toko aman</small></span></div>'+
+      '<div class="tc"><span class="ti">'+I("checkc")+'</span><span><b class="ab"><em>GA</em>ransi</b><small>Pesanan pasti sampai</small></span></div></div>';
     h += '<div class="abanner'+ra(3)+'"><div class="slides" id="slides" style="transform:translateX(-'+(S.slide%ASLIDES.length*100)+'%)">'+ASLIDES.map(x =>
       '<div class="aslide '+x.c+'"'+(x.act?' data-act="'+x.act+'"':'')+'><div class="tx"><span class="pill">'+x.pill+'</span><h3>'+x.t+'</h3><p>'+x.d+'</p>'+(x.cta?'<span class="cta">'+x.cta+' →</span>':'')+'</div><div class="art">'+E(x.art)+'</div></div>').join("")+'</div>'+
       '<div class="adots" id="dots">'+ASLIDES.map((x,i)=>'<button class="'+(i===S.slide%ASLIDES.length?"on":"")+'" data-act="slide-to" data-v="'+i+'" aria-label="Banner '+(i+1)+'"></button>').join("")+'</div></div>';
@@ -2537,13 +2585,9 @@ function appHomeBody(){
         return '<div class="again'+ra(i)+'"><div class="th">'+th+'</div><div class="grow" style="min-width:0"><b>'+esc(it.name||o.storeName)+(o.items.length>1?' +'+(o.items.length-1):'')+'</b><small>'+timeAgo(o.doneAt||o.createdAt)+' · '+rp(o.total)+'</small></div><button class="rb press" data-act="reorder" data-id="'+esc(o.id)+'" aria-label="Pesan lagi">'+I("repeat")+'</button></div>';
       }).join("")+'</div>';
     }
-    h += '<div class="ash"><h2>Promo untukmu</h2></div><div class="hscroll">'+
-      '<div class="deal d1'+ra(1)+'"><div><small>Ongkir cuma</small><b>Rp2rb<br>/500 m</b></div><span class="chip2">Driver terdekat</span><span class="art">'+E("truck")+'</span></div>'+
-      '<div class="deal d2'+ra(2)+'"><div><small>Untuk pembeli</small><b>Rp0 biaya<br>admin</b></div><span class="chip2">Bayar langsung ke toko</span><span class="art">'+E("money")+'</span></div>'+
-      '<div class="deal d3'+ra(3)+'"><div><small>Bayar mudah</small><b>QRIS, transfer<br>& COD</b></div><span class="chip2">Pilih saat checkout</span><span class="art">'+E("card")+'</span></div></div>';
   }
   if(stores.length){
-    h += '<div class="ash"><h2>'+(filtering?'Toko':'Toko di sekitarmu')+'</h2><span class="small muted">'+stores.length+' toko</span></div><div class="hscroll">'+stores.slice(0,20).map((s,i) => {
+    h += '<div class="ash" id="storeTop"><h2>'+(filtering?'Toko':'Toko di sekitarmu')+'</h2><span class="small muted">'+stores.length+' toko</span></div><div class="hscroll">'+stores.slice(0,20).map((s,i) => {
       const c = s.color || "#2f6bff";
       return '<div class="astore press'+ra(i)+'" data-act="open-store" data-id="'+esc(s.id)+'"><div class="cv" style="background:linear-gradient(140deg,'+esc(c)+'26,'+esc(c)+'66)">'+avatarHtml(s)+E(catE(s.category))+'</div>'+
         '<div class="bd"><b>'+esc(s.name)+'</b><small>'+(s.open===false?'<span class="closedt">Tutup</span>':'<span class="open">● Buka</span>')+' · '+esc(s.category)+' · '+esc(s.area||"")+'</small>'+storeStars(s.id)+'</div></div>';
@@ -2733,6 +2777,7 @@ document.addEventListener("click", e => {
   if(a === "edit-addr"){ openAddrModal(); return; }
   if(a === "guest"){ try{ localStorage.setItem("jt_onb", "1"); }catch(_){} go("home"); return; }
   if(a === "logout"){ confirmModal("Keluar dari akun di perangkat ini? Nama & alamat yang tersimpan akan dihapus.", "Keluar", async () => { try{ localStorage.removeItem("st_buyer"); localStorage.removeItem("jt_onb"); }catch(_){} go("login"); }); return; }
+  if(a === "scroll-store"){ const t = document.getElementById("storeTop")||document.getElementById("prodTop"); if(t) t.scrollIntoView({behavior:"smooth"}); return; }
   if(a === "scroll-prod"){ const t = document.getElementById("prodTop"); if(t) t.scrollIntoView({behavior:"smooth"}); return; }
 });
 document.addEventListener("submit", e => {
@@ -2874,7 +2919,7 @@ const localDrv = {
   me(){ const d = S.drivers.find(x => x.id === DRIVER_ID_LOCAL); return d ? Object.assign({}, d) : null; },
   async save(data){
     const old = this.me(), now = Date.now(), patch = {};
-    ["name","wa","vehicle","plate","area","online","lat","lng"].forEach(k => { if(k in data) patch[k] = data[k]; });
+    ["name","wa","vehicle","plate","address","area","online","lat","lng"].forEach(k => { if(k in data) patch[k] = data[k]; });
     if("lat" in patch) patch.locAt = now;
     if(!old){
       if(!patch.name || !patch.wa) throw srvErr("Isi nama dan nomor WhatsApp");
@@ -2882,6 +2927,7 @@ const localDrv = {
       if(!S.drivers.some(x => x.id === DRIVER_ID_LOCAL)) S.drivers.push(Object.assign({id:DRIVER_ID_LOCAL, createdAt:now}, patch, {online:false, verify:"pending"}));
     } else {
       if(old.verify && old.verify !== "verified" && patch.online) throw srvErr("Akun driver belum diverifikasi tim JAGA");
+      if(old.verify === "rejected" && ("name" in patch || "plate" in patch || "address" in patch)) Object.assign(patch, {verify:"pending", verifyNote:""});
       await store.update("drivers/" + DRIVER_ID_LOCAL, Object.assign(patch, {updatedAt:now}));
     }
     const merged = Object.assign(old || {}, patch, old ? {} : {online:false, verify:"pending"}, {id:DRIVER_ID_LOCAL});
@@ -3062,7 +3108,8 @@ function driverForm(me){
     '<label class="f">Nama lengkap *</label><input class="in" name="name" required value="'+esc(me.name||"")+'">'+
     '<label class="f">No. WhatsApp *</label><input class="in" name="wa" required inputmode="tel" placeholder="08xxxxxxxxxx" value="'+esc(me.wa||"")+'">'+
     '<div class="cols2"><div><label class="f">Kendaraan</label><select class="in" name="vehicle">'+["Motor","Mobil","Sepeda"].map(v=>'<option '+(me.vehicle===v?"selected":"")+'>'+v+'</option>').join("")+'</select></div>'+
-    '<div><label class="f">Plat nomor</label><input class="in" name="plate" placeholder="BM 1234 XX" value="'+esc(me.plate||"")+'"></div></div>'+
+    '<div><label class="f">Plat nomor *</label><input class="in" name="plate" required placeholder="BM 1234 XX" value="'+esc(me.plate||"")+'"></div></div>'+
+    '<label class="f">Alamat rumah *</label><input class="in" name="address" required placeholder="Jalan, desa/kelurahan, kecamatan" value="'+esc(me.address||"")+'">'+
     '<label class="f">Area narik</label><input class="in" name="area" placeholder="Contoh: Ujungbatu" value="'+esc(me.area||"Ujungbatu")+'">'+
     '<button class="btn block press" style="margin-top:16px">'+(me.name ? "Simpan perubahan" : "Daftar & mulai narik")+'</button>'+
     (me.name ? '<button type="button" class="btn ghost block" style="margin-top:8px" data-act="drv-edit">Batal</button>' : '<div class="hint" style="text-align:center">Akun driver tersimpan di HP ini.</div>')+
@@ -3119,7 +3166,7 @@ function appDriver(){
       '<div class="dperks"><div>'+E("pin")+'<b>Order terdekat</b><span>Dicari dari radius 1 km, melebar sampai 5 km</span></div>'+
       '<div>'+E("money")+'<b>Ongkir 100% untukmu</b><span>Rp2.000 per 500 m, bisa nego</span></div>'+
       '<div>'+E("scooter")+'<b>Order ojek Jago</b><span>Antar penumpang, komisi cuma 3%</span></div>'+
-      '<div>'+E("check")+'<b>Saldo gratis</b><span>Driver baru dapat saldo awal untuk order Jago</span></div></div>'+ driverForm(null);
+      '<div>'+E("check")+'<b>Daftar mudah</b><span>Cukup nama, WA, plat & alamat. Disetujui tim JAGA, dapat saldo gratis</span></div></div>'+ driverForm(null);
   }
   if(S.drv.editing) return h + '<h2 class="sec" style="margin:8px 16px">Ubah data driver</h2>' + driverForm(me);
   if(S.drv.walletOpen) return h + drvWallet();
@@ -3217,12 +3264,13 @@ document.addEventListener("submit", async e => {
   const f = e.target; if(f.id !== "drvForm") return;
   e.preventDefault();
   const fd = new FormData(f);
-  const data = {name:(fd.get("name")||"").trim(), wa:(fd.get("wa")||"").trim(), vehicle:fd.get("vehicle"), plate:(fd.get("plate")||"").trim().toUpperCase(), area:(fd.get("area")||"").trim()};
+  const data = {name:(fd.get("name")||"").trim(), wa:(fd.get("wa")||"").trim(), vehicle:fd.get("vehicle"), plate:(fd.get("plate")||"").trim().toUpperCase(), address:(fd.get("address")||"").trim(), area:(fd.get("area")||"").trim()};
   if(!data.name || data.wa.replace(/\D/g, "").length < 9) return toast("Isi nama dan nomor WhatsApp yang benar.");
+  if(data.plate.length < 3 || data.address.length < 5) return toast("Isi plat nomor dan alamat rumah.");
   const btn = f.querySelector("button"); if(btn) btn.disabled = true;
   const wasNew = !S.drv.me;
   S.drv.editing = false;
-  await drvDo(() => DRV.save(data), wasNew ? "Pendaftaran berhasil! Lanjutkan dengan mengunggah dokumen untuk verifikasi." : "Data disimpan");
+  await drvDo(() => DRV.save(data), wasNew ? "Pendaftaran terkirim! Tunggu persetujuan tim JAGA." : "Data disimpan");
 });
 /* perbarui tampilan pencarian driver di sisi pembeli & toko */
 setInterval(() => {
@@ -3393,7 +3441,7 @@ function appOwner(){
   if(!S.own.authed) return h + (S.own.err ? '<div class="notice">'+esc(S.own.err)+'</div>' : '') + ownLogin();
   const D = (SB ? S.own.data : null) || (SB ? {stores:[], orders:[], drivers:[], rides:[]} : {stores:S.stores.map(s => Object.assign({}, s, {products:(S.products[s.id]||[]).length})), orders:S.orders.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), drivers:S.drivers, rides:S.ridesAll.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), reportsOpen:(S.localReports||[]).filter(r => r.status !== "selesai").length});
   const RD = D.rides || [];
-  const pendDrv = (D.drivers||[]).filter(d => d.verify === "pending" && d.docsAt).length;
+  const pendDrv = (D.drivers||[]).filter(d => d.verify === "pending").length;
   const tabs = [["ringkasan","Ringkasan"],["pesanan","Pesanan"],["laporan","Laporan"+(D.reportsOpen?" ("+D.reportsOpen+")":"")],["toko","Toko"],["saldo","Saldo"],["driver","Driver"+(pendDrv?" ("+pendDrv+")":"")],["cabang","Cabang"],["akun","Akun"]];
   h += '<div class="otabs">'+tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+t[1]+'</button>').join("")+'</div>';
   const ranges = [["hari","Hari ini"],["7hari","7 hari"],["bulan","Bulan ini"],["semua","Semua"]];
@@ -3475,8 +3523,10 @@ function appOwner(){
     }).sort((a, b) => (b.on - a.on) || (b.trips - a.trips));
     const pend = drivers.filter(d => d.verify && d.verify !== "verified");
     if(pend.length) h += '<div class="card pad"><h3 class="sub">Menunggu verifikasi ('+pend.length+')</h3>'+pend.map(d => '<div class="orow"><div class="drv-av">'+esc(initials(d.name))+'</div><div class="grow"><b>'+esc(d.name)+'</b><small>'+esc([d.vehicle, d.plate, d.wa].filter(Boolean).join(" · "))+'</small>'+
-      '<small>'+(d.verify === "rejected" ? '<b class="warnc">Ditolak</b>'+(d.verifyNote?': '+esc(d.verifyNote):'') : (d.docsAt || d.hasDocs) ? '<b style="color:#1f4fd1">Dokumen terkirim '+(d.docsAt ? ago(d.docsAt) : '')+'</b>' : '<span class="muted">Belum mengirim dokumen</span>')+'</small></div>'+
-      '<div class="r">'+((d.docsAt || d.hasDocs) ? '<button class="btn sm" data-act="drv-docs" data-id="'+esc(d.id)+'" data-v="'+esc(d.name)+'">Cek dokumen</button>' : '')+(d.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(d.wa, "Halo "+d.name+", ini tim JAGA soal verifikasi driver."))+'">WA</a>' : '')+'</div></div>').join("")+'</div>';
+      (d.address ? '<small>'+I("pin")+' '+esc(d.address)+'</small>' : '')+
+      '<small>'+(d.verify === "rejected" ? '<b class="warnc">Ditolak</b>'+(d.verifyNote?': '+esc(d.verifyNote):'') : '<b style="color:#1f4fd1">Daftar '+(d.createdAt ? ago(d.createdAt) : '')+'</b>')+'</small></div>'+
+      '<div class="r"><button class="btn sm" data-act="drv-verify" data-id="'+esc(d.id)+'" data-v="1">Setujui</button>'+(d.verify !== "rejected" ? '<button class="btn ghost sm" data-act="drv-verify" data-id="'+esc(d.id)+'" data-v="0">Tolak</button>' : '')+
+      ((d.docsAt || d.hasDocs) ? '<button class="linkbtn" data-act="drv-docs" data-id="'+esc(d.id)+'" data-v="'+esc(d.name)+'">Dokumen</button>' : '')+(d.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(d.wa, "Halo "+d.name+", ini tim JAGA soal verifikasi driver."))+'">WA</a>' : '')+'</div></div>').join("")+'</div>';
     h += '<div class="card pad">'+(ds.length ? ds.map(x => '<div class="orow"><div class="drv-av">'+esc(initials(x.d.name))+'</div><div class="grow"><b>'+esc(x.d.name)+'</b> '+(x.d.verify && x.d.verify !== "verified" ? '<span class="tag">Belum verifikasi</span>' : '<span class="tag green">Terverifikasi</span>')+' '+starTxt(((D.ratings||S.ratings).driver||{})[x.d.id])+'<small>'+esc([x.d.vehicle, x.d.plate, x.d.area].filter(Boolean).join(" · "))+'</small>'+
       '<small>'+(x.on ? '<b style="color:#15803d">● Online</b>'+(x.busy?' · sedang mengantar':'') : '<span class="muted">○ Offline</span>')+(x.d.locAt ? ' · lokasi '+ago(x.d.locAt) : '')+'</small></div>'+
       '<div class="r"><b>'+x.trips+' trip</b><small>'+(x.rides?x.rides+' Jago · ':'')+rp(x.ongkir)+'</small><small>hari ini '+x.today+'</small><small>saldo '+(x.bal == null ? '…' : rp(x.bal))+'</small><button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(x.d.id)+'" data-v="Driver '+esc(x.d.name)+'">Saldo</button>'+(x.d.wa?'<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(x.d.wa,"Halo "+x.d.name+", ini dari JAGA."))+'">WA</a>':'')+'</div></div>').join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/toko/#driver ke calon driver.</div>')+'</div>';
@@ -4685,18 +4735,14 @@ async function drvSubmitDocs(docs){
   await store.update("drivers/" + id, {verify:"pending", docsAt:Date.now(), verifyNote:""});
 }
 function drvVerifyView(me){
-  const st = me.verify, waiting = st === "pending" && me.docsAt;
+  const rej = me.verify === "rejected";
   let h = '<div class="card dme"><div class="drv-av big">'+esc(initials(me.name))+'</div><div class="grow"><b>'+esc(me.name)+'</b><small>'+esc([me.vehicle, me.plate, me.area].filter(Boolean).join(" · "))+'</small><button class="linkbtn" data-act="drv-edit">Ubah data</button></div></div>';
-  h += '<div class="vrfy '+(st === "rejected" ? 'rej' : waiting ? 'wait' : '')+'">'+E(st === "rejected" ? "bell" : waiting ? "clock" : "check")+'<div><b>'+(st === "rejected" ? "Verifikasi ditolak" : waiting ? "Menunggu verifikasi tim JAGA" : "Verifikasi akun driver")+'</b>'+
-    '<small>'+(st === "rejected" ? esc(me.verifyNote || "Dokumen belum sesuai.")+' Silakan kirim ulang dokumen yang benar.' : waiting ? 'Dokumen sudah terkirim '+ago(me.docsAt)+'. Akun aktif setelah disetujui. Biasanya kurang dari 1×24 jam.' :
-      'Demi <b>JAminan Driver dan toko Aman</b>, setiap driver diverifikasi dulu sebelum menerima order.')+'</small></div></div>';
-  if(!waiting){
-    h += '<form class="card pad" id="docForm"><h3 class="sub">Unggah dokumen</h3>'+DOCS.map(([k, l]) =>
-      '<label class="docup'+(S.drvDocs[k] ? ' ok' : '')+'"><input type="file" accept="image/*" data-doc="'+k+'" hidden>'+(S.drvDocs[k] ? '<img src="'+S.drvDocs[k]+'" alt="">' : I("camera"))+'<span><b>'+l+'</b><small>'+(S.drvDocs[k] ? 'Siap · ketuk untuk ganti' : 'Ketuk untuk foto / pilih gambar')+'</small></span></label>').join("")+
-      '<div class="hint">Foto harus jelas dan terbaca. Data hanya dilihat tim JAGA untuk verifikasi.</div>'+
-      '<button class="btn block press" style="margin-top:12px"'+(DOCS.every(([k]) => S.drvDocs[k]) ? '' : ' disabled')+'>Kirim untuk verifikasi</button></form>';
-  }
-  h += '<div class="small muted" style="text-align:center;margin:14px">Pertanyaan? <a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo JAGA, saya driver "+me.name+", mau tanya verifikasi."))+'">WhatsApp JAGA</a></div>';
+  h += '<div class="vrfy '+(rej ? 'rej' : 'wait')+'">'+E(rej ? "bell" : "clock")+'<div><b>'+(rej ? "Pendaftaran ditolak" : "Menunggu persetujuan tim JAGA")+'</b>'+
+    '<small>'+(rej ? esc(me.verifyNote || "Data belum sesuai.")+' Perbaiki lewat “Ubah data”, lalu pendaftaran dikirim ulang.' :
+      'Demi <b>JAminan Driver dan toko Aman</b>, setiap driver disetujui tim JAGA dulu sebelum menerima order. Tim JAGA mungkin menghubungi kamu lewat WhatsApp.')+'</small></div></div>';
+  h += '<div class="card pad" style="margin:0 16px"><h3 class="sub">Data pendaftaran</h3>'+
+    [["Nama", me.name], ["WhatsApp", me.wa], ["Kendaraan", me.vehicle], ["Plat nomor", me.plate], ["Alamat", me.address], ["Area narik", me.area]].map(r => '<div class="row"><span class="muted">'+r[0]+'</span><span>'+esc(r[1] || "-")+'</span></div>').join("")+'</div>';
+  h += '<div class="small muted" style="text-align:center;margin:14px">Ingin cepat diproses? <a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo JAGA, saya "+me.name+" (plat "+(me.plate||"-")+") sudah daftar driver, mohon diverifikasi."))+'">WhatsApp JAGA</a></div>';
   return h;
 }
 document.addEventListener("change", async e => {
@@ -4786,7 +4832,7 @@ document.addEventListener("click", async e => {
   if(a === "drv-verify"){
     const ok = v === "1";
     const go2 = async note => { try{ await OWNX.verify(id, ok, note); toast(ok ? "Driver disetujui dan langsung bisa menerima order." : "Verifikasi ditolak."); closeModal(); }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/, "")); } ownRefresh(); };
-    if(ok) confirmModal("Setujui driver ini? Pastikan KTP, SIM, STNK dan selfie sudah sesuai.", "Setujui", () => go2(""));
+    if(ok) confirmModal("Setujui driver ini? Pastikan nama, plat nomor, dan alamatnya sudah dicek (misalnya lewat WhatsApp).", "Setujui", () => go2(""));
     else { const note = prompt("Alasan penolakan (dikirim ke driver):", "Foto dokumen kurang jelas"); if(note !== null) go2(note); }
     return;
   }
