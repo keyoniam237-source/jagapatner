@@ -1206,6 +1206,7 @@ body.is-owner .dtop{z-index:20}
 .areabox b{display:block;font-size:15px;color:#9a3412}
 .areabox small{display:block;color:#7c4a1e;font-size:12.5px;line-height:1.4;margin:2px 0 8px}
 .areabox .btn{background:#ea580c;color:#fff;border:0}
+.oarea .r{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -3324,7 +3325,7 @@ function appOwner(){
   if(!S.own.authed) return h + (S.own.err ? '<div class="notice">'+esc(S.own.err)+'</div>' : '') + ownLogin();
   const D = (SB ? S.own.data : null) || (SB ? {stores:[], orders:[], drivers:[], rides:[]} : {stores:S.stores.map(s => Object.assign({}, s, {products:(S.products[s.id]||[]).length})), orders:S.orders.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), drivers:S.drivers, rides:S.ridesAll.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))});
   const RD = D.rides || [];
-  const tabs = [["ringkasan","Ringkasan"],["pesanan","Pesanan"],["toko","Toko"],["saldo","Saldo"],["driver","Driver"],["akun","Akun"]];
+  const tabs = [["ringkasan","Ringkasan"],["pesanan","Pesanan"],["toko","Toko"],["saldo","Saldo"],["driver","Driver"],["cabang","Cabang"],["akun","Akun"]];
   h += '<div class="otabs">'+tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+t[1]+'</button>').join("")+'</div>';
   const ranges = [["hari","Hari ini"],["7hari","7 hari"],["bulan","Bulan ini"],["semua","Semua"]];
   const rangeBar = '<div class="oranges">'+ranges.map(r => '<button class="chip '+(S.own.range===r[0]?"on":"")+'" data-act="own-range" data-v="'+r[0]+'">'+r[1]+'</button>').join("")+'</div>';
@@ -3387,6 +3388,8 @@ function appOwner(){
         '<div class="om"><div><small>Pesanan</small><b>'+r.n+'</b></div><div><small>Penjualan</small><b>'+rp(r.gmv)+'</b></div><div><small>Bagi hasil</small><b>'+rp(r.share)+'</b></div></div>'+
         '<div class="obill"><span>Saldo toko: <b class="'+(S.ownW && S.ownW.balances && (S.ownW.balances[s.id]||0) < ((S.ownW.cfg||{}).minBalance||0) ? 'neg' : '')+'">'+(S.ownW && S.ownW.balances ? rp(S.ownW.balances[s.id]||0) : '…')+'</b></span>'+(s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", ini dari Jaga Toko."))+'">WA toko</a>' : '')+'</div></div>';
     }).join("") : '<div class="card pad muted small">Belum ada toko terdaftar.</div>')+'</div>';
+  } else if(S.own.tab === "cabang"){
+    h += ownerAreasTab();
   } else if(S.own.tab === "saldo"){
     h += ownerWalletTab(D);
   } else if(S.own.tab === "driver"){
@@ -3580,14 +3583,25 @@ const RIDE_ACTIVE = ["mencari_driver","driver_jemput","dalam_perjalanan"];
 const DRV_BUSY = ["driver_ke_toko","diantar","driver_jemput","dalam_perjalanan"];
 const JAGO_CENTER = {lat:0.6836, lng:100.5466}; // Ujungbatu
 /* Wilayah layanan. Buka cabang baru = tambah wilayah di sini (dan di fungsi server jt_in_area). */
-const AREAS = [{id:"rohul", name:"Kabupaten Rokan Hulu", short:"Rokan Hulu", s:0.40, n:1.45, w:100.03, e:101.00}];
+const AREA_DEF = [{id:"rohul", name:"Kabupaten Rokan Hulu", short:"Rokan Hulu", prov:"Riau", s:0.40, n:1.45, w:100.03, e:101.00, active:true}];
+let AREAS = AREA_DEF, AREA_NAME = "", AREA_MSG = "", AU = null, AREAS_ALL = AREA_DEF;
 const inArea = c => locOk(c) && AREAS.some(a => c.lat >= a.s && c.lat <= a.n && c.lng >= a.w && c.lng <= a.e);
-const AREA_NAME = AREAS.map(a => a.name).join(", ");
-const AREA_MSG = "Jaga Toko saat ini baru melayani " + AREA_NAME + ", Riau.";
-const cabangLink = () => waLink(CONTACT.wa, "Halo Jaga Toko, saya ingin mendaftar membuka cabang Jaga Toko di daerah saya: ");
+function setAreas(list){
+  if(Array.isArray(list) && list.length) AREAS_ALL = list;
+  const act = AREAS_ALL.filter(a => a.active !== false && isFinite(a.s) && isFinite(a.n) && isFinite(a.w) && isFinite(a.e));
+  AREAS = act.length ? act : AREA_DEF;
+  AREA_NAME = AREAS.map(a => a.name + (a.prov ? ", " + a.prov : "")).join("; ");
+  AREA_MSG = "Jaga Toko saat ini baru melayani " + AREA_NAME + ".";
+  AU = {s:Math.min(...AREAS.map(a => a.s)), n:Math.max(...AREAS.map(a => a.n)), w:Math.min(...AREAS.map(a => a.w)), e:Math.max(...AREAS.map(a => a.e))};
+}
+setAreas(AREA_DEF);
+const AREA_API = {
+  async list(){ if(SB){ const { data, error } = await SB.rpc("jt_areas", {}); if(error) throw sbErr(error); return data || []; } return (S.areasLocal || AREA_DEF); },
+  async save(list){ if(SB) return sbStore.rpc("jt_owner_areas_save", {p_areas:list}); await store.set("settings/areas", {list}); S.areasLocal = list; }
+};
+async function loadAreas(){ try{ const l = await AREA_API.list(); if(l && l.length){ setAreas(l); scheduleRender(); } }catch(e){} }
 function areaBanner(){
-  return '<div class="areabox">'+E("pin")+'<div class="grow"><b>Di luar wilayah layanan</b><small>'+esc(AREA_MSG)+' Ingin Jaga Toko hadir di daerahmu?</small>'+
-    '<a class="btn sm press" target="_blank" rel="noopener" href="'+esc(cabangLink())+'">Daftar buka cabang</a></div></div>';
+  return '<div class="areabox">'+E("pin")+'<div class="grow"><b>Di luar wilayah layanan</b><small>'+esc(AREA_MSG)+'</small></div></div>';
 }
 S.rides = []; S.ridesAll = []; S.ridesReady = false;
 S.jago = {pick:null, dest:null, mode:"pick", q:"", res:null, searching:false, gps:false, seen:{}};
@@ -3686,16 +3700,16 @@ const PLACE = {
         await loadGoogle();
         if(!GM_TOKEN) GM_TOKEN = new google.maps.places.AutocompleteSessionToken();
         const {suggestions} = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions({input:q, sessionToken:GM_TOKEN, language:"id", region:"id", includedRegionCodes:["id"],
-          locationRestriction:{south:AREAS[0].s, north:AREAS[0].n, west:AREAS[0].w, east:AREAS[0].e}, origin:{lat:c.lat, lng:c.lng}});
+          locationRestriction:{south:AU.s, north:AU.n, west:AU.w, east:AU.e}, origin:{lat:c.lat, lng:c.lng}});
         return (suggestions || []).filter(x => x.placePrediction).slice(0, 8).map(x => { const p = x.placePrediction;
           return {name:(p.mainText && p.mainText.text) || p.text.text, address:(p.secondaryText && p.secondaryText.text) || "", dist:near ? p.distanceMeters : null, pred:p}; });
       }catch(e){ if(GM_FAIL) return this.suggest(q, near); throw e; }
     }
-    const r = await fetch("https://photon.komoot.io/api/?limit=12&bbox=" + [AREAS[0].w, AREAS[0].s, AREAS[0].e, AREAS[0].n].join(",") + "&lat=" + c.lat + "&lon=" + c.lng + "&q=" + encodeURIComponent(q));
+    const r = await fetch("https://photon.komoot.io/api/?limit=12&bbox=" + [AU.w, AU.s, AU.e, AU.n].join(",") + "&lat=" + c.lat + "&lon=" + c.lng + "&q=" + encodeURIComponent(q));
     const j = await r.json();
     return (j.features || []).map(f => { const p = f.properties || {}, a = photonAddr(p), ll = {lat:+f.geometry.coordinates[1].toFixed(6), lng:+f.geometry.coordinates[0].toFixed(6)};
       return Object.assign(ll, {name:a[0] || q, address:a.slice(1, 4).join(", "), dist:near ? distM(c, ll) : null, county:String(p.county || p.city || "")}); })
-      .filter(x => inArea(x) && !/rokan hilir|kampar|bengkalis|siak|padang lawas|pasaman|lima puluh|limapuluh/i.test(x.county + " " + x.address)).slice(0, 8);
+      .filter(x => inArea(x) && (!x.county || AREAS.some(a => (x.county + " " + x.address).toLowerCase().includes(String(a.short || "").toLowerCase())))).slice(0, 8);
   },
   async resolve(it){
     if(it.pred){
@@ -3905,7 +3919,7 @@ function mountJagoMap(){
       const node = document.createElement("div"); node.className = "jmap";
       ph.replaceWith(node);
       const c = inArea(S.jago.pick) ? S.jago.pick : inArea(getProf()) ? getProf() : JAGO_CENTER;
-      const A = AREAS[0], pad = .08;
+      const A = AU, pad = .08;
       const map = L.map(node, {zoomControl:false, attributionControl:true, minZoom:10, maxBounds:[[A.s - pad, A.w - pad], [A.n + pad, A.e + pad]], maxBoundsViscosity:1}).setView([c.lat, c.lng], 15);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(map);
       map.on("click", ev => { const ll = {lat:+ev.latlng.lat.toFixed(6), lng:+ev.latlng.lng.toFixed(6)}; setJagoPoint(S.jago.mode, ll); });
@@ -4397,6 +4411,67 @@ document.addEventListener("submit", e => {
   if(v){ try{ speechSynthesis.cancel(); }catch(_){} vStop(); vHandle(v); }
 });
 
+
+/* ---------- owner: cabang / wilayah layanan ---------- */
+S.oa = {res:null, busy:false, q:""};
+function ownerAreasTab(){
+  const list = AREAS_ALL;
+  let h = '<div class="card pad"><h3 class="sub">Wilayah layanan (cabang)</h3><div class="small muted" style="margin:-4px 0 10px">Peta, pencarian lokasi, Jago, dan pengantaran hanya berlaku di cabang yang aktif. Pengguna di luar wilayah ini tidak bisa memesan.</div>'+
+    list.map((a, i) => '<div class="orow oarea"><div class="grow"><b>'+esc(a.name)+(a.prov ? ', '+esc(a.prov) : '')+'</b><small>'+(a.active !== false ? '<b style="color:#15803d">● Aktif</b>' : '<span class="muted">○ Nonaktif</span>')+' · '+a.s.toFixed(2)+'°–'+a.n.toFixed(2)+'° lintang · '+a.w.toFixed(2)+'°–'+a.e.toFixed(2)+'° BT</small></div>'+
+      '<div class="r"><button class="btn ghost sm" data-act="oa-toggle" data-v="'+i+'">'+(a.active !== false ? 'Nonaktifkan' : 'Aktifkan')+'</button>'+(list.length > 1 ? '<button class="linkbtn" data-act="oa-del" data-v="'+i+'">Hapus</button>' : '')+'</div></div>').join("")+'</div>';
+  h += '<form class="card pad" id="oaForm"><h3 class="sub">'+I("plus")+' Buka cabang baru</h3>'+
+    '<label class="f">Nama kabupaten / kota</label><div class="jsearch" style="margin-top:0"><input class="in" name="q" placeholder="Contoh: Kabupaten Kampar, Kota Pekanbaru" value="'+esc(S.oa.q)+'"><button class="btn sm"'+(S.oa.busy?' disabled':'')+'>'+(S.oa.busy?'…':'Cari')+'</button></div>'+
+    '<div class="hint">Cari wilayahnya, pilih yang benar, lalu cabang langsung aktif. Batas wilayah diambil dari OpenStreetMap.</div>';
+  if(S.oa.res) h += '<div class="jres">'+(S.oa.res.length ? S.oa.res.map((r, i) => '<button type="button" data-act="oa-add" data-v="'+i+'">'+I("pin")+'<div class="grow"><b>'+esc(r.name)+'</b><small>'+esc(r.full)+'</small></div><span class="btn sm">Buka</span></button>').join("") : '<div class="small muted" style="padding:10px">Wilayah tidak ditemukan. Tulis lengkap, misalnya “Kabupaten Kampar”.</div>')+'</div>';
+  return h + '</form>';
+}
+async function oaSave(list, msg){
+  try{ await AREA_API.save(list); setAreas(list); toast(msg); }catch(err){ toast(String(err.message || "Gagal").replace(/^.*?:\s*/, "")); }
+  render();
+}
+document.addEventListener("submit", async e => {
+  if(e.target.id !== "oaForm") return;
+  e.preventDefault();
+  const q = (new FormData(e.target).get("q") || "").trim(); S.oa.q = q;
+  if(q.length < 3) return toast("Tulis nama kabupaten/kota.");
+  S.oa.busy = true; render();
+  try{
+    const r = await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=id&limit=8&accept-language=id&addressdetails=1&q=" + encodeURIComponent(q));
+    const j = await r.json();
+    S.oa.res = (j || []).filter(x => x.category === "boundary" || x.class === "boundary" || /administrative/.test(x.type || "")).map(x => {
+      const bb = (x.boundingbox || []).map(Number), ad = x.address || {};
+      const name = String(x.name || x.display_name.split(",")[0]);
+      return {name, full:x.display_name, prov:ad.state || "", s:bb[0], n:bb[1], w:bb[2], e:bb[3]};
+    }).filter(x => [x.s, x.n, x.w, x.e].every(isFinite) && x.n - x.s < 4 && x.e - x.w < 4);
+  }catch(err){ S.oa.res = []; toast("Pencarian gagal, periksa koneksi."); }
+  S.oa.busy = false; render();
+});
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const a = el.dataset.act, i = +el.dataset.v;
+  if(a === "oa-add"){
+    const r = (S.oa.res || [])[i]; if(!r) return;
+    const short = r.name.replace(/^(kabupaten|kab\.?|kota)\s+/i, "").trim();
+    const id = short.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || ("w" + Date.now());
+    if(AREAS_ALL.some(x => x.id === id)) return toast("Cabang ini sudah ada.");
+    confirmModal("Buka cabang Jaga Toko di " + r.name + (r.prov ? ", " + r.prov : "") + "? Pengguna di wilayah ini langsung bisa memesan.", "Buka cabang", () => {
+      S.oa.res = null; S.oa.q = "";
+      oaSave(AREAS_ALL.concat([{id, name:r.name, short, prov:r.prov, s:+r.s.toFixed(4), n:+r.n.toFixed(4), w:+r.w.toFixed(4), e:+r.e.toFixed(4), active:true, createdAt:Date.now()}]), "Cabang " + short + " dibuka");
+    });
+  }
+  if(a === "oa-toggle"){
+    const list = AREAS_ALL.map(x => Object.assign({}, x)); const x = list[i]; if(!x) return;
+    x.active = x.active === false;
+    if(!list.some(y => y.active !== false)) return toast("Minimal satu cabang harus aktif.");
+    confirmModal((x.active ? "Aktifkan" : "Nonaktifkan") + " cabang " + x.name + "?", x.active ? "Aktifkan" : "Nonaktifkan", () => oaSave(list, "Cabang " + x.short + (x.active ? " diaktifkan" : " dinonaktifkan")));
+  }
+  if(a === "oa-del"){
+    const list = AREAS_ALL.filter((_, k) => k !== i);
+    if(!list.some(y => y.active !== false)) return toast("Minimal satu cabang harus aktif.");
+    confirmModal("Hapus cabang " + AREAS_ALL[i].name + "?", "Hapus", () => oaSave(list, "Cabang dihapus"));
+  }
+});
+
 /* ============ Peta live posisi driver ============ */
 let LEAF_P = null;
 function loadLeaflet(){
@@ -4684,7 +4759,8 @@ function startListening(){
     render();
   });
   if(!SB) store.listen("wallettx", rows => { if(rows){ S.walletTx = rows; if(S.sellerStoreId) loadWallet(S.sellerStoreId, S.role !== "seller"); } });
-  if(!SB) store.listen("settings", rows => { if(rows){ S.walletCfg = rows.find(r => r.id === "wallet") || null; } });
+  if(!SB) store.listen("settings", rows => { if(rows){ S.walletCfg = rows.find(r => r.id === "wallet") || null; const ar = rows.find(r => r.id === "areas"); if(ar && ar.list){ S.areasLocal = ar.list; setAreas(ar.list); } } });
+  if(SB) loadAreas();
   if(!SB) store.listen("chatmsgs", rows => { if(rows) S.chatMsgs = rows; });
   if(!SB) store.listen("drivers", rows => { if(rows) S.drivers = rows; if(S.role === "driver") drvRefresh(); });
   if(!SB) store.listen("rides", rows => { if(!rows) return; S.ridesAll = rows; setRides(rows.filter(r => r.riderId === ME).sort((a, b) => (b.createdAt||0) - (a.createdAt||0))); if(S.role === "driver") drvRefresh(); });
