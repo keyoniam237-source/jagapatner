@@ -538,6 +538,7 @@ body.app .notice{margin:12px 16px;border-radius:14px}
 .aslide.b1{background:linear-gradient(120deg,#1e4fd8 0%,#2f6bff 45%,#4f90ff 80%,#6aaeff 100%)}
 .aslide.b2{background:linear-gradient(120deg,#0b1a3d 0%,#16306e 45%,#2552b3 85%,#3a6fe0 100%)}
 .aslide.b3{background:linear-gradient(120deg,#0e7490 0%,#0ea5c6 50%,#38bdf8 100%)}
+.aslide.b4{background:linear-gradient(120deg,#15803d 0%,#16a34a 50%,#34d399 100%)}
 .adots{position:absolute;right:18px;bottom:14px;display:flex;gap:5px;z-index:2}
 .adots button{width:7px;height:7px;border-radius:99px;border:0;background:rgba(255,255,255,.5);padding:0;cursor:pointer;transition:.3s}
 .adots button.on{width:20px;background:#fff}
@@ -708,7 +709,7 @@ body.app.v-product .mcart{display:none}
 .lor{display:flex;align-items:center;gap:10px;color:#9aa6bd;font-size:12.5px;margin:18px 0}
 .lor::before,.lor::after{content:"";flex:1;height:1px;background:#e6ebf3}
 .lguest{width:100%;height:52px;border-radius:16px;border:1.5px solid #dfe6f2;background:#fff;font-weight:700;font-size:15px;cursor:pointer;color:var(--ink)}
-.lfoot{text-align:center;color:#7a869e;font-size:13px;margin-top:18px}
+.lfoot{text-align:center;color:#7a869e;font-size:13px;margin-top:18px;line-height:1.9}
 .lfoot a{color:#2f6bff;font-weight:700;cursor:pointer}
 
 /* splash */
@@ -2519,7 +2520,8 @@ function skeletonGrid(n){ let h = '<div class="agrid">'; for(let i=0;i<n;i++) h 
 const ASLIDES = [
   {c:"b1", pill:"Driver terdekat", t:"Diantar langsung dari toko", d:"Ongkir Rp2.000 per 500 m & bisa nego.", art:"scooter", cta:"Belanja sekarang", act:"scroll-prod"},
   {c:"b2", pill:"Tanpa biaya tambahan", t:"Rp0 biaya admin", d:"Bayar langsung ke toko: QRIS, transfer, e-wallet, atau COD.", art:"money"},
-  {c:"b3", pill:"Untuk pemilik toko", t:"Punya toko? Jadi Mitra", d:"Daftar gratis, bagi hasil hanya 3% per penjualan.", art:"store", cta:"Info mitra", act:"mitra-info"}
+  {c:"b3", pill:"Untuk pemilik toko", t:"Punya toko? Jadi Mitra", d:"Daftar gratis, bagi hasil hanya 3% per penjualan.", art:"store", cta:"Info mitra", act:"mitra-info"},
+  {c:"b4", pill:"Untuk pemilik motor", t:"Punya motor? Jadi Driver", d:"Daftar cukup nama, WA, plat & alamat. Bonus saldo Rp20.000.", art:"scooter", cta:"Daftar driver", act:"open-driver"}
 ];
 function appHome(){
   const prof = getProf(); const first = (prof.name||"").trim().split(/\s+/)[0];
@@ -2600,7 +2602,9 @@ function appHomeBody(){
       : aEmpty("store", "Belum ada toko", "Toko-toko di sekitarmu akan segera hadir.", '<button class="btn press" data-act="mitra-info">Punya toko? Jadi mitra</button>');
   } else h += '<div class="agrid">'+prods.map((x,i)=>appProdCard(x,i)).join("")+'</div>';
   if(!filtering) h += '<div class="pcard press" style="margin:22px 16px 0;display:flex;gap:12px;align-items:center;cursor:pointer" data-act="mitra-info">'+E("store").replace('class="e3d"','class="e3d" style="font-size:46px"')+
-    '<div class="grow"><b>Punya toko? Jualan di JAGA</b><div class="small muted">Daftar gratis · bagi hasil 3% per penjualan</div></div>'+I("chev")+'</div>';
+    '<div class="grow"><b>Punya toko? Jualan di JAGA</b><div class="small muted">Daftar gratis · bagi hasil 3% per penjualan</div></div>'+I("chev")+'</div>'+
+    '<div class="pcard press" style="margin:12px 16px 0;display:flex;gap:12px;align-items:center;cursor:pointer" data-act="open-driver">'+E("scooter").replace('class="e3d"','class="e3d" style="font-size:46px"')+
+    '<div class="grow"><b>Punya motor? Jadi driver JAGA</b><div class="small muted">Daftar cukup nama, WA, plat & alamat · bonus saldo Rp20.000</div></div>'+I("chev")+'</div>';
   return h;
 }
 
@@ -2696,7 +2700,7 @@ function appLogin(){
     '<label class="lin'+ra(5)+'">'+I("pin")+'<input name="address" placeholder="Alamat / patokan (opsional)" value="'+esc(p.address||"")+'" autocomplete="street-address"></label>'+
     '<button class="lbtn press'+ra(6)+'">Masuk</button><div class="lor">atau</div>'+
     '<button type="button" class="lguest press" data-act="guest">Lihat-lihat dulu sebagai tamu</button>'+
-    '<div class="lfoot">Punya toko? <a data-act="mitra-info">Gabung jadi mitra</a></div></form></div>';
+    '<div class="lfoot">Punya toko? <a data-act="mitra-info">Gabung jadi mitra</a><br>Punya motor? <a data-act="open-driver">Daftar jadi driver</a></div></form></div>';
 }
 function openAddrModal(){
   const p = getProf();
