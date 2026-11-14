@@ -2062,6 +2062,10 @@ function resetData(){if(ONLINE())return;S=empty();save();renderPortal();toast(L(
 try{localStorage.removeItem('jaga-demo-v1')}catch(e){}
 /* ===== API pusat (Helipod) — aktif bila settings.json berisi "api" ===== */
 const apiBase=()=>(SETTINGS.api||'').replace(/\/+$/,'');
+/* Teruskan permintaan ke CRM Jaga AI HQ (staf AI Sales/Care). Diam-diam & tidak menghambat pelanggan. */
+const HQ_LEAD='https://jaga-ai-hq.vercel.app/api/public/lead';
+function sendHQ(p){try{fetch(HQ_LEAD,{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+  body:JSON.stringify({...p,catatan:(p.catatan||'').slice(0,1500)})}).catch(()=>{})}catch(_){}}
 const ONLINE=()=>!!apiBase();
 const tokGet=()=>{try{return sessionStorage.getItem('jaga-token')||''}catch(e){return''}};
 const tokSet=t=>{try{t?sessionStorage.setItem('jaga-token',t):sessionStorage.removeItem('jaga-token')}catch(e){}};
@@ -2148,6 +2152,7 @@ $('#bookForm').addEventListener('submit',async e=>{
   const waText=[L('Halo JAGA, saya ingin meminta layanan:','Hello JAGA, I would like to request:'),`Nama: ${f.get('nama')}`,`Telp: ${f.get('telp')}`,`Wilayah: ${f.get('wilayah')}`,`Properti: ${f.get('properti')}`,`Layanan: ${f.get('layanan')}`,`Tanggal: ${f.get('tanggal')}`,f.get('catatan')?`Catatan: ${f.get('catatan')}`:''].filter(Boolean).join('\n');
   let waWin=null;if(wa0){try{waWin=window.open('about:blank','_blank')}catch(_){}}
   const goWa=id=>{if(!wa0)return;const u=`https://wa.me/${wa0}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+waText)}`;if(waWin&&!waWin.closed){try{waWin.location.href=u}catch(_){location.href=u}}else location.href=u};
+  sendHQ({nama:f.get('nama'),telp:f.get('telp'),wilayah:f.get('wilayah'),properti:f.get('properti'),layanan:f.get('layanan'),tanggal:f.get('tanggal'),catatan:f.get('catatan')||'',website:f.get('website')||''});
   if(ONLINE()){const btn=e.target.querySelector('button');btn.disabled=true;
     try{const r=await api('POST','/public/request',{nama:f.get('nama'),telp:f.get('telp'),wilayah:f.get('wilayah'),properti:f.get('properti'),layanan:f.get('layanan'),tanggal:f.get('tanggal'),catatan:f.get('catatan'),website:f.get('website')||''},false);
       goWa(r.id);e.target.reset();toast(L(`Terima kasih! Permintaan ${r.id||''} sudah kami terima. Koordinator kami akan segera menghubungi Anda.`,`Thank you! Request ${r.id||''} received. Our coordinator will contact you shortly.`))}
@@ -3025,6 +3030,7 @@ async function cleanSubmit(){
   const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');let w=null;if(wa){try{w=window.open('about:blank','_blank')}catch(_){}}
   const lines=[`Pesanan cleaning: ${x[0]}`,`Harga: ${cPrice()}`,`Wilayah: ${CB.wilayah}${CB.alamat?' — '+CB.alamat:''}`,cPin()?`Titik lokasi: ${cPin()}`:'',`Properti: ${CB.properti}`,`Jadwal: ${CB.tanggal} ${CB.jam} (${CB.durasi} jam)`,`Nama: ${name}`,`WhatsApp: ${tel}`,CB.catatan?`Catatan: ${CB.catatan}`:''].filter(Boolean);
   let id='';if(SET_READY)await SET_READY;
+  sendHQ({nama:name,telp:tel,wilayah:CB.wilayah,properti:CB.properti,layanan:x[0],tanggal:CB.tanggal,catatan:lines.join('\n'),website:CB.hp||''});
   if(ONLINE()){try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:CB.wilayah,properti:CB.properti,layanan:x[0],tanggal:CB.tanggal,jam:CB.jam,nilai:(x[5]||0)*CB.durasi,catatan:lines.join('\n'),website:CB.hp||''},false);id=r.id||''}
     catch(err){btn.disabled=false;if(w)try{w.close()}catch(_){}e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}}
   const url=wa?`https://wa.me/${wa}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+lines.join('\n'))}`:'';
@@ -3114,6 +3120,7 @@ async function chemSubmit(){
   const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');let w=null;if(wa){try{w=window.open('about:blank','_blank')}catch(_){}}
   const lines=['Pesanan chemical:',...it.map(({p,q},k)=>`${k+1}. ${p.name} (${p.size||'-'}) × ${q} = ${rp(q*(+p.price||0))}`),`Subtotal: ${rp(cartTotal())} (belum ongkir)`,'',`Nama: ${name}`,`WhatsApp: ${tel}`,CK.usaha?`Usaha/properti: ${CK.usaha}`:null,`Wilayah: ${CK.wilayah}`,`Alamat kirim: ${al}`,CK.cat?`Catatan: ${CK.cat}`:null].filter(x=>x!==null);
   let id='';if(SET_READY)await SET_READY;
+  sendHQ({nama:name,telp:tel,wilayah:CK.wilayah,properti:CK.usaha||'-',layanan:'Chemical Supplies',tanggal:new Date().toISOString().slice(0,10),catatan:lines.join('\n'),website:$('#chHp').value||''});
   if(ONLINE()){try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:CK.wilayah,properti:CK.usaha||'-',layanan:'Chemical Supplies',tanggal:iso(new Date()),nilai:cartTotal(),catatan:lines.join('\n'),website:$('#chHp').value||''},false);id=r.id||''}
     catch(err){btn.disabled=false;if(w)try{w.close()}catch(_){}e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}}
   const url=wa?`https://wa.me/${wa}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+lines.join('\n'))}`:'';
