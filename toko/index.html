@@ -1160,6 +1160,46 @@ body.is-owner .dtop{z-index:20}
 .ps-d{font-size:12px;color:#6a7894;font-weight:700;white-space:nowrap}
 .ps-foot{font-size:11px;color:#8a96ad;text-align:center;padding-top:8px}
 .jpt .jlink .ic{font-size:18px}
+
+.vcard{display:flex;gap:12px;align-items:center;width:calc(100% - 32px);margin:0 16px 12px;text-align:left;border:0;border-radius:22px;padding:14px 16px;background:linear-gradient(120deg,#16a34a,#22c55e 60%,#4ade80);color:#fff;font:inherit;cursor:pointer;box-shadow:0 14px 30px -18px rgba(22,163,74,.9)}
+.vcard.slim{width:100%;margin:0 0 12px}
+.vcard b{display:block;font-size:17px;letter-spacing:-.01em}
+.vcard small{display:block;font-size:12.5px;opacity:.92;line-height:1.35;margin-top:2px}
+.vci{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:26px;flex-shrink:0;animation:vpulse 2.2s infinite}
+@keyframes vpulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.5)}70%{box-shadow:0 0 0 14px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+.vbg{position:fixed;inset:0;z-index:60;background:linear-gradient(170deg,#0b1633,#13265a 55%,#173a8a);color:#fff;display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));overflow:auto;animation:fade .2s}
+.vbg #vbox,.vbg{max-width:100%}
+.vtop{display:flex;justify-content:space-between;align-items:center}
+.vtop span{display:flex;gap:8px;align-items:center;font-size:15px}
+.vtop .jmark{width:22px;height:auto;color:#fff}
+.vx{border:0;background:rgba(255,255,255,.12);color:#fff;width:40px;height:40px;border-radius:50%;font-size:24px;cursor:pointer}
+.vai{font-size:24px;line-height:1.35;font-weight:700;letter-spacing:-.02em;margin:22px 2px 14px;min-height:96px}
+.vopts{display:grid;gap:8px;margin-bottom:10px}
+.vopt{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:18px;padding:12px 14px;font:inherit;cursor:pointer}
+.vopt.on{background:#fff;color:#0b1633;border-color:#fff}
+.vopt .e3d{width:36px;height:36px;flex-shrink:0}
+.vopt b{display:block;font-size:16px}
+.vopt small{display:block;font-size:12.5px;opacity:.75}
+.vopt .vr{font-weight:800;font-size:14px;white-space:nowrap}
+.vyou{text-align:center;font-size:17px;color:#cfe0ff;min-height:26px;margin:auto 0 10px;font-style:italic}
+.vyou.empty{font-style:normal;opacity:.7;font-size:14px}
+.vmicwrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin:6px 0 10px}
+.vmic{width:108px;height:108px;border-radius:50%;border:0;background:#22c55e;color:#fff;font-size:46px;display:grid;place-items:center;cursor:pointer;box-shadow:0 18px 40px -14px rgba(34,197,94,.9)}
+.vmic.listen{background:#ef4444;animation:vring 1.2s infinite}
+.vmic.speak{background:#2f6bff;animation:vring 1.6s infinite}
+.vmic.busy{background:#64748b}
+.vmic.busy .ic{animation:spin 1s linear infinite}
+@keyframes vring{0%{box-shadow:0 0 0 0 rgba(255,255,255,.45)}70%{box-shadow:0 0 0 26px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.vstate{font-size:13px;opacity:.8;font-weight:600}
+.vyn{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin:6px 0 10px}
+.vyn button{border:0;border-radius:22px;padding:14px 10px;font:inherit;font-size:30px;font-weight:800;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.vyn button span{font-size:15px}
+.vno{background:#ef4444}
+.vyes{background:#22c55e}
+.vkb{align-self:center;border:0;background:none;color:#cfe0ff;font:inherit;font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;opacity:.85}
+.vtype{display:flex;gap:6px}
+.vtype .in{background:#fff}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2402,6 +2442,7 @@ function appHomeBody(){
   let h = '';
   if(!filtering){
     const ar = S.rides.find(r => RIDE_ACTIVE.includes(r.status));
+    h += '<button class="vcard press'+ra(2)+'" data-act="voice"><span class="vci">'+I("mic")+'</span><div class="grow"><b>Pesan pakai suara</b><small>Ketuk, lalu bicara: “mau ke pasar” atau “beli beras 5 kilo”</small></div></button>';
     h += '<div class="svc'+ra(2)+'"><button class="sv press" data-act="scroll-prod">'+E("cart")+'<div><b>Belanja</b><small>Antar dari toko</small></div></button>'+
       '<button class="sv jg press" data-act="nav" data-v="jago">'+E("scooter")+'<div><b>Jago</b><small>'+(ar ? esc((STATUS[ar.status]||{}).l||"Berjalan") : 'Ojek online')+'</small></div>'+(ar?'<span class="bdg">1</span>':'<span class="new">Baru</span>')+'</button></div>';
     h += '<div class="abanner'+ra(3)+'"><div class="slides" id="slides" style="transform:translateX(-'+(S.slide%ASLIDES.length*100)+'%)">'+ASLIDES.map(x =>
@@ -3574,7 +3615,8 @@ function rideNotify(rows){
     const old = S.jago.seen[r.id]; S.jago.seen[r.id] = r.status;
     if(!old || old === r.status) return;
     const m = {driver_jemput:"Driver Jago ditemukan! Sedang menuju titik jemput.", dalam_perjalanan:"Selamat jalan! Perjalanan dimulai.", selesai:"Perjalanan selesai. Terima kasih sudah naik Jago!"}[r.status];
-    if(m){ toast(m); if(r.status === "driver_jemput") ding(); }
+    if(m){ toast(m); if(r.status === "driver_jemput") ding();
+      if(typeof VA !== "undefined" && VA.used && !VA.open && window.speechSynthesis){ try{ const u = new SpeechSynthesisUtterance(m.replace("Jago", "Jago")); u.lang = "id-ID"; if(ID_VOICE) u.voice = ID_VOICE; speechSynthesis.speak(u); }catch(_){} } }
   });
 }
 function setRides(rows){
@@ -3819,7 +3861,7 @@ function appJago(){
   } else if(open){
     h += '<div class="v-wrap">'+rideCard(open)+'<button class="btn ghost block" style="margin-top:10px" data-act="ride-close">Pesan perjalanan baru</button></div>';
   } else {
-    h += '<div class="v-wrap">'+jagoForm()+'</div>';
+    h += '<div class="v-wrap"><button class="vcard slim press" data-act="voice"><span class="vci">'+I("mic")+'</span><div class="grow"><b>Pesan pakai suara</b><small>Sebutkan saja tujuannya, misalnya “antar saya ke pasar”</small></div></button>'+jagoForm()+'</div>';
   }
   const hist = S.rides.filter(r => !RIDE_ACTIVE.includes(r.status) && r.id !== (open && open.id)).slice(0, 10);
   if(hist.length) h += '<div class="v-wrap"><h2 class="sec" style="margin:18px 0 8px">Riwayat Jago</h2><div class="card pad rlist">'+hist.map(rideRow).join("")+'</div></div>';
@@ -4027,6 +4069,306 @@ document.addEventListener("submit", async e => {
   try{ const img = await compressImage(file, 1000); await DWAL.topup(amt, img); toast("Pengisian terkirim. Saldo masuk setelah dicek Jaga Toko."); f.reset(); }
   catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
   btn.disabled = false; await loadDrvWallet(); render();
+});
+
+/* ============ Asisten suara (gratis, berjalan di HP: pengenalan suara + suara bacaan bawaan browser) ============ */
+ICONS.mic = '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4M8 21h8"/>';
+ICONS.keyboard = '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M8 16h8"/>';
+const SR_CLS = window.SpeechRecognition || window.webkitSpeechRecognition;
+const VA = {open:false, step:"", ctx:{}, rec:null, listening:false, speaking:false, heard:"", used:false, typing:false};
+const vNorm = t => String(t || "").toLowerCase().replace(/[.,!?;:"'()]/g, " ").replace(/\s+/g, " ").trim();
+const YES = /\b(iya|iyah|ya|yah|yak|betul|benar|bener|boleh|oke|ok|okey|jadi|setuju|pesan|pesankan|lanjut|mau|sip|siap|gas)\b/;
+const NO = /\b(tidak|tak|nggak|ngga|gak|ga|enggak|engga|bukan|batal|jangan|salah|ganti|lain)\b/;
+const NUMW = {nol:0, kosong:0, satu:1, se:1, dua:2, tiga:3, empat:4, lima:5, enam:6, tujuh:7, delapan:8, sembilan:9, sepuluh:10, sebelas:11, "dua belas":12, setengah:0.5};
+function vNum(tok){ if(/^\d+([.,]\d+)?$/.test(tok)) return parseFloat(tok.replace(",", ".")); return NUMW[tok] != null ? NUMW[tok] : null; }
+function sayRp(n){ n = Math.round(n || 0); if(n >= 1000 && n % 1000 === 0) return (n / 1000).toLocaleString("id-ID") + " ribu rupiah"; return n.toLocaleString("id-ID") + " rupiah"; }
+function sayKm(m){ return m < 1000 ? Math.round(m / 10) * 10 + " meter" : (m / 1000).toFixed(1).replace(".", " koma ").replace(" koma 0", "") + " kilo"; }
+function callName(){ const n = (getProf().name || "").trim().split(/\s+/)[0]; return n ? n : ""; }
+
+/* ---------- bicara & mendengar ---------- */
+let ID_VOICE = null;
+function pickVoice(){ try{ const vs = speechSynthesis.getVoices(); ID_VOICE = vs.find(v => /^id(-|_)?/i.test(v.lang) && /google/i.test(v.name)) || vs.find(v => /^id/i.test(v.lang)) || null; }catch(e){} }
+try{ if(window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } }catch(e){}
+function vSay(text, then){
+  VA.ai = text; vPaint();
+  vStop();
+  if(!window.speechSynthesis){ if(then) setTimeout(then, 400); return; }
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text.replace(/Rp\s?([\d.]+)/g, (m, x) => sayRp(+x.replace(/\./g, ""))).replace(/(\d+),(\d+) km/g, "$1 koma $2 kilometer").replace(/(\d+) km/g, "$1 kilometer").replace(/(\d+) m\b/g, "$1 meter"));
+    u.lang = "id-ID"; if(ID_VOICE) u.voice = ID_VOICE; u.rate = .95; u.pitch = 1.05;
+    VA.speaking = true; vPaint();
+    let done = false; const fin = () => { if(done) return; done = true; VA.speaking = false; vPaint(); if(then && VA.open) setTimeout(then, 250); };
+    u.onend = fin; u.onerror = fin;
+    setTimeout(fin, 2500 + text.length * 120);
+    speechSynthesis.speak(u);
+  }catch(e){ VA.speaking = false; if(then) then(); }
+}
+function vStop(){ try{ if(VA.rec){ VA.rec.onend = null; VA.rec.abort(); } }catch(e){} VA.rec = null; VA.listening = false; }
+function vListen(){
+  if(!VA.open) return;
+  if(!SR_CLS || VA.typing){ VA.typing = true; vPaint(); return; }
+  vStop();
+  const r = new SR_CLS(); r.lang = "id-ID"; r.interimResults = true; r.maxAlternatives = 3; r.continuous = false;
+  let finalTxt = "";
+  r.onresult = ev => {
+    let interim = "";
+    for(let i = ev.resultIndex; i < ev.results.length; i++){ const x = ev.results[i]; if(x.isFinal) finalTxt += x[0].transcript; else interim += x[0].transcript; }
+    VA.heard = (finalTxt + " " + interim).trim(); vPaint();
+  };
+  r.onerror = ev => { VA.listening = false; VA.err = ev.error; vPaint(); };
+  r.onend = () => {
+    VA.listening = false; VA.rec = null;
+    const t = finalTxt.trim() || (VA.err ? "" : VA.heard.trim());
+    if(t){ VA.err = ""; vHandle(t); }
+    else if(VA.err === "not-allowed" || VA.err === "service-not-allowed"){ VA.hint = "Mikrofon belum diizinkan. Izinkan di pengaturan browser, atau ketik di bawah."; VA.typing = true; vPaint(); }
+    else { VA.hint = "Ketuk tombol mikrofon, lalu bicara"; vPaint(); }
+  };
+  VA.heard = ""; VA.err = ""; VA.hint = "";
+  try{ r.start(); VA.rec = r; VA.listening = true; }catch(e){ VA.listening = false; }
+  vPaint();
+}
+
+/* ---------- tampilan ---------- */
+function openVoice(){
+  VA.open = true; VA.used = true; VA.step = "start"; VA.ctx = {}; VA.heard = ""; VA.opts = null; VA.ask = null; VA.typing = !SR_CLS;
+  try{ if(!audioCtx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC) audioCtx = new AC(); } }catch(_){}
+  document.getElementById("modal").innerHTML = '<div class="vbg" id="vbox"></div>';
+  const nm = callName();
+  vSay(greet() + (nm ? ", " + nm : "") + ". Mau ke mana, atau mau pesan apa hari ini?", vListen);
+}
+function closeVoice(){ VA.open = false; vStop(); try{ speechSynthesis.cancel(); }catch(e){} closeModal(); }
+function vPaint(){
+  const box = document.getElementById("vbox"); if(!box || !VA.open) return;
+  const st = VA.listening ? "listen" : VA.speaking ? "speak" : VA.busy ? "busy" : "idle";
+  let h = '<div class="vtop"><span>'+JMARK()+'<b>Asisten Jaga</b></span><button class="vx" data-act="v-close" aria-label="Tutup">×</button></div>';
+  h += '<div class="vai">'+esc(VA.ai || "")+'</div>';
+  if(VA.opts && VA.opts.length) h += '<div class="vopts">'+VA.opts.map((o, i) => '<button class="vopt press'+(o.on?' on':'')+'" data-act="v-opt" data-v="'+i+'">'+(o.e ? E(o.e) : '')+'<div class="grow"><b>'+esc(o.t)+'</b>'+(o.s ? '<small>'+esc(o.s)+'</small>' : '')+'</div>'+(o.r ? '<span class="vr">'+esc(o.r)+'</span>' : '')+'</button>').join("")+'</div>';
+  h += '<div class="vyou'+(VA.heard ? '' : ' empty')+'">'+(VA.heard ? '“'+esc(VA.heard)+'”' : (VA.listening ? 'Silakan bicara…' : esc(VA.hint || '')))+'</div>';
+  h += '<div class="vmicwrap"><button class="vmic '+st+' press" data-act="v-mic" aria-label="Bicara">'+(st === "busy" ? I("loader") : I("mic"))+'</button>'+
+    '<div class="vstate">'+(st === "listen" ? "Mendengarkan…" : st === "speak" ? "Asisten berbicara…" : st === "busy" ? "Sedang mencari…" : "Ketuk untuk bicara")+'</div></div>';
+  if(VA.ask === "yesno") h += '<div class="vyn"><button class="vno press" data-act="v-no">✗<span>Tidak</span></button><button class="vyes press" data-act="v-yes">✓<span>Iya, pesan</span></button></div>';
+  h += VA.typing ? '<form class="vtype" id="vtype"><input class="in" name="t" autocomplete="off" placeholder="Atau ketik di sini…"><button class="btn sm">Kirim</button></form>'
+    : '<button class="vkb" data-act="v-kb">'+I("keyboard")+' Ketik saja</button>';
+  box.innerHTML = h;
+}
+
+/* ---------- memahami permintaan ---------- */
+const RIDE_W = /\b(antar(kan|in)?\s*(saya|aku|ibu|kami)|jemput|pergi|berangkat|ojek|ojeg|jago|naik motor|pulang|ke rumah|mau ke|minta antar|mau jalan)\b/;
+const SHOP_W = /\b(beli|belikan|pesan|pesankan|order|lapar|makan|minum|belanja|cari|mau)\b/;
+const FILL = new Set("saya aku ibu bu bapak pak mas mbak dek kak tolong dong ya yah deh nih sih mau ingin pengen pingin beli belikan pesan pesankan order cari carikan minta yang untuk buat hari ini sekarang juga aja saja lagi tadi nya kah yuk ayo".split(" "));
+const UNIT = /^(kilo|kg|kilogram|liter|ltr|gram|gr|ons)$/;
+function prodTokens(name){ return vNorm(name).split(" ").filter(w => w.length >= 3 && !/^\d/.test(w) && !UNIT.test(w)); }
+function tokHit(w, words){ return words.some(u => u === w || (u.length >= 4 && w.length >= 4 && (u.startsWith(w.slice(0, 4)) && w.startsWith(u.slice(0, 4))))); }
+function parseShop(text){
+  const t = vNorm(text);
+  const segs = t.split(/\s(?:dan|sama|terus|trus|plus|serta|lalu|tambah)\s|,/).map(x => x.trim()).filter(Boolean);
+  const stores = S.stores.filter(s => visibleStore(s) && s.open !== false);
+  let best = null;
+  stores.forEach(s => {
+    const prods = (S.products[s.id] || []).filter(p => p.active !== false && !(typeof p.stock === "number" && p.stock <= 0));
+    const items = [];
+    segs.forEach(seg => {
+      const words = seg.split(" ").filter(w => !FILL.has(w));
+      if(!words.length) return;
+      let top = null;
+      prods.forEach(p => {
+        const pt = prodTokens(p.name); if(!pt.length) return;
+        const hit = pt.filter(w => tokHit(w, words)).length;
+        if(!hit) return;
+        const score = hit / pt.length + hit * .5;
+        if(!top || score > top.score) top = {p, score};
+      });
+      if(!top) return;
+      let qty = 1;
+      for(let i = 0; i < words.length; i++){
+        const n = vNum(words[i]); if(n == null) continue;
+        const next = words[i + 1] || "";
+        const inName = vNorm(top.p.name).includes(String(n)) && (UNIT.test(next) || /^\d/.test(words[i]));
+        if(!inName && n >= 1 && n <= 50 && Number.isInteger(n)) qty = n;
+        break;
+      }
+      if(!items.some(x => x.p.id === top.p.id)) items.push({p:top.p, qty, score:top.score});
+    });
+    if(!items.length) return;
+    const cod = payMethodsOf(s).some(m => m.k === "cod");
+    const sc = items.reduce((a, x) => a + x.score, 0) + (cod ? .3 : 0);
+    if(!best || sc > best.sc) best = {s, items, cod, sc};
+  });
+  return best;
+}
+function rideDest(text){
+  const t = vNorm(text);
+  let m = t.match(/(?:^|\s)(?:ke|kek|menuju|arah)\s+(.+)$/);
+  let d = m ? m[1] : "";
+  if(!d && /\bpulang\b/.test(t)) return "";
+  d = d.split(" ").filter(w => !["ya","dong","sekarang","bang","pak","bu","mas","deh","aja","saja","tolong"].includes(w)).join(" ").trim();
+  return d;
+}
+async function vHandle(text){
+  VA.heard = text; VA.opts = null; vPaint();
+  const t = vNorm(text);
+  const step = VA.step;
+  if(/\b(tutup|keluar|sudah|udah|selesai|nggak jadi|gak jadi|batal)\b/.test(t) && !["confirm-ride","confirm-shop","pick-dest"].includes(step)){ vSay("Baik. Sampai jumpa lagi.", closeVoice); return; }
+  if(step === "ask-name"){ const nm = text.replace(/^(nama (saya|aku|ibu)( adalah)?|saya|aku)\s+/i, "").trim().replace(/\b\w/g, c => c.toUpperCase()); setProf(Object.assign(getProf(), {name:nm})); VA.step = VA.after; return vNext(); }
+  if(step === "ask-wa"){
+    let digits = text.replace(/\D/g, "");
+    if(digits.length < 9){ digits = vNorm(text).split(" ").map(w => { const n = vNum(w); return n != null && n < 10 && Number.isInteger(n) ? String(n) : /^\d+$/.test(w) ? w : ""; }).join(""); }
+    if(digits.length < 9 || digits.length > 14){ vSay("Maaf, nomornya belum lengkap. Coba sebutkan nomor WhatsApp pelan-pelan.", vListen); return; }
+    if(digits.startsWith("62")) digits = "0" + digits.slice(2);
+    setProf(Object.assign(getProf(), {wa:digits})); VA.step = VA.after; return vNext();
+  }
+  if(step === "confirm-ride" || step === "confirm-shop"){
+    if(NO.test(t) && !/\bmau\b/.test(t.replace(/\b(tidak|nggak|gak|enggak) mau\b/, ""))) return vNo();
+    if(YES.test(t)) return vYes();
+    // jawaban lain dianggap permintaan baru
+  }
+  if(step === "pick-dest"){
+    if(NO.test(t)) return vNo();
+    if(YES.test(t)) return vYes();
+    const n = t.match(/\b(pertama|kedua|ketiga|satu|dua|tiga|1|2|3)\b/);
+    if(n){ const i = {pertama:0, satu:0, "1":0, kedua:1, dua:1, "2":1, ketiga:2, tiga:2, "3":2}[n[1]]; if(VA.ctx.places && VA.ctx.places[i]){ VA.ctx.idx = i; return vRideOffer(); } }
+  }
+  if(step === "which"){
+    if(/\b(pergi|ojek|jago|antar|jalan|ke)\b/.test(t) && !/\bbeli|belanja\b/.test(t)){ VA.step = "ask-dest"; vSay("Ibu mau ke mana? Sebutkan nama tempatnya.", vListen); return; }
+    if(/\b(beli|belanja|pesan|makan|minum)\b/.test(t) && !rideDest(t) && t.split(" ").length <= 2){ VA.step = "ask-item"; vSay("Mau beli apa? Sebutkan nama barangnya.", vListen); return; }
+  }
+  if(step === "ask-dest"){ return vStartRide(rideDest(t) || t.replace(/^(ke|mau ke)\s+/, "")); }
+  // permintaan baru
+  const dest = rideDest(t);
+  const wantsRide = RIDE_W.test(t) || (!!dest && !/\b(beli|belanja|pesan)\b/.test(t));
+  const shop = step === "ask-item" || !wantsRide ? parseShop(t) : null;
+  if(wantsRide && dest) return vStartRide(dest);
+  if(wantsRide && !dest){ VA.step = "ask-dest"; vSay("Baik. Ibu mau ke mana? Sebutkan nama tempatnya.", vListen); return; }
+  if(shop) return vStartShop(shop);
+  if(SHOP_W.test(t) || step === "ask-item"){ VA.step = "ask-item"; vSay("Maaf, barang itu belum ketemu di toko sekitar. Coba sebutkan nama barang lain, atau sebut lebih singkat. Misalnya, beras, atau mie ayam.", vListen); return; }
+  VA.step = "which";
+  VA.opts = [{e:"scooter", t:"Mau pergi (ojek Jago)", act:"ride"}, {e:"cart", t:"Mau beli sesuatu", act:"shop"}];
+  vSay("Maaf, saya belum paham. Ibu mau pergi ke suatu tempat, atau mau beli sesuatu?", vListen);
+}
+
+/* ---------- alur ojek ---------- */
+async function vStartRide(dest){
+  if(!dest){ VA.step = "ask-dest"; vSay("Ibu mau ke mana? Sebutkan nama tempatnya.", vListen); return; }
+  if(S.rides.some(r => RIDE_ACTIVE.includes(r.status))){ vSay("Ibu masih punya perjalanan Jago yang berjalan. Saya bukakan halamannya ya.", () => { closeVoice(); go("jago"); }); return; }
+  VA.busy = true; VA.ai = "Mencari " + dest + "…"; vPaint();
+  let pick = null;
+  try{ pick = await getPos(); setProf(Object.assign(getProf(), pick)); }
+  catch(e){ VA.busy = false; vSay("Lokasi Ibu belum ketemu. Nyalakan GPS di HP, lalu coba lagi.", vListen); VA.step = "ask-dest"; return; }
+  let list = [];
+  try{ list = await PLACE.suggest(dest, pick); }catch(e){}
+  list = list.filter(x => x.dist == null || x.dist < 60000).slice(0, 3);
+  VA.busy = false;
+  if(!list.length){ VA.step = "ask-dest"; vSay("Maaf, tempat " + dest + " belum ketemu. Coba sebutkan nama tempat lain yang dekat, misalnya nama masjid, pasar, atau sekolah.", vListen); return; }
+  const places = [];
+  for(const it of list){ try{ places.push(Object.assign(await PLACE.resolve(it), {name:it.name})); }catch(e){} }
+  if(!places.length){ VA.step = "ask-dest"; vSay("Maaf, tempatnya belum ketemu. Coba sebutkan lagi.", vListen); return; }
+  VA.ctx = {pick, places, idx:0};
+  vRideOffer();
+}
+function vRideOffer(){
+  const c = VA.ctx, p = c.places[c.idx], d = distM(c.pick, p), fare = ongkirByDist(d);
+  c.dist = d; c.fare = fare;
+  VA.opts = c.places.map((x, i) => ({e:i === c.idx ? "pin" : "", t:x.name, s:shortAddr(x.address), r:kmTxt(distM(c.pick, x)), on:i === c.idx, act:"place", i}));
+  if(d < 100){ VA.step = "ask-dest"; vSay("Tempat itu dekat sekali dari posisi Ibu sekarang. Coba sebutkan tujuan lain.", vListen); return; }
+  const prof = getProf();
+  if(!prof.name){ VA.step = "ask-name"; VA.after = "ride-offer"; vSay("Sebelum memesan, siapa nama Ibu?", vListen); return; }
+  if(!prof.wa){ VA.step = "ask-wa"; VA.after = "ride-offer"; vSay("Nomor WhatsApp Ibu berapa? Supaya driver bisa menelepon.", vListen); return; }
+  VA.step = "confirm-ride"; VA.ask = "yesno";
+  vSay("Ke " + p.name + ", " + shortAddr(p.address).split(",").slice(1, 2).join("") + ". Jaraknya " + kmTxt(d) + ", ongkosnya sekitar " + rp(fare) + ", bayar tunai ke driver. Ibu dijemput di lokasi sekarang. Pesan sekarang?", vListen);
+}
+async function vBookRide(){
+  const c = VA.ctx, p = c.places[c.idx], prof = getProf();
+  VA.busy = true; VA.ask = null; VA.ai = "Memesan Jago…"; vPaint();
+  try{
+    const addr = await PLACE.reverse(c.pick);
+    const r = await RIDE.create(uid("r"), {riderId:ME, rider:{name:prof.name, wa:prof.wa}, pickup:{lat:c.pick.lat, lng:c.pick.lng, address:addr || ""}, dest:{lat:p.lat, lng:p.lng, address:p.address}, note:"Dipesan lewat suara"});
+    if(r && r.id) S.jago.seen[r.id] = r.status;
+    if(SB) await rideRefresh();
+    VA.busy = false; VA.step = "done";
+    vSay("Sudah dipesan. Saya sedang mencari driver terdekat. Nanti saya kabari kalau driver sudah ditemukan.", () => { closeVoice(); go("jago"); });
+  }catch(e){ VA.busy = false; vSay("Maaf, pesanan gagal. " + String(e.message || "").replace(/^.*?:\s*/, ""), vListen); }
+}
+
+/* ---------- alur belanja ---------- */
+function vStartShop(m){
+  const items = m.items.map(x => ({pid:x.p.id, name:x.p.name, price:x.p.price, img:x.p.img || "", qty:x.qty}));
+  const sub = items.reduce((a, x) => a + x.price * x.qty, 0);
+  VA.ctx = {s:m.s, items, sub, cod:m.cod};
+  VA.opts = items.map(x => ({e:catE(m.s.category), t:x.qty + "× " + x.name, r:rp(x.price * x.qty)}));
+  const prof = getProf();
+  if(!prof.name){ VA.step = "ask-name"; VA.after = "shop-offer"; vSay("Sebelum memesan, siapa nama Ibu?", vListen); return; }
+  if(!prof.wa){ VA.step = "ask-wa"; VA.after = "shop-offer"; vSay("Nomor WhatsApp Ibu berapa? Supaya toko dan driver bisa menghubungi.", vListen); return; }
+  vShopOffer();
+}
+function vShopOffer(){
+  const c = VA.ctx;
+  VA.opts = c.items.map(x => ({e:catE(c.s.category), t:x.qty + "× " + x.name, r:rp(x.price * x.qty)}));
+  VA.step = "confirm-shop"; VA.ask = "yesno";
+  const list = c.items.map(x => x.qty + " " + x.name).join(", ");
+  vSay("Di " + c.s.name + ": " + list + ". Totalnya " + rp(c.sub) + ", ditambah ongkir dua ribu rupiah per lima ratus meter. " + (c.cod ? "Bayar di tempat saat barang sampai. " : "") + "Pesan sekarang?", vListen);
+}
+async function vPlaceShop(){
+  const c = VA.ctx, prof = getProf();
+  S.cart = {storeId:c.s.id, items:{}}; c.items.forEach(x => S.cart.items[x.pid] = x); saveCart();
+  if(!c.cod){ VA.step = "done"; VA.ask = null; vSay("Toko ini belum menerima bayar di tempat. Barangnya sudah saya masukkan ke keranjang. Minta bantuan keluarga untuk menyelesaikan pembayarannya, ya.", () => { closeVoice(); go("cart"); }); return; }
+  VA.busy = true; VA.ask = null; VA.ai = "Mengambil lokasi Ibu…"; vPaint();
+  let loc = null; try{ loc = await getPos(); }catch(e){}
+  let address = prof.address || "";
+  if(!address && loc) address = await PLACE.reverse(loc);
+  if(!address){ VA.busy = false; VA.step = "done"; vSay("Lokasi Ibu belum ketemu. Barang sudah di keranjang. Nyalakan GPS, lalu tekan tombol pesan di halaman keranjang.", () => { closeVoice(); go("cart"); }); return; }
+  const f = document.createElement("form");
+  const add = (n, v) => { const i = document.createElement("input"); i.name = n; i.value = v == null ? "" : v; f.appendChild(i); };
+  add("name", prof.name); add("wa", prof.wa); add("address", address); add("note", "Dipesan lewat suara"); add("pay", "cod");
+  if(loc){ add("blat", loc.lat); add("blng", loc.lng); }
+  VA.ai = "Mengirim pesanan…"; vPaint();
+  const before = S.view;
+  await placeOrder(f);
+  VA.busy = false;
+  if(S.view === "order" && before !== "order"){ VA.step = "done"; VA.open = true; document.getElementById("modal").innerHTML = '<div class="vbg" id="vbox"></div>'; vSay("Pesanan sudah dikirim ke " + c.s.name + ". Tunggu toko mengonfirmasi, lalu driver akan mengantar ke tempat Ibu.", closeVoice); }
+  else { VA.open = true; document.getElementById("modal").innerHTML = '<div class="vbg" id="vbox"></div>'; vSay("Maaf, pesanan belum berhasil. Coba lagi sebentar.", vListen); }
+}
+
+/* ---------- jawaban iya / tidak ---------- */
+function vNext(){ if(VA.after === "ride-offer") return vRideOffer(); if(VA.after === "shop-offer") return vShopOffer(); }
+function vYes(){
+  if(VA.step === "confirm-ride" || VA.step === "pick-dest") return vBookRide();
+  if(VA.step === "confirm-shop") return vPlaceShop();
+}
+function vNo(){
+  VA.ask = null;
+  if(VA.step === "confirm-ride" || VA.step === "pick-dest"){
+    const c = VA.ctx;
+    if(c.places && c.idx < c.places.length - 1){ c.idx++; VA.step = "pick-dest"; return vRideOffer(); }
+    VA.step = "ask-dest"; VA.opts = null; vSay("Baik. Coba sebutkan lagi nama tempat tujuannya, lebih lengkap.", vListen); return;
+  }
+  if(VA.step === "confirm-shop"){ VA.step = "ask-item"; VA.opts = null; vSay("Baik, tidak jadi. Mau beli apa? Sebutkan lagi nama barangnya.", vListen); return; }
+}
+
+/* ---------- aksi ---------- */
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const a = el.dataset.act;
+  if(a === "voice"){ openVoice(); return; }
+  if(!VA.open) return;
+  if(a === "v-close"){ closeVoice(); return; }
+  if(a === "v-mic"){ if(SR_CLS) VA.typing = false; if(VA.listening){ try{ VA.rec.stop(); }catch(_){} return; } try{ speechSynthesis.cancel(); }catch(_){} VA.speaking = false; vListen(); return; }
+  if(a === "v-yes"){ try{ speechSynthesis.cancel(); }catch(_){} vStop(); vYes(); return; }
+  if(a === "v-no"){ try{ speechSynthesis.cancel(); }catch(_){} vStop(); vNo(); return; }
+  if(a === "v-kb"){ VA.typing = true; vStop(); vPaint(); setTimeout(() => { const i = document.querySelector("#vtype input"); if(i) i.focus(); }, 50); return; }
+  if(a === "v-opt"){
+    const o = (VA.opts || [])[+el.dataset.v]; if(!o) return;
+    try{ speechSynthesis.cancel(); }catch(_){} vStop();
+    if(o.act === "ride"){ VA.step = "ask-dest"; VA.opts = null; vSay("Ibu mau ke mana? Sebutkan nama tempatnya.", vListen); }
+    else if(o.act === "shop"){ VA.step = "ask-item"; VA.opts = null; vSay("Mau beli apa? Sebutkan nama barangnya.", vListen); }
+    else if(o.act === "place"){ VA.ctx.idx = o.i; vRideOffer(); }
+  }
+});
+document.addEventListener("submit", e => {
+  if(e.target.id !== "vtype") return;
+  e.preventDefault();
+  const i = e.target.querySelector("input"), v = i.value.trim(); i.value = "";
+  if(v){ try{ speechSynthesis.cancel(); }catch(_){} vStop(); vHandle(v); }
 });
 
 /* ============ Peta live posisi driver ============ */
