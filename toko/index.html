@@ -1104,7 +1104,8 @@ body.is-owner .dtop{z-index:20}
 .jmap{height:270px;width:100%;background:#e8eef8;position:relative;z-index:0;isolation:isolate}
 .jmaphint{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:5;background:rgba(15,27,45,.82);color:#fff;font-size:12px;font-weight:700;border-radius:99px;padding:5px 12px;pointer-events:none;white-space:nowrap}
 .jgps{position:absolute;right:10px;bottom:10px;z-index:5;width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:#1f4fd1;font-size:20px;display:grid;place-items:center;box-shadow:0 6px 16px -6px rgba(10,22,51,.5);cursor:pointer}
-.jpts{display:grid;gap:6px;margin-top:10px}
+.jpts{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin-top:10px}
+.jpt{min-width:0;width:100%}
 .jpt{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:#f8faff;border-radius:14px;padding:10px 12px;font:inherit;color:inherit;cursor:pointer}
 .jpt.on{border-color:#2f6bff;background:#fff;box-shadow:0 0 0 3px rgba(47,107,255,.14)}
 .jpt small{display:block;color:#6a7894;font-size:11.5px}
@@ -1137,6 +1138,28 @@ body.is-owner .dtop{z-index:20}
 .mk-dest .mkin{border-color:#f59e0b}
 .wchip.dw{margin:0 16px 10px}
 .dbar{position:static;background:none;padding:6px 12px 0}
+
+.psbg{align-items:flex-end;padding:0}
+.psheet{max-width:560px;border-radius:24px 24px 0 0;padding:16px 16px calc(14px + env(safe-area-inset-bottom));height:88vh;max-height:88vh;display:flex;flex-direction:column;animation:sheetup .25s cubic-bezier(.2,.8,.2,1)}
+@keyframes sheetup{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.ps-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ps-head b{flex:1;font-size:18px;letter-spacing:-.02em}
+.ps-x{border:0;background:#eef2f9;width:36px;height:36px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer;color:#0f1b2d}
+.ps-in{display:flex;align-items:center;gap:10px;border:2px solid #2f6bff;border-radius:16px;padding:0 14px;background:#fff;box-shadow:0 0 0 4px rgba(47,107,255,.12)}
+.ps-in .ic{color:#5b6a86;font-size:18px;flex-shrink:0}
+.ps-in input{flex:1;border:0;outline:0;font:inherit;font-size:16px;padding:13px 0;background:none;min-width:0}
+.ps-quick{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.ps-quick button{display:flex;gap:6px;align-items:center;border:1px solid var(--line);background:#f8faff;border-radius:99px;padding:8px 12px;font:inherit;font-size:13px;font-weight:700;color:#1f4fd1;cursor:pointer}
+.ps-res{flex:1;overflow:auto;margin:0 -4px;padding:0 4px}
+.ps-t{font-size:12.5px;color:#6a7894;font-weight:700;padding:12px 2px 6px;display:flex;gap:6px;align-items:center}
+.ps-row{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid #eef1f6;background:none;padding:12px 2px;font:inherit;color:inherit;cursor:pointer}
+.ps-row .ic{color:#f59e0b;font-size:18px;flex-shrink:0}
+.ps-row b{display:block;font-size:14.5px}
+.ps-row small{display:block;color:#6a7894;font-size:12.5px;line-height:1.35}
+.ps-row.busy{opacity:.5}
+.ps-d{font-size:12px;color:#6a7894;font-weight:700;white-space:nowrap}
+.ps-foot{font-size:11px;color:#8a96ad;text-align:center;padding-top:8px}
+.jpt .jlink .ic{font-size:18px}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -3576,23 +3599,137 @@ setInterval(() => {
 }, 5000);
 setInterval(() => { if(!document.hidden && SB && S.role !== "driver" && S.role !== "owner") rideRefresh(); }, 30000);
 
-/* ---------- geocoding (OpenStreetMap) ---------- */
-async function revGeo(c){
-  try{
-    const r = await fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&accept-language=id&lat=" + c.lat + "&lon=" + c.lng);
+/* ---------- pencarian lokasi: Google Maps (jika ada kunci) atau OpenStreetMap ---------- */
+const GKEY = String(CFG.googleMapsKey || "").trim();
+let GM_P = null, GM_FAIL = false, GM_TOKEN = null;
+function loadGoogle(){
+  if(!GKEY || GM_FAIL) return Promise.reject(new Error("no-google"));
+  if(GM_P) return GM_P;
+  GM_P = new Promise((res, rej) => {
+    window.__jtGm = async () => { try{ await google.maps.importLibrary("places"); await google.maps.importLibrary("geocoding"); res(); }catch(e){ rej(e); } };
+    window.gm_authFailure = () => { GM_FAIL = true; };
+    const sc = document.createElement("script");
+    sc.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(GKEY) + "&v=weekly&language=id&region=ID&loading=async&callback=__jtGm";
+    sc.onerror = () => { GM_P = null; rej(new Error("gmaps")); };
+    document.head.appendChild(sc);
+  });
+  return GM_P;
+}
+const usingGoogle = () => !!GKEY && !GM_FAIL;
+const photonAddr = p => [p.name, [p.street, p.housenumber].filter(Boolean).join(" "), p.district || p.locality, p.city || p.county, p.state].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
+const PLACE = {
+  async suggest(q, near){
+    const c = near || JAGO_CENTER;
+    if(usingGoogle()){
+      try{
+        await loadGoogle();
+        if(!GM_TOKEN) GM_TOKEN = new google.maps.places.AutocompleteSessionToken();
+        const {suggestions} = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions({input:q, sessionToken:GM_TOKEN, language:"id", region:"id", includedRegionCodes:["id"],
+          locationBias:{center:{lat:c.lat, lng:c.lng}, radius:30000}, origin:{lat:c.lat, lng:c.lng}});
+        return (suggestions || []).filter(x => x.placePrediction).slice(0, 8).map(x => { const p = x.placePrediction;
+          return {name:(p.mainText && p.mainText.text) || p.text.text, address:(p.secondaryText && p.secondaryText.text) || "", dist:near ? p.distanceMeters : null, pred:p}; });
+      }catch(e){ if(GM_FAIL) return this.suggest(q, near); throw e; }
+    }
+    const r = await fetch("https://photon.komoot.io/api/?limit=8&bbox=94.5,-11.5,141.5,6.5&lat=" + c.lat + "&lon=" + c.lng + "&q=" + encodeURIComponent(q));
     const j = await r.json();
-    const a = j.address || {};
-    const parts = [a.road || a.pedestrian || a.neighbourhood || a.amenity || a.building || j.name, a.village || a.suburb || a.hamlet, a.town || a.city || a.county].filter(Boolean);
-    return parts.slice(0, 3).join(", ") || (j.display_name || "").split(",").slice(0, 3).join(",");
-  }catch(e){ return ""; }
+    return (j.features || []).map(f => { const p = f.properties || {}, a = photonAddr(p), ll = {lat:+f.geometry.coordinates[1].toFixed(6), lng:+f.geometry.coordinates[0].toFixed(6)};
+      return Object.assign(ll, {name:a[0] || q, address:a.slice(1, 4).join(", "), dist:near ? distM(c, ll) : null}); });
+  },
+  async resolve(it){
+    if(it.pred){
+      const pl = it.pred.toPlace();
+      await pl.fetchFields({fields:["location","displayName","formattedAddress"]});
+      GM_TOKEN = null;
+      const nm = pl.displayName || it.name, fa = String(pl.formattedAddress || it.address || "");
+      return {lat:+pl.location.lat().toFixed(6), lng:+pl.location.lng().toFixed(6), address:fa.toLowerCase().startsWith(String(nm).toLowerCase()) ? fa : nm + ", " + fa};
+    }
+    return {lat:it.lat, lng:it.lng, address:[it.name, it.address].filter(Boolean).join(", ")};
+  },
+  async reverse(c){
+    if(usingGoogle()){
+      try{
+        await loadGoogle();
+        const {results} = await new google.maps.Geocoder().geocode({location:{lat:c.lat, lng:c.lng}, language:"id"});
+        if(results && results[0]) return results[0].formatted_address.split(",").slice(0, 3).join(",").trim();
+      }catch(e){}
+    }
+    try{
+      const r = await fetch("https://photon.komoot.io/reverse?lat=" + c.lat + "&lon=" + c.lng);
+      const j = await r.json(); const p = ((j.features || [])[0] || {}).properties;
+      if(p){ const a = photonAddr(p); if(a.length) return a.slice(0, 3).join(", "); }
+    }catch(e){}
+    try{
+      const r = await fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&accept-language=id&lat=" + c.lat + "&lon=" + c.lng);
+      const j = await r.json(); return (j.display_name || "").split(",").slice(0, 3).join(",");
+    }catch(e){ return ""; }
+  }
+};
+const revGeo = c => PLACE.reverse(c);
+const gmLink = c => "https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng;
+
+/* ---------- lembar pencarian lokasi ---------- */
+let PS_T = null, PS_Q = "";
+function recentPlaces(kind){
+  const out = [], seen = new Set();
+  S.rides.forEach(r => [r.dest, r.pickup].forEach(p => { if(!locOk(p) || !p.address) return; const k = p.address; if(seen.has(k)) return; seen.add(k); out.push({lat:p.lat, lng:p.lng, name:shortAddr(p.address).split(",")[0], address:p.address, recent:true}); }));
+  return out.slice(0, 5);
 }
-async function fwdGeo(q, near){
-  const c = near || JAGO_CENTER, d = 0.35;
-  const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=id&accept-language=id&viewbox=" + (c.lng - d) + "," + (c.lat + d) + "," + (c.lng + d) + "," + (c.lat - d) + "&q=" + encodeURIComponent(q);
-  const r = await fetch(url); const j = await r.json();
-  return (j || []).map(x => ({lat:+(+x.lat).toFixed(6), lng:+(+x.lon).toFixed(6), name:(x.name || x.display_name.split(",")[0]), address:x.display_name.split(",").slice(0, 3).join(",")}))
-    .sort((a, b) => distM(c, a) - distM(c, b));
+function psRows(list, title){
+  S.jago.sugg = list;
+  if(!list.length) return '';
+  return (title ? '<div class="ps-t">'+title+'</div>' : '') + list.map((r, i) => '<button class="ps-row" data-act="ps-pick" data-v="'+i+'">'+(r.recent ? I("clock") : I("pin"))+'<div class="grow"><b>'+esc(r.name)+'</b><small>'+esc(r.address || "")+'</small></div>'+(r.dist != null && r.dist < 300000 ? '<span class="ps-d">'+kmTxt(r.dist)+'</span>' : '')+'</button>').join("");
 }
+function openPlaceSheet(kind){
+  S.jago.sheet = kind; S.jago.mode = kind; S.jago.touched = true; PS_Q = "";
+  const pk = kind === "pick";
+  const rec = recentPlaces(kind);
+  document.getElementById("modal").innerHTML = '<div class="modal-bg psbg" data-act="modal-bg"><div class="modal psheet">'+
+    '<div class="ps-head"><i class="dot '+(pk ? "a" : "b")+'"></i><b>'+(pk ? "Jemput di mana?" : "Mau ke mana?")+'</b><button class="ps-x" data-act="ps-close" aria-label="Tutup">×</button></div>'+
+    '<label class="ps-in">'+I("search")+'<input id="psq" type="search" enterkeyhint="search" autocomplete="off" placeholder="'+(pk ? "Cari lokasi jemput: jalan, masjid, toko…" : "Cari tujuan: pasar, sekolah, rumah sakit…")+'"></label>'+
+    '<div class="ps-quick">'+(pk ? '<button data-act="ps-gps">'+I("pin")+' Pakai lokasi saya sekarang</button>' : '')+'<button data-act="ps-map">'+I("grid")+' Pilih di peta</button></div>'+
+    '<div id="psres" class="ps-res">'+psRows(rec, rec.length ? "Terakhir dipakai" : "")+'</div>'+
+    '<div class="ps-foot">'+(usingGoogle() ? 'Hasil pencarian dari Google Maps' : 'Data peta © OpenStreetMap')+'</div></div></div>';
+  const inp = document.getElementById("psq"); setTimeout(() => { try{ inp.focus(); }catch(e){} }, 60);
+  if(usingGoogle()) loadGoogle().catch(() => {});
+}
+async function psSearch(q){
+  const box = document.getElementById("psres"); if(!box) return;
+  PS_Q = q;
+  if(q.length < 2){ const rec = recentPlaces(); box.innerHTML = psRows(rec, rec.length ? "Terakhir dipakai" : ""); return; }
+  box.innerHTML = '<div class="ps-t">'+I("loader")+' Mencari…</div>';
+  const near = S.jago.pick || (locOk(getProf()) ? getProf() : null);
+  try{
+    const list = await PLACE.suggest(q, near);
+    if(PS_Q !== q || !document.getElementById("psres")) return;
+    box.innerHTML = list.length ? psRows(list, "") : '<div class="ps-t">Tidak ketemu. Coba kata lain, atau ketuk “Pilih di peta”.</div>';
+  }catch(e){ if(PS_Q === q) box.innerHTML = '<div class="ps-t">Pencarian gagal. Periksa koneksi internet.</div>'; }
+}
+document.addEventListener("input", e => { if(e.target.id !== "psq") return; clearTimeout(PS_T); const q = e.target.value.trim(); PS_T = setTimeout(() => psSearch(q), 320); });
+document.addEventListener("keydown", e => { if(e.target.id === "psq" && e.key === "Enter"){ e.preventDefault(); clearTimeout(PS_T); psSearch(e.target.value.trim()); } });
+document.addEventListener("click", async e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const a = el.dataset.act;
+  if(a === "jago-sheet"){ openPlaceSheet(el.dataset.v); return; }
+  if(a === "ps-close"){ closeModal(); return; }
+  if(a === "ps-map"){ closeModal(); render(); toast(S.jago.mode === "pick" ? "Ketuk peta atau geser pin biru untuk titik jemput" : "Ketuk peta untuk memilih tujuan"); const m = document.querySelector(".jmapbox"); if(m) m.scrollIntoView({behavior:"smooth", block:"center"}); return; }
+  if(a === "ps-gps"){
+    el.disabled = true; el.innerHTML = I("loader") + " Mengambil lokasi…";
+    try{ const c = await getPos(); setProf(Object.assign(getProf(), c)); closeModal(); await setJagoPoint("pick", c); if(JMAP) JMAP.map.setView([c.lat, c.lng], 16); if(!S.jago.dest) openPlaceSheet("dest"); }
+    catch(err){ toast(err.message); el.disabled = false; el.innerHTML = I("pin") + " Pakai lokasi saya sekarang"; }
+    return;
+  }
+  if(a === "ps-pick"){
+    const it = (S.jago.sugg || [])[+el.dataset.v], kind = S.jago.sheet; if(!it) return;
+    el.classList.add("busy");
+    try{
+      const c = await PLACE.resolve(it);
+      closeModal();
+      await setJagoPoint(kind, c, c.address);
+      if(kind === "pick" && !S.jago.dest) openPlaceSheet("dest");
+    }catch(err){ el.classList.remove("busy"); toast("Lokasi tidak bisa diambil, coba pilih yang lain."); }
+  }
+});
+
 async function setJagoPoint(kind, c, address){
   S.jago[kind] = {lat:c.lat, lng:c.lng, address:address || ""};
   if(kind === "pick" && !S.jago.dest) S.jago.mode = "dest";
@@ -3651,13 +3788,9 @@ function jagoForm(){
   h += '<div class="jmapbox"><div data-jmap="1" class="jmap"></div><div class="jmaphint">'+(J.mode === "pick" ? "Ketuk peta untuk titik jemput" : "Ketuk peta untuk tujuan")+'</div>'+
     '<button class="jgps press" data-act="jago-gps" aria-label="Lokasi saya">'+I("pin")+'</button></div>';
   h += '<div class="jpts">'+
-    '<button class="jpt'+(J.mode==="pick"?" on":"")+'" data-act="jago-mode" data-v="pick"><i class="dot a"></i><div class="grow"><small>Titik jemput</small><b>'+(J.pick ? esc(J.pick.address || "Mencari nama jalan…") : (J.gps ? "Mengambil lokasi…" : "Pakai lokasi saya / ketuk peta"))+'</b></div>'+
-      (!J.pick ? '<span class="jlink" data-act="jago-gps">'+I("pin")+' GPS</span>' : '')+'</button>'+
-    '<button class="jpt'+(J.mode==="dest"?" on":"")+'" data-act="jago-mode" data-v="dest"><i class="dot b"></i><div class="grow"><small>Tujuan</small><b>'+(J.dest ? esc(J.dest.address || "Mencari nama jalan…") : "Cari tempat atau ketuk peta")+'</b></div></button></div>';
-  h += '<form class="jsearch" id="jagoSearch"><input class="in" name="q" id="jq" placeholder="Cari tujuan: masjid, pasar, sekolah, jalan…" autocomplete="off" value="'+esc(J.q)+'"><button class="btn sm press"'+(J.searching?' disabled':'')+'>'+(J.searching?'…':'Cari')+'</button></form>';
-  if(J.res){
-    h += '<div class="jres">'+(J.res.length ? J.res.map((r, i) => '<button data-act="jago-res" data-v="'+i+'">'+I("pin")+'<div class="grow"><b>'+esc(r.name)+'</b><small>'+esc(r.address)+(J.pick ? ' · '+kmTxt(distM(J.pick, r)) : '')+'</small></div></button>').join("") : '<div class="small muted" style="padding:10px 4px">Tidak ketemu. Coba kata lain, atau ketuk langsung di peta.</div>')+'</div>';
-  }
+    '<button class="jpt'+(J.mode==="pick"?" on":"")+'" data-act="jago-sheet" data-v="pick"><i class="dot a"></i><div class="grow"><small>Titik jemput</small><b>'+(J.pick ? esc(J.pick.address || "Mencari nama jalan…") : (J.gps ? "Mengambil lokasi…" : "Ketuk untuk cari lokasi jemput"))+'</b></div>'+
+      '<span class="jlink">'+I("search")+'</span></button>'+
+    '<button class="jpt'+(J.mode==="dest"?" on":"")+'" data-act="jago-sheet" data-v="dest"><i class="dot b"></i><div class="grow"><small>Tujuan</small><b>'+(J.dest ? esc(J.dest.address || "Mencari nama jalan…") : "Mau ke mana? Ketuk untuk cari")+'</b></div><span class="jlink">'+I("search")+'</span></button></div>';
   h += '</div>';
   if(dist != null){
     h += '<div class="ongkirbox big jfare">'+E("money")+'<div><small>Perkiraan tarif · jarak ±'+kmTxt(dist)+' · '+ONGKIR_LBL+'</small><b>±'+rp(ongkirByDist(dist))+'</b><small>Bayar tunai langsung ke driver, bisa nego. Jarak dihitung garis lurus dari titik jemput ke tujuan.</small></div></div>';
@@ -3751,7 +3884,6 @@ document.addEventListener("click", async e => {
     }catch(err){ S.jago.gps = false; toast(err.message); render(); }
     return;
   }
-  if(a === "jago-res"){ const r = (S.jago.res || [])[+v]; if(!r) return; S.jago.res = null; S.jago.q = r.name; S.jago.mode = "dest"; setJagoPoint("dest", r, r.address); return; }
   if(a === "ride-cancel"){
     confirmModal("Batalkan perjalanan Jago ini?", "Ya, batalkan", async () => { try{ await RIDE.act(id, "cancel"); toast("Perjalanan dibatalkan"); }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/, "")); } if(SB) await rideRefresh(); render(); });
     return;
@@ -3765,18 +3897,8 @@ document.addEventListener("click", async e => {
     render(); window.scrollTo(0, 0); return;
   }
 });
-document.addEventListener("input", e => { if(e.target.id === "jq") S.jago.q = e.target.value; });
 document.addEventListener("submit", async e => {
   const f = e.target;
-  if(f.id === "jagoSearch"){
-    e.preventDefault();
-    const q = (new FormData(f).get("q") || "").trim(); S.jago.q = q;
-    if(q.length < 3) return toast("Ketik minimal 3 huruf.");
-    S.jago.searching = true; render();
-    try{ S.jago.res = await fwdGeo(q, S.jago.pick || (locOk(getProf()) ? getProf() : null)); }catch(err){ S.jago.res = []; toast("Pencarian gagal, periksa koneksi."); }
-    S.jago.searching = false; render();
-    return;
-  }
   if(f.id === "jagoForm"){
     e.preventDefault();
     const fd = new FormData(f), J = S.jago;
