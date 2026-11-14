@@ -1309,6 +1309,12 @@ body.is-owner .dtop{z-index:20}
 .tstrip .tc b.ab{color:#334063;font-weight:600}
 .tstrip .tc b.ab em,.tstrip .th .jg2 em{font-style:normal;font-weight:800;color:#fff;background:#1f4fd1;border-radius:6px;padding:1px 4px;margin-right:1px}
 .tstrip .th .jg2{display:inline-flex;gap:2px}
+.rmodal{max-height:86vh;overflow:auto}
+.rgrp{border:1px solid #e7ecf5;border-radius:16px;padding:10px 12px;margin-top:10px;background:#fbfcff}
+.rgrp .rh{display:flex;align-items:center;gap:8px;font-size:15px}
+.rgrp .rh .e3d{width:28px;height:28px}
+.rgrp ol{margin:6px 0 0;padding-left:20px;color:#3d4b66;font-size:13px;line-height:1.5}
+.rgrp li{margin:3px 0}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1816,6 +1822,22 @@ function openAksesModal(){
     '<input class="in" name="key" required placeholder="jt…" autocomplete="off">'+
     '<div class="actions" style="margin-top:16px"><button class="btn" style="flex:1">Masuk</button><button type="button" class="btn ghost" data-act="close-modal">Batal</button></div></form></div>';
 }
+const waNorm = w => { let d = String(w||"").replace(/\D/g, ""); if(d[0] === "0") d = "62" + d.slice(1); else if(d[0] === "8") d = "62" + d; return d; };
+const waOk = w => /^628\d{7,11}$/.test(waNorm(w));
+const WA_BAD = "Nomor WhatsApp tidak valid. Contoh: 081234567890";
+const RULES = [
+  {t:"Umum", e:"check", r:["1 nomor WhatsApp hanya untuk 1 akun di setiap peran (1 pembeli, 1 toko, 1 driver).","Nomor WhatsApp wajib aktif dan benar (08… atau +62…). Data akun harus data asli.","Tidak boleh bertransaksi dengan diri sendiri: membeli dari toko sendiri atau mengantar pesanan sendiri.","Bonus saldo akun baru hanya diberikan 1 kali untuk setiap nomor WhatsApp.","Akun yang curang, memakai data palsu, atau membuat pesanan palsu dapat dinonaktifkan tim JAGA."]},
+  {t:"Pembeli", e:"cart", r:["Maksimal 3 pesanan belanja yang sedang berjalan sekaligus.","Di toko yang sama hanya boleh 1 pesanan yang belum dikonfirmasi. Tunggu atau batalkan dulu sebelum memesan lagi.","Maksimal 1 perjalanan Jago yang sedang berjalan.","Alamat pengantaran harus berada di wilayah layanan JAGA."]},
+  {t:"Penjual (toko)", e:"store", r:["1 nomor WhatsApp hanya untuk 1 toko.","1 akun / HP hanya bisa mendaftarkan 1 toko.","Nama toko tidak boleh sama dengan toko lain di daerah yang sama.","Bagi hasil 3% dari setiap penjualan yang selesai, dipotong otomatis dari saldo toko.","Toko wajib mengonfirmasi pesanan dan menjaga stok tetap sesuai."]},
+  {t:"Driver", e:"scooter", r:["1 nomor WhatsApp dan 1 plat nomor hanya untuk 1 akun driver.","Akun driver harus disetujui tim JAGA sebelum bisa ONLINE.","1 driver hanya bisa membawa 1 pesanan atau 1 perjalanan sekaligus.","Ganti nomor WhatsApp atau plat nomor = verifikasi ulang oleh tim JAGA.","Tidak bisa mengambil pesanan sendiri atau pesanan dari toko milik sendiri.","Komisi Jago 3% per perjalanan, dipotong dari saldo driver."]}
+];
+function openRules(){
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal rmodal"><h2 class="sec" style="margin-bottom:4px">Aturan JAGA</h2>'+
+    '<p class="muted" style="margin-top:0">Supaya setiap akun asli, tidak ganda, dan transaksi tetap aman untuk semua.</p>'+
+    RULES.map(g => '<div class="rgrp"><div class="rh">'+E(g.e)+'<b>'+g.t+'</b></div><ol>'+g.r.map(x => '<li>'+esc(x)+'</li>').join("")+'</ol></div>').join("")+
+    '<button class="btn block" style="margin-top:12px" data-act="close-modal">Saya mengerti</button>'+
+    '<button class="btn ghost sm" style="position:absolute;top:14px;right:14px" data-act="close-modal" aria-label="Tutup">✕</button></div></div>';
+}
 function openMitraModal(){
   document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal mmodal"><div class="mhead">'+I("store")+'</div><h2 class="sec" style="margin-bottom:6px">Jadi Mitra JAGA</h2>'+
     '<p class="muted" style="margin-top:0">Untuk usaha makanan, minuman, dan sembako. Daftar gratis — JAGA hanya mengambil bagi hasil 3% dari setiap penjualan yang selesai.</p>'+
@@ -2183,7 +2205,7 @@ function storeForm(s){
     '<label class="f">QRIS toko</label><div class="imgpick"><div class="prev" id="qrisPrev">'+(p.qris?'<img alt="" src="'+esc(p.qris)+'">':I("qr"))+'</div><input type="file" accept="image/*" id="qrisFile">'+(p.qris?'<label class="small"><input type="checkbox" name="qrisRemove"> hapus</label>':'')+'</div>'+
     '<label class="check"><input type="checkbox" name="cod" '+(p.cod?"checked":"")+'> Terima bayar di tempat (COD)</label></fieldset>'+
     (s.id ? '<div class="sharenote">'+I("percent")+' Bagi hasil JAGA: <b>3%</b> dari setiap penjualan selesai'+(s.shareAgreedAt?' · disetujui '+esc(new Date(s.shareAgreedAt).toLocaleDateString("id-ID")):'')+'</div>'
-      : '<div class="sharebox"><b>'+I("percent")+' Bagi hasil 3%</b><p>Pembeli tidak dikenai biaya admin. Sebagai gantinya, toko membayar bagi hasil <b>3% dari setiap penjualan yang selesai</b> kepada JAGA, dipotong otomatis dari saldo toko setiap pesanan selesai. Pesanan yang dibatalkan tidak dipotong. Toko baru mendapat saldo gratis untuk mulai.</p><label class="check" style="margin-top:8px"><input type="checkbox" name="agreeShare" required> Saya setuju dengan bagi hasil 3% per penjualan</label></div>')+
+      : '<div class="sharebox"><b>'+I("percent")+' Bagi hasil 3%</b><p>Pembeli tidak dikenai biaya admin. Sebagai gantinya, toko membayar bagi hasil <b>3% dari setiap penjualan yang selesai</b> kepada JAGA, dipotong otomatis dari saldo toko setiap pesanan selesai. Pesanan yang dibatalkan tidak dipotong. Toko baru mendapat saldo gratis untuk mulai.</p><label class="check" style="margin-top:8px"><input type="checkbox" name="agreeShare" required> Saya setuju dengan bagi hasil 3% per penjualan</label><label class="check" style="margin-top:6px"><input type="checkbox" name="agreeRules"> Saya setuju dengan <a data-act="rules" style="color:#2f6bff;font-weight:700">Aturan JAGA</a> (1 nomor WA = 1 toko)</label></div>')+
     '<button class="btn block" style="margin-top:16px">'+(s.id?"Simpan perubahan":"Daftarkan toko")+'</button>'+
     (s.id?'<button type="button" class="btn danger block" style="margin-top:8px" data-act="del-store">Hapus toko</button>':'')+
     '</form>';
@@ -2240,6 +2262,7 @@ async function placeOrder(form){
   if(isFinite(blat) && isFinite(blng)){ buyer.lat = blat; buyer.lng = blng; }
   if(locOk(buyer) && !inArea(buyer)) return toast("Alamat pengantaran di luar wilayah layanan. " + AREA_MSG);
   if(!buyer.name || !buyer.wa || !buyer.address) return toast("Lengkapi nama, WhatsApp, dan alamat.");
+  if(!waOk(buyer.wa)) return toast(WA_BAD);
   if(buyer.maps && !/^https?:\/\//i.test(buyer.maps)) buyer.maps = "";
   const k = fd.get("pay") || S.payChoice; if(!k) return toast("Pilih metode pembayaran.");
   try{ localStorage.setItem("st_buyer", JSON.stringify(Object.assign(getProf(), {name:buyer.name, wa:buyer.wa, address:buyer.address, maps:buyer.maps}, isFinite(blat) ? {lat:blat, lng:blng} : {}))); }catch(e){}
@@ -2295,7 +2318,10 @@ async function saveStore(form){
   const slat = parseFloat(fd.get("slat")), slng = parseFloat(fd.get("slng"));
   if(isFinite(slat) && isFinite(slng)){ data.lat = slat; data.lng = slng; }
   if(!payMethodsOf(data).length) return toast("Isi minimal satu metode pembayaran (rekening, e-wallet, QRIS, atau COD).");
+  if(!waOk(data.wa)) return toast(WA_BAD);
+  if(data.name.length < 3) return toast("Nama toko minimal 3 huruf.");
   if(!old && !fd.get("agreeShare")) return toast("Centang persetujuan bagi hasil 3% untuk mendaftar.");
+  if(!old && !fd.get("agreeRules")) return toast("Centang persetujuan Aturan JAGA untuk mendaftar.");
   if(old){
     const ok = await safe(() => store.update("stores/"+id, Object.assign(data, {updatedAt:Date.now()})), "Perubahan disimpan");
     if(ok){ pending.logo = pending.qris = undefined; }
@@ -2353,6 +2379,7 @@ document.addEventListener("click", async e => {
   if(a === "go"){ go(v); return; }
   if(a === "logo"){ if(S.role === "seller") go("seller", {sellerTab:"ringkasan"}); else go("home"); return; }
   if(a === "mitra-info"){ openMitraModal(); return; }
+  if(a === "rules"){ openRules(); return; }
   if(a === "akses-copy"){ copyText(KEY); return; }
   if(a === "akses"){ openAksesModal(); return; }
   if(a === "nav"){ if(v === "seller") go("seller", {sellerTab: el.dataset.t || "ringkasan"}); else go(v); return; }
@@ -2601,10 +2628,7 @@ function appHomeBody(){
       ? aEmpty("search", filtering?"Belum ketemu":"Belum ada produk", filtering?"Coba kata kunci atau kategori lain.":"Produk dari toko akan tampil di sini.")
       : aEmpty("store", "Belum ada toko", "Toko-toko di sekitarmu akan segera hadir.", '<button class="btn press" data-act="mitra-info">Punya toko? Jadi mitra</button>');
   } else h += '<div class="agrid">'+prods.map((x,i)=>appProdCard(x,i)).join("")+'</div>';
-  if(!filtering) h += '<div class="pcard press" style="margin:22px 16px 0;display:flex;gap:12px;align-items:center;cursor:pointer" data-act="mitra-info">'+E("store").replace('class="e3d"','class="e3d" style="font-size:46px"')+
-    '<div class="grow"><b>Punya toko? Jualan di JAGA</b><div class="small muted">Daftar gratis · bagi hasil 3% per penjualan</div></div>'+I("chev")+'</div>'+
-    '<div class="pcard press" style="margin:12px 16px 0;display:flex;gap:12px;align-items:center;cursor:pointer" data-act="open-driver">'+E("scooter").replace('class="e3d"','class="e3d" style="font-size:46px"')+
-    '<div class="grow"><b>Punya motor? Jadi driver JAGA</b><div class="small muted">Daftar cukup nama, WA, plat & alamat · bonus saldo Rp20.000</div></div>'+I("chev")+'</div>';
+  if(!filtering) h += '<div style="height:8px"></div>';
   return h;
 }
 
@@ -2687,6 +2711,7 @@ function appProfile(){
       '<button data-act="open-seller">'+E("store")+'<div class="grow">Masuk sebagai toko<small>Konfirmasi pesanan & kelola toko</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="open-driver">'+E("scooter")+'<div class="grow">Jadi driver JAGA<small>Antar barang & ojek Jago · jagapatner.my.id/toko/#driver</small></div><span class="chev">'+I("chev")+'</span></button>'+
       (!isStandalone() ? '<button data-act="install"><img class="e3d" src="icons/icon-192.png" alt="" style="border-radius:8px"><div class="grow">Pasang aplikasi di HP<small>Buka JAGA langsung dari layar utama</small></div><span class="chev">'+I("chev")+'</span></button>' : '')+
+      '<button data-act="rules">'+E("check")+'<div class="grow">Aturan JAGA<small>Ketentuan akun pembeli, toko & driver</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa,"Halo JAGA, saya butuh bantuan."))+'">'+E("bell")+'<div class="grow">Bantuan<small>WhatsApp '+esc(CONTACT.wa)+'</small></div><span class="chev">'+I("chev")+'</span></a>'+
       (p.name?'<button data-act="logout">'+I("logout")+'<div class="grow">Keluar</div></button>':'<button data-act="nav" data-v="login">'+E("check")+'<div class="grow">Masuk<small>Simpan nama & alamat untuk checkout cepat</small></div><span class="chev">'+I("chev")+'</span></button>')+
     '</div><div class="small muted" style="text-align:center;margin:8px 0 20px;user-select:none" data-act="ver-tap">JAGA · versi 1.1<br><span class="jtag"><b>JA</b>minan Driver dan toko Aman<br><b>GA</b>ransi pesanan pasti sampai<br>Kami <b>JAGA</b> Kepercayaan anda</span></div>';
@@ -2700,7 +2725,7 @@ function appLogin(){
     '<label class="lin'+ra(5)+'">'+I("pin")+'<input name="address" placeholder="Alamat / patokan (opsional)" value="'+esc(p.address||"")+'" autocomplete="street-address"></label>'+
     '<button class="lbtn press'+ra(6)+'">Masuk</button><div class="lor">atau</div>'+
     '<button type="button" class="lguest press" data-act="guest">Lihat-lihat dulu sebagai tamu</button>'+
-    '<div class="lfoot">Punya toko? <a data-act="mitra-info">Gabung jadi mitra</a><br>Punya motor? <a data-act="open-driver">Daftar jadi driver</a></div></form></div>';
+    '<div class="lfoot">Punya toko? <a data-act="mitra-info">Gabung jadi mitra</a><br>Punya motor? <a data-act="open-driver">Daftar jadi driver</a><br><span style="font-size:12px">Dengan masuk, kamu setuju dengan <a data-act="rules">Aturan JAGA</a></span></div></form></div>';
 }
 function openAddrModal(){
   const p = getProf();
@@ -2789,7 +2814,8 @@ document.addEventListener("submit", e => {
   if(f.id === "loginForm"){
     const fd = new FormData(f); const p = getProf();
     const name = (fd.get("name")||"").trim(), wa = (fd.get("wa")||"").replace(/[^\d+]/g,"");
-    if(!name || wa.replace(/\D/g,"").length < 9) return toast("Isi nama dan nomor WhatsApp yang benar.");
+    if(!name) return toast("Isi nama lengkap.");
+    if(!waOk(wa)) return toast(WA_BAD);
     setProf(Object.assign(p, {name, wa, address:(fd.get("address")||"").trim() || p.address || ""}));
     try{ localStorage.setItem("jt_onb", "1"); }catch(_){}
     go("home"); toast("Selamat datang, "+name.split(/\s+/)[0]+"!");
@@ -3115,8 +3141,9 @@ function driverForm(me){
     '<div><label class="f">Plat nomor *</label><input class="in" name="plate" required placeholder="BM 1234 XX" value="'+esc(me.plate||"")+'"></div></div>'+
     '<label class="f">Alamat rumah *</label><input class="in" name="address" required placeholder="Jalan, desa/kelurahan, kecamatan" value="'+esc(me.address||"")+'">'+
     '<label class="f">Area narik</label><input class="in" name="area" placeholder="Contoh: Ujungbatu" value="'+esc(me.area||"Ujungbatu")+'">'+
+    (me.name ? '' : '<label class="check" style="margin-top:12px"><input type="checkbox" name="agree"> Saya setuju dengan <a data-act="rules" style="color:#2f6bff;font-weight:700">Aturan JAGA</a> (1 nomor WA & 1 plat = 1 akun driver)</label>')+
     '<button class="btn block press" style="margin-top:16px">'+(me.name ? "Simpan perubahan" : "Daftar & mulai narik")+'</button>'+
-    (me.name ? '<button type="button" class="btn ghost block" style="margin-top:8px" data-act="drv-edit">Batal</button>' : '<div class="hint" style="text-align:center">Akun driver tersimpan di HP ini.</div>')+
+    (me.name ? '<div class="hint">Ganti nomor WA atau plat nomor perlu verifikasi ulang tim JAGA.</div><button type="button" class="btn ghost block" style="margin-top:8px" data-act="drv-edit">Batal</button>' : '<div class="hint" style="text-align:center">Akun driver tersimpan di HP ini.</div>')+
   '</form>';
 }
 function drvJob(o, offer){
@@ -3269,8 +3296,10 @@ document.addEventListener("submit", async e => {
   e.preventDefault();
   const fd = new FormData(f);
   const data = {name:(fd.get("name")||"").trim(), wa:(fd.get("wa")||"").trim(), vehicle:fd.get("vehicle"), plate:(fd.get("plate")||"").trim().toUpperCase(), address:(fd.get("address")||"").trim(), area:(fd.get("area")||"").trim()};
-  if(!data.name || data.wa.replace(/\D/g, "").length < 9) return toast("Isi nama dan nomor WhatsApp yang benar.");
-  if(data.plate.length < 3 || data.address.length < 5) return toast("Isi plat nomor dan alamat rumah.");
+  if(!data.name) return toast("Isi nama lengkap.");
+  if(!waOk(data.wa)) return toast(WA_BAD);
+  if(data.plate.replace(/[^A-Za-z0-9]/g, "").length < 3 || data.address.length < 5) return toast("Isi plat nomor dan alamat rumah.");
+  if(!S.drv.me && !fd.get("agree")) return toast("Centang persetujuan Aturan JAGA untuk mendaftar.");
   const btn = f.querySelector("button"); if(btn) btn.disabled = true;
   const wasNew = !S.drv.me;
   S.drv.editing = false;
