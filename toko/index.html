@@ -1200,6 +1200,12 @@ body.is-owner .dtop{z-index:20}
 .vkb{align-self:center;border:0;background:none;color:#cfe0ff;font:inherit;font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;opacity:.85}
 .vtype{display:flex;gap:6px}
 .vtype .in{background:#fff}
+
+.areabox{display:flex;gap:12px;align-items:flex-start;background:#fff7ed;border:1px solid #fed7aa;border-radius:18px;padding:12px 14px;margin-bottom:12px}
+.areabox .e3d{width:34px;height:34px;flex-shrink:0}
+.areabox b{display:block;font-size:15px;color:#9a3412}
+.areabox small{display:block;color:#7c4a1e;font-size:12.5px;line-height:1.4;margin:2px 0 8px}
+.areabox .btn{background:#ea580c;color:#fff;border:0}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2126,6 +2132,7 @@ async function placeOrder(form){
   const buyer = {name:fd.get("name").trim(), wa:fd.get("wa").trim(), address:fd.get("address").trim(), maps:(fd.get("maps")||"").trim(), note:(fd.get("note")||"").trim()};
   const blat = parseFloat(fd.get("blat")), blng = parseFloat(fd.get("blng"));
   if(isFinite(blat) && isFinite(blng)){ buyer.lat = blat; buyer.lng = blng; }
+  if(locOk(buyer) && !inArea(buyer)) return toast("Alamat pengantaran di luar wilayah layanan. " + AREA_MSG);
   if(!buyer.name || !buyer.wa || !buyer.address) return toast("Lengkapi nama, WhatsApp, dan alamat.");
   if(buyer.maps && !/^https?:\/\//i.test(buyer.maps)) buyer.maps = "";
   const k = fd.get("pay") || S.payChoice; if(!k) return toast("Pilih metode pembayaran.");
@@ -2442,6 +2449,7 @@ function appHomeBody(){
   let h = '';
   if(!filtering){
     const ar = S.rides.find(r => RIDE_ACTIVE.includes(r.status));
+    if(locOk(getProf()) && !inArea(getProf())) h += '<div style="margin:0 16px 12px">'+areaBanner()+'</div>';
     h += '<button class="vcard press'+ra(2)+'" data-act="voice"><span class="vci">'+I("mic")+'</span><div class="grow"><b>Pesan pakai suara</b><small>Ketuk, lalu bicara: “mau ke pasar” atau “beli beras 5 kilo”</small></div></button>';
     h += '<div class="svc'+ra(2)+'"><button class="sv press" data-act="scroll-prod">'+E("cart")+'<div><b>Belanja</b><small>Antar dari toko</small></div></button>'+
       '<button class="sv jg press" data-act="nav" data-v="jago">'+E("scooter")+'<div><b>Jago</b><small>'+(ar ? esc((STATUS[ar.status]||{}).l||"Berjalan") : 'Ojek online')+'</small></div>'+(ar?'<span class="bdg">1</span>':'<span class="new">Baru</span>')+'</button></div>';
@@ -3126,6 +3134,7 @@ document.addEventListener("click", async e => {
     if(txt) txt.textContent = "Mengambil lokasi…";
     try{
       const c = await getPos();
+      if(!inArea(c)){ if(txt) txt.textContent = "Lokasi di luar wilayah layanan"; toast((a === "store-loc" ? "Lokasi toko harus di wilayah layanan. " : "Alamat pengantaran di luar wilayah layanan. ") + AREA_MSG); return; }
       const pre = a === "buyer-loc" ? "b" : "s";
       f.querySelector('[name="'+pre+'lat"]').value = c.lat; f.querySelector('[name="'+pre+'lng"]').value = c.lng;
       if(txt) txt.textContent = "Lokasi tersimpan ✓ ("+c.lat.toFixed(5)+", "+c.lng.toFixed(5)+")";
@@ -3570,6 +3579,16 @@ const JAGO_FEE = 0.03;
 const RIDE_ACTIVE = ["mencari_driver","driver_jemput","dalam_perjalanan"];
 const DRV_BUSY = ["driver_ke_toko","diantar","driver_jemput","dalam_perjalanan"];
 const JAGO_CENTER = {lat:0.6836, lng:100.5466}; // Ujungbatu
+/* Wilayah layanan. Buka cabang baru = tambah wilayah di sini (dan di fungsi server jt_in_area). */
+const AREAS = [{id:"rohul", name:"Kabupaten Rokan Hulu", short:"Rokan Hulu", s:0.40, n:1.45, w:100.03, e:101.00}];
+const inArea = c => locOk(c) && AREAS.some(a => c.lat >= a.s && c.lat <= a.n && c.lng >= a.w && c.lng <= a.e);
+const AREA_NAME = AREAS.map(a => a.name).join(", ");
+const AREA_MSG = "Jaga Toko saat ini baru melayani " + AREA_NAME + ", Riau.";
+const cabangLink = () => waLink(CONTACT.wa, "Halo Jaga Toko, saya ingin mendaftar membuka cabang Jaga Toko di daerah saya: ");
+function areaBanner(){
+  return '<div class="areabox">'+E("pin")+'<div class="grow"><b>Di luar wilayah layanan</b><small>'+esc(AREA_MSG)+' Ingin Jaga Toko hadir di daerahmu?</small>'+
+    '<a class="btn sm press" target="_blank" rel="noopener" href="'+esc(cabangLink())+'">Daftar buka cabang</a></div></div>';
+}
 S.rides = []; S.ridesAll = []; S.ridesReady = false;
 S.jago = {pick:null, dest:null, mode:"pick", q:"", res:null, searching:false, gps:false, seen:{}};
 const isRide = o => !!o && o.kind === "ride";
@@ -3667,21 +3686,23 @@ const PLACE = {
         await loadGoogle();
         if(!GM_TOKEN) GM_TOKEN = new google.maps.places.AutocompleteSessionToken();
         const {suggestions} = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions({input:q, sessionToken:GM_TOKEN, language:"id", region:"id", includedRegionCodes:["id"],
-          locationBias:{center:{lat:c.lat, lng:c.lng}, radius:30000}, origin:{lat:c.lat, lng:c.lng}});
+          locationRestriction:{south:AREAS[0].s, north:AREAS[0].n, west:AREAS[0].w, east:AREAS[0].e}, origin:{lat:c.lat, lng:c.lng}});
         return (suggestions || []).filter(x => x.placePrediction).slice(0, 8).map(x => { const p = x.placePrediction;
           return {name:(p.mainText && p.mainText.text) || p.text.text, address:(p.secondaryText && p.secondaryText.text) || "", dist:near ? p.distanceMeters : null, pred:p}; });
       }catch(e){ if(GM_FAIL) return this.suggest(q, near); throw e; }
     }
-    const r = await fetch("https://photon.komoot.io/api/?limit=8&bbox=94.5,-11.5,141.5,6.5&lat=" + c.lat + "&lon=" + c.lng + "&q=" + encodeURIComponent(q));
+    const r = await fetch("https://photon.komoot.io/api/?limit=12&bbox=" + [AREAS[0].w, AREAS[0].s, AREAS[0].e, AREAS[0].n].join(",") + "&lat=" + c.lat + "&lon=" + c.lng + "&q=" + encodeURIComponent(q));
     const j = await r.json();
     return (j.features || []).map(f => { const p = f.properties || {}, a = photonAddr(p), ll = {lat:+f.geometry.coordinates[1].toFixed(6), lng:+f.geometry.coordinates[0].toFixed(6)};
-      return Object.assign(ll, {name:a[0] || q, address:a.slice(1, 4).join(", "), dist:near ? distM(c, ll) : null}); });
+      return Object.assign(ll, {name:a[0] || q, address:a.slice(1, 4).join(", "), dist:near ? distM(c, ll) : null, county:String(p.county || p.city || "")}); })
+      .filter(x => inArea(x) && !/rokan hilir|kampar|bengkalis|siak|padang lawas|pasaman|lima puluh|limapuluh/i.test(x.county + " " + x.address)).slice(0, 8);
   },
   async resolve(it){
     if(it.pred){
       const pl = it.pred.toPlace();
       await pl.fetchFields({fields:["location","displayName","formattedAddress"]});
       GM_TOKEN = null;
+      if(!inArea({lat:pl.location.lat(), lng:pl.location.lng()})) throw new Error(AREA_MSG);
       const nm = pl.displayName || it.name, fa = String(pl.formattedAddress || it.address || "");
       return {lat:+pl.location.lat().toFixed(6), lng:+pl.location.lng().toFixed(6), address:fa.toLowerCase().startsWith(String(nm).toLowerCase()) ? fa : nm + ", " + fa};
     }
@@ -3730,7 +3751,7 @@ function openPlaceSheet(kind){
     '<label class="ps-in">'+I("search")+'<input id="psq" type="search" enterkeyhint="search" autocomplete="off" placeholder="'+(pk ? "Cari lokasi jemput: jalan, masjid, toko…" : "Cari tujuan: pasar, sekolah, rumah sakit…")+'"></label>'+
     '<div class="ps-quick">'+(pk ? '<button data-act="ps-gps">'+I("pin")+' Pakai lokasi saya sekarang</button>' : '')+'<button data-act="ps-map">'+I("grid")+' Pilih di peta</button></div>'+
     '<div id="psres" class="ps-res">'+psRows(rec, rec.length ? "Terakhir dipakai" : "")+'</div>'+
-    '<div class="ps-foot">'+(usingGoogle() ? 'Hasil pencarian dari Google Maps' : 'Data peta © OpenStreetMap')+'</div></div></div>';
+    '<div class="ps-foot">Wilayah layanan: '+esc(AREA_NAME)+' · '+(usingGoogle() ? 'hasil dari Google Maps' : 'data peta © OpenStreetMap')+'</div></div></div>';
   const inp = document.getElementById("psq"); setTimeout(() => { try{ inp.focus(); }catch(e){} }, 60);
   if(usingGoogle()) loadGoogle().catch(() => {});
 }
@@ -3743,7 +3764,7 @@ async function psSearch(q){
   try{
     const list = await PLACE.suggest(q, near);
     if(PS_Q !== q || !document.getElementById("psres")) return;
-    box.innerHTML = list.length ? psRows(list, "") : '<div class="ps-t">Tidak ketemu. Coba kata lain, atau ketuk “Pilih di peta”.</div>';
+    box.innerHTML = list.length ? psRows(list, "") : '<div class="ps-t">Tidak ketemu di '+esc(AREA_NAME)+'. Coba kata lain, atau ketuk “Pilih di peta”.</div>';
   }catch(e){ if(PS_Q === q) box.innerHTML = '<div class="ps-t">Pencarian gagal. Periksa koneksi internet.</div>'; }
 }
 document.addEventListener("input", e => { if(e.target.id !== "psq") return; clearTimeout(PS_T); const q = e.target.value.trim(); PS_T = setTimeout(() => psSearch(q), 320); });
@@ -3756,7 +3777,7 @@ document.addEventListener("click", async e => {
   if(a === "ps-map"){ closeModal(); render(); toast(S.jago.mode === "pick" ? "Ketuk peta atau geser pin biru untuk titik jemput" : "Ketuk peta untuk memilih tujuan"); const m = document.querySelector(".jmapbox"); if(m) m.scrollIntoView({behavior:"smooth", block:"center"}); return; }
   if(a === "ps-gps"){
     el.disabled = true; el.innerHTML = I("loader") + " Mengambil lokasi…";
-    try{ const c = await getPos(); setProf(Object.assign(getProf(), c)); closeModal(); await setJagoPoint("pick", c); if(JMAP) JMAP.map.setView([c.lat, c.lng], 16); if(!S.jago.dest) openPlaceSheet("dest"); }
+    try{ const c = await getPos(); setProf(Object.assign(getProf(), c)); closeModal(); if(!inArea(c)){ S.jago.outside = true; toast("Lokasimu di luar wilayah layanan. " + AREA_MSG); render(); return; } await setJagoPoint("pick", c); if(JMAP) JMAP.map.setView([c.lat, c.lng], 16); if(!S.jago.dest) openPlaceSheet("dest"); }
     catch(err){ toast(err.message); el.disabled = false; el.innerHTML = I("pin") + " Pakai lokasi saya sekarang"; }
     return;
   }
@@ -3768,11 +3789,12 @@ document.addEventListener("click", async e => {
       closeModal();
       await setJagoPoint(kind, c, c.address);
       if(kind === "pick" && !S.jago.dest) openPlaceSheet("dest");
-    }catch(err){ el.classList.remove("busy"); toast("Lokasi tidak bisa diambil, coba pilih yang lain."); }
+    }catch(err){ el.classList.remove("busy"); toast(err && err.message === AREA_MSG ? "Tempat itu di luar wilayah layanan. " + AREA_MSG : "Lokasi tidak bisa diambil, coba pilih yang lain."); }
   }
 });
 
 async function setJagoPoint(kind, c, address){
+  if(!inArea(c)){ toast((kind === "pick" ? "Titik jemput" : "Tujuan") + " di luar wilayah layanan. " + AREA_MSG); S.jago.outside = kind === "pick" || S.jago.outside; render(); return; }
   S.jago[kind] = {lat:c.lat, lng:c.lng, address:address || ""};
   if(kind === "pick" && !S.jago.dest) S.jago.mode = "dest";
   render();
@@ -3824,7 +3846,7 @@ function rideCard(o){
 function jagoForm(){
   const J = S.jago, p = getProf();
   const dist = locOk(J.pick) && locOk(J.dest) ? distM(J.pick, J.dest) : null;
-  let h = '<section class="jhero">'+E("scooter")+'<div><h2>Jago</h2><p>Ojek online dari driver terdekat</p><span>'+ONGKIR_LBL+' · bisa nego · bayar tunai</span></div></section>';
+  let h = (S.jago.outside || (locOk(p) && !inArea(p)) ? areaBanner() : '') + '<section class="jhero">'+E("scooter")+'<div><h2>Jago</h2><p>Ojek online di '+esc(AREAS.map(a => a.short).join(", "))+'</p><span>'+ONGKIR_LBL+' · bisa nego · bayar tunai</span></div></section>';
   h += '<div class="card jcard">';
   h += '<div class="jmode"><button class="'+(J.mode==="pick"?"on":"")+'" data-act="jago-mode" data-v="pick"><i class="dot a"></i>Atur jemput</button><button class="'+(J.mode==="dest"?"on":"")+'" data-act="jago-mode" data-v="dest"><i class="dot b"></i>Atur tujuan</button></div>';
   h += '<div class="jmapbox"><div data-jmap="1" class="jmap"></div><div class="jmaphint">'+(J.mode === "pick" ? "Ketuk peta untuk titik jemput" : "Ketuk peta untuk tujuan")+'</div>'+
@@ -3852,7 +3874,7 @@ function rideRow(o){
 function appJago(){
   let h = appBar("Jago · Ojek online");
   const pf = getProf();
-  if(!S.jago.pick && locOk(pf)) S.jago.pick = {lat:pf.lat, lng:pf.lng, address:pf.address || ""};
+  if(!S.jago.pick && inArea(pf)) S.jago.pick = {lat:pf.lat, lng:pf.lng, address:pf.address || ""};
   if(S.jago.pick && !S.jago.dest && S.jago.mode === "pick" && !S.jago.touched) S.jago.mode = "dest";
   const act = S.rides.find(r => RIDE_ACTIVE.includes(r.status));
   const open = S.jago.open && S.rides.find(r => r.id === S.jago.open);
@@ -3882,8 +3904,9 @@ function mountJagoMap(){
     if(!JMAP){
       const node = document.createElement("div"); node.className = "jmap";
       ph.replaceWith(node);
-      const c = S.jago.pick || (locOk(getProf()) ? getProf() : JAGO_CENTER);
-      const map = L.map(node, {zoomControl:false, attributionControl:true}).setView([c.lat, c.lng], 15);
+      const c = inArea(S.jago.pick) ? S.jago.pick : inArea(getProf()) ? getProf() : JAGO_CENTER;
+      const A = AREAS[0], pad = .08;
+      const map = L.map(node, {zoomControl:false, attributionControl:true, minZoom:10, maxBounds:[[A.s - pad, A.w - pad], [A.n + pad, A.e + pad]], maxBoundsViscosity:1}).setView([c.lat, c.lng], 15);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(map);
       map.on("click", ev => { const ll = {lat:+ev.latlng.lat.toFixed(6), lng:+ev.latlng.lng.toFixed(6)}; setJagoPoint(S.jago.mode, ll); });
       JMAP = {node, map, mk:{}, line:null, fit:""};
@@ -3921,6 +3944,7 @@ document.addEventListener("click", async e => {
     try{
       const c = await getPos(); S.jago.gps = false;
       setProf(Object.assign(getProf(), c));
+      if(!inArea(c)){ S.jago.outside = true; toast("Lokasimu di luar wilayah layanan. " + AREA_MSG); render(); return; }
       await setJagoPoint("pick", c);
       if(JMAP) JMAP.map.setView([c.lat, c.lng], 16);
     }catch(err){ S.jago.gps = false; toast(err.message); render(); }
@@ -4255,11 +4279,12 @@ async function vStartRide(dest){
   let pick = null;
   try{ pick = await getPos(); setProf(Object.assign(getProf(), pick)); }
   catch(e){ VA.busy = false; vSay("Lokasi Ibu belum ketemu. Nyalakan GPS di HP, lalu coba lagi.", vListen); VA.step = "ask-dest"; return; }
+  if(!inArea(pick)){ VA.busy = false; VA.step = "done"; vSay("Maaf, lokasi Ibu di luar wilayah layanan. " + AREA_MSG); return; }
   let list = [];
   try{ list = await PLACE.suggest(dest, pick); }catch(e){}
   list = list.filter(x => x.dist == null || x.dist < 60000).slice(0, 3);
   VA.busy = false;
-  if(!list.length){ VA.step = "ask-dest"; vSay("Maaf, tempat " + dest + " belum ketemu. Coba sebutkan nama tempat lain yang dekat, misalnya nama masjid, pasar, atau sekolah.", vListen); return; }
+  if(!list.length){ VA.step = "ask-dest"; vSay("Maaf, tempat " + dest + " belum ketemu di " + AREA_NAME + ". Coba sebutkan nama tempat lain yang dekat, misalnya nama masjid, pasar, atau sekolah.", vListen); return; }
   const places = [];
   for(const it of list){ try{ places.push(Object.assign(await PLACE.resolve(it), {name:it.name})); }catch(e){} }
   if(!places.length){ VA.step = "ask-dest"; vSay("Maaf, tempatnya belum ketemu. Coba sebutkan lagi.", vListen); return; }
@@ -4314,6 +4339,7 @@ async function vPlaceShop(){
   if(!c.cod){ VA.step = "done"; VA.ask = null; vSay("Toko ini belum menerima bayar di tempat. Barangnya sudah saya masukkan ke keranjang. Minta bantuan keluarga untuk menyelesaikan pembayarannya, ya.", () => { closeVoice(); go("cart"); }); return; }
   VA.busy = true; VA.ask = null; VA.ai = "Mengambil lokasi Ibu…"; vPaint();
   let loc = null; try{ loc = await getPos(); }catch(e){}
+  if(loc && !inArea(loc)){ VA.busy = false; VA.step = "done"; vSay("Maaf, lokasi Ibu di luar wilayah layanan. " + AREA_MSG); return; }
   let address = prof.address || "";
   if(!address && loc) address = await PLACE.reverse(loc);
   if(!address){ VA.busy = false; VA.step = "done"; vSay("Lokasi Ibu belum ketemu. Barang sudah di keranjang. Nyalakan GPS, lalu tekan tombol pesan di halaman keranjang.", () => { closeVoice(); go("cart"); }); return; }
