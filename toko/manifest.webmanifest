@@ -1,7 +1,7 @@
 {
-  "name": "Jaga Toko — Belanja dekat, diantar ke depan pintu",
-  "short_name": "Jaga Toko",
-  "description": "Belanja dari toko di sekitarmu. Gratis ongkir, tanpa biaya admin, bayar langsung ke toko.",
+  "name": "JAGA — Kami JAGA Kepercayaan Anda",
+  "short_name": "JAGA",
+  "description": "JAminan Driver dan toko Aman, GAransi pesanan pasti sampai. Belanja dari toko sekitar dan ojek online Jago. Ongkir Rp2.000/500 m, bisa nego.",
   "lang": "id",
   "start_url": "./",
   "scope": "./",
@@ -9,10 +9,26 @@
   "orientation": "portrait",
   "background_color": "#f6f8fc",
   "theme_color": "#2a5ccc",
-  "categories": ["shopping", "food"],
+  "categories": [
+    "shopping",
+    "food"
+  ],
   "icons": [
-    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
-    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
