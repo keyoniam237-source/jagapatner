@@ -3288,6 +3288,31 @@ const PLACE = {
   }
 };
 const revGeo = c => PLACE.reverse(c);
+/* Buku tempat JAGA (gratis): tempat + toko lokal tampil lebih dulu, lalu data peta eksternal */
+const _suggestExt = PLACE.suggest.bind(PLACE);
+PLACE.suggest = async function(q, near){
+  const c = near || JAGO_CENTER;
+  const locP = SB ? SB.rpc("jt_place_search", {p_q:q, p_lat:c.lat, p_lng:c.lng}).then(r => (r && r.data) || []).catch(() => []) : Promise.resolve([]);
+  let ext = [], extErr = null;
+  try{ ext = await _suggestExt(q, near); }catch(e){ extErr = e; }
+  const loc = (await locP).filter(x => typeof x.lat === "number" && inArea(x)).map(x => ({lat:x.lat, lng:x.lng, name:x.name, address:(x.src === "toko" ? "Toko · " : "Tempat JAGA · ") + (x.address || ""), src:x.src, dist:near ? distM(c, x) : null}));
+  if(!loc.length && extErr) throw extErr;
+  const rest = ext.filter(e => !(typeof e.lat === "number" && loc.some(l => Math.abs(l.lat - e.lat) < 0.0006 && Math.abs(l.lng - e.lng) < 0.0006)));
+  return loc.concat(rest).slice(0, 10);
+};
+function offerSavePlace(name, c, addr){
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><form class="modal" id="placeSave" data-lat="'+c.lat+'" data-lng="'+c.lng+'" data-addr="'+esc(addr || "")+'"><h2 class="sec">Simpan di buku tempat JAGA?</h2><p class="muted" style="margin-top:0">Supaya pengguna lain mudah menemukan tempat ini. Boleh ubah namanya. <b>Jangan simpan rumah pribadi atau nomor telepon.</b></p><label class="f">Nama tempat</label><input class="in" name="name" required minlength="3" maxlength="60" value="'+esc(name)+'"><div class="actions"><button class="btn" type="submit">Ya, simpan</button><button type="button" class="btn ghost" onclick="closeModal()">Jangan</button></div></form></div>';
+}
+function placesCard(){
+  return SB ? '<div class="card pad"><h3 class="sub">Buku tempat</h3><div class="hint">Tempat yang disimpan pengguna dan muncul di pencarian lokasi. Hapus yang salah atau pribadi.</div><button class="btn ghost sm" data-act="own-places">'+I("pin")+' Kelola tempat</button></div>' : "";
+}
+async function placesOpen(){
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Buku tempat</h2><div id="plBox" class="muted small">Memuat…</div><div class="actions"><button type="button" class="btn ghost" onclick="closeModal()">Tutup</button></div></div></div>';
+  try{
+    const rows = await sbStore.rpc("jt_owner_places", {}); const box = document.getElementById("plBox"); if(!box) return;
+    box.innerHTML = rows && rows.length ? rows.map(r => '<div class="orow"><div class="grow"><b>'+esc(r.name)+'</b><small>'+esc(r.addr || "")+'</small><small>dipakai '+r.uses+'× · '+esc(new Date(r.created_at).toLocaleDateString("id-ID"))+'</small></div><div class="r"><a class="linkbtn small" target="_blank" rel="noopener" href="'+esc(gmLink(r))+'">Peta</a><button class="btn ghost sm" data-act="own-place-del" data-id="'+esc(r.id)+'">Hapus</button></div></div>').join("") : "Belum ada tempat tersimpan.";
+  }catch(err){ const box = document.getElementById("plBox"); if(box) box.textContent = "Gagal memuat: " + String(err.message || err); }
+}
 const gmLink = c => "https://www.google.com/maps/search/?api=1&query=" + c.lat + "," + c.lng;
 
 /* ---------- lembar pencarian lokasi ---------- */
@@ -3300,7 +3325,7 @@ function recentPlaces(kind){
 function psRows(list, title){
   S.jago.sugg = list;
   if(!list.length) return '';
-  return (title ? '<div class="ps-t">'+title+'</div>' : '') + list.map((r, i) => '<button class="ps-row" data-act="ps-pick" data-v="'+i+'">'+(r.recent ? I("clock") : I("pin"))+'<div class="grow"><b>'+esc(r.name)+'</b><small>'+esc(r.address || "")+'</small></div>'+(r.dist != null && r.dist < 300000 ? '<span class="ps-d">'+kmTxt(r.dist)+'</span>' : '')+'</button>').join("");
+  return (title ? '<div class="ps-t">'+title+'</div>' : '') + list.map((r, i) => '<button class="ps-row" data-act="ps-pick" data-v="'+i+'">'+(r.recent ? I("clock") : r.src === "toko" ? I("store") : I("pin"))+'<div class="grow"><b>'+esc(r.name)+'</b><small>'+esc(r.address || "")+'</small></div>'+(r.dist != null && r.dist < 300000 ? '<span class="ps-d">'+kmTxt(r.dist)+'</span>' : '')+'</button>').join("");
 }
 function openPlaceSheet(kind){
   S.jago.sheet = kind; S.jago.mode = kind; S.jago.touched = true; PS_Q = "";
@@ -3361,7 +3386,7 @@ async function setJagoPoint(kind, c, address){
   S.jago[kind] = {lat:c.lat, lng:c.lng, address:address || ""};
   if(kind === "pick" && !S.jago.dest) S.jago.mode = "dest";
   render();
-  if(!address){ const a = await revGeo(c); const cur = S.jago[kind]; if(cur && cur.lat === c.lat && cur.lng === c.lng){ cur.address = labelText ? (labelText + (a ? " (dekat " + a + ")" : "")) : (a || ("Titik " + fmtLL(c))); if(S.view === "jago") render(); } }
+  if(!address){ const a = await revGeo(c); const cur = S.jago[kind]; if(cur && cur.lat === c.lat && cur.lng === c.lng){ cur.address = labelText ? (labelText + (a ? " (dekat " + a + ")" : "")) : (a || ("Titik " + fmtLL(c))); if(S.view === "jago") render(); if(SB && labelText) offerSavePlace(labelText, c, a || ""); } }
 }
 
 /* ---------- tampilan penumpang ---------- */
@@ -4630,6 +4655,7 @@ function ownerWalletTab(D){
       '<button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">Sesuaikan</button></div></div>';
   }).join("") : '<div class="muted small">Belum ada driver.</div>')+'</div>';
   h += fraudCard();
+  h += placesCard();
   h += '<div class="card pad"><h3 class="sub">Jejak audit</h3><div class="hint">Catatan permanen semua tindakan owner (saldo, verifikasi, hapus, pengaturan). Tidak bisa diubah atau dihapus.</div><button class="btn ghost sm" data-act="own-audit">'+I("receipt")+' Lihat 100 catatan terakhir</button></div>';
   h += '<form class="card pad" id="walletCfg"><h3 class="sub">Pengaturan saldo</h3>'+
     '<div class="cols2"><div><label class="f">Minimal saldo (Rp)</label><input class="in" name="minBalance" inputmode="numeric" value="'+esc(c.minBalance)+'"></div><div><label class="f">Bonus toko/driver baru (Rp)</label><input class="in" name="bonus" inputmode="numeric" value="'+esc(c.bonus)+'"></div></div>'+
@@ -4680,6 +4706,8 @@ document.addEventListener("click", async e => {
     RD.filter(r => (r.createdAt || 0) >= f).sort((a,b) => (a.createdAt||0) - (b.createdAt||0)).forEach(r => rows.push(["Jago", csvDate(r.createdAt), r.code || r.id, "", r.status, r.fareFinal || r.fareEst || 0, 0, 0, r.status === "selesai" ? (r.fee || 0) : 0]));
     csvDownload("transaksi-jaga-" + new Date().toISOString().slice(0,10) + ".csv", rows); toast("Transaksi diunduh"); return;
   }
+  if(a === "own-places"){ placesOpen(); return; }
+  if(a === "own-place-del"){ try{ await sbStore.rpc("jt_owner_place_del", {p_id:el.dataset.id}); }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); } placesOpen(); return; }
   if(a === "pg-more"){ S.pgN = S.pgN || {}; S.pgN[el.dataset.k] = (S.pgN[el.dataset.k] || 20) + 20; render(); return; }
   if(a === "promo-open"){ promoOpen(el.dataset.id); return; }
   if(a === "promo-toggle"){ try{ await sbStore.rpc("jt_promo_toggle", {p_sid:el.dataset.id, p_code:el.dataset.code, p_active:el.dataset.v === "1"}); }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); } promoOpen(el.dataset.id); return; }
@@ -4703,7 +4731,7 @@ document.addEventListener("click", async e => {
   if(a === "proof-view"){ proofView(el.dataset.id); return; }
   if(a === "own-fraud"){ fraudOpen(); return; }
   if(a === "own-audit"){
-    const AL = {"wallet.adjust":"Sesuaikan saldo","wallet.cfg":"Ubah pengaturan saldo/komisi","topup.decide":"Putusan isi saldo","comm.exempt":"Bebas komisi", "fraud.cfg":"Aturan kecurangan", "driver.verify":"Verifikasi driver","driver.active":"Aktif/nonaktif driver","driver.delete":"Hapus driver","store.active":"Aktif/nonaktif toko","store.delete":"Hapus toko","order.set":"Ubah status order","report.set":"Tangani laporan","areas.save":"Ubah wilayah","owner.setpass":"Ganti password owner"};
+    const AL = {"wallet.adjust":"Sesuaikan saldo","wallet.cfg":"Ubah pengaturan saldo/komisi","topup.decide":"Putusan isi saldo","place.delete":"Hapus tempat", "comm.exempt":"Bebas komisi", "fraud.cfg":"Aturan kecurangan", "driver.verify":"Verifikasi driver","driver.active":"Aktif/nonaktif driver","driver.delete":"Hapus driver","store.active":"Aktif/nonaktif toko","store.delete":"Hapus toko","order.set":"Ubah status order","report.set":"Tangani laporan","areas.save":"Ubah wilayah","owner.setpass":"Ganti password owner"};
     document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Jejak audit</h2><div id="auditBox" class="muted small">Memuat…</div><div class="actions"><button type="button" class="btn ghost" onclick="closeModal()">Tutup</button></div></div></div>';
     try{
       const rows = SB ? await sbStore.rpc("jt_owner_audit", {p_limit:100}) : [];
@@ -4758,6 +4786,12 @@ document.addEventListener("submit", async e => {
   if(f.id === "exForm"){
     e.preventDefault(); const fd = new FormData(f);
     try{ S.ownEx = await sbStore.rpc("jt_owner_exempt", {p_kind:f.dataset.k, p_id:f.dataset.id, p_days:parseInt(fd.get("days"),10)||0}); closeModal(); toast("Pengaturan bebas komisi disimpan"); render(); }
+    catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
+    return;
+  }
+  if(f.id === "placeSave"){
+    e.preventDefault(); const fd = new FormData(f);
+    try{ await sbStore.rpc("jt_place_save", {p_name:String(fd.get("name")||"").trim(), p_addr:f.dataset.addr || "", p_lat:+f.dataset.lat, p_lng:+f.dataset.lng}); closeModal(); toast("Tempat disimpan. Terima kasih!"); }
     catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
     return;
   }
