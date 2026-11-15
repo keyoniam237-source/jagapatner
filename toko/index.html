@@ -6044,6 +6044,7 @@ function ownerWalletTab(D){
     return '<div class="orow"><div class="grow"><b>'+esc(d.name)+'</b><small>Potongan 3% terpotong: '+rp(f)+' · '+(PT["drv:"+d.id]||0)+' poin</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">order tidak masuk</small>'+'<button class="linkbtn small" data-act="own-msg" data-v="drv:'+esc(d.id)+'">Ingatkan lewat pesan</button>':'')+
       '<button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">Sesuaikan</button></div></div>';
   }).join("") : '<div class="muted small">Belum ada driver.</div>')+'</div>';
+  h += '<div class="card pad"><h3 class="sub">Jejak audit</h3><div class="hint">Catatan permanen semua tindakan owner (saldo, verifikasi, hapus, pengaturan). Tidak bisa diubah atau dihapus.</div><button class="btn ghost sm" data-act="own-audit">'+I("receipt")+' Lihat 100 catatan terakhir</button></div>';
   h += '<form class="card pad" id="walletCfg"><h3 class="sub">Pengaturan saldo</h3>'+
     '<div class="cols2"><div><label class="f">Minimal saldo (Rp)</label><input class="in" name="minBalance" inputmode="numeric" value="'+esc(c.minBalance)+'"></div><div><label class="f">Bonus toko/driver baru (Rp)</label><input class="in" name="bonus" inputmode="numeric" value="'+esc(c.bonus)+'"></div></div>'+
     '<h3 class="sub" style="margin-top:16px">Komisi JAGA</h3><div class="cols2"><div><label class="f">Komisi penjualan toko (%)</label><input class="in" name="storePct" inputmode="decimal" value="'+esc(c.storePct)+'"></div><div><label class="f">Komisi ongkir/tarif driver (%)</label><input class="in" name="drvPct" inputmode="decimal" value="'+esc(c.drvPct)+'"></div></div>'+
@@ -6075,6 +6076,17 @@ document.addEventListener("click", async e => {
   }
   if(a === "own-proof"){
     document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><img alt="Bukti transfer" src="'+esc(el.dataset.v)+'" style="width:100%;border-radius:12px"><button class="btn block" style="margin-top:12px" onclick="closeModal()">Tutup</button></div></div>';
+    return;
+  }
+  if(a === "own-audit"){
+    const AL = {"wallet.adjust":"Sesuaikan saldo","wallet.cfg":"Ubah pengaturan saldo/komisi","topup.decide":"Putusan isi saldo","driver.verify":"Verifikasi driver","driver.active":"Aktif/nonaktif driver","driver.delete":"Hapus driver","store.active":"Aktif/nonaktif toko","store.delete":"Hapus toko","order.set":"Ubah status order","report.set":"Tangani laporan","areas.save":"Ubah wilayah","owner.setpass":"Ganti password owner"};
+    document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Jejak audit</h2><div id="auditBox" class="muted small">Memuat…</div><div class="actions"><button type="button" class="btn ghost" onclick="closeModal()">Tutup</button></div></div></div>';
+    try{
+      const rows = SB ? await sbStore.rpc("jt_owner_audit", {p_limit:100}) : [];
+      const box = document.getElementById("auditBox"); if(!box) return;
+      box.innerHTML = !SB ? 'Jejak audit aktif pada mode online.' : (rows && rows.length ? rows.map(r => { const d = r.detail || {}; const bits = Object.keys(d).filter(k => d[k] !== null && d[k] !== "" && k !== "keys").map(k => esc(k) + ": " + esc(typeof d[k] === "object" ? JSON.stringify(d[k]) : String(d[k]))).join(" · ");
+        return '<div class="orow"><div class="grow"><b>'+esc(AL[r.action] || r.action)+'</b><small>'+esc(r.target || "")+(bits ? ' · '+bits : '')+'</small></div><div class="r"><small>'+esc(new Date(r.at).toLocaleString("id-ID"))+'</small><small>'+esc(r.actor)+'</small></div></div>'; }).join("") : 'Belum ada catatan.');
+    }catch(err){ const box = document.getElementById("auditBox"); if(box) box.textContent = "Gagal memuat: " + String(err.message || err); }
     return;
   }
   if(a === "own-adjust"){
