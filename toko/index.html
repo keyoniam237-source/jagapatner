@@ -982,6 +982,7 @@ body.is-driver .slogin{margin:12px 14px 20px}
 .ob small{font-size:10px;color:#7a869e;margin-top:4px}
 .olegend{display:flex;gap:14px;font-size:12px;color:#6a7894;margin-top:8px}
 .olegend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.obars .col i.gold{background:#b08d4f}
 .olegend .g{background:#2f6bff}.olegend .s{background:#b08d4f}
 .orow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eef1f6}
 .orow:last-child{border-bottom:0}
@@ -2493,6 +2494,8 @@ function shareTable(s, orders){
   return h;
 }
 function sellerReport(s, orders){
+  const PD = S.repDays || 7, pFrom = Date.now() - PD * 86400000;
+  const allOrders = orders; orders = orders.filter(o => (o.createdAt || 0) >= pFrom);
   const done = orders.filter(o => o.status === "selesai");
   const omzet = done.reduce((a,o)=>a+o.total,0);
   const active = orders.filter(o => !["selesai","dibatalkan"].includes(o.status));
@@ -2506,8 +2509,11 @@ function sellerReport(s, orders){
   const topList = Object.entries(top).sort((a,b)=>b[1].v-a[1].v).slice(0,8);
   const byPay = {};
   done.forEach(o => { const k = o.pay?o.pay.type:"-"; byPay[k] = (byPay[k]||0)+o.total; });
-  let h = '<div class="stats">'+
-    '<div class="card stat"><div class="l">Omzet (pesanan selesai)</div><div class="v">'+rp(omzet)+'</div></div>'+
+  let h = '<div class="card pad" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b class="small">Periode</b>'+[7,30,90].map(n => '<button class="btn '+(PD===n?'':'ghost ')+'sm" data-act="rep-days" data-v="'+n+'">'+n+' hari</button>').join("")+
+    '<button class="btn ghost sm" data-act="rep-csv" style="margin-left:auto">'+I("receipt")+' Unduh laporan (CSV)</button></div>'+
+    '<div class="stats">'+
+    '<div class="card stat"><div class="l">Omzet '+PD+' hari (pesanan selesai)</div><div class="v">'+rp(omzet)+'</div></div>'+
+    '<div class="card stat"><div class="l">Pendapatan bersih setelah komisi</div><div class="v">'+rp(omzet - done.reduce((a,o)=>a+shareVal(o),0))+'</div><div class="small muted">komisi JAGA '+rp(done.reduce((a,o)=>a+shareVal(o),0))+'</div></div>'+
     '<div class="card stat"><div class="l">Pesanan selesai</div><div class="v">'+done.length+'</div></div>'+
     '<div class="card stat"><div class="l">Rata-rata per pesanan</div><div class="v">'+rp(done.length?omzet/done.length:0)+'</div></div>'+
     '<div class="card stat"><div class="l">Pesanan aktif</div><div class="v">'+active.length+'</div><div class="small muted">'+rp(pending)+' belum selesai</div></div></div>';
@@ -4155,6 +4161,18 @@ function ownLogin(){
     '<label class="f">Password</label><div class="pwrap"><input class="in" type="password" name="pass" autocomplete="current-password" required><button type="button" class="pw-eye" data-act="pw-toggle" aria-label="Lihat password">'+I("eye")+'</button></div>'+
     '<button class="btn block press" style="margin-top:14px">Masuk</button><div class="hint" style="text-align:center">Halaman ini khusus pemilik aplikasi.</div></form>';
 }
+function csvDownload(name, rows){
+  const q = v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+  const blob = new Blob(["\ufeff" + rows.map(r => r.map(q).join(",")).join("\n")], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+const csvSlug = t => String(t || "toko").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "toko";
+const csvDate = t => t ? new Date(t).toLocaleString("id-ID", {dateStyle:"short", timeStyle:"short"}) : "";
+function miniBars(vals, labels, fmt, cls){
+  const max = Math.max(1, ...vals);
+  return '<div class="obars">'+vals.map((v, i) => '<div class="ob" title="'+esc(labels[i]+': '+fmt(v))+'"><div class="col"><i class="'+(cls||'')+'" style="height:'+Math.round(v/max*100)+'%"></i></div><small>'+esc(labels[i].split(" ")[0])+'</small></div>').join("")+'</div>';
+}
 function bars(days){
   const max = Math.max(1, ...days.map(d => d.gmv));
   return '<div class="obars">'+days.map(d => '<div class="ob" title="'+esc(d.label+': '+rp(d.gmv)+' · bagi hasil '+rp(d.share))+'"><div class="col"><i style="height:'+Math.round(d.gmv/max*100)+'%"></i><b style="height:'+Math.round(d.share/max*100)+'%"></b></div><small>'+esc(d.short)+'</small></div>').join("")+'</div>'+
@@ -4224,6 +4242,8 @@ function appOwner(){
         : '<p class="muted small" style="margin:8px 0 0">Tidak ada driver menunggu, pesan, laporan, atau pesanan macet.'+(offStores||suspD?' '+offStores+' toko dan '+suspD+' driver sedang dinonaktifkan.':'')+'</p>')+'</div>';
     h += '<div class="okpi">'+
       '<div class="k main"><small>Pendapatan JAGA (bagi hasil 3%)</small><b>'+rp(st.share)+'</b><span>dari '+st.done.length+' pesanan selesai</span></div>'+
+      (() => { const f = rangeStart(S.own.range); const rf = RD.filter(r => r.status === "selesai" && (r.doneAt||r.createdAt||0) >= f).reduce((a,r)=>a+(r.fee||0),0), df = st.done.reduce((a,o)=>a+(o.drvFee||0),0);
+        return '<div class="k main"><small>Total semua komisi JAGA</small><b>'+rp(st.share + df + rf)+'</b><span>toko '+rp(st.share)+' · ongkir antar '+rp(df)+' · Jago '+rp(rf)+'</span></div>'; })()+
       '<div class="k"><small>Penjualan selesai (masuk ke toko)</small><b>'+rp(st.gmv)+'</b></div>'+
       '<div class="k"><small>Ongkir diterima driver</small><b>'+rp(st.ongkir)+'</b></div>'+
       '<div class="k"><small>Pesanan dibuat</small><b>'+st.created.length+'</b><span>'+st.cancel.length+' batal'+(st.created.length?' ('+Math.round(st.cancel.length/st.created.length*100)+'%)':'')+'</span></div>'+
@@ -4246,6 +4266,16 @@ function appOwner(){
       days.push({label:d.toLocaleDateString("id-ID",{day:"numeric",month:"short"}), short:String(d.getDate()), gmv:dn.reduce((a,o)=>a+(o.total||0),0), share:dn.reduce((a,o)=>a+shareVal(o),0)});
     }
     h += '<div class="card pad"><h3 class="sub">Penjualan 14 hari terakhir</h3>'+bars(days)+'</div>';
+    { const cnt = [], inc = [], lab = [];
+      for(let i = 13; i >= 0; i--){
+        const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i); const k = dayKey(d);
+        const dn = (D.orders||[]).filter(o => o.status === "selesai" && dayKey(doneT(o)) === k), dr = RD.filter(r => r.status === "selesai" && dayKey(r.doneAt||r.createdAt||0) === k);
+        cnt.push(dn.length + dr.length); inc.push(dn.reduce((a,o)=>a+shareVal(o)+(o.drvFee||0),0) + dr.reduce((a,r)=>a+(r.fee||0),0));
+        lab.push(d.toLocaleDateString("id-ID",{day:"numeric",month:"short"}));
+      }
+      h += '<div class="card pad"><h3 class="sub">Transaksi selesai per hari <span class="small muted" style="font-weight:600">· pesanan + Jago, 14 hari</span></h3>'+miniBars(cnt, lab, v => v + " transaksi")+'<div class="olegend"><span><i class="g"></i>Jumlah transaksi selesai</span><span>Total '+cnt.reduce((a,b)=>a+b,0)+'</span></div></div>'+
+        '<div class="card pad"><h3 class="sub">Pendapatan JAGA per hari <span class="small muted" style="font-weight:600">· semua komisi, 14 hari</span></h3>'+miniBars(inc, lab, rp, "gold")+'<div class="olegend"><span><i class="s"></i>Komisi toko + ongkir antar + Jago</span><span>Total '+rp(inc.reduce((a,b)=>a+b,0))+'</span></div>'+
+        '<button class="btn ghost sm" data-act="own-csv" style="margin-top:10px">'+I("receipt")+' Unduh transaksi (CSV) · '+esc(ranges.find(r => r[0]===S.own.range)[1].toLowerCase())+'</button></div>'; }
     const live = st.active.slice(0, 8);
     h += '<div class="card pad"><h3 class="sub">Sedang berjalan <span class="small muted" style="font-weight:600">· diperbarui otomatis</span></h3>'+(live.length ? live.map(ownOrderRow).join("") : '<div class="muted small">Tidak ada pesanan yang sedang berjalan.</div>')+'</div>';
     h += '<div class="card pad"><h3 class="sub">Aktivitas terbaru</h3>'+ownFeed(D.orders || [])+'</div>';
@@ -6077,6 +6107,22 @@ document.addEventListener("click", async e => {
   if(a === "own-proof"){
     document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><img alt="Bukti transfer" src="'+esc(el.dataset.v)+'" style="width:100%;border-radius:12px"><button class="btn block" style="margin-top:12px" onclick="closeModal()">Tutup</button></div></div>';
     return;
+  }
+  if(a === "rep-days"){ S.repDays = parseInt(el.dataset.v, 10) || 7; render(); return; }
+  if(a === "rep-csv"){
+    const s = storeById(S.sellerStoreId); if(!s) return; const PD = S.repDays || 7, from = Date.now() - PD * 86400000;
+    const os = S.orders.filter(o => o.storeId === s.id && (o.createdAt || 0) >= from).sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
+    const rows = [["Tanggal","Kode","Status","Barang","Subtotal (Rp)","Komisi JAGA (Rp)","Diterima toko (Rp)","Pembayaran"]].concat(os.map(o => [csvDate(o.createdAt), o.code, o.status, (o.items||[]).map(i => i.qty + "x " + i.name).join("; "), o.total || 0, o.status === "selesai" ? shareVal(o) : 0, o.status === "selesai" ? (o.total||0) - shareVal(o) : 0, o.pay ? o.pay.type : ""]));
+    const done = os.filter(o => o.status === "selesai"), om = done.reduce((x,o)=>x+(o.total||0),0), sh = done.reduce((x,o)=>x+shareVal(o),0);
+    rows.push([]); rows.push(["","","","TOTAL selesai ("+done.length+" pesanan)", om, sh, om - sh, ""]);
+    csvDownload("laporan-" + csvSlug(s.name) + "-" + PD + "hari-" + new Date().toISOString().slice(0,10) + ".csv", rows); toast("Laporan diunduh"); return;
+  }
+  if(a === "own-csv"){
+    const D = ownD(), f = rangeStart(S.own.range), RD = D.rides || [];
+    const rows = [["Jenis","Tanggal","Kode","Toko/Pembeli","Status","Nilai transaksi (Rp)","Komisi toko (Rp)","Komisi ongkir antar (Rp)","Komisi Jago (Rp)"]];
+    (D.orders || []).filter(o => (o.createdAt || 0) >= f).sort((a,b) => (a.createdAt||0) - (b.createdAt||0)).forEach(o => rows.push(["Pesanan", csvDate(o.createdAt), o.code, o.storeName || "", o.status, o.total || 0, o.status === "selesai" ? shareVal(o) : 0, o.status === "selesai" ? (o.drvFee || 0) : 0, 0]));
+    RD.filter(r => (r.createdAt || 0) >= f).sort((a,b) => (a.createdAt||0) - (b.createdAt||0)).forEach(r => rows.push(["Jago", csvDate(r.createdAt), r.code || r.id, "", r.status, r.fareFinal || r.fareEst || 0, 0, 0, r.status === "selesai" ? (r.fee || 0) : 0]));
+    csvDownload("transaksi-jaga-" + new Date().toISOString().slice(0,10) + ".csv", rows); toast("Transaksi diunduh"); return;
   }
   if(a === "own-audit"){
     const AL = {"wallet.adjust":"Sesuaikan saldo","wallet.cfg":"Ubah pengaturan saldo/komisi","topup.decide":"Putusan isi saldo","driver.verify":"Verifikasi driver","driver.active":"Aktif/nonaktif driver","driver.delete":"Hapus driver","store.active":"Aktif/nonaktif toko","store.delete":"Hapus toko","order.set":"Ubah status order","report.set":"Tangani laporan","areas.save":"Ubah wilayah","owner.setpass":"Ganti password owner"};
