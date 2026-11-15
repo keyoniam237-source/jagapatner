@@ -1063,6 +1063,12 @@ body.is-owner .dtop{z-index:20}
 .wbig span{display:block;opacity:.9;font-size:12.5px}
 .whow ol{margin:0;padding-left:20px;color:#3b4a66;font-size:13.5px;line-height:1.55}
 .wchips{display:flex;gap:6px;flex-wrap:wrap}
+.askbox .sub{display:flex;align-items:center;gap:8px}.askn{font-style:normal;background:#e5484d;color:#fff;font-size:11px;border-radius:99px;padding:2px 8px}
+.askrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:10px 2px;cursor:pointer;font:inherit;color:inherit}
+.askrow:first-of-type{border-top:0}.askrow .grow{min-width:0}.askrow b{display:block;font-size:14px}.askrow small{display:block;color:#6a7894;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.askrow time{font-size:11px;color:#8a96ad;white-space:nowrap}.askrow .aav{width:36px;height:36px;border-radius:12px;background:#eef3ff;color:#2f6bff;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.askrow.un b::after{content:"";display:inline-block;width:8px;height:8px;border-radius:99px;background:#e5484d;margin-left:6px;vertical-align:middle}
+.chead .av,.chead .avatar{width:34px;height:34px;flex:none}
 .wpay2{background:#f5f8fe;border-radius:14px;padding:12px;margin-top:12px;display:flex;flex-direction:column;gap:10px}
 .wpay2 .wplbl{color:#6a7894;font-size:12px;font-weight:700}
 .wpg{display:flex;flex-direction:column;gap:6px}
@@ -1905,6 +1911,7 @@ function renderInner(){
     else if(v === "order") html += appOrder();
     else if(v === "fav") html += appFav();
     else if(v === "poin") html += appPoin();
+    else if(v === "pesan") html += appPesan();
     else if(v === "jago") html += appJago();
     else if(v === "profile") html += appProfile();
     else html += appHome();
@@ -2009,7 +2016,7 @@ const waNorm = w => { let d = String(w||"").replace(/\D/g, ""); if(d[0] === "0")
 const waOk = w => /^628\d{7,11}$/.test(waNorm(w));
 const WA_BAD = "Nomor WhatsApp tidak valid. Contoh: 081234567890";
 const RULES = [
-  {t:"Umum", e:"check", r:["1 nomor WhatsApp hanya untuk 1 akun di setiap peran (1 pembeli, 1 toko, 1 driver).","Nomor WhatsApp wajib aktif dan benar (08… atau +62…). Data akun harus data asli.","Tidak boleh bertransaksi dengan diri sendiri: membeli dari toko sendiri atau mengantar pesanan sendiri.","Bonus saldo akun baru hanya diberikan 1 kali untuk setiap nomor WhatsApp.","Akun yang curang, memakai data palsu, atau membuat pesanan palsu dapat dinonaktifkan tim JAGA."]},
+  {t:"Umum", e:"check", r:["1 nomor WhatsApp hanya untuk 1 akun di setiap peran (1 pembeli, 1 toko, 1 driver).","Nomor WhatsApp wajib aktif dan benar (08… atau +62…). Data akun harus data asli.","Tidak boleh bertransaksi dengan diri sendiri: membeli dari toko sendiri atau mengantar pesanan sendiri.","Semua pertanyaan, chat, dan transaksi antara pembeli, toko, dan driver dilakukan lewat pesan di aplikasi JAGA, bukan WhatsApp. WhatsApp hanya untuk menghubungi layanan JAGA bila ada keluhan atau butuh bantuan.","Bonus saldo akun baru hanya diberikan 1 kali untuk setiap nomor WhatsApp.","Akun yang curang, memakai data palsu, atau membuat pesanan palsu dapat dinonaktifkan tim JAGA."]},
   {t:"Pembeli", e:"cart", r:["Maksimal 3 pesanan belanja yang sedang berjalan sekaligus.","Di toko yang sama hanya boleh 1 pesanan yang belum dikonfirmasi. Tunggu atau batalkan dulu sebelum memesan lagi.","Maksimal 1 perjalanan Jago yang sedang berjalan.","Alamat pengantaran harus berada di wilayah layanan JAGA."]},
   {t:"Penjual (toko)", e:"store", r:["1 nomor WhatsApp hanya untuk 1 toko.","1 akun / HP hanya bisa mendaftarkan 1 toko.","Nama toko tidak boleh sama dengan toko lain di daerah yang sama.","Bagi hasil 3% dari setiap penjualan yang selesai, dipotong otomatis dari saldo toko.","Toko wajib mengonfirmasi pesanan dan menjaga stok tetap sesuai."]},
   {t:"Driver", e:"scooter", r:["1 nomor WhatsApp dan 1 plat nomor hanya untuk 1 akun driver.","Akun driver harus disetujui tim JAGA sebelum bisa ONLINE.","1 driver hanya bisa membawa 1 pesanan atau 1 perjalanan sekaligus.","Ganti nomor WhatsApp atau plat nomor = verifikasi ulang oleh tim JAGA.","Tidak bisa mengambil pesanan sendiri atau pesanan dari toko milik sendiri.","Potongan 3% dari ongkir antar dan tarif Jago setiap order selesai, dipotong dari saldo driver.","Saldo di bawah minimum (Rp10.000) = order tidak masuk sampai saldo diisi."]},
@@ -2052,7 +2059,7 @@ function viewProduct(){
       '<div style="display:flex;gap:8px"><button class="btn ghost" style="flex:1" data-act="qty" data-id="'+esc(p.id)+'" data-d="1">+ Keranjang</button><button class="btn" style="flex:1" data-act="buy-now" data-id="'+esc(p.id)+'">Beli langsung</button></div>')+'</div>'+
     '<div class="storebox">'+avatarHtml(s)+'<div class="grow"><b>'+esc(s.name)+'</b><div class="small muted">'+(isOpen?'<span style="color:#16a34a;font-weight:700">● Buka</span>':'<span style="color:var(--danger);font-weight:700">Tutup</span>')+' · '+I("pin")+' '+esc(s.area||"")+'</div></div>'+
     '<button class="btn ghost sm" data-act="open-store" data-id="'+esc(s.id)+'">Kunjungi toko</button>'+
-    (s.wa?'<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", saya mau tanya tentang "+p.name+" di JAGA."))+'">'+I("chat")+' Chat</a>':'')+'</div></div></div>';
+    '<button class="btn ghost sm" data-act="chat-seller" data-id="'+esc(s.id)+'" data-p="'+esc(p.id)+'">'+I("chat")+' Chat</button></div></div></div>';
   if(others.length) h += '<div class="sec-head" style="margin-top:26px"><h2 style="font-size:19px">Lainnya dari '+esc(s.name)+'</h2></div><div class="pgrid">'+others.map(prodCard).join("")+'</div>';
   return h;
 }
@@ -2067,7 +2074,7 @@ function viewStore(){
     '<div class="small muted">'+(isOpen?'<span style="color:#86efac;font-weight:700">● Buka</span>':'<span style="color:#fca5a5;font-weight:700">Tutup</span>')+' · '+(CAT_ICON[s.category]||"")+' '+esc(s.category)+' · '+I("pin")+' '+esc(s.address||"")+(s.area?', '+esc(s.area):'')+(s.hours?' · '+I("clock")+' '+esc(s.hours):'')+'</div>'+
     (s.desc?'<p style="margin:8px 0 0;color:#dce6fb">'+esc(s.desc)+'</p>':'')+
     '<div class="paylist"><span class="tag">'+I("truck")+' Ongkir Rp2rb/500 m</span><span class="tag">0% admin</span>'+payMethodsOf(s).map(p=>'<span class="tag gray">'+esc(p.l)+'</span>').join("")+'</div></div>'+
-    (s.wa?'<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", saya lihat toko Anda di JAGA."))+'">'+I("chat")+' Chat WhatsApp</a>':'')+'</div>';
+    '<button class="btn ghost sm" data-act="chat-seller" data-id="'+esc(s.id)+'">'+I("chat")+' Chat penjual</button></div>';
   if(!S.products[s.id]) return h + '<div class="empty">'+I("loader")+' Memuat produk…</div>';
   if(!prods.length) return h + '<div class="empty card"><div class="big">'+I("package")+'</div>Toko ini belum menambahkan produk.</div>';
   h += '<div class="sec-head" style="margin:4px 0 12px"><h2 style="font-size:19px">Semua produk</h2><span class="small muted">'+prods.length+' produk</span></div>';
@@ -2189,7 +2196,6 @@ function viewOrder(){
   if(o.proof && o.status !== "menunggu_pembayaran") h += '<div class="small muted" style="margin-top:10px">Bukti pembayaran Anda:</div><img class="proof" alt="Bukti pembayaran" src="'+esc(o.proof)+'">';
   h += '<div class="actions">'+chatBtn(o, "pembeli", "Chat toko & driver", "ghost sm")+
     (["menunggu_pembayaran","menunggu_konfirmasi"].includes(o.status) || (o.status==="diproses" && o.pay && o.pay.k==="cod" && false) ?'<button class="btn danger sm" data-act="buyer-cancel" data-id="'+esc(o.id)+'">Batalkan pesanan</button>':'')+'</div>';
-  if(s && s.wa) h += '<div class="hint">WhatsApp toko: '+esc(s.wa)+'</div>';
   h += trustBox(o, "order") + (["selesai","dibatalkan"].includes(o.status) ? "" : pushCard("buyer", "Kabari saya saat pesanan dikonfirmasi, diambil driver, dan sampai."));
   h += '</div>';
   h += '<div class="card pad"><h3 class="sub">Rincian</h3>'+o.items.map(i=>'<div class="row"><span>'+esc(i.name)+' ×'+i.qty+'</span><span>'+rp(i.price*i.qty)+'</span></div>').join("")+
@@ -2226,6 +2232,7 @@ function viewSeller(){
     '<button class="btn ghost sm sup-btn" data-act="sup-open" data-v="store:'+esc(s.id)+'">'+I("chat")+' Tanya JAGA'+supBadge("store:"+s.id)+'</button>'+
     '<button class="btn ghost sm" data-act="go" data-v="register" data-new="1">+ Toko baru</button></div></div>';
   if(s.active === false) h += '<div class="notice warnbox">'+I("bell")+' <b>Toko Anda sedang dinonaktifkan tim JAGA</b> dan tidak tampil di aplikasi pembeli. <button class="linkbtn" data-act="sup-open" data-v="store:'+esc(s.id)+'">Tanya tim JAGA</button></div>';
+  if(["ringkasan","pesanan"].includes(S.sellerTab || "ringkasan")) h += askInbox(s);
   if((S.sup.unread||{})["store:"+s.id]) h += '<button class="supnote" data-act="sup-open" data-v="store:'+esc(s.id)+'">'+I("chat")+'<div class="grow"><b>Ada pesan baru dari tim JAGA</b><small>Ketuk untuk membaca dan membalas</small></div><em>'+S.sup.unread["store:"+s.id]+'</em></button>';
   if(S.sellerTab === "ringkasan") h += portalInstallCard("seller");
   h += pushCard("store", "Bunyikan notifikasi saat ada pesanan baru, walau aplikasi ditutup.");
@@ -2301,7 +2308,7 @@ function orderCard(s, o){
     if(o.status==="diantar"){ if(o.driverId) info = driverBox(o, "Pesanan sedang diantar driver ke pembeli.", true); else acts = '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="selesai">Tandai selesai</button>'; }
     if(!["selesai","dibatalkan","diantar"].includes(o.status)) acts += '<button class="btn danger sm" data-act="seller-cancel" data-id="'+esc(o.id)+'">Tolak / batalkan</button>';
     if(o.status==="menunggu_konfirmasi" && s && typeof s.lat !== "number") info += '<div class="small" style="margin-top:8px;color:var(--warn);font-weight:600">'+I("pin")+' Lokasi toko belum diatur — driver dicari dari semua yang online. Atur di Pengaturan agar dapat driver terdekat.</div>';
-    return '<div class="card order"><div class="order-top"><div><b>'+esc(o.code)+'</b> <span class="small muted">· '+fmtDate(o.createdAt)+'</span><div class="small">'+esc(o.buyer.name)+' · <a target="_blank" rel="noopener" href="'+esc(waLink(o.buyer.wa,"Halo "+o.buyer.name+", ini dari "+s.name+" tentang pesanan "+o.code))+'">'+esc(o.buyer.wa)+'</a></div></div>'+statusTag(o.status)+'</div>'+
+    return '<div class="card order"><div class="order-top"><div><b>'+esc(o.code)+'</b> <span class="small muted">· '+fmtDate(o.createdAt)+'</span><div class="small">'+esc(o.buyer.name)+'</div></div>'+statusTag(o.status)+'</div>'+
       '<div class="small" style="margin-top:8px">'+o.items.map(i=>'<b>'+i.qty+'×</b> '+esc(i.name)).join(" · ")+'</div>'+
       '<div class="small muted" style="margin-top:4px">'+I("pin")+' '+esc(o.buyer.address)+(o.buyer.maps?' · <a target="_blank" rel="noopener" href="'+esc(o.buyer.maps)+'">peta</a>':'')+'</div>'+
       (o.buyer.note?'<div class="small muted">'+I("note")+' '+esc(o.buyer.note)+'</div>':'')+
@@ -2854,7 +2861,7 @@ const NAV_APP = [
 ];
 function renderAppNav(){
   if(S.role === "driver" || S.role === "owner"){ document.getElementById("bnav").style.display = "none"; document.getElementById("bnav").innerHTML = ""; return; }
-  const on = {home:"home", store:"home", product:"home", fav:"fav", poin:"profile", cart:"cart", checkout:"cart", orders:"orders", order:"orders", profile:"profile", jago:"home"}[S.view];
+  const on = {home:"home", store:"home", product:"home", fav:"fav", poin:"profile", pesan:"profile", cart:"cart", checkout:"cart", orders:"orders", order:"orders", profile:"profile", jago:"home"}[S.view];
   const badge = v => { const c = v==="cart" ? cartCount() : v==="orders" ? myActiveOrders() : 0; return c ? '<span class="badge">'+c+'</span>' : ''; };
   const bn = document.getElementById("bnav");
   bn.style.display = "";
@@ -2982,7 +2989,7 @@ function appStore(){
     '<div class="who'+ra(0)+'">'+avatarHtml(s)+'<div><h2>'+esc(s.name)+'</h2><small>'+(s.open===false?'Tutup sementara':'● Buka')+' · '+esc(s.category)+(s.hours?' · '+esc(s.hours):'')+' '+storeStars(s.id)+'</small></div></div>'+
     '<div class="tags'+ra(1)+'"><span>Ongkir Rp2rb/500 m</span><span>Rp0 admin</span>'+payMethodsOf(s).map(m=>'<span>'+esc(m.l)+'</span>').join("")+'</div></section>';
   h += '<div class="sec-pad" style="margin-top:14px">'+(s.desc?'<div class="pcard'+ra(2)+'"><div class="small" style="color:#45526b">'+esc(s.desc)+'</div><div class="small muted" style="margin-top:6px">'+esc(s.address||"")+(s.area?', '+esc(s.area):'')+'</div></div>':'')+
-    '<div class="actions" style="margin:0 0 4px">'+(s.wa?'<button class="btn ghost press grow" data-act="chat-seller" data-id="'+esc(s.id)+'">'+I("chat")+' Chat penjual</button>':'')+'<button class="btn ghost press" data-act="store-link" data-id="'+esc(s.id)+'">'+I("megaphone")+' Bagikan toko</button></div></div>';
+    '<div class="actions" style="margin:0 0 4px">'+'<button class="btn ghost press grow" data-act="chat-seller" data-id="'+esc(s.id)+'">'+I("chat")+' Chat penjual'+askBadgeStore(s.id)+'</button>'+'<button class="btn ghost press" data-act="store-link" data-id="'+esc(s.id)+'">'+I("megaphone")+' Bagikan toko</button></div></div>';
   if(!S.products[s.id]) return h + skeletonGrid(4);
   if(!prods.length) return h + aEmpty("package", "Belum ada produk", "Toko ini belum menambahkan produk.");
   return h + '<div class="ash"><h2>Semua produk</h2><span class="small muted">'+prods.length+' produk</span></div><div class="agrid">'+prods.map((p,i)=>appProdCard({p, s}, i)).join("")+'</div>';
@@ -3007,7 +3014,7 @@ function appProduct(){
     (p.desc?'<div class="pcard'+ra(2)+'"><h3>Deskripsi</h3><div class="small" style="white-space:pre-line;color:#45526b">'+esc(p.desc)+'</div></div>':'')+
     '<div class="pcard'+ra(3)+'" style="display:flex;gap:12px;align-items:center">'+avatarHtml(s)+'<div class="grow" style="min-width:0"><b>'+esc(s.name)+'</b><div class="small muted">'+(closed?'<span class="closedt">Tutup</span>':'<span class="open">● Buka</span>')+' · '+esc(s.area||"")+'</div></div>'+
     '<button class="btn ghost sm press" data-act="open-store" data-id="'+esc(s.id)+'">Kunjungi</button></div>'+
-    (s.wa?'<button class="btn ghost block press" style="margin-bottom:12px" data-act="chat-seller" data-id="'+esc(s.id)+'" data-p="'+esc(p.id)+'">'+I("chat")+' Tanya penjual soal produk ini</button>':'')+'</div>';
+    '<button class="btn ghost block press" style="margin-bottom:12px" data-act="chat-seller" data-id="'+esc(s.id)+'" data-p="'+esc(p.id)+'">'+I("chat")+' Tanya penjual soal produk ini</button>'+'</div>';
   if(others.length) h += '<div class="ash"><h2>Lainnya dari toko ini</h2></div><div class="agrid">'+others.map((x,i)=>appProdCard(x,i)).join("")+'</div>';
   h += '<div style="height:90px"></div><div class="pbuy"><button class="ibtn press" data-act="nav" data-v="cart" aria-label="Keranjang" style="position:relative;background:#f1f4fa;box-shadow:none">'+I("cart")+(cartCount()?'<span class="badge" style="position:absolute;top:-4px;right:-4px;background:#ff4d6d;color:#fff;font-size:10px;font-weight:800;border-radius:99px;padding:0 5px;line-height:16px">'+cartCount()+'</span>':'')+'</button>';
   if(out || closed) h += '<button class="btn" disabled>'+(out?'Stok habis':'Toko sedang tutup')+'</button></div>';
@@ -3042,6 +3049,7 @@ function appProfile(){
     '<div class="plist'+ra(1)+'">'+
       '<button data-act="edit-addr">'+E("pin")+'<div class="grow">Alamat pengantaran<small>'+esc(p.address||"Belum diatur")+'</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="nav" data-v="orders">'+E("receipt")+'<div class="grow">Pesanan saya<small>'+n+' pesanan</small></div><span class="chev">'+I("chev")+'</span></button>'+
+      '<button data-act="nav" data-v="pesan">'+E("bell")+'<div class="grow">Pesan ke toko<small>'+((S.ask.mine||[]).filter(t => askUnread(t, "pembeli")).length ? '<b style="color:#e5484d">'+(S.ask.mine||[]).filter(t => askUnread(t, "pembeli")).length+' pesan baru</b>' : 'Tanya stok & harga langsung ke penjual')+'</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="nav" data-v="poin">'+E("gift")+'<div class="grow">Poin & saldo JAGA<small>'+(S.pts.buyer && S.pts.buyer.points != null ? S.pts.buyer.points+' poin · saldo '+rp(S.pts.buyer.balance||0) : '10 transaksi sehari = 5 poin')+'</small></div><span class="chev">'+I("chev")+'</span></button>'+
       (PUSH_OK ? '<button data-act="push-on" data-v="buyer">'+E("bell")+'<div class="grow">Notifikasi pesanan<small>'+(pushOn("buyer") ? "Aktif ✓" : "Ketuk untuk mengaktifkan")+'</small></div><span class="chev">'+I("chev")+'</span></button>' : '')+
       '<button data-act="nav" data-v="jago">'+E("scooter")+'<div class="grow">Jago · ojek online<small>'+S.rides.length+' perjalanan</small></div><span class="chev">'+I("chev")+'</span></button>'+
@@ -3257,23 +3265,138 @@ function chatQuestions(s, p){
   q.push({e:"card", t:"Cara bayar apa saja?", m:"Pembayarannya bisa lewat apa saja? Apakah bisa bayar di tempat (COD)?"});
   q.push({e:"clock", t:"Jam buka toko", m:"Toko buka jam berapa sampai jam berapa? Hari ini buka?"});
   if(cartTxt) q.unshift({e:"cart", t:"Konfirmasi isi keranjang saya", m:"Saya mau pesan:\n" + cartTxt + "\nTotal " + rp(cartTotals().total) + ". Apakah semuanya tersedia dan bisa diantar" + addr + "?"});
-  return q.map(x => Object.assign(x, {link: waLink(s.wa, head + x.m)}));
+  return q;
 }
-function openChatSheet(sid, pid){
-  const s = storeById(sid); if(!s || !s.wa) return;
-  const f = pid ? findProd(pid) : null; const p = f ? f.p : null;
-  const qs = chatQuestions(s, p);
-  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal chatsheet">'+
-    '<div class="cs-head">'+avatarHtml(s)+'<div class="grow"><b>Tanya '+esc(s.name)+'</b><small>'+(p?esc(p.name):'Pilih pertanyaan, lalu kirim lewat WhatsApp')+'</small></div><button class="x" data-act="close-modal" aria-label="Tutup">×</button></div>'+
-    '<div class="cs-list">'+qs.map((x,i) => '<a class="cs-q'+(i===0&&x.e==="cart"?' hl':'')+'" target="_blank" rel="noopener" href="'+esc(x.link)+'" data-act="close-modal">'+E(x.e)+'<span class="grow">'+esc(x.t)+'<small>'+esc(x.m.split("\n")[0].slice(0,70))+(x.m.length>70?'…':'')+'</small></span>'+I("chev")+'</a>').join("")+'</div>'+
-    '<a class="btn wa block" target="_blank" rel="noopener" href="'+esc(waLink(s.wa, "Halo "+s.name+", saya lihat toko Anda di JAGA. "))+'" data-act="close-modal">'+I("chat")+' Tulis pesan sendiri</a>'+
-    '<div class="small muted" style="text-align:center;margin-top:10px">WhatsApp penjual: '+esc(s.wa)+'</div></div></div>';
+/* ===== Tanya toko: pesan pembeli <-> toko di dalam JAGA (tanpa WhatsApp) ===== */
+S.ask = {store:{}, mine:null};
+let ASK_SEEN = {}; try{ ASK_SEEN = JSON.parse(localStorage.getItem("jt_ask_seen") || "{}"); }catch(_){}
+const askSeenSave = () => { try{ localStorage.setItem("jt_ask_seen", JSON.stringify(ASK_SEEN)); }catch(_){} };
+const askLocal = () => { try{ return JSON.parse(localStorage.getItem("jt_ask_local") || "[]"); }catch(_){ return []; } };
+const askLocalSave = a => { try{ localStorage.setItem("jt_ask_local", JSON.stringify(a.slice(-3000))); }catch(_){} };
+const askThLocal = sid => "a_" + sid + "_" + ME;
+function askGroup(rows, nameOf){
+  const by = {};
+  rows.forEach(m => { const t = by[m.th] || (by[m.th] = {th:m.th, storeId:m.storeId, n:0, last:0}); t.n++; if(m.buyerName) t.name = m.buyerName; if(m.id > t.last){ t.last = m.id; t.role = m.role; t.body = m.body; t.at = m.at; } });
+  return Object.values(by).map(t => nameOf ? Object.assign(t, {name:nameOf(t)}) : t).sort((a, b) => b.last - a.last);
 }
+const ASK = {
+  async send(sid, th, body, as){
+    if(SB) return await sbStore.rpc("jt_ask_send", {p_store:sid, p_th:th || null, p_body:body, p_name:getProf().name || null});
+    body = String(body || "").trim().slice(0, 800); if(!body) throw srvErr("Pesan kosong");
+    const a = askLocal(), id = Date.now() + a.length, mt = th || askThLocal(sid);
+    a.push({id, th:mt, storeId:sid, role:as === "toko" ? "toko" : "pembeli", buyerName:as === "toko" ? null : (getProf().name || "Pembeli"), body, at:Date.now()});
+    askLocalSave(a); return {ok:true, id, th:mt};
+  },
+  async get(sid, th, after){
+    if(SB) return await sbStore.rpc("jt_ask_get", {p_store:sid, p_th:th || null, p_after:after || 0});
+    const mt = th || askThLocal(sid);
+    return {th:mt, msgs:askLocal().filter(m => m.th === mt && m.id > (after || 0)).map(m => Object.assign({}, m, {name:m.buyerName || ""}))};
+  },
+  async threads(sid){
+    if(SB) return (await sbStore.rpc("jt_ask_threads", {p_store:sid || null})) || [];
+    const a = askLocal();
+    if(sid) return askGroup(a.filter(m => m.storeId === sid), t => t.name || "Pembeli");
+    return askGroup(a.filter(m => m.th === askThLocal(m.storeId)), t => (storeById(t.storeId) || {}).name || "Toko");
+  }
+};
+const askUnread = (t, myRole) => !!t && t.last > (ASK_SEEN[t.th] || 0) && t.role !== myRole;
+function askBadgeStore(sid){ const t = (S.ask.mine || []).find(x => x.storeId === sid); return askUnread(t, "pembeli") ? '<span class="cdot"></span>' : ''; }
+const askOpen = {sid:null, th:null, as:null, msgs:[], last:0, timer:null, first:true};
+function askQuick(s, p, as){
+  if(as === "toko") return [{t:"Masih ada", m:"Masih ada kak, silakan langsung dipesan lewat aplikasi JAGA ya."}, {t:"Stok habis", m:"Maaf kak, stoknya sedang habis."}, {t:"Bisa diantar", m:"Bisa diantar hari ini kak, pesan lewat aplikasi ya."}, {t:"Jam buka", m:"Toko buka setiap hari. Silakan pesan lewat aplikasi JAGA."}];
+  return chatQuestions(s, p);
+}
+function openAsk(sid, th, as, pid, name){
+  as = as || "pembeli";
+  const s = storeById(sid) || {id:sid, name:"Toko"}; const f = pid ? findProd(pid) : null; const p = f ? f.p : null;
+  Object.assign(askOpen, {sid, th:th || null, as, msgs:[], last:0, first:true});
+  const title = as === "toko" ? "Pembeli " + (name || "") : "Tanya " + s.name;
+  const sub = as === "toko" ? "Pertanyaan untuk " + s.name : (p ? "Soal " + p.name : "Pesan langsung ke penjual di JAGA");
+  document.getElementById("modal").innerHTML = '<div class="modal-bg chatbg" data-act="modal-bg"><div class="modal chatwin" role="dialog" aria-label="Pesan toko">'+
+    '<div class="chead"><button class="ibtn" data-act="close-ask" aria-label="Tutup">'+I("back")+'</button>'+(as === "toko" ? '' : avatarHtml(s))+'<div class="grow"><b>'+esc(title)+'</b><small>'+esc(sub)+'</small></div></div>'+
+    '<div class="clist" id="askList"><div class="empty">'+I("loader")+'</div></div>'+
+    '<div class="cquick">'+askQuick(s, p, as).map((q, i) => '<button type="button" data-act="ask-quick" data-i="'+i+'">'+esc(q.t)+'</button>').join("")+'</div>'+
+    '<form class="cform" id="askForm"><input class="in" name="body" maxlength="800" autocomplete="off" placeholder="Tulis pesan…"><button class="btn press" aria-label="Kirim">'+I("send")+'</button></form></div></div>';
+  askOpen.quick = askQuick(s, p, as);
+  askLoad();
+  clearInterval(askOpen.timer); askOpen.timer = setInterval(() => { if(!document.getElementById("askList")){ clearInterval(askOpen.timer); askOpen.sid = null; return; } if(!document.hidden) askLoad(); }, 4000);
+}
+function renderAskMsgs(){
+  const box = document.getElementById("askList"); if(!box) return;
+  const near = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+  box.innerHTML = askOpen.msgs.length ? askOpen.msgs.map(m => {
+    const mine = m.role === askOpen.as;
+    return '<div class="cm '+(mine ? "me" : "them")+' r-'+(m.role === "toko" ? "toko" : "pembeli")+'">'+(mine ? '' : '<small>'+(m.role === "toko" ? "Toko" : "Pembeli"+(m.name ? " · "+esc(m.name) : ""))+'</small>')+'<div class="bub">'+esc(m.body)+'</div><time>'+new Date(m.at).toLocaleTimeString("id-ID", {hour:"2-digit", minute:"2-digit"})+'</time></div>';
+  }).join("") : '<div class="cempty">'+E("bell")+'<b>Belum ada pesan</b><small>'+(askOpen.as === "toko" ? "" : "Tanyakan stok, harga, atau pengantaran. Pilih pertanyaan cepat di bawah atau tulis sendiri.")+' Semua pesan dan transaksi dilakukan di aplikasi JAGA.</small></div>';
+  if(near || askOpen.first){ box.scrollTop = box.scrollHeight; askOpen.first = false; }
+}
+async function askLoad(){
+  if(!askOpen.sid) return;
+  try{
+    const r = await ASK.get(askOpen.sid, askOpen.th, askOpen.last) || {};
+    if(r.th) askOpen.th = askOpen.th || (askOpen.as === "toko" ? askOpen.th : null), askOpen.thv = r.th;
+    const add = r.msgs || [];
+    if(add.length){
+      const ids = new Set(askOpen.msgs.map(m => m.id));
+      add.forEach(m => { if(!ids.has(m.id)) askOpen.msgs.push(m); });
+      askOpen.last = Math.max(askOpen.last, ...add.map(m => m.id));
+      renderAskMsgs();
+    } else if(askOpen.first) renderAskMsgs();
+    if(askOpen.thv){ ASK_SEEN[askOpen.thv] = Math.max(ASK_SEEN[askOpen.thv] || 0, askOpen.last); askSeenSave(); }
+  }catch(e){ const box = document.getElementById("askList"); if(box && !askOpen.msgs.length) box.innerHTML = '<div class="cempty"><small>'+esc(String(e.message || "Pesan belum bisa dimuat").replace(/^.*?:\s*/, ""))+'</small></div>'; }
+}
+async function askSend(body){
+  body = String(body || "").trim(); if(!body || !askOpen.sid) return;
+  if(askOpen.as === "pembeli" && !SB && myStores().some(x => x.id === askOpen.sid)) return toast("Tidak bisa mengirim pesan ke toko sendiri.");
+  try{ await ASK.send(askOpen.sid, askOpen.as === "toko" ? askOpen.th : null, body, askOpen.as); await askLoad(); askPoll(); }
+  catch(e){ toast(String(e.message || "Gagal mengirim").replace(/^.*?:\s*/, "")); }
+}
+function openChatSheet(sid, pid){ if(!storeById(sid)) return; openAsk(sid, null, "pembeli", pid); }
 document.addEventListener("click", e => {
-  const el = e.target.closest('[data-act="chat-seller"]'); if(!el) return;
-  e.stopPropagation(); openChatSheet(el.dataset.id, el.dataset.p);
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const a = el.dataset.act;
+  if(a === "chat-seller"){ e.stopPropagation(); openChatSheet(el.dataset.id, el.dataset.p); return; }
+  if(a === "ask-open"){ e.stopPropagation(); openAsk(el.dataset.id, el.dataset.th || null, el.dataset.as || "pembeli", null, el.dataset.v || ""); return; }
+  if(a === "close-ask"){ clearInterval(askOpen.timer); askOpen.sid = null; closeModal(); askPoll(); return; }
+  if(a === "ask-quick"){ const q = (askOpen.quick || [])[+el.dataset.i]; if(q) askSend(q.m); return; }
+}, true);
+document.addEventListener("submit", e => {
+  if(e.target.id !== "askForm") return;
+  e.preventDefault();
+  const inp = e.target.querySelector("input"); const v = inp.value; inp.value = ""; inp.focus();
+  askSend(v);
 });
-document.addEventListener("click", e => { if(e.target.closest(".chatsheet a[href]")) setTimeout(closeModal, 300); });
+/* kotak masuk & notifikasi pesan toko */
+let askFirst = true;
+async function askPoll(){
+  if(document.hidden || S.role === "owner" || S.role === "driver") return;
+  try{
+    const before = JSON.stringify(S.ask);
+    const notify = (list, myRole, label) => { (list || []).forEach(t => { if(!askFirst && askUnread(t, myRole) && askOpen.thv !== t.th && !(S.ask._t || {})[t.th + ":" + t.last]){ (S.ask._t = S.ask._t || {})[t.th + ":" + t.last] = 1; try{ ding(); }catch(_){} toast("💬 " + label(t) + ": " + (t.body || "pesan baru")); } }); };
+    if(S.role === "seller"){
+      for(const st of myStores()){ const l = await ASK.threads(st.id); S.ask.store[st.id] = l; notify(l, "toko", t => "Pembeli " + (t.name || "")); }
+    } else {
+      const l = await ASK.threads(null); S.ask.mine = l; notify(l, "pembeli", t => t.name || "Toko");
+    }
+    askFirst = false;
+    if(JSON.stringify(S.ask) !== before && !typing() && !document.getElementById("askList")) scheduleRender();
+  }catch(_){}
+}
+setInterval(askPoll, 12000); setTimeout(askPoll, 1500);
+function askInbox(s){
+  const l = S.ask.store[s.id]; if(!l || !l.length) return "";
+  const un = l.filter(t => askUnread(t, "toko")).length;
+  return '<div class="card pad askbox"><h3 class="sub">'+I("chat")+' Pertanyaan pembeli'+(un ? ' <em class="askn">'+un+' baru</em>' : '')+'</h3>'+
+    l.slice(0, 8).map(t => '<button class="askrow'+(askUnread(t, "toko") ? ' un' : '')+'" data-act="ask-open" data-id="'+esc(s.id)+'" data-th="'+esc(t.th)+'" data-as="toko" data-v="'+esc(t.name || "")+'"><span class="aav">'+esc(initials(t.name || "P"))+'</span><div class="grow"><b>'+esc(t.name || "Pembeli")+'</b><small>'+(t.role === "toko" ? "Anda: " : "")+esc(t.body || "")+'</small></div><time>'+fmtDate(t.at)+'</time></button>').join("")+
+    '<div class="hint">Balas pertanyaan di sini. Semua pesan dan transaksi dilakukan di aplikasi JAGA, bukan WhatsApp.</div></div>';
+}
+function appPesan(){
+  const l = S.ask.mine;
+  let h = appBar("Pesan ke toko");
+  if(!l){ askPoll(); return h + '<div class="empty">'+I("loader")+' Memuat…</div>'; }
+  if(!l.length) return h + aEmpty("bell", "Belum ada pesan", "Tekan “Chat penjual” di halaman toko atau produk untuk bertanya langsung ke penjual.");
+  return h + '<div class="v-wrap"><div class="card pad askbox">'+l.map(t => '<button class="askrow'+(askUnread(t, "pembeli") ? ' un' : '')+'" data-act="ask-open" data-id="'+esc(t.storeId)+'" data-as="pembeli"><span class="aav">'+esc(initials(t.name || "T"))+'</span><div class="grow"><b>'+esc(t.name || "Toko")+'</b><small>'+(t.role === "pembeli" ? "Anda: " : "")+esc(t.body || "")+'</small></div><time>'+fmtDate(t.at)+'</time></button>').join("")+'</div></div>';
+}
 
 /* ============ Driver: pencarian driver terdekat & portal driver ============ */
 const DRIVER_ID_LOCAL = "d" + KEY.slice(2, 22);
@@ -3522,10 +3645,10 @@ function drvJob(o, offer){
   }
   h += '<div class="dj-route">'+
     '<div class="pt a"><i></i><div><small>Ambil di toko</small><b>'+esc(o.storeName)+'</b><span>'+esc(o.storeAddress || "")+'</span>'+
-      (!offer && o.status==="driver_ke_toko" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(dirLink(o.storeLoc, (o.storeAddress||"")+" "+(o.storeName||"")))+'">'+I("pin")+' Rute ke toko</a>'+(o.storeWa?'<a target="_blank" rel="noopener" href="'+esc(waLink(o.storeWa, "Halo "+o.storeName+", saya driver JAGA untuk pesanan "+o.code+"."))+'">WA toko</a>':'')+'</div>' : '')+
+      (!offer && o.status==="driver_ke_toko" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(dirLink(o.storeLoc, (o.storeAddress||"")+" "+(o.storeName||"")))+'">'+I("pin")+' Rute ke toko</a>'+'</div>' : '')+
     '</div></div>'+
     '<div class="pt b"><i></i><div><small>Antar ke</small><b>'+esc(offer ? (o.buyer.address||"").split(",")[0] : o.buyer.name)+'</b><span>'+esc(o.buyer.address||"")+'</span>'+
-      (!offer && o.status==="diantar" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(hasLoc(o.buyer) ? dirLink(o.buyer) : (o.buyer.maps || dirLink(null, o.buyer.address)))+'">'+I("pin")+' Rute ke pembeli</a>'+(o.buyer.wa?'<a target="_blank" rel="noopener" href="'+esc(waLink(o.buyer.wa, "Halo "+o.buyer.name+", saya driver JAGA mengantar pesanan "+o.code+" dari "+o.storeName+"."))+'">WA pembeli</a>':'')+'</div>' : '')+
+      (!offer && o.status==="diantar" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(hasLoc(o.buyer) ? dirLink(o.buyer) : (o.buyer.maps || dirLink(null, o.buyer.address)))+'">'+I("pin")+' Rute ke pembeli</a>'+'</div>' : '')+
       (o.buyer.note ? '<span class="note">'+I("note")+' '+esc(o.buyer.note)+'</span>' : '')+
     '</div></div></div>';
   h += '<div class="small" style="margin:8px 0 2px">'+items+'</div>' + voucherNote(o, "driver");
@@ -3842,7 +3965,7 @@ setInterval(() => { if(!document.hidden && (S.role === "seller" || S.role === "d
 setTimeout(loadSupUnread, 2500);
 const supBadge = th => { const n = (S.sup.unread || {})[th] || 0; return n ? '<em class="sbadge">'+n+'</em>' : ''; };
 function supBubbles(msgs, viewer){
-  if(!msgs.length) return '<div class="sempty">'+E("chat")+'<b>Belum ada pesan</b><span>'+(viewer === "owner" ? "Mulai percakapan dengan menulis pesan di bawah." : "Ceritakan masalahmu, tim JAGA akan membalas di sini.")+'</span></div>';
+  if(!msgs.length) return '<div class="sempty">'+E("bell")+'<b>Belum ada pesan</b><span>'+(viewer === "owner" ? "Mulai percakapan dengan menulis pesan di bawah." : "Ceritakan masalahmu, tim JAGA akan membalas di sini.")+'</span></div>';
   let last = "";
   return msgs.map(m => {
     const mine = viewer === "owner" ? m.sender === "owner" : m.sender !== "owner";
@@ -3912,13 +4035,13 @@ function ownerInboxTab(D){
   const left = '<div class="ilist'+(sel?' hide-m':'')+'"><div class="itools"><input class="in" id="ownIq" placeholder="Cari toko atau driver…" value="'+esc(S.own.iq||"")+'" autocomplete="off"><button class="btn sm" data-act="own-msg-new">'+I("plus")+' Pesan baru</button></div>'+
     '<div class="oranges" style="margin:8px 0">'+[["semua","Semua"],["baru","Belum dibaca"+(unreadN?" ("+unreadN+")":"")],["store","Toko"],["driver","Driver"]].map(t => '<button class="chip '+(f===t[0]?"on":"")+'" data-act="own-ifilter" data-v="'+t[0]+'">'+t[1]+'</button>').join("")+'</div>'+
     (list.length ? list.map(t => '<button class="ith'+(t.thread===sel?' on':'')+(t.unread?' un':'')+'" data-act="own-thread" data-v="'+esc(t.thread)+'"><div class="drv-av'+(t.kind==="store"?" st":"")+'">'+esc(initials(t.name))+'</div><div class="grow"><div class="r1"><b>'+esc(t.name)+'</b><small>'+ago(t.at)+'</small></div><div class="r2"><span>'+(t.sender==="owner"?"Anda: ":"")+esc(String(t.body||"").slice(0,80))+'</span>'+(t.unread?'<em>'+t.unread+'</em>':'')+'</div><small class="kind">'+(t.kind==="store"?"Toko":"Driver")+(t.target && t.target.active===false?' · nonaktif':'')+'</small></div></button>').join("")
-      : '<div class="sempty" style="padding:30px 10px">'+E("chat")+'<b>'+(th.length ? "Tidak ada percakapan di filter ini" : "Belum ada pesan")+'</b><span>Pertanyaan dari toko dan driver akan muncul di sini. Tekan “Pesan baru” untuk menghubungi mereka lebih dulu.</span></div>')+'</div>';
-  let right = '<div class="iconv empty-c'+(sel?'':' hide-m')+'"><div class="sempty">'+E("chat")+'<b>Pilih percakapan</b><span>Atau mulai pesan baru ke toko atau driver.</span></div></div>';
+      : '<div class="sempty" style="padding:30px 10px">'+E("bell")+'<b>'+(th.length ? "Tidak ada percakapan di filter ini" : "Belum ada pesan")+'</b><span>Pertanyaan dari toko dan driver akan muncul di sini. Tekan “Pesan baru” untuk menghubungi mereka lebih dulu.</span></div>')+'</div>';
+  let right = '<div class="iconv empty-c'+(sel?'':' hide-m')+'"><div class="sempty">'+E("bell")+'<b>Pilih percakapan</b><span>Atau mulai pesan baru ke toko atau driver.</span></div></div>';
   if(sel){
     const r = (S.own.msgs || {})[sel], tg = (r && r.target) || {}, name = tg.name || thName(sel, D), kind = sel.startsWith("drv:") ? "driver" : "store", id = sel.split(":")[1];
     if(!r) setTimeout(() => loadOwnMsgs(sel, true), 0);
     right = '<div class="iconv"><div class="ichead"><button class="ibtn back" data-act="own-thread" data-v="" aria-label="Kembali">←</button><div class="drv-av'+(kind==="store"?" st":"")+'">'+esc(initials(name))+'</div><div class="grow"><b>'+esc(name)+'</b><small>'+(kind==="store"?"Toko":"Driver")+(tg.active===false?' · <span class="warnc">dinonaktifkan</span>':' · aktif')+'</small></div>'+
-      (tg.wa ? '<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(tg.wa, "Halo "+name+", ini dari tim JAGA."))+'">WA</a>' : '')+
+
       '<button class="btn ghost sm" data-act="own-tab" data-v="'+(kind==="store"?"toko":"driver")+'" data-focus="'+esc(id)+'">Kelola</button></div>'+
       '<div class="sbody" id="ownSupBody">'+(r ? supBubbles(r.msgs || [], "owner") : '<div class="empty">'+I("loader")+' Memuat…</div>')+'</div>'+
       '<div class="squick">'+["Baik, kami cek dulu ya.","Mohon kirim foto buktinya.","Masalah sudah kami selesaikan. Terima kasih.","Saldo sudah kami tambahkan."].map(q => '<button type="button" class="chip" data-act="own-quick" data-v="'+esc(q)+'">'+esc(q)+'</button>').join("")+'</div>'+
@@ -4062,7 +4185,7 @@ function appOwner(){
         '<small>'+(off?'<span class="warnc">Dinonaktifkan</span>':s.open===false?'Tutup':'Buka')+(s.hasLogin===false?' · belum ada login':'')+(r.last?' · pesanan terakhir '+ago(r.last):'')+'</small></div>'+
         (off ? '<span class="tag amber">Nonaktif</span>' : '<span class="tag green">Aktif</span>')+'</div>'+
         '<div class="om"><div><small>Pesanan</small><b>'+r.n+'</b></div><div><small>Penjualan</small><b>'+rp(r.gmv)+'</b></div><div><small>Bagi hasil</small><b>'+rp(r.share)+'</b></div></div>'+
-        '<div class="obill"><span>Saldo toko: <b class="'+(S.ownW && S.ownW.balances && (S.ownW.balances[s.id]||0) < ((S.ownW.cfg||{}).minBalance||0) ? 'neg' : '')+'">'+(S.ownW && S.ownW.balances ? rp(S.ownW.balances[s.id]||0) : '…')+'</b></span>'+(s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", ini dari JAGA."))+'">WA toko</a>' : '')+'</div>'+
+        '<div class="obill"><span>Saldo toko: <b class="'+(S.ownW && S.ownW.balances && (S.ownW.balances[s.id]||0) < ((S.ownW.cfg||{}).minBalance||0) ? 'neg' : '')+'">'+(S.ownW && S.ownW.balances ? rp(S.ownW.balances[s.id]||0) : '…')+'</b></span>'+'<button class="linkbtn small" data-act="own-msg" data-v="store:'+esc(s.id)+'">Kirim pesan</button>'+'</div>'+
         '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="store:'+esc(s.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("cash")+' Saldo</button>'+
         '<button class="btn ghost sm" data-act="own-store-active" data-id="'+esc(s.id)+'" data-v="'+(off?"1":"0")+'">'+(off?"Aktifkan":"Nonaktifkan")+'</button><button class="btn ghost sm dangerc" data-act="own-store-del" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Hapus</button></div></div>';
     }).join("") : '<div class="card pad muted small">Belum ada toko terdaftar.</div>')+'</div>';
@@ -4085,12 +4208,12 @@ function appOwner(){
       (d.address ? '<small>'+I("pin")+' '+esc(d.address)+'</small>' : '')+
       '<small>'+(d.verify === "rejected" ? '<b class="warnc">Ditolak</b>'+(d.verifyNote?': '+esc(d.verifyNote):'') : '<b style="color:#1f4fd1">Daftar '+(d.createdAt ? ago(d.createdAt) : '')+'</b>')+'</small></div>'+
       '<div class="r"><button class="btn sm" data-act="drv-verify" data-id="'+esc(d.id)+'" data-v="1">Setujui</button>'+(d.verify !== "rejected" ? '<button class="btn ghost sm" data-act="drv-verify" data-id="'+esc(d.id)+'" data-v="0">Tolak</button>' : '')+
-      ((d.docsAt || d.hasDocs) ? '<button class="linkbtn" data-act="drv-docs" data-id="'+esc(d.id)+'" data-v="'+esc(d.name)+'">Dokumen</button>' : '')+(d.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(d.wa, "Halo "+d.name+", ini tim JAGA soal verifikasi driver."))+'">WA</a>' : '')+'</div></div>').join("")+'</div>';
+      ((d.docsAt || d.hasDocs) ? '<button class="linkbtn" data-act="drv-docs" data-id="'+esc(d.id)+'" data-v="'+esc(d.name)+'">Dokumen</button>' : '')+'<button class="linkbtn small" data-act="own-msg" data-v="drv:'+esc(d.id)+'">Pesan</button>'+'</div></div>').join("")+'</div>';
     h += '<div class="otool"><input class="in" id="ownFind" placeholder="Cari nama atau plat driver…" autocomplete="off"><button class="btn ghost sm" data-act="own-msg-new">'+I("chat")+' Kirim pesan</button></div>';
     h += '<div class="card pad">'+(ds.length ? ds.map(x => '<div class="orow odrv'+(x.d.suspended?' off':'')+(S.own.focus===x.d.id?' focus':'')+'" data-n="'+esc((String(x.d.name||"")+" "+String(x.d.plate||"")).toLowerCase())+'"><div class="drv-av">'+esc(initials(x.d.name))+'</div><div class="grow"><b>'+esc(x.d.name)+'</b> '+(x.d.suspended ? '<span class="tag amber">Dinonaktifkan</span>' : x.d.verify && x.d.verify !== "verified" ? '<span class="tag">Belum verifikasi</span>' : '<span class="tag green">Terverifikasi</span>')+' '+starTxt(((D.ratings||S.ratings).driver||{})[x.d.id])+'<small>'+esc([x.d.vehicle, x.d.plate, x.d.area].filter(Boolean).join(" · "))+'</small>'+
       '<small>'+(x.on ? '<b style="color:#15803d">● Online</b>'+(x.busy?' · sedang mengantar':'') : '<span class="muted">○ Offline</span>')+(x.d.locAt ? ' · lokasi '+ago(x.d.locAt) : '')+'</small>'+(x.d.suspended && x.d.suspendNote ? '<small class="warnc">Alasan: '+esc(x.d.suspendNote)+'</small>' : '')+
       '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="drv:'+esc(x.d.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-drv-active" data-id="'+esc(x.d.id)+'" data-v="'+(x.d.suspended?"1":"0")+'" data-name="'+esc(x.d.name)+'">'+(x.d.suspended?"Aktifkan":"Nonaktifkan")+'</button><button class="btn ghost sm dangerc" data-act="own-drv-del" data-id="'+esc(x.d.id)+'" data-v="'+esc(x.d.name)+'">Hapus</button></div></div>'+
-      '<div class="r"><b>'+x.trips+' trip</b><small>'+(x.rides?x.rides+' Jago · ':'')+rp(x.ongkir)+'</small><small>hari ini '+x.today+'</small><small>saldo '+(x.bal == null ? '…' : rp(x.bal))+'</small><button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(x.d.id)+'" data-v="Driver '+esc(x.d.name)+'">Saldo</button>'+(x.d.wa?'<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(x.d.wa,"Halo "+x.d.name+", ini dari JAGA."))+'">WA</a>':'')+'</div></div>').join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/toko/#driver ke calon driver.</div>')+'</div>';
+      '<div class="r"><b>'+x.trips+' trip</b><small>'+(x.rides?x.rides+' Jago · ':'')+rp(x.ongkir)+'</small><small>hari ini '+x.today+'</small><small>saldo '+(x.bal == null ? '…' : rp(x.bal))+'</small><button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(x.d.id)+'" data-v="Driver '+esc(x.d.name)+'">Saldo</button>'+'<button class="linkbtn small" data-act="own-msg" data-v="drv:'+esc(x.d.id)+'">Pesan</button>'+'</div></div>').join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/toko/#driver ke calon driver.</div>')+'</div>';
   } else {
     h += '<div class="card pad"><h3 class="sub">Link penting</h3>'+
       [["Aplikasi pembeli",APP_URL],["Portal toko",APP_URL+"#mitra"],["Portal driver",APP_URL+"#driver"]].map(l => '<div class="orow"><div class="grow"><b>'+l[0]+'</b><small>'+esc(l[1])+'</small></div><button class="btn ghost sm" data-act="copy" data-v="'+esc(l[1])+'">Salin</button></div>').join("")+'</div>';
@@ -4209,7 +4332,7 @@ let chatTimer = null, chatFirst = true;
 async function chatPoll(){
   if(document.hidden) return;
   const role = myChatRole();
-  const relevant = S.role === "driver" ? (S.drv.mine||[]).length : S.role === "owner" ? 0 : S.orders.length;
+  const relevant = S.role === "driver" ? (S.drv.mine||[]).length : S.role === "owner" ? 0 : S.orders.length + (S.rides||[]).length;
   if(!relevant) return;
   try{
     const c = await CHAT.counts();
@@ -4228,9 +4351,10 @@ function startChatPoll(){ if(chatTimer) return; chatPoll(); chatTimer = setInter
 
 /* ---------- jendela chat ---------- */
 const chatOpen = {oid:null, role:null, msgs:[], last:0, timer:null};
-function chatOrder(oid){ return S.orders.find(o => o.id === oid) || (S.drv.mine||[]).find(o => o.id === oid) || null; }
+function chatOrder(oid){ return S.orders.find(o => o.id === oid) || (S.rides||[]).find(o => o.id === oid) || (S.drv.mine||[]).find(o => o.id === oid) || null; }
 function chatQuick(o, role){
   const est = o && ongkirEstOf(o) != null ? rp(ongkirEstOf(o)) : "Rp…";
+  if(o && isRide(o)) return role === "driver" ? ["Saya menuju titik jemput", "Saya sudah sampai di titik jemput", "Posisi tepatnya di mana?", "Tarifnya "+rp(o.fareEst||0)+" ya"] : ["Saya tunggu di titik jemput", "Saya pakai baju …", "Sudah sampai mana, Pak?", "Mohon tunggu sebentar ya"];
   if(role === "driver") return ["Saya menuju toko", "Pesanan sudah saya ambil, otw ke lokasi", "Saya sudah di depan", "Ongkirnya "+est+" ya, bisa?", "Alamatnya sesuai titik di peta?"];
   if(role === "toko") return ["Pesanan sedang disiapkan", "Pesanan sudah siap diambil", "Maaf, ada barang yang habis", "Terima kasih sudah belanja!"];
   return ["Pesanan saya sudah diproses?", "Saya tunggu di rumah ya", "Tolong kabari kalau sudah dekat", "Ongkirnya bisa "+est+"?"];
@@ -4238,7 +4362,7 @@ function chatQuick(o, role){
 function chatName(o, role){
   if(role === "driver") return (S.drv.me && S.drv.me.name) || "Driver";
   if(role === "toko") return (o && o.storeName) || "Toko";
-  return (o && o.buyer && o.buyer.name) || getProf().name || "Pembeli";
+  return (o && o.buyer && o.buyer.name) || (o && o.rider && o.rider.name) || getProf().name || "Pembeli";
 }
 function renderChatMsgs(){
   const box = document.getElementById("chatList"); if(!box) return;
@@ -4246,7 +4370,7 @@ function renderChatMsgs(){
   box.innerHTML = chatOpen.msgs.length ? chatOpen.msgs.map(m => {
     const mine = m.role === chatOpen.role;
     return '<div class="cm '+(mine?"me":"them")+' r-'+esc(m.role)+'">'+(mine?'':'<small>'+esc(ROLE_L[m.role]||m.role)+(m.name?' · '+esc(m.name):'')+'</small>')+'<div class="bub">'+esc(m.body)+'</div><time>'+new Date(m.at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+'</time></div>';
-  }).join("") : '<div class="cempty">'+E("bell")+'<b>Belum ada pesan</b><small>Chat ini terlihat oleh pembeli, toko, dan driver pesanan ini.</small></div>';
+  }).join("") : '<div class="cempty">'+E("bell")+'<b>Belum ada pesan</b><small>'+(chatOrder(chatOpen.oid) && isRide(chatOrder(chatOpen.oid)) ? 'Chat ini antara penumpang dan driver.' : 'Chat ini terlihat oleh pembeli, toko, dan driver pesanan ini.')+'</small></div>';
   if(near || chatOpen.first){ box.scrollTop = box.scrollHeight; chatOpen.first = false; }
 }
 async function chatLoad(){
@@ -4266,11 +4390,11 @@ function openChat(oid, role){
   const o = chatOrder(oid);
   chatOpen.oid = oid; chatOpen.role = role; chatOpen.msgs = []; chatOpen.last = 0; chatOpen.first = true;
   const who = [];
-  if(o){ who.push("Toko " + (o.storeName||"")); if(o.driver && o.driver.name) who.push("Driver " + o.driver.name); if(o.buyer && o.buyer.name && role !== "driver") who.push("Pembeli " + o.buyer.name); else if(o.buyer && o.buyer.name) who.push("Pembeli " + o.buyer.name); }
-  const wa = !o ? "" : role === "pembeli" ? (o.driver && o.driver.wa ? o.driver.wa : o.storeWa) : role === "toko" ? (o.driver && o.driver.wa ? o.driver.wa : o.buyer && o.buyer.wa) : (o.status === "driver_ke_toko" ? o.storeWa : o.buyer && o.buyer.wa);
+  if(o && isRide(o)){ if(o.driver && o.driver.name) who.push("Driver " + o.driver.name); if(o.rider && o.rider.name) who.push("Penumpang " + o.rider.name); }
+  else if(o){ who.push("Toko " + (o.storeName||"")); if(o.driver && o.driver.name) who.push("Driver " + o.driver.name); if(o.buyer && o.buyer.name && role !== "driver") who.push("Pembeli " + o.buyer.name); else if(o.buyer && o.buyer.name) who.push("Pembeli " + o.buyer.name); }
   document.getElementById("modal").innerHTML = '<div class="modal-bg chatbg" data-act="modal-bg"><div class="modal chatwin" role="dialog" aria-label="Chat pesanan">'+
-    '<div class="chead"><button class="ibtn" data-act="close-chat" aria-label="Tutup">'+I("back")+'</button><div class="grow"><b>Chat pesanan '+esc(o ? o.code : "")+'</b><small>'+esc(who.join(" · "))+'</small></div>'+
-      (wa ? '<a class="ibtn" target="_blank" rel="noopener" href="'+esc(waLink(wa))+'" aria-label="WhatsApp">'+I("phone")+'</a>' : '')+'</div>'+
+    '<div class="chead"><button class="ibtn" data-act="close-chat" aria-label="Tutup">'+I("back")+'</button><div class="grow"><b>Chat '+(o && isRide(o) ? 'perjalanan' : 'pesanan')+' '+esc(o ? o.code : "")+'</b><small>'+esc(who.join(" · "))+'</small></div>'+
+      '</div>'+
     '<div class="clist" id="chatList"><div class="empty">'+I("loader")+'</div></div>'+
     '<div class="cquick">'+chatQuick(o, role).map(q => '<button type="button" data-act="chat-quick" data-v="'+esc(q)+'">'+esc(q)+'</button>').join("")+'</div>'+
     '<form class="cform" id="chatForm"><input class="in" name="body" maxlength="500" autocomplete="off" placeholder="Tulis pesan…"><button class="btn press" aria-label="Kirim">'+I("send")+'</button></form></div></div>';
@@ -4555,7 +4679,7 @@ function rideDriverBox(o){
   const d = o.driver || {};
   return '<div class="drvbox"><div class="drv-av">'+E("scooter")+'</div><div class="grow"><small>'+(o.status === "driver_jemput" ? "Driver menuju titik jemput" : "Kamu sedang dalam perjalanan bersama")+'</small><b>'+esc(d.name || "Driver")+' '+driverStars(o.driverId)+'</b>'+
     '<div class="small muted">'+esc([d.vehicle, d.plate].filter(Boolean).join(" · "))+'</div></div>'+
-    (d.wa ? '<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(d.wa, "Halo "+(d.name||"")+", saya penumpang Jago "+o.code+"."))+'">WA</a><a class="btn ghost sm" href="'+esc(telLink(d.wa))+'">Telepon</a>' : '')+'</div>';
+    chatBtn(o, "pembeli", "Chat driver", "ghost sm")+'</div>';
 }
 function rideCard(o){
   let h = '<div class="card pad rcard"><div class="dj-head">'+statusTag(o.status)+'<span class="small muted">'+esc(o.code)+' · '+fmtDate(o.createdAt)+'</span></div>'+rideSteps(o);
@@ -4734,8 +4858,8 @@ function rideJob(o, offer){
   h += offer ? '<div class="dj-head">'+E("bell")+'<b>Order Jago</b><span class="jtag">Penumpang</span>'+(o.dist!=null?'<span class="dist">'+fmtDist(o.dist)+' ke penjemputan</span>':'')+'</div>'
     : '<div class="dj-head">'+statusTag(o.status)+'<span class="jtag">Jago</span><span class="small muted">'+esc(o.code)+'</span></div>';
   h += rideRoute(o, !offer);
-  if(!offer && o.rider && o.rider.wa && RIDE_ACTIVE.includes(o.status))
-    h += '<div class="dj-links" style="margin-top:8px"><a target="_blank" rel="noopener" href="'+esc(waLink(o.rider.wa, "Halo "+o.rider.name+", saya driver Jago untuk perjalanan "+o.code+"."))+'">WA penumpang</a><a href="'+esc(telLink(o.rider.wa))+'">Telepon</a><a data-act="report" data-k="ride" data-id="'+esc(o.id)+'">Lapor masalah</a></div>';
+  if(!offer && o.rider && RIDE_ACTIVE.includes(o.status))
+    h += '<div class="actions" style="margin-top:8px">'+chatBtn(o, "driver", "Chat penumpang", "ghost")+'<button class="btn ghost sm" data-act="report" data-k="ride" data-id="'+esc(o.id)+'">Lapor masalah</button></div>';
   h += '<div class="dj-money"><div><small>Jarak</small><b>'+kmTxt(o.dist)+'</b></div><div><small>Tarif</small><b>'+(typeof o.fareFinal === "number" ? rp(o.fareFinal) : '±'+rp(est))+'</b></div><div><small>Komisi 3%</small><b>'+rp(typeof o.fee === "number" ? o.fee : rideFee(typeof o.fareFinal === "number" ? o.fareFinal : est))+'</b></div></div>' + voucherNote(o, "driver");
   if(offer){
     h += '<div class="actions"><button class="btn press grow" data-act="drv-accept" data-id="'+esc(o.id)+'">Ambil order Jago</button><button class="btn ghost press" data-act="drv-decline" data-id="'+esc(o.id)+'">Lewati</button></div>';
@@ -5792,12 +5916,12 @@ function ownerWalletTab(D){
   h += '<div class="card pad"><h3 class="sub">Saldo per toko</h3>'+(stores.length ? stores.map(s => {
     const b = (W.balances||{})[s.id] || 0, f = (W.fees||{})[s.id] || 0, low = b < (c.minBalance||0);
     return '<div class="orow"><div class="grow"><b>'+esc(s.name)+'</b><small>Bagi hasil terpotong: '+rp(f)+' · '+(PT[s.id]||0)+' poin</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">di bawah minimum</small>':'')+
-      '<button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Sesuaikan</button>'+(low && s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa, "Halo "+s.name+", saldo toko Anda di JAGA tinggal "+rp(b)+". Isi saldo di menu Saldo agar tetap bisa menerima pesanan."))+'">Ingatkan via WA</a>':'')+'</div></div>';
+      '<button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Sesuaikan</button>'+(low ? '<button class="linkbtn small" data-act="own-msg" data-v="store:'+esc(s.id)+'">Ingatkan lewat pesan</button>':'')+'</div></div>';
   }).join("") : '<div class="muted small">Belum ada toko.</div>')+'</div>';
   const drvs = (D.drivers||[]).slice().sort((a, b) => ((W.balances||{})["drv:"+a.id]||0) - ((W.balances||{})["drv:"+b.id]||0));
   h += '<div class="card pad"><h3 class="sub">Saldo per driver (potongan 3%)</h3>'+(drvs.length ? drvs.map(d => {
     const b = (W.balances||{})["drv:"+d.id] || 0, f = (W.fees||{})["drv:"+d.id] || 0, low = b < (c.minBalance||0);
-    return '<div class="orow"><div class="grow"><b>'+esc(d.name)+'</b><small>Potongan 3% terpotong: '+rp(f)+' · '+(PT["drv:"+d.id]||0)+' poin</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">order tidak masuk</small>'+(d.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(d.wa, "Halo "+d.name+", saldo driver Anda di JAGA tinggal "+rp(b)+". Isi saldo di menu Saldo driver agar order masuk lagi."))+'">Ingatkan via WA</a>' : ''):'')+
+    return '<div class="orow"><div class="grow"><b>'+esc(d.name)+'</b><small>Potongan 3% terpotong: '+rp(f)+' · '+(PT["drv:"+d.id]||0)+' poin</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">order tidak masuk</small>'+'<button class="linkbtn small" data-act="own-msg" data-v="drv:'+esc(d.id)+'">Ingatkan lewat pesan</button>':'')+
       '<button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">Sesuaikan</button></div></div>';
   }).join("") : '<div class="muted small">Belum ada driver.</div>')+'</div>';
   h += '<form class="card pad" id="walletCfg"><h3 class="sub">Pengaturan saldo</h3>'+
