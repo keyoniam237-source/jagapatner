@@ -1560,8 +1560,12 @@ const STATUS = {
   selesai:{l:"Selesai",c:""},
   dibatalkan:{l:"Dibatalkan",c:"red"}
 };
-const BAGI_HASIL = 0.03; // bagi hasil JAGA dari setiap penjualan selesai
-const shareOf = o => Math.round((o.total||0) * BAGI_HASIL);
+/* komisi JAGA bisa diatur owner (default 3%). Server yang menghitung; angka di sini hanya tampilan. */
+let BAGI_HASIL = 0.03, COMM = {storePct:3, drvPct:3, minTx:0, round:1};
+const commCalc = (base, kind) => { base = Number(base) || 0; if(base <= 0 || base < COMM.minTx) return 0; const pct = (kind === "store" ? COMM.storePct : COMM.drvPct) / 100, st = COMM.round || 1; return Math.round(Math.round(base * pct / st) * st); };
+const fmtPct = v => String(Math.round(v * 100) / 100).replace(".", ",");
+function applyComm(c){ if(!c) return; COMM = {storePct:+c.storePct >= 0 ? +c.storePct : 3, drvPct:+c.drvPct >= 0 ? +c.drvPct : 3, minTx:+c.minTx || 0, round:+c.round || 1}; BAGI_HASIL = COMM.storePct / 100; JAGO_FEE = COMM.drvPct / 100; }
+const shareOf = o => commCalc(o.total, "store");
 const FLOW = ["menunggu_pembayaran","menunggu_konfirmasi","mencari_driver","driver_ke_toko","diantar","selesai"];
 const FLOW_COD = ["menunggu_konfirmasi","mencari_driver","driver_ke_toko","diantar","selesai"];
 const STEP_L = {menunggu_pembayaran:"Bayar", menunggu_konfirmasi:"Konfirmasi toko", mencari_driver:"Cari driver", driver_ke_toko:"Ke toko", diantar:"Diantar", selesai:"Selesai"};
@@ -2624,7 +2628,7 @@ async function placeOrder(form){
   const code = "JT-" + new Date().toISOString().slice(2,10).replace(/-/g,"") + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
   const order = {code, storeId:s.id, storeName:s.name, buyerId:ME, buyer,
     items:t2.items.map(i=>({pid:i.pid, name:i.name, price:i.price, qty:i.qty})),
-    subtotal:t2.subtotal, ongkir:0, ongkirPer500:ONGKIR_PER, admin:0, total:t2.total, shareRate:BAGI_HASIL, share:Math.round(t2.total*BAGI_HASIL), pay,
+    subtotal:t2.subtotal, ongkir:0, ongkirPer500:ONGKIR_PER, admin:0, total:t2.total, shareRate:BAGI_HASIL, share:commCalc(t2.total,"store"), pay,
     storeAddress:s.address||"", storeWa:s.wa||"",
     status: k === "cod" ? "menunggu_konfirmasi" : "menunggu_pembayaran", createdAt:now, updatedAt:now};
   if(typeof s.lat === "number" && typeof s.lng === "number") order.storeLoc = {lat:s.lat, lng:s.lng};
@@ -3997,7 +4001,7 @@ function rangeStart(r){
   return 0;
 }
 const doneT = o => o.doneAt || o.updatedAt || o.createdAt || 0;
-const shareVal = o => typeof o.share === "number" ? o.share : Math.round((o.total||0) * BAGI_HASIL);
+const shareVal = o => typeof o.share === "number" ? o.share : commCalc(o.total, "store");
 function ownStats(D, from){
   const orders = D.orders || [];
   const created = orders.filter(o => (o.createdAt||0) >= from);
@@ -4510,7 +4514,7 @@ document.addEventListener("submit", e => {
 });
 
 /* ============ Jago: ojek online ============ */
-const JAGO_FEE = 0.03;
+let JAGO_FEE = 0.03;
 const RIDE_ACTIVE = ["mencari_driver","driver_jemput","dalam_perjalanan"];
 const DRV_BUSY = ["driver_ke_toko","diantar","driver_jemput","dalam_perjalanan"];
 const JAGO_CENTER = {lat:0.6836, lng:100.5466}; // Ujungbatu
@@ -4531,6 +4535,19 @@ const AREA_API = {
   async list(){ if(SB){ const { data, error } = await SB.rpc("jt_areas", {}); if(error) throw sbErr(error); return data || []; } return (S.areasLocal || AREA_DEF); },
   async save(list){ if(SB) return sbStore.rpc("jt_owner_areas_save", {p_areas:list}); await store.set("settings/areas", {list}); S.areasLocal = list; }
 };
+
+/* teks "3%" di layar mengikuti komisi yang diatur owner (hanya bila bukan 3%) */
+(function(){
+  const fix = root => {
+    if(COMM.storePct === 3 && COMM.drvPct === 3) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null); const arr = []; let n;
+    while((n = w.nextNode())) if(/(^|[^\d.,])3%/.test(n.nodeValue)) arr.push(n);
+    arr.forEach(t => { const low = String(t.nodeValue + " " + (t.parentNode && t.parentNode.textContent || "")).toLowerCase(); const store = /bagi hasil|penjualan|toko/.test(low) && !/driver|jago|ongkir/.test(String(t.nodeValue).toLowerCase());
+      t.nodeValue = t.nodeValue.replace(/(^|[^\d.,])3%/g, (m, a) => a + fmtPct(store ? COMM.storePct : COMM.drvPct) + "%"); });
+  };
+  let tm = 0; new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(() => fix(document.body), 80); }).observe(document.body, {childList:true, subtree:true, characterData:false});
+})();
+async function loadComm(){ try{ if(SB){ const { data } = await SB.rpc("jt_comm_cfg", {}); if(data){ applyComm(data); scheduleRender(); } } else applyComm(wCfgLocal()); }catch(e){} }
 async function loadAreas(){ try{ const l = await AREA_API.list(); if(l && l.length){ setAreas(l); scheduleRender(); } }catch(e){} }
 function areaBanner(){
   return '<div class="areabox">'+E("pin")+'<div class="grow"><b>Di luar wilayah layanan</b><small>'+esc(AREA_MSG)+'</small></div></div>';
@@ -4538,7 +4555,7 @@ function areaBanner(){
 S.rides = []; S.ridesAll = []; S.ridesReady = false;
 S.jago = {pick:null, dest:null, mode:"pick", q:"", res:null, searching:false, gps:false, seen:{}};
 const isRide = o => !!o && o.kind === "ride";
-const rideFee = v => Math.round((Number(v) || 0) * JAGO_FEE);
+const rideFee = v => commCalc(v, "drv");
 const shortAddr = a => String(a || "").split(",").slice(0, 2).join(",").trim();
 const fmtLL = c => c ? c.lat.toFixed(5) + ", " + c.lng.toFixed(5) : "";
 const telLink = wa => "tel:" + String(wa || "").replace(/[^\d+]/g, "");
@@ -5784,7 +5801,7 @@ setInterval(() => {
 
 /* ============ Saldo toko (top-up, potong bagi hasil 3% otomatis) ============ */
 S.wallet = {}; S.walletTx = []; S.walletCfg = null; S.ownW = null;
-const WCFG_DEF = {minBalance:10000, bonus:15000, bank:{name:"", no:"", holder:""}, pay:[], qris:"", ptTarget:10, ptEarn:5, ptRedeem:5, ptValue:2000};
+const WCFG_DEF = {minBalance:10000, bonus:15000, bank:{name:"", no:"", holder:""}, pay:[], qris:"", ptTarget:10, ptEarn:5, ptRedeem:5, ptValue:2000, storePct:3, drvPct:3, minTx:0, round:1};
 const wCfgLocal = () => Object.assign({}, WCFG_DEF, S.walletCfg || {});
 const balLocal = sid => S.walletTx.filter(t => t.storeId === sid && t.status === "ok").reduce((a, t) => a + (t.amount || 0), 0);
 const WAL = {
@@ -5804,7 +5821,7 @@ const WAL = {
 async function localTx(id, data){ await store.set("wallettx/" + id, Object.assign({status:"ok", at:Date.now()}, data)); }
 async function localChargeFee(o){
   if(SB || !o || S.walletTx.some(t => t.id === "fee_" + o.id)) return;
-  const share = typeof o.share === "number" ? o.share : Math.round((o.total||0) * BAGI_HASIL);
+  const share = typeof o.share === "number" ? o.share : commCalc(o.total, "store");
   if(share > 0) await localTx("fee_" + o.id, {storeId:o.storeId, kind:"fee", amount:-share, orderId:o.id, note:"Bagi hasil 3% pesanan " + (o.code||"") + " (" + rp(o.total) + ")"});
 }
 async function localBonus(sid){ const b = wCfgLocal().bonus || 0; if(!SB && b > 0 && !S.walletTx.some(t => t.storeId === sid && t.kind === "bonus")) await localTx("bonus_" + sid, {storeId:sid, kind:"bonus", amount:b, note:"Saldo gratis toko baru"}); }
@@ -6029,6 +6046,9 @@ function ownerWalletTab(D){
   }).join("") : '<div class="muted small">Belum ada driver.</div>')+'</div>';
   h += '<form class="card pad" id="walletCfg"><h3 class="sub">Pengaturan saldo</h3>'+
     '<div class="cols2"><div><label class="f">Minimal saldo (Rp)</label><input class="in" name="minBalance" inputmode="numeric" value="'+esc(c.minBalance)+'"></div><div><label class="f">Bonus toko/driver baru (Rp)</label><input class="in" name="bonus" inputmode="numeric" value="'+esc(c.bonus)+'"></div></div>'+
+    '<h3 class="sub" style="margin-top:16px">Komisi JAGA</h3><div class="cols2"><div><label class="f">Komisi penjualan toko (%)</label><input class="in" name="storePct" inputmode="decimal" value="'+esc(c.storePct)+'"></div><div><label class="f">Komisi ongkir/tarif driver (%)</label><input class="in" name="drvPct" inputmode="decimal" value="'+esc(c.drvPct)+'"></div></div>'+
+    '<div class="cols2"><div><label class="f">Transaksi minimum kena komisi (Rp)</label><input class="in" name="minTx" inputmode="numeric" value="'+esc(c.minTx)+'"></div><div><label class="f">Pembulatan komisi</label><select class="in" name="round">'+[1,10,100,500,1000].map(v => '<option value="'+v+'"'+(+c.round === v ? ' selected' : '')+'>Rp'+v+'</option>').join("")+'</select></div></div>'+
+    '<div class="hint">Berlaku untuk pesanan baru. Pesanan yang sudah dibuat tetap memakai komisi saat dibuat. Standar: 3%.</div>'+
     '<h3 class="sub" style="margin-top:16px">Poin harian</h3><div class="cols2"><div><label class="f">Target transaksi selesai / hari</label><input class="in" name="ptTarget" inputmode="numeric" value="'+esc(c.ptTarget)+'"></div><div><label class="f">Poin didapat</label><input class="in" name="ptEarn" inputmode="numeric" value="'+esc(c.ptEarn)+'"></div></div>'+
     '<div class="cols2"><div><label class="f">Poin untuk ditukar</label><input class="in" name="ptRedeem" inputmode="numeric" value="'+esc(c.ptRedeem)+'"></div><div><label class="f">Nilai tukar (Rp)</label><input class="in" name="ptValue" inputmode="numeric" value="'+esc(c.ptValue)+'"></div></div>'+
     '<div class="hint">Berlaku untuk toko, driver, dan pembeli. Pembeli memakai hasil tukar poin untuk memotong ongkir/tarif Jago; JAGA mengganti potongan itu ke saldo driver.</div>'+
@@ -6084,11 +6104,12 @@ document.addEventListener("submit", async e => {
     const pay = [...f.querySelectorAll(".payrow")].map(r => ({type:r.querySelector("[name^=ptype]").value, name:r.querySelector("[name^=pname]").value.trim(), no:r.querySelector("[name^=pno]").value.trim(), holder:r.querySelector("[name^=pholder]").value.trim()})).filter(x => x.name || x.no);
     if(pay.some(x => !x.name || !x.no)) return toast("Lengkapi nama dan nomor setiap tujuan transfer.");
     const b0 = pay.find(x => x.type === "bank") || {};
-    const d = {minBalance:num("minBalance"), bonus:num("bonus"), ptTarget:Math.max(1, num("ptTarget")), ptEarn:num("ptEarn"), ptRedeem:Math.max(1, num("ptRedeem")), ptValue:num("ptValue"), pay, bank:{name:b0.name||"", no:b0.no||"", holder:b0.holder||""}};
+    const dec = k => { const v = parseFloat(String(fd.get(k)||"0").replace(",", ".")); return isFinite(v) ? Math.max(0, Math.min(30, Math.round(v * 100) / 100)) : 0; };
+    const d = {storePct:dec("storePct"), drvPct:dec("drvPct"), minTx:num("minTx"), round:parseInt(fd.get("round"), 10) || 1, minBalance:num("minBalance"), bonus:num("bonus"), ptTarget:Math.max(1, num("ptTarget")), ptEarn:num("ptEarn"), ptRedeem:Math.max(1, num("ptRedeem")), ptValue:num("ptValue"), pay, bank:{name:b0.name||"", no:b0.no||"", holder:b0.holder||""}};
     const q = document.getElementById("wQris").files[0];
     try{
       if(q) d.qris = await compressImage(q, 900); else if(fd.get("qrisRemove")) d.qris = "";
-      await OWAL.cfg(d); toast("Pengaturan saldo disimpan");
+      await OWAL.cfg(d); applyComm(d); toast("Pengaturan saldo disimpan");
     }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
     await loadOwnerWallet(); render();
   }
@@ -6113,6 +6134,7 @@ function startListening(){
   if(!SB) store.listen("wallettx", rows => { if(rows){ S.walletTx = rows; if(S.sellerStoreId) loadWallet(S.sellerStoreId, S.role !== "seller"); } });
   if(!SB) store.listen("settings", rows => { if(rows){ S.walletCfg = rows.find(r => r.id === "wallet") || null; const ar = rows.find(r => r.id === "areas"); if(ar && ar.list){ S.areasLocal = ar.list; setAreas(ar.list); } } });
   if(SB) loadAreas();
+  loadComm();
   if(!SB) store.listen("chatmsgs", rows => { if(rows) S.chatMsgs = rows; });
   if(!SB) store.listen("drivers", rows => { if(rows) S.drivers = rows; if(S.role === "driver") drvRefresh(); });
   if(!SB) store.listen("rides", rows => { if(!rows) return; S.ridesAll = rows; setRides(rows.filter(r => r.riderId === ME).sort((a, b) => (b.createdAt||0) - (a.createdAt||0))); if(S.role === "driver") drvRefresh(); });
