@@ -1,0 +1,43 @@
+{
+  "posts": [
+    {
+      "id": "checklist-turnover-villa",
+      "tag": "Tips",
+      "tagEn": "Tips",
+      "title": "Checklist turnover villa dalam 3 jam",
+      "titleEn": "A 3-hour villa turnover checklist",
+      "excerpt": "Urutan kerja yang membuat tim tetap cepat tanpa mengorbankan detail.",
+      "excerptEn": "The work sequence that keeps teams fast without sacrificing detail.",
+      "body": "",
+      "bodyEn": "",
+      "date": "2026-11-01",
+      "color": "#3f6b52"
+    },
+    {
+      "id": "stok-linen-musim-ramai",
+      "tag": "Operasional",
+      "tagEn": "Operations",
+      "title": "Mengatur stok linen saat musim ramai",
+      "titleEn": "Managing linen stock in peak season",
+      "excerpt": "Cara menghitung par level agar linen tidak pernah kurang.",
+      "excerptEn": "How to calculate par levels so you never run short of linen.",
+      "body": "",
+      "bodyEn": "",
+      "date": "2026-11-01",
+      "color": "#3d5f83"
+    },
+    {
+      "id": "logistik-properti-gili",
+      "tag": "Wilayah",
+      "tagEn": "Regions",
+      "title": "Tantangan logistik properti di Gili",
+      "titleEn": "The logistics of island properties in the Gilis",
+      "excerpt": "Penyeberangan, perlengkapan, dan jadwal tim untuk properti di pulau.",
+      "excerptEn": "Boat crossings, supplies and team schedules for island properties.",
+      "body": "",
+      "bodyEn": "",
+      "date": "2026-11-01",
+      "color": "#a8483f"
+    }
+  ]
+}

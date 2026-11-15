@@ -116,6 +116,18 @@ async function route(req, u, method, path, body, ip) {
     throw new HttpErr(401, 'Kode akses tidak valid.');
   }
 
+  /* Jaga AI HQ: baca pesanan (hanya-baca), dilindungi kunci HQ_SYNC_KEY */
+  if (method === 'GET' && path === '/hq/bookings') {
+    const key = process.env.HQ_SYNC_KEY || '';
+    const given = String(req.headers['x-hq-key'] || '');
+    if (key.length < 24 || given.length !== key.length || !crypto.timingSafeEqual(Buffer.from(given), Buffer.from(key))) throw new HttpErr(401, 'unauthorized');
+    if (limited('hq:' + ip, 30, 60000)) throw new HttpErr(429, 'Terlalu sering.');
+    const sp = new URL(req.url, 'http://x').searchParams.get('since') || '';
+    const since = /^\d{4}-\d{2}-\d{2}$/.test(sp) ? sp : '1970-01-01';
+    const rows = await q(`SELECT id,klien,telp,wilayah,properti,layanan,tanggal,jam,status,petugas,nilai,catatan,sumber,created_at,updated_at FROM bookings WHERE updated_at >= $1::date ORDER BY updated_at DESC LIMIT 1000`, [since]);
+    return { bookings: rows.map(r => ({ ...r, nilai: Number(r.nilai) })) };
+  }
+
   /* formulir publik (website) → pesanan Baru */
   if (method === 'POST' && path === '/public/request') {
     if (limited('pub:' + ip, 5, 600000)) throw new HttpErr(429, 'Terlalu banyak permintaan. Coba lagi nanti.');
