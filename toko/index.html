@@ -11,7 +11,10 @@
   gtag('config', 'G-7SZ59PQSWK');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" id="mf" href="manifest.webmanifest">
+<script>(function(){try{var h=location.hash,m=document.getElementById("mf"),st=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+if(st&&(!h||h==="#")){var r=localStorage.getItem("jt_home_role");if(r==="seller"){location.replace("#mitra");h="#mitra";}else if(r==="driver"){location.replace("#driver");h="#driver";}}
+m.href=h==="#mitra"?"manifest-mitra.webmanifest":h==="#driver"?"manifest-driver.webmanifest":"manifest.webmanifest";}catch(e){}})();</script>
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1458,6 +1461,17 @@ body.is-seller .supnote{width:100%;margin:0 0 14px}
   .iconv{min-height:620px}
   .sbody{max-height:520px}
 }
+.jslog{display:flex;flex-direction:column;gap:7px;margin:14px 0 0;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);max-width:250px!important;font-size:13.5px!important;font-weight:400;line-height:1.3;text-shadow:none!important}
+.lhero p.jslog{opacity:1;max-width:228px!important;font-size:12.5px!important;padding:10px 12px;gap:6px}
+.lhero:has(.jslog){min-height:335px}
+.lhero:has(.jslog) .courier{width:225px}
+.jslog .jl{display:flex;align-items:center;gap:9px}
+.jslog .jl i{width:6px;height:6px;border-radius:50%;background:#ffd23f;flex-shrink:0;box-shadow:0 0 0 3px rgba(255,210,63,.22)}
+.jslog em{font-style:normal;color:#ffd23f;font-weight:500;letter-spacing:.02em}
+.stag.jslog{margin:14px auto 0;align-items:flex-start;text-align:left;background:#fff;border-color:#e3e8f1;color:#33405e;box-shadow:0 10px 24px -18px rgba(10,22,51,.4)}
+.stag.jslog em{color:#1f4fd1}
+.pinst{margin:0 0 14px!important}
+body.is-driver .pinst{margin:0 16px 12px!important}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1955,7 +1969,7 @@ function mitraBand(){
     '<div class="mperks"><div>'+I("percent")+'<b>Bagi hasil 3%</b><span>Hanya dari penjualan yang selesai</span></div><div>'+I("truck")+'<b>Driver terdekat</b><span>Pesanan dijemput driver sekitar toko</span></div><div>'+I("chart")+'<b>Dashboard toko</b><span>Pesanan & laporan</span></div></div></section>';
 }
 function siteFooter(){
-  return '<footer class="sfoot"><div class="fcol"><div class="logo" style="cursor:default">'+document.querySelector(".jmark").outerHTML+'<span class="lsep"></span><span class="wm">JAGA</span></div><p class="small muted jtag" style="max-width:320px"><b>JA</b>minan Driver dan toko Aman<br><b>GA</b>ransi pesanan pasti sampai<br>Kami <b>JAGA</b> Kepercayaan anda</p></div>'+
+  return '<footer class="sfoot"><div class="fcol"><div class="logo" style="cursor:default">'+document.querySelector(".jmark").outerHTML+'<span class="lsep"></span><span class="wm">JAGA</span></div><p class="small muted" style="max-width:320px;line-height:1.6">JAminan Driver dan toko Aman<br>GAransi pesanan pasti sampai<br>Kami JAGA Kepercayaan anda</p></div>'+
     '<div class="fcol"><b>Hubungi kami</b><a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa,"Halo JAGA"))+'">'+I("chat")+' WhatsApp '+esc(CONTACT.wa)+'</a>'+(CONTACT.email?'<span>'+I("note")+' '+esc(CONTACT.email)+'</span>':'')+(CONTACT.office?'<span>'+I("pin")+' '+esc(CONTACT.office)+'</span>':'')+'</div>'+
     '<div class="fcol"><b>Mitra toko</b><a data-act="mitra-info">Info menjadi mitra</a><a target="_blank" rel="noopener" href="'+MITRA_URL+'">Pendaftaran toko ↗</a><a target="_blank" rel="noopener" href="'+MITRA_URL+'">Dashboard mitra ↗</a></div>'+
     '<div class="fcopy">© '+new Date().getFullYear()+' JAGA</div></footer>';
@@ -2185,6 +2199,7 @@ function viewSeller(){
     '<button class="btn ghost sm" data-act="go" data-v="register" data-new="1">+ Toko baru</button></div></div>';
   if(s.active === false) h += '<div class="notice warnbox">'+I("bell")+' <b>Toko Anda sedang dinonaktifkan tim JAGA</b> dan tidak tampil di aplikasi pembeli. <button class="linkbtn" data-act="sup-open" data-v="store:'+esc(s.id)+'">Tanya tim JAGA</button></div>';
   if((S.sup.unread||{})["store:"+s.id]) h += '<button class="supnote" data-act="sup-open" data-v="store:'+esc(s.id)+'">'+I("chat")+'<div class="grow"><b>Ada pesan baru dari tim JAGA</b><small>Ketuk untuk membaca dan membalas</small></div><em>'+S.sup.unread["store:"+s.id]+'</em></button>';
+  if(S.sellerTab === "ringkasan") h += portalInstallCard("seller");
   h += pushCard("store", "Bunyikan notifikasi saat ada pesanan baru, walau aplikasi ditutup.");
   if(S.sellerTab === "ringkasan") h += sellerDashboard(s, orders);
   else if(S.sellerTab === "pesanan") h += sellerOrders(s, orders);
@@ -2192,7 +2207,7 @@ function viewSeller(){
   else if(S.sellerTab === "laporan") h += sellerReport(s, orders);
   else if(S.sellerTab === "stok") h += isGrocer(s) ? sellerStock(s, orders) : sellerProducts(s);
   else if(S.sellerTab === "saldo") h += sellerWallet(s);
-  else h += storeForm(s) + storeLoginSettings(s) + (SB ? '<div class="card pad" style="margin-top:16px"><h3 class="sub">'+I("settings")+' Kode akses toko</h3><p class="small muted" style="margin:0 0 12px">Kode ini membuktikan bahwa Anda pemilik toko. Gunakan untuk membuka dashboard di HP/laptop lain. <b>Jangan bagikan ke siapa pun.</b></p><div class="actions"><button class="btn ghost sm" data-act="akses-copy">Salin kode akses</button><button class="btn ghost sm" data-act="akses">Masuk dengan kode lain</button></div></div>' : '');
+  else h += storeForm(s) + '<div class="card pad" style="margin-top:16px"><h3 class="sub">'+I("phone")+' Aplikasi JAGA Mitra</h3><p class="small muted" style="margin:0">Pasang di HP agar portal toko terbuka langsung dari layar utama, tanpa mengetik alamat.</p>'+portalInstallRow("seller")+'</div>' + storeLoginSettings(s) + (SB ? '<div class="card pad" style="margin-top:16px"><h3 class="sub">'+I("settings")+' Kode akses toko</h3><p class="small muted" style="margin:0 0 12px">Kode ini membuktikan bahwa Anda pemilik toko. Gunakan untuk membuka dashboard di HP/laptop lain. <b>Jangan bagikan ke siapa pun.</b></p><div class="actions"><button class="btn ghost sm" data-act="akses-copy">Salin kode akses</button><button class="btn ghost sm" data-act="akses">Masuk dengan kode lain</button></div></div>' : '');
   return h;
 }
 function sellerDashboard(s, orders){
@@ -2756,7 +2771,7 @@ function setSlide(i){
 }
 setInterval(() => { if(S.view === "home" && !document.hidden && document.getElementById("slides")) setSlide(S.slide + 1); }, 5000);
 
-window.addEventListener("hashchange", () => { if(openStoreFromHash()) return; const r = modeFromHash(); if(r !== S.role){ S.role = r; if(r === "driver") startDriver(); if(r === "owner") startOwner(); go(r === "seller" ? "seller" : r === "driver" ? "driver" : r === "owner" ? "owner" : "home", r === "seller" ? {sellerTab:"ringkasan"} : {}); } });
+window.addEventListener("hashchange", () => { try{ const m = document.getElementById("mf"); if(m) m.href = location.hash === "#mitra" ? "manifest-mitra.webmanifest" : location.hash === "#driver" ? "manifest-driver.webmanifest" : "manifest.webmanifest"; }catch(_){} if(openStoreFromHash()) return; const r = modeFromHash(); if(r !== S.role){ S.role = r; if(r === "driver") startDriver(); if(r === "owner") startOwner(); go(r === "seller" ? "seller" : r === "driver" ? "driver" : r === "owner" ? "owner" : "home", r === "seller" ? {sellerTab:"ringkasan"} : {}); } });
 
 
 /* ================= JAGA — MODE APLIKASI (pembeli) ================= */
@@ -3008,11 +3023,11 @@ function appProfile(){
       '<button data-act="rules">'+E("check")+'<div class="grow">Aturan JAGA<small>Ketentuan akun pembeli, toko & driver</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa,"Halo JAGA, saya butuh bantuan."))+'">'+E("bell")+'<div class="grow">Bantuan<small>WhatsApp '+esc(CONTACT.wa)+'</small></div><span class="chev">'+I("chev")+'</span></a>'+
       (p.name?'<button data-act="logout">'+I("logout")+'<div class="grow">Keluar</div></button>':'<button data-act="nav" data-v="login">'+E("check")+'<div class="grow">Masuk<small>Simpan nama & alamat untuk checkout cepat</small></div><span class="chev">'+I("chev")+'</span></button>')+
-    '</div><div class="small muted" style="text-align:center;margin:8px 0 20px;user-select:none" data-act="ver-tap">JAGA · versi 1.1<br><span class="jtag"><b>JA</b>minan Driver dan toko Aman<br><b>GA</b>ransi pesanan pasti sampai<br>Kami <b>JAGA</b> Kepercayaan anda</span></div>';
+    '</div><div class="small muted" style="text-align:center;margin:8px 0 20px;user-select:none" data-act="ver-tap">JAGA · versi 1.1<br><span style="font-size:11.5px;opacity:.8">Kami JAGA Kepercayaan anda</span></div>';
 }
 function appLogin(){
   const p = getProf();
-  return '<div class="login"><section class="lhero"><div class="wmk'+ra(0)+'">'+JMARK()+'<b>JAGA</b></div><p class="jtag'+ra(1)+'"><b>JA</b>minan Driver dan toko Aman<br><b>GA</b>ransi pesanan pasti sampai<br>Kami <b>JAGA</b> Kepercayaan anda</p>'+COURIER_SVG+'</section>'+
+  return '<div class="login"><section class="lhero"><div class="wmk'+ra(0)+'">'+JMARK()+'<b>JAGA</b></div><p class="jslog'+ra(1)+'"><span class="jl"><i></i><span><em>JA</em>minan Driver dan toko Aman</span></span><span class="jl"><i></i><span><em>GA</em>ransi pesanan pasti sampai</span></span><span class="jl"><i></i><span>Kami <em>JAGA</em> Kepercayaan anda</span></span></p>'+COURIER_SVG+'</section>'+
     '<form class="lform" id="loginForm" autocomplete="on"><h2 class="'+ra(2)+'">Selamat datang '+E("party")+'</h2><p class="'+ra(2)+'">Isi sekali saja — dipakai otomatis saat checkout.</p>'+
     '<label class="lin'+ra(3)+'">'+I("user")+'<input name="name" required placeholder="Nama lengkap" value="'+esc(p.name||"")+'" autocomplete="name"></label>'+
     '<label class="lin'+ra(4)+'">'+I("phone")+'<input name="wa" required inputmode="tel" placeholder="Nomor WhatsApp (08…)" value="'+esc(p.wa||"")+'" autocomplete="tel"></label>'+
@@ -3056,7 +3071,7 @@ function showSplash(){
   let seen = false; try{ seen = sessionStorage.getItem("jt_splash"); }catch(e){}
   if(seen || S.role === "seller") return;
   const sp = document.createElement("div"); sp.id = "splash";
-  sp.innerHTML = '<div class="blob"></div>'+COURIER_SVG+'<div class="sbrand">'+JMARK()+'<b>JAGA</b></div><div class="stag jtag"><b>JA</b>minan Driver dan toko Aman<br><b>GA</b>ransi pesanan pasti sampai<br>Kami <b>JAGA</b> Kepercayaan anda</div><div class="sload"><i></i></div>';
+  sp.innerHTML = '<div class="blob"></div>'+COURIER_SVG+'<div class="sbrand">'+JMARK()+'<b>JAGA</b></div><div class="stag jslog"><span class="jl"><i></i><span><em>JA</em>minan Driver dan toko Aman</span></span><span class="jl"><i></i><span><em>GA</em>ransi pesanan pasti sampai</span></span><span class="jl"><i></i><span>Kami <em>JAGA</em> Kepercayaan anda</span></span></div><div class="sload"><i></i></div>';
   document.body.appendChild(sp);
   try{ sessionStorage.setItem("jt_splash", "1"); }catch(e){}
   setTimeout(() => { sp.classList.add("out"); setTimeout(() => sp.remove(), 600); }, 2400);
@@ -3131,20 +3146,40 @@ document.addEventListener("input", e => {
 let INSTALL_EVT = null;
 const isStandalone = () => { try{ return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; }catch(e){ return false; } };
 const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent || "");
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); INSTALL_EVT = e; if(S.role !== "seller") scheduleRender(); });
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); INSTALL_EVT = e; if(!typing()) scheduleRender(); });
 window.addEventListener("appinstalled", () => { INSTALL_EVT = null; toast("JAGA terpasang di HP Anda"); scheduleRender(); });
 function canInstall(){ if(isStandalone()) return false; let hid = false; try{ hid = localStorage.getItem("jt_inst_hide") === "1"; }catch(e){} return !hid && (INSTALL_EVT || isIOS()); }
 function installCard(){ return canInstall() ? '<div class="installcard'+ra(4)+'"><img class="ico" src="icons/icon-192.png" alt=""><div class="grow"><b>Pasang JAGA di HP</b><small>Buka lebih cepat, seperti aplikasi</small></div><button class="btn sm press" data-act="install">Pasang</button><button class="x" data-act="install-hide" aria-label="Tutup">×</button></div>' : ''; }
-async function doInstall(){
+const PORTAL_APP = {seller:["JAGA Mitra","Terima pesanan & kelola toko langsung dari layar utama HP"], driver:["JAGA Driver","Buka aplikasi driver lebih cepat & terima order tanpa buka browser"]};
+function canInstallPortal(role){ if(isStandalone()) return false; let hid = false; try{ hid = localStorage.getItem("jt_inst_hide_" + role) === "1"; }catch(e){} return !hid; }
+function portalInstallCard(role){
+  if(!canInstallPortal(role)) return "";
+  const a = PORTAL_APP[role];
+  return '<div class="installcard pinst"><img class="ico" src="icons/icon-192.png" alt=""><div class="grow"><b>Pasang '+a[0]+' di HP</b><small>'+a[1]+'</small></div><button class="btn sm press" data-act="install" data-v="'+role+'">Pasang</button><button class="x" data-act="install-hide" data-v="'+role+'" aria-label="Tutup">×</button></div>';
+}
+function portalInstallRow(role){
+  if(isStandalone()) return '<div class="hint" style="margin-top:6px">'+I("checkc")+' '+PORTAL_APP[role][0]+' sudah terpasang di HP ini.</div>';
+  return '<button class="btn ghost sm" data-act="install" data-v="'+role+'" style="margin-top:8px"><img src="icons/icon-192.png" alt="" style="width:20px;height:20px;border-radius:6px"> Pasang '+PORTAL_APP[role][0]+' di HP</button>';
+}
+async function doInstall(role){
+  if(role === "seller" || role === "driver"){ try{ localStorage.setItem("jt_home_role", role); }catch(_){} }
+  else { try{ localStorage.removeItem("jt_home_role"); }catch(_){} }
   if(INSTALL_EVT){ INSTALL_EVT.prompt(); try{ await INSTALL_EVT.userChoice; }catch(e){} INSTALL_EVT = null; render(); return; }
+  const nm = role === "seller" ? "JAGA Mitra" : role === "driver" ? "JAGA Driver" : "JAGA";
+  if(!isIOS()){
+    document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec" style="display:flex;gap:10px;align-items:center"><img src="icons/icon-192.png" alt="" style="width:40px;height:40px;border-radius:11px"> Pasang '+nm+'</h2>'+
+      '<ol style="padding-left:20px;line-height:1.9;margin:0 0 16px"><li>Buka halaman ini di <b>Chrome</b></li><li>Ketuk menu <b>⋮</b> di pojok kanan atas</li><li>Pilih <b>Instal aplikasi</b> atau <b>Tambahkan ke layar utama</b></li><li>Ketuk <b>Instal</b>, lalu buka '+nm+' dari layar utama</li></ol>'+
+      '<button class="btn block" data-act="close-modal">Mengerti</button></div></div>';
+    return;
+  }
   document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec" style="display:flex;gap:10px;align-items:center"><img src="icons/icon-192.png" alt="" style="width:40px;height:40px;border-radius:11px"> Pasang di iPhone</h2>'+
     '<ol style="padding-left:20px;line-height:1.9;margin:0 0 16px"><li>Ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas) di Safari</li><li>Pilih <b>Tambah ke Layar Utama</b></li><li>Ketuk <b>Tambah</b></li></ol>'+
     '<button class="btn block" data-act="close-modal">Mengerti</button></div></div>';
 }
 document.addEventListener("click", e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
-  if(el.dataset.act === "install"){ doInstall(); }
-  if(el.dataset.act === "install-hide"){ try{ localStorage.setItem("jt_inst_hide", "1"); }catch(_){} render(); }
+  if(el.dataset.act === "install"){ doInstall(el.dataset.v || ""); }
+  if(el.dataset.act === "install-hide"){ try{ localStorage.setItem(el.dataset.v ? "jt_inst_hide_" + el.dataset.v : "jt_inst_hide", "1"); }catch(_){} render(); }
 });
 if("serviceWorker" in navigator && /(^|\.)jagapatner\.my\.id$|github\.io$|^localhost$|^127\./.test(location.hostname)){
   const hadSW = !!navigator.serviceWorker.controller;
@@ -3506,6 +3541,7 @@ function appDriver(){
   h += '<div class="card dme"><div class="drv-av big">'+esc(initials(me.name))+'</div><div class="grow"><b>'+esc(me.name)+'</b><small>'+esc([me.vehicle, me.plate, me.area].filter(Boolean).join(" · "))+'</small>'+
     '<button class="linkbtn" data-act="drv-edit">Ubah data</button></div>'+
     '<button class="onsw press '+(me.online?"on":"")+'" data-act="drv-online" aria-pressed="'+(me.online?"true":"false")+'"><i></i><span>'+(me.online?"ONLINE":"OFFLINE")+'</span></button></div>';
+  h += portalInstallCard("driver");
   if(me.online){
     h += S.drv.locErr ? '<div class="notice warnbox">'+I("pin")+' '+esc(S.drv.locErr)+'</div>'
       : '<div class="locline">'+I("pin")+(S.drv.loc ? ' Lokasi aktif — kamu terlihat oleh pesanan di sekitar' : ' Mencari lokasi GPS…')+'</div>';
