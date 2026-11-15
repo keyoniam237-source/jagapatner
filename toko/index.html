@@ -1063,6 +1063,30 @@ body.is-owner .dtop{z-index:20}
 .wbig span{display:block;opacity:.9;font-size:12.5px}
 .whow ol{margin:0;padding-left:20px;color:#3b4a66;font-size:13.5px;line-height:1.55}
 .wchips{display:flex;gap:6px;flex-wrap:wrap}
+.wpay2{background:#f5f8fe;border-radius:14px;padding:12px;margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.wpay2 .wplbl{color:#6a7894;font-size:12px;font-weight:700}
+.wpg{display:flex;flex-direction:column;gap:6px}
+.wpg>em{font-style:normal;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#2f6bff}
+.wpd{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.wpd .grow{min-width:0;display:flex;flex-direction:column}
+.wpd b{font-size:14px}.wpd .mono{font-family:ui-monospace,Menlo,monospace;font-size:15px;font-weight:700;letter-spacing:.03em;word-break:break-all}
+.wpd small{color:#6a7894;font-size:12px}
+.wpay2 .qris{max-width:220px;border-radius:12px;background:#fff}
+.wpay2>span{font-size:13px;color:#5b6a86}
+.wblock{display:flex;gap:12px;align-items:flex-start;background:#fff4f2;border:1px solid #ffd2c9;border-radius:18px;padding:14px;margin-bottom:14px}
+.wblock b{display:block;color:#b3261e;font-size:15px}.wblock small{display:block;color:#7a4a44;font-size:12.5px;margin-top:3px;line-height:1.45}
+.wblock .actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.ptcard .pthead{display:flex;align-items:center;gap:12px}
+.ptcard .pthead small{display:block;color:#6a7894;font-size:12px}.ptcard .pthead b{display:block;font-size:20px}.ptcard .pthead span{display:block;font-size:12px;color:#6a7894}
+.ptbar{height:8px;border-radius:99px;background:#eef2fa;overflow:hidden;margin:12px 0 6px}.ptbar i{display:block;height:100%;background:linear-gradient(90deg,#2f6bff,#ffc93c);border-radius:99px}
+.ptrow{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:#4b5a76;flex-wrap:wrap}
+.pthist{margin-top:8px}.pthist summary{cursor:pointer;font-size:13px;font-weight:700;color:#2f6bff;padding:4px 0}
+.usaldo{display:block;background:#eef4ff;border:1px solid #cfe0ff;border-radius:14px;padding:10px 12px;margin-top:12px;font-weight:700}
+.usaldo small{display:block;font-weight:500;color:#5b6a86;font-size:12px;margin:3px 0 0 24px}
+.vnote{background:#eef4ff;border-radius:12px;padding:9px 12px;font-size:12.5px;color:#25408a;margin-top:8px;line-height:1.45}
+.payrow{display:grid;grid-template-columns:1fr 1.2fr;gap:6px;background:#f5f8fe;border-radius:12px;padding:8px;margin-bottom:8px;position:relative}
+.payrow .in{margin:0}.payrow .ibtn{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:99px;background:#fff;border:1px solid var(--line);font-size:16px;line-height:1}
+@media(min-width:700px){.payrow{grid-template-columns:150px 1fr 1fr 1fr}}
 .wpay{background:#f5f8fe;border-radius:14px;padding:12px;margin-top:12px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
 .wpay small{color:#6a7894;font-size:12px}
 .wpay b{font-size:16px}
@@ -1880,6 +1904,7 @@ function renderInner(){
     else if(v === "orders") html += appOrders();
     else if(v === "order") html += appOrder();
     else if(v === "fav") html += appFav();
+    else if(v === "poin") html += appPoin();
     else if(v === "jago") html += appJago();
     else if(v === "profile") html += appProfile();
     else html += appHome();
@@ -1987,7 +2012,8 @@ const RULES = [
   {t:"Umum", e:"check", r:["1 nomor WhatsApp hanya untuk 1 akun di setiap peran (1 pembeli, 1 toko, 1 driver).","Nomor WhatsApp wajib aktif dan benar (08… atau +62…). Data akun harus data asli.","Tidak boleh bertransaksi dengan diri sendiri: membeli dari toko sendiri atau mengantar pesanan sendiri.","Bonus saldo akun baru hanya diberikan 1 kali untuk setiap nomor WhatsApp.","Akun yang curang, memakai data palsu, atau membuat pesanan palsu dapat dinonaktifkan tim JAGA."]},
   {t:"Pembeli", e:"cart", r:["Maksimal 3 pesanan belanja yang sedang berjalan sekaligus.","Di toko yang sama hanya boleh 1 pesanan yang belum dikonfirmasi. Tunggu atau batalkan dulu sebelum memesan lagi.","Maksimal 1 perjalanan Jago yang sedang berjalan.","Alamat pengantaran harus berada di wilayah layanan JAGA."]},
   {t:"Penjual (toko)", e:"store", r:["1 nomor WhatsApp hanya untuk 1 toko.","1 akun / HP hanya bisa mendaftarkan 1 toko.","Nama toko tidak boleh sama dengan toko lain di daerah yang sama.","Bagi hasil 3% dari setiap penjualan yang selesai, dipotong otomatis dari saldo toko.","Toko wajib mengonfirmasi pesanan dan menjaga stok tetap sesuai."]},
-  {t:"Driver", e:"scooter", r:["1 nomor WhatsApp dan 1 plat nomor hanya untuk 1 akun driver.","Akun driver harus disetujui tim JAGA sebelum bisa ONLINE.","1 driver hanya bisa membawa 1 pesanan atau 1 perjalanan sekaligus.","Ganti nomor WhatsApp atau plat nomor = verifikasi ulang oleh tim JAGA.","Tidak bisa mengambil pesanan sendiri atau pesanan dari toko milik sendiri.","Komisi Jago 3% per perjalanan, dipotong dari saldo driver."]}
+  {t:"Driver", e:"scooter", r:["1 nomor WhatsApp dan 1 plat nomor hanya untuk 1 akun driver.","Akun driver harus disetujui tim JAGA sebelum bisa ONLINE.","1 driver hanya bisa membawa 1 pesanan atau 1 perjalanan sekaligus.","Ganti nomor WhatsApp atau plat nomor = verifikasi ulang oleh tim JAGA.","Tidak bisa mengambil pesanan sendiri atau pesanan dari toko milik sendiri.","Potongan 3% dari ongkir antar dan tarif Jago setiap order selesai, dipotong dari saldo driver.","Saldo di bawah minimum (Rp10.000) = order tidak masuk sampai saldo diisi."]},
+  {t:"Saldo & poin", e:"gift", r:["Toko dan driver baru mendapat saldo gratis Rp15.000 (1 kali per nomor WhatsApp).","Isi saldo lewat bank, virtual account, e-wallet, atau QRIS yang disediakan JAGA, wajib kirim foto bukti transfer. Saldo bertambah setelah dicek tim JAGA.","Setiap 10 transaksi selesai dalam sehari dapat 5 poin, berlaku untuk toko, driver, dan pembeli.","5 poin bisa ditukar jadi Rp2.000. Untuk toko & driver masuk ke saldo; untuk pembeli jadi saldo JAGA yang memotong ongkir atau tarif Jago.","Poin dari pesanan palsu atau curang akan dibatalkan dan akun dapat dinonaktifkan."]}
 ];
 function openRules(){
   document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal rmodal"><h2 class="sec" style="margin-bottom:4px">Aturan JAGA</h2>'+
@@ -2085,6 +2111,7 @@ function viewCart(){
     '<h3 class="sub" style="margin-top:20px">Metode pembayaran</h3><div class="small muted" style="margin-bottom:10px">Pembayaran langsung masuk ke akun milik '+esc(s.name)+'.</div>'+
     (methods.length ? methods.map(m => '<label class="opt '+(S.payChoice===m.k?"on":"")+'"><input type="radio" name="pay" value="'+m.k+'" '+(S.payChoice===m.k?"checked":"")+' data-act="pay"><div><b>'+esc(m.l)+'</b><div class="small muted">'+(m.k==="cod"?"Bayar tunai saat pesanan diterima":"Instruksi pembayaran muncul setelah pesanan dibuat")+'</div></div></label>').join("")
       : '<div class="notice">Toko ini belum mengatur metode pembayaran.</div>')+
+    useSaldoBox(t.ongkirEst || 0, "ongkir")+
     '<button class="btn block" style="margin-top:12px" '+(methods.length && s.open!==false?"":"disabled")+'>Buat pesanan · '+rp(t.total)+'</button>'+
     (s.open===false?'<div class="hint">Toko sedang tutup.</div>':'')+
     '</form>';
@@ -2167,6 +2194,7 @@ function viewOrder(){
   h += '</div>';
   h += '<div class="card pad"><h3 class="sub">Rincian</h3>'+o.items.map(i=>'<div class="row"><span>'+esc(i.name)+' ×'+i.qty+'</span><span>'+rp(i.price*i.qty)+'</span></div>').join("")+
     '<div class="row"><span>Biaya admin</span><span class="free">Rp0</span></div><div class="row total"><span>Total belanja</span><span>'+rp(o.total)+'</span></div>'+
+    (o.voucher > 0 && !o.selfDelivery ? '<div class="row"><span>Potongan saldo JAGA</span><span class="free">−'+rp(o.voucher)+'</span></div>' : '')+
     (o.selfDelivery ? '' : '<div class="row"><span>Ongkir (ke driver)</span><span>'+(typeof o.ongkirFinal==="number" ? rp(o.ongkirFinal) : ongkirEstOf(o)==null ? ONGKIR_LBL : '±'+rp(ongkirEstOf(o))+' <small class="muted">nego</small>')+'</span></div>')+
     '<h3 class="sub" style="margin-top:16px">Dikirim ke</h3><div><b>'+esc(o.buyer.name)+'</b> · '+esc(o.buyer.wa)+'</div><div class="small">'+esc(o.buyer.address)+'</div>'+
     (o.buyer.maps?'<div class="small"><a target="_blank" rel="noopener" href="'+esc(o.buyer.maps)+'">Lihat di peta</a></div>':'')+
@@ -2497,7 +2525,7 @@ function storeForm(s){
     '<label class="f">QRIS toko</label><div class="imgpick"><div class="prev" id="qrisPrev">'+(p.qris?'<img alt="" src="'+esc(p.qris)+'">':I("qr"))+'</div><input type="file" accept="image/*" id="qrisFile">'+(p.qris?'<label class="small"><input type="checkbox" name="qrisRemove"> hapus</label>':'')+'</div>'+
     '<label class="check"><input type="checkbox" name="cod" '+(p.cod?"checked":"")+'> Terima bayar di tempat (COD)</label></fieldset>'+
     (s.id ? '<div class="sharenote">'+I("percent")+' Bagi hasil JAGA: <b>3%</b> dari setiap penjualan selesai'+(s.shareAgreedAt?' · disetujui '+esc(new Date(s.shareAgreedAt).toLocaleDateString("id-ID")):'')+'</div>'
-      : '<div class="sharebox"><b>'+I("percent")+' Bagi hasil 3%</b><p>Pembeli tidak dikenai biaya admin. Sebagai gantinya, toko membayar bagi hasil <b>3% dari setiap penjualan yang selesai</b> kepada JAGA, dipotong otomatis dari saldo toko setiap pesanan selesai. Pesanan yang dibatalkan tidak dipotong. Toko baru mendapat saldo gratis untuk mulai.</p><label class="check" style="margin-top:8px"><input type="checkbox" name="agreeShare" required> Saya setuju dengan bagi hasil 3% per penjualan</label><label class="check" style="margin-top:6px"><input type="checkbox" name="agreeRules"> Saya setuju dengan <a data-act="rules" style="color:#2f6bff;font-weight:700">Aturan JAGA</a> (1 nomor WA = 1 toko)</label></div>')+
+      : '<div class="sharebox"><b>'+I("percent")+' Bagi hasil 3%</b><p>Pembeli tidak dikenai biaya admin. Sebagai gantinya, toko membayar bagi hasil <b>3% dari setiap penjualan yang selesai</b> kepada JAGA, dipotong otomatis dari saldo toko setiap pesanan selesai. Pesanan yang dibatalkan tidak dipotong. Toko baru mendapat saldo gratis Rp15.000 untuk mulai, dan setiap 10 pesanan selesai sehari dapat 5 poin (bisa ditukar jadi saldo).</p><label class="check" style="margin-top:8px"><input type="checkbox" name="agreeShare" required> Saya setuju dengan bagi hasil 3% per penjualan</label><label class="check" style="margin-top:6px"><input type="checkbox" name="agreeRules"> Saya setuju dengan <a data-act="rules" style="color:#2f6bff;font-weight:700">Aturan JAGA</a> (1 nomor WA = 1 toko)</label></div>')+
     '<button class="btn block" style="margin-top:16px">'+(s.id?"Simpan perubahan":"Daftarkan toko")+'</button>'+
     (s.id?'<button type="button" class="btn danger block" style="margin-top:8px" data-act="del-store">Hapus toko</button>':'')+
     '</form>';
@@ -2579,10 +2607,12 @@ async function placeOrder(form){
     status: k === "cod" ? "menunggu_konfirmasi" : "menunggu_pembayaran", createdAt:now, updatedAt:now};
   if(typeof s.lat === "number" && typeof s.lng === "number") order.storeLoc = {lat:s.lat, lng:s.lng};
   if(locOk(order.storeLoc) && locOk(buyer)){ order.ongkirDist = Math.round(distM(order.storeLoc, buyer)); order.ongkirEst = ongkirByDist(order.ongkirDist); }
+  if(fd.get("useSaldo")){ order.useSaldo = true; if(!SB && order.ongkirEst > 0 && buyerAvail() > 0) order.voucher = Math.min(buyerAvail(), order.ongkirEst); }
   const btn = form.querySelector("button"); if(btn) btn.disabled = true;
   const ok = await safe(() => store.set("orders/"+id, order));
   if(btn) btn.disabled = false;
   if(!ok) return;
+  if(order.useSaldo) loadPts("buyer", true);
   for(const i of t2.items){
     const p = prods.find(x=>x.id===i.pid);
     if(!SB && p && typeof p.stock === "number") await safe(() => store.update("stores/"+s.id+"/products/"+p.id, {stock:Math.max(0,p.stock-i.qty)}));
@@ -2824,7 +2854,7 @@ const NAV_APP = [
 ];
 function renderAppNav(){
   if(S.role === "driver" || S.role === "owner"){ document.getElementById("bnav").style.display = "none"; document.getElementById("bnav").innerHTML = ""; return; }
-  const on = {home:"home", store:"home", product:"home", fav:"fav", cart:"cart", checkout:"cart", orders:"orders", order:"orders", profile:"profile", jago:"home"}[S.view];
+  const on = {home:"home", store:"home", product:"home", fav:"fav", poin:"profile", cart:"cart", checkout:"cart", orders:"orders", order:"orders", profile:"profile", jago:"home"}[S.view];
   const badge = v => { const c = v==="cart" ? cartCount() : v==="orders" ? myActiveOrders() : 0; return c ? '<span class="badge">'+c+'</span>' : ''; };
   const bn = document.getElementById("bnav");
   bn.style.display = "";
@@ -2857,7 +2887,7 @@ const ASLIDES = [
   {c:"b1", pill:"Driver terdekat", t:"Diantar langsung dari toko", d:"Ongkir Rp2.000 per 500 m & bisa nego.", art:"scooter", cta:"Belanja sekarang", act:"scroll-prod"},
   {c:"b2", pill:"Tanpa biaya tambahan", t:"Rp0 biaya admin", d:"Bayar langsung ke toko: QRIS, transfer, e-wallet, atau COD.", art:"money"},
   {c:"b3", pill:"Untuk pemilik toko", t:"Punya toko? Jadi Mitra", d:"Daftar gratis, bagi hasil hanya 3% per penjualan.", art:"store", cta:"Info mitra", act:"mitra-info"},
-  {c:"b4", pill:"Untuk pemilik motor", t:"Punya motor? Jadi Driver", d:"Daftar cukup nama, WA, plat & alamat. Bonus saldo Rp20.000.", art:"scooter", cta:"Daftar driver", act:"open-driver"}
+  {c:"b4", pill:"Untuk pemilik motor", t:"Punya motor? Jadi Driver", d:"Daftar cukup nama, WA, plat & alamat. Bonus saldo Rp15.000.", art:"scooter", cta:"Daftar driver", act:"open-driver"}
 ];
 function appHome(){
   const prof = getProf(); const first = (prof.name||"").trim().split(/\s+/)[0];
@@ -3012,6 +3042,7 @@ function appProfile(){
     '<div class="plist'+ra(1)+'">'+
       '<button data-act="edit-addr">'+E("pin")+'<div class="grow">Alamat pengantaran<small>'+esc(p.address||"Belum diatur")+'</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="nav" data-v="orders">'+E("receipt")+'<div class="grow">Pesanan saya<small>'+n+' pesanan</small></div><span class="chev">'+I("chev")+'</span></button>'+
+      '<button data-act="nav" data-v="poin">'+E("gift")+'<div class="grow">Poin & saldo JAGA<small>'+(S.pts.buyer && S.pts.buyer.points != null ? S.pts.buyer.points+' poin · saldo '+rp(S.pts.buyer.balance||0) : '10 transaksi sehari = 5 poin')+'</small></div><span class="chev">'+I("chev")+'</span></button>'+
       (PUSH_OK ? '<button data-act="push-on" data-v="buyer">'+E("bell")+'<div class="grow">Notifikasi pesanan<small>'+(pushOn("buyer") ? "Aktif ✓" : "Ketuk untuk mengaktifkan")+'</small></div><span class="chev">'+I("chev")+'</span></button>' : '')+
       '<button data-act="nav" data-v="jago">'+E("scooter")+'<div class="grow">Jago · ojek online<small>'+S.rides.length+' perjalanan</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="nav" data-v="fav">'+E("heart")+'<div class="grow">Favorit<small>'+FAV.size+' produk disimpan</small></div><span class="chev">'+I("chev")+'</span></button>'+
@@ -3260,7 +3291,7 @@ function searchElapsed(o){ return Math.max(0, (Date.now() - (o.searchAt || o.upd
 function drvFree(id, d){ return !!(d && d.online) && (!d.verify || d.verify === "verified") && !S.orders.concat(S.ridesAll).some(o => o.driverId === id && DRV_BUSY.includes(o.status)); }
 function offerDist(o, id, d, now){
   if((o.declined || []).includes(id)) return null;
-  if(isRide(o) && !drvCanRide(id, o)) return null;
+  if(!drvCanRide(id, o)) return null;
   const sl = o.storeLoc || o.pickup;
   if(!hasLoc(sl)) return -1;
   if(!hasLoc(d) || !(d.locAt > now - LOC_FRESH)) return null;
@@ -3268,7 +3299,7 @@ function offerDist(o, id, d, now){
   const dist = distM(sl, d);
   if(dist > radiusM(el)) return null;
   if(el < 30){
-    const c = S.drivers.filter(x => x.online && hasLoc(x) && x.locAt > now - LOC_FRESH && !(o.declined || []).includes(x.id) && drvFree(x.id, x) && (!isRide(o) || drvCanRide(x.id, o))).sort((a, b) => distM(sl, a) - distM(sl, b));
+    const c = S.drivers.filter(x => x.online && hasLoc(x) && x.locAt > now - LOC_FRESH && !(o.declined || []).includes(x.id) && drvFree(x.id, x) && drvCanRide(x.id, o)).sort((a, b) => distM(sl, a) - distM(sl, b));
     if(!c[0] || c[0].id !== id) return null;
   }
   return dist;
@@ -3319,6 +3350,7 @@ const localDrv = {
     if(act === "accept"){
       if(o.status !== "mencari_driver") throw srvErr("Pesanan sudah diambil driver lain");
       if(!drvFree(me.id, me)) throw srvErr("Selesaikan pesanan aktif Anda atau aktifkan status online");
+      if(!drvCanRide(me.id, o)) throw srvErr("Saldo driver di bawah minimum. Isi saldo atau hubungi JAGA agar bisa menerima order lagi");
       if(offerDist(o, me.id, me, now) === null) throw srvErr("Pesanan ini di luar jangkauan Anda");
       patch = {status:"driver_ke_toko", driverId:me.id, acceptedAt:now, updatedAt:now, driver:{name:me.name, wa:me.wa, vehicle:me.vehicle || "", plate:me.plate || ""}};
       if(hasLoc(me)) patch.driverLoc = {lat:me.lat, lng:me.lng, at:now};
@@ -3332,10 +3364,11 @@ const localDrv = {
         if(o.status !== "diantar") throw srvErr("Status pesanan tidak sesuai");
         const v = Math.round(Number(data && data.ongkir));
         patch = {status:"selesai", ongkirFinal: isFinite(v) && v >= 0 ? v : (ongkirEstOf(o) || 0), doneAt:now, updatedAt:now};
+        patch.drvFee = rideFee(patch.ongkirFinal);
       } else throw srvErr("Aksi tidak valid");
     }
     await store.update("orders/" + id, patch);
-    if(act === "done") await localChargeFee(o);
+    if(act === "done"){ await localChargeFee(o); if(patch.drvFee > 0) await localTx("fee_dlv_" + id, {storeId:"drv:" + me.id, kind:"fee", amount:-patch.drvFee, orderId:"dlv:" + id, note:"Potongan 3% ongkir antar " + (o.code || "") + " (" + rp(patch.ongkirFinal) + ")"}); }
     return Object.assign({}, o, patch);
   },
   async rideAct(me, o, act, data, now){
@@ -3343,7 +3376,7 @@ const localDrv = {
     if(act === "accept"){
       if(o.status !== "mencari_driver") throw srvErr("Order Jago sudah diambil driver lain");
       if(!drvFree(me.id, me)) throw srvErr("Selesaikan pesanan aktif Anda atau aktifkan status online");
-      if(!drvCanRide(me.id, o)) throw srvErr("Saldo driver kurang. Isi saldo dulu untuk menerima order Jago");
+      if(!drvCanRide(me.id, o)) throw srvErr("Saldo driver di bawah minimum. Isi saldo atau hubungi JAGA agar bisa menerima order lagi");
       if(offerDist(o, me.id, me, now) === null) throw srvErr("Pesanan ini di luar jangkauan Anda");
       patch = {status:"driver_jemput", driverId:me.id, acceptedAt:now, updatedAt:now, driver:{name:me.name, wa:me.wa, vehicle:me.vehicle || "", plate:me.plate || ""}};
       if(hasLoc(me)) patch.driverLoc = {lat:me.lat, lng:me.lng, at:now};
@@ -3457,7 +3490,7 @@ function ongkirNego(o){
   const dist = ongkirDistOf(o);
   return '<div class="ongkirbox big">'+E("money")+'<div><small>Biaya antar ('+(dist!=null?'jarak ±'+kmTxt(dist)+' · ':'')+ONGKIR_LBL+')</small><b>'+(est==null?'Dihitung driver':rp(est))+'</b>'+
     '<small>Bayar langsung ke driver. Harga antar <b>bisa dinego</b> dengan driver saat pesanan tiba.</small>'+
-    (cod ? '<small class="codline">COD: siapkan '+rp(o.total)+' (barang) + ongkir yang disepakati.</small>' : '')+'</div></div>';
+    (cod ? '<small class="codline">COD: siapkan '+rp(o.total)+' (barang) + ongkir yang disepakati'+(o.voucher > 0 ? ' − potongan '+rp(o.voucher) : '')+'.</small>' : '')+'</div></div>'+voucherNote(o, "buyer");
 }
 
 /* ---------- portal driver ---------- */
@@ -3495,7 +3528,7 @@ function drvJob(o, offer){
       (!offer && o.status==="diantar" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(hasLoc(o.buyer) ? dirLink(o.buyer) : (o.buyer.maps || dirLink(null, o.buyer.address)))+'">'+I("pin")+' Rute ke pembeli</a>'+(o.buyer.wa?'<a target="_blank" rel="noopener" href="'+esc(waLink(o.buyer.wa, "Halo "+o.buyer.name+", saya driver JAGA mengantar pesanan "+o.code+" dari "+o.storeName+"."))+'">WA pembeli</a>':'')+'</div>' : '')+
       (o.buyer.note ? '<span class="note">'+I("note")+' '+esc(o.buyer.note)+'</span>' : '')+
     '</div></div></div>';
-  h += '<div class="small" style="margin:8px 0 2px">'+items+'</div>';
+  h += '<div class="small" style="margin:8px 0 2px">'+items+'</div>' + voucherNote(o, "driver");
   h += '<div class="dj-money"><div><small>Belanja</small><b>'+rp(o.total)+'</b></div><div><small>Ongkir'+(ongkirDistOf(o)!=null?' · '+kmTxt(ongkirDistOf(o)):'')+'</small><b>'+(est==null?ONGKIR_LBL:'±'+rp(est))+'</b></div><div><small>Bayar barang</small><b>'+(cod?"COD":"Lunas ke toko")+'</b></div></div>';
   if(offer){
     h += '<div class="actions"><button class="btn press grow" data-act="drv-accept" data-id="'+esc(o.id)+'">Ambil pesanan</button><button class="btn ghost press" data-act="drv-decline" data-id="'+esc(o.id)+'">Lewati</button></div>';
@@ -3524,9 +3557,10 @@ function appDriver(){
   if(!me){
     return h + '<section class="dhero">'+COURIER_SVG+'<h1>Jadi Driver JAGA</h1><p>Antar pesanan dari toko & penumpang Jago di sekitarmu.</p></section>'+
       '<div class="dperks"><div>'+E("pin")+'<b>Order terdekat</b><span>Dicari dari radius 1 km, melebar sampai 5 km</span></div>'+
-      '<div>'+E("money")+'<b>Ongkir 100% untukmu</b><span>Rp2.000 per 500 m, bisa nego</span></div>'+
+      '<div>'+E("money")+'<b>Ongkir untukmu</b><span>Rp2.000 per 500 m, bisa nego · potongan cuma 3%</span></div>'+
       '<div>'+E("scooter")+'<b>Order ojek Jago</b><span>Antar penumpang, komisi cuma 3%</span></div>'+
-      '<div>'+E("check")+'<b>Daftar mudah</b><span>Cukup nama, WA, plat & alamat. Disetujui tim JAGA, dapat saldo gratis</span></div></div>'+ driverForm(null);
+      '<div>'+E("check")+'<b>Daftar mudah</b><span>Cukup nama, WA, plat & alamat. Disetujui tim JAGA, dapat saldo gratis Rp15.000</span></div>'+
+      '<div>'+E("gift")+'<b>Poin harian</b><span>10 order selesai sehari = 5 poin = Rp2.000 saldo</span></div></div>'+ driverForm(null);
   }
   if(S.drv.editing) return h + '<h2 class="sec" style="margin:8px 16px">Ubah data driver</h2>' + driverForm(me);
   if(S.drv.walletOpen) return h + drvWallet();
@@ -3602,7 +3636,7 @@ document.addEventListener("click", async e => {
     const v = parseInt(String(inp ? inp.value : "").replace(/\D/g, ""), 10);
     if(!isFinite(v) || v < 0) return toast(ride ? "Isi tarif yang disepakati." : "Isi ongkir yang disepakati.");
     if(ride){ confirmModal("Sudah sampai tujuan dengan tarif " + rp(v) + "? Komisi 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Perjalanan selesai. Tarif " + rp(v) + " tercatat.")); return; }
-    confirmModal("Pesanan sudah diterima pembeli dengan ongkir " + rp(v) + "?", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat."));
+    confirmModal("Pesanan sudah diterima pembeli dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat."));
     return;
   }
   if(a === "self-deliver"){
@@ -4312,7 +4346,7 @@ const RIDE = {
     if(S.rides.some(x => RIDE_ACTIVE.includes(x.status))) throw srvErr("Masih ada perjalanan Jago yang berjalan");
     const now = Date.now();
     const v = Object.assign({}, data, {kind:"ride", code:"JG-" + new Date().toISOString().slice(2, 10).replace(/-/g, "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase(),
-      riderId:ME, dist:Math.round(dist), fareEst:ongkirByDist(dist), ratePer500:2000, feeRate:JAGO_FEE, status:"mencari_driver", searchAt:now, createdAt:now, updatedAt:now});
+      riderId:ME, dist:Math.round(dist), fareEst:ongkirByDist(dist), voucher:data.useSaldo && buyerAvail() > 0 ? Math.min(buyerAvail(), ongkirByDist(dist)) : undefined, ratePer500:2000, feeRate:JAGO_FEE, status:"mencari_driver", searchAt:now, createdAt:now, updatedAt:now});
     await store.set("rides/" + id, v);
     return Object.assign({id}, v);
   },
@@ -4533,7 +4567,7 @@ function rideCard(o){
   h += rideRoute(o, false);
   const fare = typeof o.fareFinal === "number" ? o.fareFinal : o.fareEst;
   h += '<div class="ongkirbox big">'+E("money")+'<div><small>'+(typeof o.fareFinal === "number" ? "Tarif dibayar" : "Perkiraan tarif")+' · jarak ±'+kmTxt(o.dist)+' · '+ONGKIR_LBL+'</small><b>'+(typeof o.fareFinal === "number" ? rp(fare) : "±"+rp(fare))+'</b>'+
-    (o.status === "selesai" ? '' : '<small>Bayar tunai langsung ke driver. Tarif <b>bisa dinego</b> dengan driver.</small>')+'</div></div>';
+    (o.status === "selesai" ? '' : '<small>Bayar tunai langsung ke driver. Tarif <b>bisa dinego</b> dengan driver.</small>')+'</div></div>'+voucherNote(o, "buyer");
   if(o.status === "mencari_driver"){
     const long = searchElapsed(o) >= 210;
     h += '<div class="actions">'+(long ? '<button class="btn press grow" data-act="ride-retry" data-id="'+esc(o.id)+'">'+I("repeat")+' Cari ulang</button>' : '')+'<button class="btn ghost press'+(long?'':' grow')+'" data-act="ride-cancel" data-id="'+esc(o.id)+'">Batalkan</button></div>';
@@ -4565,6 +4599,7 @@ function jagoForm(){
     '<div class="cols2"><div><label class="f">Nama *</label><input class="in" name="name" required value="'+esc(p.name||"")+'"></div>'+
     '<div><label class="f">No. WhatsApp *</label><input class="in" name="wa" inputmode="tel" required placeholder="08xxxxxxxxxx" value="'+esc(p.wa||"")+'"></div></div>'+
     '<label class="f">Catatan untuk driver</label><input class="in" name="note" placeholder="Contoh: depan masjid, pakai baju biru">'+
+    (dist != null ? useSaldoBox(ongkirByDist(dist), "tarif Jago") : '')+
     '<button class="btn block press" style="margin-top:14px"'+(dist == null ? ' disabled' : '')+'>'+E("scooter")+' Pesan Jago'+(dist != null ? ' · ±'+rp(ongkirByDist(dist)) : '')+'</button>'+
     (dist == null ? '<div class="hint" style="text-align:center">Atur titik jemput dan tujuan dulu.</div>' : '')+'</form>';
   return h;
@@ -4677,8 +4712,10 @@ document.addEventListener("submit", async e => {
     setProf(Object.assign(getProf(), {name:rider.name, wa:rider.wa}));
     const btn = f.querySelector("button"); if(btn) btn.disabled = true;
     const data = {riderId:ME, rider, pickup:{lat:J.pick.lat, lng:J.pick.lng, address:J.pick.address || ""}, dest:{lat:J.dest.lat, lng:J.dest.lng, address:J.dest.address || ""}, note:(fd.get("note")||"").trim()};
+    if(fd.get("useSaldo")) data.useSaldo = true;
     try{
       const r = await RIDE.create(uid("r"), data);
+      if(data.useSaldo) loadPts("buyer", true);
       if(r && r.id) S.jago.seen[r.id] = r.status;
       S.jago.dest = null; S.jago.res = null; S.jago.q = ""; S.jago.open = null;
       toast("Order Jago dibuat. Mencari driver terdekat…");
@@ -4699,7 +4736,7 @@ function rideJob(o, offer){
   h += rideRoute(o, !offer);
   if(!offer && o.rider && o.rider.wa && RIDE_ACTIVE.includes(o.status))
     h += '<div class="dj-links" style="margin-top:8px"><a target="_blank" rel="noopener" href="'+esc(waLink(o.rider.wa, "Halo "+o.rider.name+", saya driver Jago untuk perjalanan "+o.code+"."))+'">WA penumpang</a><a href="'+esc(telLink(o.rider.wa))+'">Telepon</a><a data-act="report" data-k="ride" data-id="'+esc(o.id)+'">Lapor masalah</a></div>';
-  h += '<div class="dj-money"><div><small>Jarak</small><b>'+kmTxt(o.dist)+'</b></div><div><small>Tarif</small><b>'+(typeof o.fareFinal === "number" ? rp(o.fareFinal) : '±'+rp(est))+'</b></div><div><small>Komisi 3%</small><b>'+rp(typeof o.fee === "number" ? o.fee : rideFee(typeof o.fareFinal === "number" ? o.fareFinal : est))+'</b></div></div>';
+  h += '<div class="dj-money"><div><small>Jarak</small><b>'+kmTxt(o.dist)+'</b></div><div><small>Tarif</small><b>'+(typeof o.fareFinal === "number" ? rp(o.fareFinal) : '±'+rp(est))+'</b></div><div><small>Komisi 3%</small><b>'+rp(typeof o.fee === "number" ? o.fee : rideFee(typeof o.fareFinal === "number" ? o.fareFinal : est))+'</b></div></div>' + voucherNote(o, "driver");
   if(offer){
     h += '<div class="actions"><button class="btn press grow" data-act="drv-accept" data-id="'+esc(o.id)+'">Ambil order Jago</button><button class="btn ghost press" data-act="drv-decline" data-id="'+esc(o.id)+'">Lewati</button></div>';
   } else if(o.status === "driver_jemput"){
@@ -4709,7 +4746,7 @@ function rideJob(o, offer){
     const v = S.drv.draft[o.id] != null ? S.drv.draft[o.id] : est;
     h += liveMap(o, "driver");
     h += '<div class="negobox"><label class="f">Tarif yang disepakati dengan penumpang</label><div class="rpin"><span>Rp</span><input class="in" inputmode="numeric" id="ongkir-'+esc(o.id)+'" data-ongkir="'+esc(o.id)+'" value="'+esc(v)+'"></div>'+
-      '<div class="hint">Patokan '+ONGKIR_LBL+' = '+rp(est)+' (±'+kmTxt(o.dist)+'). Boleh nego. Tagih tunai ke penumpang. Komisi 3% dipotong otomatis dari saldo driver.</div></div>'+
+      '<div class="hint">Patokan '+ONGKIR_LBL+' = '+rp(est)+' (±'+kmTxt(o.dist)+'). Boleh nego. Tagih tunai ke penumpang. Komisi 3% dipotong otomatis dari saldo driver.</div></div>'+voucherNote(o, "driver")+
       '<div class="actions"><button class="btn press grow" data-act="drv-done" data-id="'+esc(o.id)+'">'+I("checkc")+' Sampai tujuan</button></div>';
   } else if(o.status === "selesai"){
     h += '<div class="small" style="margin-top:6px">Tarif diterima: <b>'+rp(o.fareFinal || 0)+'</b> · komisi '+rp(o.fee || 0)+' · '+fmtDate(o.doneAt || o.updatedAt)+'</div>';
@@ -4727,7 +4764,7 @@ const DWAL = {
     const wid = this.wid(), c = wCfgLocal();
     await localDrvBonus(S.drv.me ? S.drv.me.id : DRIVER_ID_LOCAL);
     const txs = S.walletTx.filter(t => t.storeId === wid).sort((a, b) => (b.at||0) - (a.at||0)).map(t => Object.assign({}, t, {hasProof:!!t.proof, proof:undefined}));
-    return {balance:balLocal(wid), pending:S.walletTx.filter(t => t.storeId === wid && t.status === "pending").reduce((a,t)=>a+t.amount,0), cfg:{minBalance:c.minBalance, bank:c.bank, qris:c.qris}, txs};
+    return {balance:balLocal(wid), pending:S.walletTx.filter(t => t.storeId === wid && t.status === "pending").reduce((a,t)=>a+t.amount,0), cfg:{minBalance:c.minBalance, bank:c.bank, pay:c.pay || [], qris:c.qris}, txs};
   },
   async topup(amount, proof){
     if(SB) return sbStore.rpc("jt_driver_topup", {p_amount:amount, p_proof:proof});
@@ -4741,7 +4778,7 @@ async function localDrvBonus(did){
   if(!SB && b > 0 && dd && (!dd.verify || dd.verify === "verified") && !S.walletTx.some(t => t.storeId === wid && t.kind === "bonus")) await localTx("bonus_" + wid.replace(":", "_"), {storeId:wid, kind:"bonus", amount:b, note:"Saldo gratis driver baru"});
 }
 function drvCanRide(did, o){
-  const c = wCfgLocal(); const need = Math.max(c.minBalance || 0, rideFee(o.fareEst));
+  const c = wCfgLocal(); const need = Math.max(c.minBalance || 0, rideFee(isRide(o) ? o.fareEst : (ongkirEstOf(o) || 0)));
   return balLocal("drv:" + did) >= need;
 }
 async function loadDrvWallet(){
@@ -4751,28 +4788,28 @@ async function loadDrvWallet(){
 function drvWalletChip(){
   const w = S.drv.wallet; if(!w) return "";
   const low = w.balance < (w.minBalance || 0);
-  return '<div class="wchip dw'+(low?' low':'')+'" data-act="drv-wallet">'+E("money")+'<div class="grow"><small>Saldo driver (untuk order Jago)</small><b>'+rp(w.balance)+'</b>'+
-    (low ? '<span>Saldo di bawah '+rp(w.minBalance)+' — order Jago tidak masuk. Order antar barang tetap masuk.</span>' : '<span>Komisi 3% per perjalanan Jago dipotong otomatis</span>')+'</div><b class="go">'+(low?'Isi saldo':'Lihat')+' ›</b></div>';
+  return '<div class="wchip dw'+(low?' low':'')+'" data-act="drv-wallet">'+E("money")+'<div class="grow"><small>Saldo driver</small><b>'+rp(w.balance)+'</b>'+
+    (low ? '<span>Saldo di bawah '+rp(w.minBalance)+' — order tidak masuk. Isi saldo atau hubungi JAGA.</span>' : '<span>Potongan 3% per order selesai · kumpulkan poin harian</span>')+'</div><b class="go">'+(low?'Isi saldo':'Lihat')+' ›</b></div>';
 }
 function drvWallet(){
   const w = S.drv.wal;
   let h = '<div class="abar dbar"><button class="ibtn press" data-act="drv-wallet-close" aria-label="Kembali">'+I("back")+'</button><h1>Saldo driver</h1></div><div class="v-wrap">';
   if(!w || !w.loaded){ if(!w) loadDrvWallet(); return h + '<div class="empty">'+I("loader")+' Memuat saldo…</div></div>'; }
   if(w.err && w.balance == null) return h + '<div class="notice">'+esc(w.err)+'</div></div>';
-  const c = w.cfg || {}, bank = c.bank || {}, low = w.balance < (c.minBalance || 0);
-  h += '<div class="wbig'+(low?' low':'')+'"><small>Saldo driver</small><b>'+rp(w.balance)+'</b><span>Minimal saldo untuk menerima order Jago: '+rp(c.minBalance||0)+(w.pending ? ' · '+rp(w.pending)+' menunggu dicek' : '')+'</span></div>';
-  h += '<div class="card pad whow"><h3 class="sub">Cara kerja komisi Jago</h3><ol>'+
-    '<li>Tarif Jago dibayar tunai oleh penumpang langsung ke kamu.</li>'+
-    '<li>Setiap perjalanan Jago <b>selesai</b>, komisi 3% dari tarif dipotong otomatis dari saldo ini.</li>'+
-    '<li>Jika saldo di bawah '+rp(c.minBalance||0)+', order Jago tidak masuk sampai saldo diisi. Ongkir antar barang tetap 100% untukmu.</li>'+
-    '<li>Isi saldo ke rekening/QRIS JAGA lalu unggah bukti transfer. Saldo masuk setelah dicek.</li></ol></div>';
+  const c = w.cfg || {}, low = w.balance < (c.minBalance || 0);
+  if(low) h += lowBlock(S.drv.me && S.drv.me.id ? "drv:" + S.drv.me.id : "", c.minBalance || 0, "driver");
+  h += '<div class="wbig'+(low?' low':'')+'"><small>Saldo driver</small><b>'+rp(w.balance)+'</b><span>Minimal saldo untuk menerima order: '+rp(c.minBalance||0)+(w.pending ? ' · '+rp(w.pending)+' menunggu dicek' : '')+'</span></div>';
+  h += ptsCard("driver", "driver");
+  h += '<div class="card pad whow"><h3 class="sub">Cara kerja potongan 3%</h3><ol>'+
+    '<li>Driver baru dapat saldo gratis untuk mulai narik.</li>'+
+    '<li>Ongkir antar dan tarif Jago dibayar tunai oleh pembeli/penumpang langsung ke kamu.</li>'+
+    '<li>Setiap order <b>selesai</b> (antar barang maupun Jago), potongan 3% dipotong otomatis dari saldo ini.</li>'+
+    '<li>Jika saldo di bawah '+rp(c.minBalance||0)+', order tidak masuk sampai saldo diisi.</li>'+
+    '<li>Isi saldo lewat bank, virtual account, e-wallet, atau QRIS JAGA, lalu unggah bukti transfer. Saldo masuk setelah dicek.</li></ol></div>';
   h += '<form class="card pad" id="dtopupForm"><h3 class="sub">'+I("plus")+' Isi saldo</h3>'+
     '<div class="wchips">'+[20000,50000,100000].map(x => '<button type="button" class="chip" data-act="topup-amt" data-v="'+x+'">'+rp(x)+'</button>').join("")+'</div>'+
     '<label class="f">Jumlah (Rp)</label><input class="in" name="amount" inputmode="numeric" required placeholder="Minimal 10000">'+
-    '<div class="wpay"><small>Transfer ke rekening JAGA</small>'+
-      (bank.no ? '<b>'+esc(bank.name||"Bank")+' · '+esc(bank.no)+'</b><span>a.n. '+esc(bank.holder||"-")+'</span><button type="button" class="btn ghost sm" data-act="copy" data-v="'+esc(bank.no)+'">Salin nomor</button>' : '')+
-      (c.qris ? '<img class="qris" alt="QRIS JAGA" src="'+esc(c.qris)+'">' : '')+
-      (!bank.no && !c.qris ? '<span>Rekening JAGA belum diatur. Hubungi <a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo JAGA, saya driver mau isi saldo."))+'">WhatsApp JAGA</a> untuk info rekening.</span>' : '')+'</div>'+
+    payDest(c, "driver")+
     '<label class="f">Foto bukti transfer</label><input type="file" accept="image/*" class="in" id="dtopupProof" required>'+
     '<button class="btn block" style="margin-top:12px">Kirim pengisian saldo</button></form>';
   const txs = w.txs || [];
@@ -5520,7 +5557,7 @@ setInterval(() => {
 
 /* ============ Saldo toko (top-up, potong bagi hasil 3% otomatis) ============ */
 S.wallet = {}; S.walletTx = []; S.walletCfg = null; S.ownW = null;
-const WCFG_DEF = {minBalance:10000, bonus:20000, bank:{name:"", no:"", holder:""}, qris:""};
+const WCFG_DEF = {minBalance:10000, bonus:15000, bank:{name:"", no:"", holder:""}, pay:[], qris:"", ptTarget:10, ptEarn:5, ptRedeem:5, ptValue:2000};
 const wCfgLocal = () => Object.assign({}, WCFG_DEF, S.walletCfg || {});
 const balLocal = sid => S.walletTx.filter(t => t.storeId === sid && t.status === "ok").reduce((a, t) => a + (t.amount || 0), 0);
 const WAL = {
@@ -5528,7 +5565,7 @@ const WAL = {
     if(SB) return await sbStore.rpc("jt_wallet", {p_store:sid});
     const c = wCfgLocal();
     const txs = S.walletTx.filter(t => t.storeId === sid).sort((a, b) => (b.at||0) - (a.at||0)).map(t => Object.assign({}, t, {hasProof:!!t.proof, proof:undefined}));
-    return {balance:balLocal(sid), pending:S.walletTx.filter(t => t.storeId === sid && t.status === "pending").reduce((a,t)=>a+t.amount,0), cfg:{minBalance:c.minBalance, bank:c.bank, qris:c.qris}, txs};
+    return {balance:balLocal(sid), pending:S.walletTx.filter(t => t.storeId === sid && t.status === "pending").reduce((a,t)=>a+t.amount,0), cfg:{minBalance:c.minBalance, bank:c.bank, pay:c.pay || [], qris:c.qris}, txs};
   },
   async topup(sid, amount, proof){
     if(SB) return sbStore.rpc("jt_wallet_topup", {p_store:sid, p_amount:amount, p_proof:proof});
@@ -5559,9 +5596,9 @@ function walletChip(s){
   if(!w || !w.loaded){ if(!w) loadWallet(s.id); return ""; }
   const low = walletLow(s.id, 0);
   return '<div class="wchip'+(low?' low':'')+'" data-act="nav" data-v="seller" data-t="saldo">'+E("money")+'<div class="grow"><small>Saldo toko</small><b>'+rp(w.balance)+'</b>'+
-    (low ? '<span>Saldo di bawah minimum '+rp(w.cfg.minBalance)+' — isi saldo agar bisa menerima pesanan</span>' : '<span>Bagi hasil 3% dipotong otomatis saat pesanan selesai</span>')+'</div><b class="go">'+(low?'Isi saldo':'Lihat')+' ›</b></div>';
+    (low ? '<span>Saldo di bawah minimum '+rp(w.cfg.minBalance)+' — isi saldo atau hubungi JAGA agar bisa menerima pesanan</span>' : '<span>Bagi hasil 3% per pesanan selesai · kumpulkan poin harian</span>')+'</div><b class="go">'+(low?'Isi saldo':'Lihat')+' ›</b></div>';
 }
-const TX_L = {topup:["Isi saldo","money"], fee:["Bagi hasil 3%","receipt"], bonus:["Bonus","gift"], adjust:["Penyesuaian","bell"]};
+const TX_L = {topup:["Isi saldo","money"], fee:["Bagi hasil 3%","receipt"], bonus:["Bonus","gift"], adjust:["Penyesuaian","bell"], reward:["Tukar poin","gift"], voucher:["Potongan saldo JAGA","percent"]};
 function walletName(id){
   id = String(id || "");
   if(id.startsWith("drv:")){ const did = id.slice(4); const d = ((S.own.data && S.own.data.drivers) || S.drivers || []).find(x => x.id === did); return "Driver " + (d ? d.name : did.slice(0, 6)); }
@@ -5570,7 +5607,7 @@ function walletName(id){
 function txRow(t, withStore){
   const st = t.status === "pending" ? '<span class="tag warn">Menunggu dicek</span>' : t.status === "rejected" ? '<span class="tag red">Ditolak</span>' : '';
   const sname = withStore ? walletName(t.storeId) : "";
-  const lbl = t.kind === "fee" && String(t.orderId||"").startsWith("ride:") ? "Komisi Jago 3%" : (TX_L[t.kind]||[t.kind])[0];
+  const lbl = t.kind === "fee" && String(t.orderId||"").startsWith("ride:") ? "Komisi Jago 3%" : t.kind === "fee" && String(t.orderId||"").startsWith("dlv:") ? "Potongan 3% ongkir" : (TX_L[t.kind]||[t.kind])[0];
   return '<div class="txr">'+E((TX_L[t.kind]||["","money"])[1])+'<div class="grow"><b>'+esc(withStore ? sname : lbl)+'</b><small>'+esc(t.note||"")+'</small><small>'+fmtDate(t.at)+'</small></div>'+
     '<div class="r"><b class="'+(t.amount<0?'neg':'pos')+(t.status!=="ok"?' dim':'')+'">'+(t.amount<0?'−':'+')+rp(Math.abs(t.amount))+'</b>'+st+'</div></div>';
 }
@@ -5578,27 +5615,129 @@ function sellerWallet(s){
   const w = S.wallet[s.id];
   if(!w || !w.loaded){ loadWallet(s.id); return '<div class="empty">'+I("loader")+' Memuat saldo…</div>'; }
   if(w.err && w.balance == null) return '<div class="notice">'+esc(w.err)+'</div>';
-  const c = w.cfg || {}, bank = c.bank || {}, low = walletLow(s.id, 0);
-  let h = '<div class="wbig'+(low?' low':'')+'"><small>Saldo toko</small><b>'+rp(w.balance)+'</b>'+
+  const c = w.cfg || {}, low = walletLow(s.id, 0);
+  let h = (low ? lowBlock("store:" + s.id, c.minBalance || 0, "toko") : '') + '<div class="wbig'+(low?' low':'')+'"><small>Saldo toko</small><b>'+rp(w.balance)+'</b>'+
     '<span>Minimal saldo untuk menerima pesanan: '+rp(c.minBalance||0)+(w.pending ? ' · '+rp(w.pending)+' menunggu dicek' : '')+'</span></div>';
+  h += ptsCard(s.id, "toko");
   h += '<div class="card pad whow"><h3 class="sub">Cara kerja bagi hasil</h3><ol>'+
-    '<li>Isi saldo ke rekening/QRIS JAGA, lalu unggah bukti transfer.</li>'+
-    '<li>Saldo masuk setelah dicek tim JAGA.</li>'+
+    '<li>Toko baru dapat saldo gratis untuk mulai berjualan.</li>'+
     '<li>Setiap pesanan <b>selesai</b>, bagi hasil 3% dipotong otomatis dari saldo. Pesanan batal tidak dipotong.</li>'+
-    '<li>Jika saldo di bawah '+rp(c.minBalance||0)+', toko tidak bisa menerima pesanan baru sampai saldo diisi.</li></ol></div>';
+    '<li>Jika saldo di bawah '+rp(c.minBalance||0)+', toko tidak bisa menerima pesanan baru sampai saldo diisi.</li>'+
+    '<li>Isi saldo lewat bank, virtual account, e-wallet, atau QRIS JAGA, lalu unggah bukti transfer. Saldo masuk setelah dicek tim JAGA.</li></ol></div>';
   h += '<form class="card pad" id="topupForm" data-id="'+esc(s.id)+'"><h3 class="sub">'+I("plus")+' Isi saldo</h3>'+
     '<div class="wchips">'+[25000,50000,100000,200000].map(v => '<button type="button" class="chip" data-act="topup-amt" data-v="'+v+'">'+rp(v)+'</button>').join("")+'</div>'+
     '<label class="f">Jumlah (Rp)</label><input class="in" name="amount" inputmode="numeric" required placeholder="Minimal 10000">'+
-    '<div class="wpay"><small>Transfer ke rekening JAGA</small>'+
-      (bank.no ? '<b>'+esc(bank.name||"Bank")+' · '+esc(bank.no)+'</b><span>a.n. '+esc(bank.holder||"-")+'</span><button type="button" class="btn ghost sm" data-act="copy" data-v="'+esc(bank.no)+'">Salin nomor</button>' : '')+
-      (c.qris ? '<img class="qris" alt="QRIS JAGA" src="'+esc(c.qris)+'">' : '')+
-      (!bank.no && !c.qris ? '<span>Rekening JAGA belum diatur. Hubungi <a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo JAGA, saya mau isi saldo toko "+s.name+"."))+'">WhatsApp JAGA</a> untuk info rekening.</span>' : '')+'</div>'+
+    payDest(c, "toko "+s.name)+
     '<label class="f">Foto bukti transfer</label><input type="file" accept="image/*" class="in" id="topupProof" required>'+
     '<button class="btn block" style="margin-top:12px">Kirim pengisian saldo</button></form>';
   const txs = w.txs || [];
   h += '<div class="card pad"><h3 class="sub">Riwayat saldo</h3>'+(txs.length ? txs.map(t => txRow(t)).join("") : '<div class="muted small">Belum ada mutasi.</div>')+'</div>';
   return h;
 }
+/* ---------- tujuan isi saldo, saldo minimum, poin JAGA ---------- */
+const PAY_T = {bank:"Transfer bank", va:"Virtual account", ewallet:"E-wallet"};
+function payList(c){
+  const list = (c.pay || []).filter(x => x && x.no);
+  if(!list.length && c.bank && c.bank.no) list.push({type:"bank", name:c.bank.name || "Bank", no:c.bank.no, holder:c.bank.holder || ""});
+  return list;
+}
+function payDest(c, who){
+  const list = payList(c);
+  let h = '<div class="wpay2"><small class="wplbl">Transfer ke salah satu tujuan JAGA</small>';
+  ["bank","va","ewallet"].forEach(t => {
+    const xs = list.filter(x => x.type === t); if(!xs.length) return;
+    h += '<div class="wpg"><em>'+PAY_T[t]+'</em>'+xs.map(x => '<div class="wpd"><div class="grow"><b>'+esc(x.name)+'</b><span class="mono">'+esc(x.no)+'</span>'+(x.holder ? '<small>a.n. '+esc(x.holder)+'</small>' : '')+'</div><button type="button" class="btn ghost sm" data-act="copy" data-v="'+esc(x.no)+'">Salin</button></div>').join("")+'</div>';
+  });
+  if(c.qris) h += '<div class="wpg"><em>QRIS JAGA</em><img class="qris" alt="QRIS JAGA" src="'+esc(c.qris)+'"><small class="muted">Scan dengan m-banking atau e-wallet apa pun</small></div>';
+  if(!list.length && !c.qris) h += '<span>Tujuan transfer JAGA belum diatur. Hubungi <a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo JAGA, saya "+(who||"mitra")+" mau isi saldo."))+'">WhatsApp JAGA</a> untuk info rekening.</span>';
+  return h + '<div class="hint">Setelah transfer, <b>wajib unggah foto bukti transfer</b> di bawah. Saldo bertambah setelah dicek tim JAGA.</div></div>';
+}
+function lowBlock(th, min, who){
+  return '<div class="wblock">'+E("bell")+'<div class="grow"><b>Saldo di bawah '+rp(min)+' — perlu isi saldo</b><small>'+(who === "driver" ? "Order antar barang & Jago tidak masuk" : "Toko tidak bisa menerima pesanan baru")+' sampai saldo diisi. Isi saldo lewat bank, virtual account, e-wallet, atau QRIS JAGA, lalu kirim bukti transfer. Butuh bantuan? Hubungi tim JAGA.</small>'+
+    '<div class="actions"><button type="button" class="btn sm" data-act="wtopup-go">'+I("plus")+' Isi saldo</button>'+(th ? '<button type="button" class="btn ghost sm" data-act="sup-open" data-v="'+esc(th)+'">'+I("chat")+' Hubungi JAGA</button>' : '<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo JAGA, saldo saya perlu diisi."))+'">'+I("chat")+' Hubungi JAGA</a>')+'</div></div></div>';
+}
+S.pts = {};
+const ptWid = party => party === "buyer" ? "buy:" + ME : party === "driver" ? "drv:" + (S.drv.me ? S.drv.me.id : DRIVER_ID_LOCAL) : party;
+function localPts(party){
+  const c = wCfgLocal(), w = ptWid(party);
+  const done = S.orders.concat(S.ridesAll || []).filter(o => o.status === "selesai" && (
+    party === "buyer" ? (o.buyerId === ME || o.riderId === ME) : party === "driver" ? ("drv:" + o.driverId) === w : (!isRide(o) && o.storeId === party)));
+  const days = {}; done.forEach(o => { const d = dayKey(o.doneAt || o.updatedAt || 0); days[d] = (days[d] || 0) + 1; });
+  const hist = []; let earned = 0;
+  Object.keys(days).forEach(d => { const k = Math.floor(days[d] / c.ptTarget); if(k > 0){ earned += k * c.ptEarn; hist.push({pts:k * c.ptEarn, kind:"earn", note:"Capai " + (k * c.ptTarget) + " transaksi selesai dalam sehari", at:new Date(d.replace(/-(\d)(?!\d)/g, "-0$1")).getTime() || 0}); } });
+  const red = S.walletTx.filter(t => t.storeId === w && t.kind === "reward");
+  red.forEach(t => hist.push({pts:-(t.pts || 0), kind:"redeem", note:"Tukar jadi saldo " + rp(t.amount), at:t.at}));
+  const r = {target:c.ptTarget, earn:c.ptEarn, redeem:c.ptRedeem, value:c.ptValue, points:earned - red.reduce((a, t) => a + (t.pts || 0), 0), today:days[dayKey(Date.now())] || 0, hist:hist.sort((a, b) => (b.at || 0) - (a.at || 0))};
+  if(party === "buyer"){
+    const act = S.orders.concat(S.rides || []).filter(o => (o.buyerId === ME || o.riderId === ME) && !["selesai","dibatalkan"].includes(o.status)).reduce((a, o) => a + (o.voucher || 0), 0);
+    r.balance = balLocal(w); r.avail = Math.max(0, r.balance - act); r.txs = S.walletTx.filter(t => t.storeId === w).sort((a, b) => (b.at || 0) - (a.at || 0));
+  }
+  return r;
+}
+const PTS = {
+  async info(party){ return SB ? await sbStore.rpc("jt_points_info", {p_party:party}) : localPts(party); },
+  async redeem(party){
+    if(SB) return sbStore.rpc("jt_points_redeem", {p_party:party});
+    const p = localPts(party), u = Math.floor(p.points / p.redeem);
+    if(u < 1) throw srvErr("Poin belum cukup. Butuh " + p.redeem + " poin untuk ditukar");
+    await localTx("rw" + Date.now(), {storeId:ptWid(party), kind:"reward", amount:u * p.value, pts:u * p.redeem, note:"Tukar " + (u * p.redeem) + " poin"});
+    return {ok:true, pts:u * p.redeem, amount:u * p.value};
+  }
+};
+async function loadPts(party, quiet){
+  try{ S.pts[party] = Object.assign(await PTS.info(party) || {}, {loaded:true}); }catch(e){ S.pts[party] = {loaded:true, err:e.message}; }
+  if(!quiet && !typing()) scheduleRender();
+}
+function ptsCard(party, who){
+  const p = S.pts[party];
+  if(!p){ loadPts(party); return '<div class="card pad ptcard"><div class="muted small">'+I("loader")+' Memuat poin…</div></div>'; }
+  if(p.points == null) return '';
+  const tg = p.target || 10, step = p.today % tg, pct = Math.round(step / tg * 100), can = p.points >= p.redeem;
+  const unit = who === "buyer" ? "pesanan/perjalanan selesai" : who === "driver" ? "order selesai" : "pesanan selesai";
+  return '<div class="card pad ptcard"><div class="pthead">'+E("gift")+'<div class="grow"><small>Poin JAGA</small><b>'+p.points+' poin</b><span>'+p.redeem+' poin = '+rp(p.value)+(who === "buyer" ? ' saldo JAGA' : ' masuk saldo')+'</span></div>'+
+    (can ? '<button type="button" class="btn sm" data-act="pts-redeem" data-v="'+esc(party)+'">Tukar '+rp(Math.floor(p.points / p.redeem) * p.value)+'</button>' : '')+'</div>'+
+    '<div class="ptbar"><i style="width:'+pct+'%"></i></div>'+
+    '<div class="ptrow"><span>Hari ini <b>'+p.today+'</b> '+unit+'</span><span>'+(tg - step)+' lagi → +'+p.earn+' poin</span></div>'+
+    '<div class="hint">Setiap '+tg+' '+unit+' dalam sehari dapat '+p.earn+' poin. Tukar '+p.redeem+' poin jadi '+rp(p.value)+(who === "buyer" ? ' saldo JAGA untuk potong ongkir atau tarif Jago.' : ' di saldo.')+'</div>'+
+    ((p.hist || []).length ? '<details class="pthist"><summary>Riwayat poin</summary>'+p.hist.slice(0, 15).map(x => '<div class="txr"><div class="grow"><small>'+esc(x.note || "")+'</small><small>'+fmtDate(x.at)+'</small></div><div class="r"><b class="'+(x.pts < 0 ? 'neg' : 'pos')+'">'+(x.pts > 0 ? '+' : '')+x.pts+'</b></div></div>').join("")+'</details>' : '')+'</div>';
+}
+function buyerAvail(){ const p = S.pts.buyer; if(!p) { loadPts("buyer", true).then(() => scheduleRender()); return 0; } return Math.max(0, Math.round(p.avail || 0)); }
+function useSaldoBox(base, what){
+  const a = buyerAvail(); if(!(a > 0) || !(base > 0)) return "";
+  const v = Math.min(a, base);
+  return '<label class="check usaldo"><input type="checkbox" name="useSaldo" checked> Pakai saldo JAGA '+rp(v)+' untuk potong '+what+'<small>Saldo kamu '+rp(a)+'. Bayar ke driver lebih sedikit; JAGA yang mengganti ke driver.</small></label>';
+}
+function voucherNote(o, who){
+  if(!(o && o.voucher > 0)) return "";
+  if(who === "driver") return '<div class="vnote">'+I("percent")+' Pembeli pakai saldo JAGA <b>'+rp(o.voucher)+'</b>: terima tunai '+(isRide(o) ? "tarif" : "ongkir")+' dikurangi '+rp(o.voucher)+'. JAGA mengganti '+rp(o.voucher)+' ke saldomu saat order selesai.</div>';
+  return '<div class="vnote">'+I("percent")+' Potongan saldo JAGA <b>−'+rp(o.voucher)+'</b> dari '+(isRide(o) ? "tarif" : "ongkir")+'. Bayar ke driver dikurangi '+rp(o.voucher)+'.</div>';
+}
+function appPoin(){
+  const p = S.pts.buyer;
+  let h = appBar("Poin & saldo JAGA");
+  if(!p){ loadPts("buyer"); return h + '<div class="empty">'+I("loader")+' Memuat…</div>'; }
+  if(p.err && p.points == null) return h + '<div class="notice">'+esc(p.err)+'</div>';
+  h += '<div class="v-wrap"><div class="wbig"><small>Saldo JAGA kamu</small><b>'+rp(p.balance || 0)+'</b><span>Bisa dipakai memotong ongkir antar atau tarif Jago'+((p.balance || 0) > (p.avail || 0) ? ' · '+rp((p.balance || 0) - (p.avail || 0))+' sedang dipakai di pesanan berjalan' : '')+'</span></div>';
+  h += ptsCard("buyer", "buyer");
+  const txs = p.txs || [];
+  h += '<div class="card pad"><h3 class="sub">Riwayat saldo</h3>'+(txs.length ? txs.map(t => txRow(t)).join("") : '<div class="muted small">Belum ada mutasi. Kumpulkan poin dari pesanan & perjalanan yang selesai.</div>')+'</div></div>';
+  return h;
+}
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const a = el.dataset.act;
+  if(a === "wtopup-go"){ const f = document.getElementById("topupForm") || document.getElementById("dtopupForm"); if(f){ f.scrollIntoView({behavior:"smooth", block:"start"}); const i = f.querySelector("[name=amount]"); if(i) setTimeout(() => i.focus(), 350); } }
+  if(a === "pts-redeem"){
+    const party = el.dataset.v, p = S.pts[party] || {}, u = Math.floor((p.points || 0) / (p.redeem || 5));
+    confirmModal("Tukar " + (u * (p.redeem || 5)) + " poin jadi saldo " + rp(u * (p.value || 0)) + "?", "Tukar poin", async () => {
+      try{ const r = await PTS.redeem(party); toast("Berhasil! " + rp((r && r.amount) || 0) + " masuk ke saldo."); }catch(err){ toast(String(err.message || "Gagal").replace(/^.*?:\s*/, "")); }
+      await loadPts(party, true);
+      if(party === "driver") await loadDrvWallet(); else if(party !== "buyer") await loadWallet(party, true);
+      render();
+    });
+  }
+});
+setInterval(() => { if(!document.hidden && !typing()) Object.keys(S.pts).forEach(k => loadPts(k, true)); }, 60000);
 /* ---------- owner ---------- */
 const OWAL = {
   async get(){
@@ -5606,11 +5745,11 @@ const OWAL = {
     const ok = S.walletTx.filter(t => t.status === "ok");
     const sum = (arr) => arr.reduce((a, t) => a + (t.amount||0), 0);
     const m0 = rangeStart("bulan");
-    const by = (f) => { const o = {}; ok.filter(f).forEach(t => { o[t.storeId] = (o[t.storeId]||0) + t.amount; }); return o; };
+    const by = (f) => { const o = {}; ok.filter(f).filter(t => !String(t.storeId).startsWith("buy:")).forEach(t => { o[t.storeId] = (o[t.storeId]||0) + t.amount; }); return o; };
     const fees = {}; Object.entries(by(t => t.kind === "fee")).forEach(([k, v]) => fees[k] = -v);
     return {cfg:wCfgLocal(), pending:S.walletTx.filter(t => t.status === "pending").sort((a,b)=>a.at-b.at), balances:by(() => true), fees,
-      totals:{fee:-sum(ok.filter(t => t.kind === "fee")), feeMonth:-sum(ok.filter(t => t.kind === "fee" && t.at >= m0)), topup:sum(ok.filter(t => t.kind === "topup")), bonus:sum(ok.filter(t => t.kind === "bonus")), saldo:sum(ok)},
-      recent:S.walletTx.filter(t => t.status !== "pending").sort((a,b)=>b.at-a.at).slice(0,60)};
+      totals:{fee:-sum(ok.filter(t => t.kind === "fee")), feeMonth:-sum(ok.filter(t => t.kind === "fee" && t.at >= m0)), topup:sum(ok.filter(t => t.kind === "topup")), bonus:sum(ok.filter(t => t.kind === "bonus")), reward:sum(ok.filter(t => t.kind === "reward")), saldo:sum(ok.filter(t => !String(t.storeId).startsWith("buy:")))},
+      recent:S.walletTx.filter(t => t.status !== "pending" && !String(t.storeId).startsWith("buy:")).sort((a,b)=>b.at-a.at).slice(0,60)};
   },
   async decide(id, okk){ if(SB) return sbStore.rpc("jt_owner_topup_decide", {p_id:id, p_ok:okk}); await store.update("wallettx/" + id, {status: okk ? "ok" : "rejected", note: okk ? "Isi saldo (disetujui)" : "Isi saldo ditolak — hubungi JAGA"}); },
   async cfg(d){ if(SB) return sbStore.rpc("jt_owner_wallet_cfg", {p_data:d}); await store.set("settings/wallet", Object.assign(wCfgLocal(), d)); },
@@ -5620,17 +5759,29 @@ async function loadOwnerWallet(){
   try{ S.ownW = await OWAL.get(); S.ownW.err = ""; }catch(e){ S.ownW = {err:e.message}; }
   if(S.role === "owner" && !typing()) scheduleRender();
 }
+let PAYROW_N = 0;
+function payRow(x){
+  x = x || {}; const n = "_" + (PAYROW_N++);
+  return '<div class="payrow"><select class="in" name="ptype'+n+'">'+Object.keys(PAY_T).map(k => '<option value="'+k+'"'+(x.type === k ? ' selected' : '')+'>'+PAY_T[k]+'</option>').join("")+'</select>'+
+    '<input class="in" name="pname'+n+'" placeholder="BRI / BCA VA / DANA / OVO" value="'+esc(x.name||"")+'"><input class="in" name="pno'+n+'" inputmode="numeric" placeholder="Nomor" value="'+esc(x.no||"")+'">'+
+    '<input class="in" name="pholder'+n+'" placeholder="Atas nama" value="'+esc(x.holder||"")+'"><button type="button" class="ibtn" data-act="pay-row-del" aria-label="Hapus">×</button></div>';
+}
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  if(el.dataset.act === "pay-row-add"){ const box = document.getElementById("payRows"); if(box && box.children.length < 12) box.insertAdjacentHTML("beforeend", payRow({})); else toast("Maksimal 12 tujuan transfer."); }
+  if(el.dataset.act === "pay-row-del"){ const r = el.closest(".payrow"); if(r) r.remove(); }
+});
 function ownerWalletTab(D){
   const W = S.ownW;
   if(!W){ loadOwnerWallet(); return '<div class="empty">'+I("loader")+' Memuat…</div>'; }
   if(W.err && !W.totals) return '<div class="notice">'+esc(W.err)+'</div>';
-  const T = W.totals || {}, c = Object.assign({}, WCFG_DEF, W.cfg || {}), bank = c.bank || {};
+  const T = W.totals || {}, c = Object.assign({}, WCFG_DEF, W.cfg || {}), PT = W.points || {};
   const sname = id => String(id).startsWith("drv:") ? walletName(id) : (((D.stores||[]).find(s => s.id === id) || storeById(id) || {}).name || id);
   let h = '<div class="okpi">'+
     '<div class="k main"><small>Bagi hasil & komisi Jago bulan ini</small><b>'+rp(T.feeMonth||0)+'</b><span>Total sejak awal: '+rp(T.fee||0)+'</span></div>'+
     '<div class="k"><small>Top-up masuk (disetujui)</small><b>'+rp(T.topup||0)+'</b></div>'+
     '<div class="k"><small>Saldo seluruh toko & driver</small><b>'+rp(T.saldo||0)+'</b><span>uang titipan toko</span></div>'+
-    '<div class="k"><small>Bonus diberikan</small><b>'+rp(T.bonus||0)+'</b></div>'+
+    '<div class="k"><small>Bonus diberikan</small><b>'+rp(T.bonus||0)+'</b><span>Poin ditukar: '+rp(T.reward||0)+'</span></div>'+
     '<div class="k"><small>Menunggu dicek</small><b>'+(W.pending||[]).length+'</b></div></div>';
   h += '<div class="card pad"><h3 class="sub">Pengisian saldo menunggu dicek</h3>'+((W.pending||[]).length ? W.pending.map(t =>
     '<div class="wpend"><div class="grow"><b>'+esc(sname(t.storeId))+'</b><small>'+fmtDate(t.at)+'</small><b class="pos" style="font-size:18px">'+rp(t.amount)+'</b>'+
@@ -5640,19 +5791,23 @@ function ownerWalletTab(D){
   const stores = (D.stores||[]).slice().sort((a, b) => ((W.balances||{})[a.id]||0) - ((W.balances||{})[b.id]||0));
   h += '<div class="card pad"><h3 class="sub">Saldo per toko</h3>'+(stores.length ? stores.map(s => {
     const b = (W.balances||{})[s.id] || 0, f = (W.fees||{})[s.id] || 0, low = b < (c.minBalance||0);
-    return '<div class="orow"><div class="grow"><b>'+esc(s.name)+'</b><small>Bagi hasil terpotong: '+rp(f)+'</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">di bawah minimum</small>':'')+
+    return '<div class="orow"><div class="grow"><b>'+esc(s.name)+'</b><small>Bagi hasil terpotong: '+rp(f)+' · '+(PT[s.id]||0)+' poin</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">di bawah minimum</small>':'')+
       '<button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Sesuaikan</button>'+(low && s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa, "Halo "+s.name+", saldo toko Anda di JAGA tinggal "+rp(b)+". Isi saldo di menu Saldo agar tetap bisa menerima pesanan."))+'">Ingatkan via WA</a>':'')+'</div></div>';
   }).join("") : '<div class="muted small">Belum ada toko.</div>')+'</div>';
   const drvs = (D.drivers||[]).slice().sort((a, b) => ((W.balances||{})["drv:"+a.id]||0) - ((W.balances||{})["drv:"+b.id]||0));
-  h += '<div class="card pad"><h3 class="sub">Saldo per driver (komisi Jago 3%)</h3>'+(drvs.length ? drvs.map(d => {
+  h += '<div class="card pad"><h3 class="sub">Saldo per driver (potongan 3%)</h3>'+(drvs.length ? drvs.map(d => {
     const b = (W.balances||{})["drv:"+d.id] || 0, f = (W.fees||{})["drv:"+d.id] || 0, low = b < (c.minBalance||0);
-    return '<div class="orow"><div class="grow"><b>'+esc(d.name)+'</b><small>Komisi terpotong: '+rp(f)+'</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">order Jago tidak masuk</small>':'')+
+    return '<div class="orow"><div class="grow"><b>'+esc(d.name)+'</b><small>Potongan 3% terpotong: '+rp(f)+' · '+(PT["drv:"+d.id]||0)+' poin</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">order tidak masuk</small>'+(d.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(d.wa, "Halo "+d.name+", saldo driver Anda di JAGA tinggal "+rp(b)+". Isi saldo di menu Saldo driver agar order masuk lagi."))+'">Ingatkan via WA</a>' : ''):'')+
       '<button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">Sesuaikan</button></div></div>';
   }).join("") : '<div class="muted small">Belum ada driver.</div>')+'</div>';
   h += '<form class="card pad" id="walletCfg"><h3 class="sub">Pengaturan saldo</h3>'+
     '<div class="cols2"><div><label class="f">Minimal saldo (Rp)</label><input class="in" name="minBalance" inputmode="numeric" value="'+esc(c.minBalance)+'"></div><div><label class="f">Bonus toko/driver baru (Rp)</label><input class="in" name="bonus" inputmode="numeric" value="'+esc(c.bonus)+'"></div></div>'+
-    '<label class="f">Rekening JAGA — nama bank</label><input class="in" name="bname" placeholder="BRI / BCA / Mandiri / DANA" value="'+esc(bank.name||"")+'">'+
-    '<div class="cols2"><div><label class="f">Nomor rekening</label><input class="in" name="bno" inputmode="numeric" value="'+esc(bank.no||"")+'"></div><div><label class="f">Atas nama</label><input class="in" name="bholder" value="'+esc(bank.holder||"")+'"></div></div>'+
+    '<h3 class="sub" style="margin-top:16px">Poin harian</h3><div class="cols2"><div><label class="f">Target transaksi selesai / hari</label><input class="in" name="ptTarget" inputmode="numeric" value="'+esc(c.ptTarget)+'"></div><div><label class="f">Poin didapat</label><input class="in" name="ptEarn" inputmode="numeric" value="'+esc(c.ptEarn)+'"></div></div>'+
+    '<div class="cols2"><div><label class="f">Poin untuk ditukar</label><input class="in" name="ptRedeem" inputmode="numeric" value="'+esc(c.ptRedeem)+'"></div><div><label class="f">Nilai tukar (Rp)</label><input class="in" name="ptValue" inputmode="numeric" value="'+esc(c.ptValue)+'"></div></div>'+
+    '<div class="hint">Berlaku untuk toko, driver, dan pembeli. Pembeli memakai hasil tukar poin untuk memotong ongkir/tarif Jago; JAGA mengganti potongan itu ke saldo driver.</div>'+
+    '<h3 class="sub" style="margin-top:16px">Tujuan isi saldo (bank, virtual account, e-wallet)</h3><div id="payRows">'+payList(c).concat([{}]).map(payRow).join("")+'</div>'+
+    '<button type="button" class="btn ghost sm" data-act="pay-row-add">'+I("plus")+' Tambah tujuan</button>'+
+    '<div class="hint">Toko dan driver melihat semua tujuan ini di menu Saldo, transfer ke salah satunya, lalu wajib mengunggah bukti transfer.</div>'+
     '<label class="f">QRIS JAGA (opsional)</label>'+(c.qris ? '<img class="qris" alt="QRIS" src="'+esc(c.qris)+'"><label class="check"><input type="checkbox" name="qrisRemove"> Hapus QRIS</label>' : '')+'<input type="file" accept="image/*" class="in" id="wQris">'+
     '<button class="btn sm" style="margin-top:12px">Simpan pengaturan</button></form>';
   h += '<div class="card pad"><h3 class="sub">Mutasi terbaru</h3>'+((W.recent||[]).length ? W.recent.map(t => txRow(t, true)).join("") : '<div class="muted small">Belum ada mutasi.</div>')+'</div>';
@@ -5699,7 +5854,10 @@ document.addEventListener("submit", async e => {
   if(f.id === "walletCfg"){
     e.preventDefault();
     const fd = new FormData(f); const num = k => parseInt(String(fd.get(k)||"0").replace(/\D/g,""), 10) || 0;
-    const d = {minBalance:num("minBalance"), bonus:num("bonus"), bank:{name:(fd.get("bname")||"").trim(), no:(fd.get("bno")||"").trim(), holder:(fd.get("bholder")||"").trim()}};
+    const pay = [...f.querySelectorAll(".payrow")].map(r => ({type:r.querySelector("[name^=ptype]").value, name:r.querySelector("[name^=pname]").value.trim(), no:r.querySelector("[name^=pno]").value.trim(), holder:r.querySelector("[name^=pholder]").value.trim()})).filter(x => x.name || x.no);
+    if(pay.some(x => !x.name || !x.no)) return toast("Lengkapi nama dan nomor setiap tujuan transfer.");
+    const b0 = pay.find(x => x.type === "bank") || {};
+    const d = {minBalance:num("minBalance"), bonus:num("bonus"), ptTarget:Math.max(1, num("ptTarget")), ptEarn:num("ptEarn"), ptRedeem:Math.max(1, num("ptRedeem")), ptValue:num("ptValue"), pay, bank:{name:b0.name||"", no:b0.no||"", holder:b0.holder||""}};
     const q = document.getElementById("wQris").files[0];
     try{
       if(q) d.qris = await compressImage(q, 900); else if(fd.get("qrisRemove")) d.qris = "";
