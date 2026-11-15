@@ -977,7 +977,7 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
 .jh .jx-st b{font-family:var(--head);font-size:clamp(30px,3.4vw,44px);font-weight:800;color:var(--ink);letter-spacing:-.03em;line-height:1}
 .jh .jx-st span{display:block;font-size:13.5px;color:var(--muted);margin-top:8px}
 .jh .jx-doors{background:var(--bg2);transition:background .6s;overflow:hidden;margin-top:-60px;padding-top:170px}
-.jh .jx-stage{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2.4vw,32px);transition:opacity .5s,transform .6s var(--ease)}
+.jh .jx-stage{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(14px,2.4vw,32px);transition:opacity .5s,transform .6s var(--ease)}
 .jh .jx-stage.jx-hide{opacity:0;transform:scale(1.06);pointer-events:none}
 .jh .jx-door{display:flex;flex-direction:column;gap:16px;text-align:left}
 .jh .jx-frame{position:relative;aspect-ratio:1/1.85;border-radius:10px 10px 4px 4px;padding:9px 9px 0;background:linear-gradient(#2a2622,#1a1714);box-shadow:0 34px 50px -28px rgba(0,0,0,.65);perspective:1100px}
@@ -1353,6 +1353,34 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
 .jxwalk{position:fixed;z-index:500;overflow:hidden;pointer-events:none;border-radius:2px;background:radial-gradient(ellipse 90% 70% at 50% 60%,#1a1612,#070605 75%);will-change:left,top,width,height}
 @media(prefers-reduced-motion:reduce){.jh .jx-door .jx-leaf{transition:none}.jh .jx-stage.jx-walk{transform:none}}
 
+
+/* halaman Web & Aplikasi */
+.pbanner.dgban{background:radial-gradient(ellipse at 80% 20%,rgba(201,169,106,.22),transparent 55%),linear-gradient(160deg,#141a24,#1d2735 60%,#2a3546)}
+.dgprice{display:inline-flex;align-items:baseline;gap:10px;margin-top:26px;padding:14px 22px;border:1px solid rgba(201,169,106,.45);border-radius:16px;background:rgba(255,255,255,.05)}
+.dgprice small{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.dgprice b{font-size:30px;color:var(--gold2);font-weight:700}.dgprice b span{font-size:18px}.dgprice em{font-style:normal;font-size:13px;color:rgba(255,255,255,.7)}
+.dggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:26px 0 50px}
+.dgc{background:#fff;border:1px solid #e6eef1;border-radius:18px;padding:24px 22px;display:flex;flex-direction:column;transition:.3s}
+.dgc:hover{box-shadow:0 24px 44px -30px rgba(15,43,58,.45);transform:translateY(-3px)}
+.dgi{width:48px;height:48px;border-radius:14px;background:#f4ecdc;display:grid;place-items:center;margin-bottom:16px}
+.dgi svg{width:24px;height:24px;fill:none;stroke:#a8813c;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.dgc h3{font-size:18px;font-weight:600;color:#14202b;margin-bottom:12px}
+.dgc ul{list-style:none;padding:0;margin:0 0 18px;flex:1}.dgc li{font-size:14px;color:#5d6b74;padding:6px 0 6px 22px;position:relative;line-height:1.45}
+.dgc li:before{content:"✓";position:absolute;left:0;color:#25a466;font-weight:700}
+.dgb{align-self:flex-start;border:0;background:#14202b;color:#fff;border-radius:999px;padding:10px 18px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.25s}.dgb:hover{background:#a8813c}
+.dgwhy{margin-bottom:56px}
+.cform.chform{margin:0 auto}
+.dgprice b{white-space:nowrap}.dgprice{flex-wrap:wrap}
+.dgsteps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:24px 0 56px}
+.dgsteps div{border-top:2px solid #c9a96a;padding-top:16px}.dgsteps span{font-size:13px;font-weight:700;color:#a8813c;letter-spacing:.1em}
+.dgsteps h4{font-size:16px;color:#14202b;margin:6px 0 4px}.dgsteps p{font-size:13.5px;color:#5d6b74;line-height:1.55}
+.dgneed{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.dgneed>span{width:100%;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#5d7882}
+.dgchip input{position:absolute;opacity:0;pointer-events:none}.dgchip span{display:inline-block;padding:9px 16px;border:1.5px solid #dcebf0;border-radius:999px;font-size:14px;cursor:pointer;color:#0f2b3a;text-transform:none;letter-spacing:0}
+.dgchip input:checked+span{border-color:#2a7f97;background:#eef8fb;color:#1f6a80;font-weight:600}
+@media(max-width:1000px){.dggrid,.dgsteps{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.dggrid{grid-template-columns:1fr}.dgsteps{grid-template-columns:1fr 1fr;gap:14px}.dgprice b{font-size:26px}}
+@media(max-width:1100px) and (min-width:761px){.jh .jx-stage{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.jh .jx-door:last-child:nth-child(odd){grid-column:1/-1;width:calc(50% - 7px);justify-self:center}}
 /* ================= PENYEMPURNAAN TAMPILAN HP ================= */
 @media(max-width:600px){
   section.s{padding:72px 6vw}
@@ -1525,13 +1553,14 @@ body.pt-in #site>:not(.nav):not(.mnav),body.pt-in #portal{animation:ptIn .75s va
   <div class="jx-wrap">
     <div class="jx-sh jx-rv">
       <div><span class="jx-eyebrow" data-en="Our services">Layanan kami</span><h2 data-en='The magic happens<br><span class="jx-acc">behind the door.</span>'>Keajaiban terjadi<br><span class="jx-acc">di balik pintu.</span></h2></div>
-      <p data-en="Four services, one standard. Open a door to see the service and its prices.">Empat layanan, satu standar. Pilih pintu untuk melihat detail layanan dan harganya.</p>
+      <p data-en="Five services, one standard. Open a door to see the service and its prices.">Lima layanan, satu standar. Pilih pintu untuk melihat detail layanan dan harganya.</p>
     </div>
     <div class="jx-stage jx-rv" id="jx-stage">
       <button class="jx-door" data-go="#cleaning" style="--w:#b98b58"><span class="jx-wall"></span><span class="jx-frame"><span class="jx-room"><i class="jx-rlight"></i></span><span class="jx-leaf"><span class="jx-face"><span class="jx-plate">CLEANING<br>SERVICE</span><span class="jx-pn jx-a"></span><span class="jx-pn jx-b"></span><span class="jx-pn jx-c"></span><span class="jx-pn jx-d"></span><span class="jx-lever"><i></i></span></span><span class="jx-shade"></span></span><span class="jx-spill"></span></span><span class="jx-cap" data-en='<small>01</small><b>Cleaning Service</b>Basic, Regular, Deep &amp; Special. From Rp 55k/hour.<br><u>Open the door →</u>'><small>01</small><b>Cleaning Service</b>Basic, Regular, Deep &amp; Special. Mulai Rp 55rb/jam.<br><u>Buka pintu →</u></span></button>
       <button class="jx-door" data-go="#manajemen" style="--w:#6f4b33"><span class="jx-wall"></span><span class="jx-frame"><span class="jx-room"><i class="jx-rlight"></i></span><span class="jx-leaf"><span class="jx-face"><span class="jx-plate">MANAJEMEN<br>OPERASIONAL</span><span class="jx-pn jx-a"></span><span class="jx-pn jx-b"></span><span class="jx-pn jx-c"></span><span class="jx-pn jx-d"></span><span class="jx-lever"><i></i></span></span><span class="jx-shade"></span></span><span class="jx-spill"></span></span><span class="jx-cap" data-en='<small>02</small><b>Operations Management</b>Staff, SOPs, maintenance &amp; owner reports.<br><u>Open the door →</u>'><small>02</small><b>Manajemen Operasional</b>Staf, SOP, maintenance &amp; laporan pemilik.<br><u>Buka pintu →</u></span></button>
       <button class="jx-door" data-go="#chemical" style="--w:#9a6639"><span class="jx-wall"></span><span class="jx-frame"><span class="jx-room"><i class="jx-rlight"></i></span><span class="jx-leaf"><span class="jx-face"><span class="jx-plate">CLEANING<br>CHEMICALS</span><span class="jx-pn jx-a"></span><span class="jx-pn jx-b"></span><span class="jx-pn jx-c"></span><span class="jx-pn jx-d"></span><span class="jx-lever"><i></i></span></span><span class="jx-shade"></span></span><span class="jx-spill"></span></span><span class="jx-cap" data-en='<small>03</small><b>Chemical Supplier</b>Professional-grade chemicals for business.<br><u>Open the door →</u>'><small>03</small><b>Chemical Supplier</b>Chemical kelas profesional untuk bisnis.<br><u>Buka pintu →</u></span></button>
       <button class="jx-door" data-go="#properti" style="--w:#7d412d"><span class="jx-wall"></span><span class="jx-frame"><span class="jx-room"><i class="jx-rlight"></i></span><span class="jx-leaf"><span class="jx-face"><span class="jx-plate">PROPERTI<br>DI-JAGA</span><span class="jx-pn jx-a"></span><span class="jx-pn jx-b"></span><span class="jx-pn jx-c"></span><span class="jx-pn jx-d"></span><span class="jx-lever"><i></i></span></span><span class="jx-shade"></span></span><span class="jx-spill"></span></span><span class="jx-cap" data-en='<small>04</small><b>Exclusive Properties</b>Villas &amp; apartments, daily or monthly stays.<br><u>Open the door →</u>'><small>04</small><b>Properti Eksklusif</b>Villa &amp; apartemen, sewa harian/bulanan.<br><u>Buka pintu →</u></span></button>
+      <button class="jx-door" data-go="#digital" style="--w:#8a7560"><span class="jx-wall"></span><span class="jx-frame"><span class="jx-room"><i class="jx-rlight"></i></span><span class="jx-leaf"><span class="jx-face"><span class="jx-plate">WEB &amp;<br>APLIKASI</span><span class="jx-pn jx-a"></span><span class="jx-pn jx-b"></span><span class="jx-pn jx-c"></span><span class="jx-pn jx-d"></span><span class="jx-lever"><i></i></span></span><span class="jx-shade"></span></span><span class="jx-spill"></span></span><span class="jx-cap" data-en='<small>05</small><b>Web &amp; Apps</b>Management systems for villas, hotels, cafés &amp; shops. From Rp 300k.<br><u>Open the door →</u>'><small>05</small><b>Web &amp; Aplikasi</b>Sistem manajemen villa, hotel, kafe &amp; toko. Mulai Rp 300rb-an.<br><u>Buka pintu →</u></span></button>
     </div>
   </div>
 </section>
@@ -2200,7 +2229,7 @@ $('#langBtn').onclick=()=>{setLang(LANG==='ID'?'EN':'ID');toast(L('Bahasa Indone
 /* nav: solid on scroll, active link, reveal, counters */
 const nav=$('#nav');
 addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>60||$('#site').classList.contains('pmode'));
-  let cur='beranda';if($('#site').classList.contains('pmode'))cur=location.hash==='#karier'?'karier':/^(cleaning|manajemen|chemical)$/.test(location.hash.slice(1))?'layanan':'properti';else ['beranda','cerita','layanan','mitra','blog','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id});
+  let cur='beranda';if($('#site').classList.contains('pmode'))cur=location.hash==='#karier'?'karier':/^(cleaning|manajemen|chemical|digital)$/.test(location.hash.slice(1))?'layanan':'properti';else ['beranda','cerita','layanan','mitra','blog','kontak'].forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<160)cur=id});
   $$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
 },{passive:true});
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');
@@ -2832,7 +2861,7 @@ function bkSubmit(id){
     <p>${L('WhatsApp terbuka dengan detail pesanan Anda. Tekan <b>Kirim</b> di WhatsApp untuk menyelesaikan.','WhatsApp has opened with your booking details. Press <b>Send</b> in WhatsApp to complete it.')}<br><br>${L('No. pesanan','Order no.')}: <b>${oid}</b><br>${esc(p.name)} · ${c.label}<br>${rp(c.total)}</p>
     <p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('Buka WhatsApp lagi','Open WhatsApp again')}</a> · <a style="cursor:pointer;color:var(--muted)" onclick="renderBooking(PROPS.find(x=>x.id==='${p.id}'))">${L('Ubah pesanan','Edit request')}</a></p></div>`;
 }
-function renderPropRoute(){const h=location.hash.slice(1);if(h==='chemical')return chemPage();if(h==='karier')return careerPage();if(h==='cleaning'||h==='manajemen')svcPage(h);else if(h.startsWith('p-'))renderPropDetail(h.slice(2));else renderPropList()}
+function renderPropRoute(){const h=location.hash.slice(1);if(h==='chemical')return chemPage();if(h==='karier')return careerPage();if(h==='digital')return digitalPage();if(h==='cleaning'||h==='manajemen')svcPage(h);else if(h.startsWith('p-'))renderPropDetail(h.slice(2));else renderPropList()}
 
 
 /* ================= HALAMAN LAYANAN: #cleaning & #manajemen ================= */
@@ -3186,6 +3215,61 @@ async function delProd(i){
     renderPortal()});
 }
 
+/* ================= HALAMAN WEB & APLIKASI (#digital) ================= */
+const DGSOL=[
+ ['villa','Villa & Hotel','Villas & Hotels','<path d="M3 11l9-7 9 7M5 9.5V20h14V9.5M9 20v-6h6v6"/>',['Website + booking langsung','Kalender ketersediaan kamar','Jadwal housekeeping & checklist','Laporan pendapatan untuk pemilik'],['Website with direct booking','Room availability calendar','Housekeeping schedule & checklist','Revenue reports for owners']],
+ ['resto','Restoran & Coffee Shop','Restaurants & Coffee Shops','<path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M7 3v2M11 3v2M15 3v2"/>',['Menu digital & pesan lewat QR','Kasir (POS) & struk','Stok bahan baku','Laporan penjualan harian'],['Digital menu & QR ordering','Point of sale & receipts','Ingredient stock','Daily sales reports']],
+ ['toko','Toko & Warung Harian','Shops & Daily Stalls','<path d="M3 9l1.5-5h15L21 9M4 9v11h16V9M3 9h18M9 20v-6h6v6"/>',['Kasir sederhana di HP','Stok & barang hampir habis','Catatan utang-piutang','Laporan untung harian'],['Simple phone cashier','Stock & low-stock alerts','Credit & debt ledger','Daily profit report']],
+ ['web','Website Usaha','Business Websites','<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 8h18M8 21h8"/>',['Profil usaha & galeri','Tombol WhatsApp & Google Maps','Bisa ditemukan di Google','Domain .com / .my.id'],['Business profile & gallery','WhatsApp & Google Maps buttons','Findable on Google','.com / .my.id domain']]];
+const DG={jenis:'Villa & Hotel',wilayah:'Bali',butuh:['Website']};
+function digitalPage(){
+  const o=(arr,v)=>arr.map(a=>`<option ${a===v?'selected':''}>${esc(a)}</option>`).join('');
+  $('#propPage').innerHTML=`
+  <div class="pbanner dgban"><div class="wrap"><div class="kicker">${L('Web & Aplikasi Manajemen','Management Web & Apps')}</div>
+    <h1>${L('Website & aplikasi untuk mengelola usaha Anda.','Websites & apps to run your business.')}</h1>
+    <p>${L('Dibuat khusus (custom) untuk villa, hotel, restoran, coffee shop, toko, hingga warung harian. Biaya mulai Rp 300rb-an, menyesuaikan kebutuhan.','Custom-built for villas, hotels, restaurants, coffee shops, shops and daily stalls. From around Rp 300k, depending on your needs.')}</p>
+    <div class="dgprice"><small>${L('Mulai','From')}</small><b>Rp 300rb<span>-an</span></b><em>${L('sesuai kebutuhan','custom quote')}</em></div></div></div>
+  <div class="svwrap">
+    <div class="kicker">${L('Solusi','Solutions')}</div><h2 class="svh">${L('Pilih sesuai jenis usaha','Pick by business type')}</h2>
+    <p class="svsub">${L('Semua fitur bisa ditambah atau dikurangi. Anda hanya membayar yang dibutuhkan.','Every feature can be added or removed — you only pay for what you need.')}</p>
+    <div class="dggrid">${DGSOL.map(x=>`<div class="dgc"><span class="dgi"><svg viewBox="0 0 24 24">${x[3]}</svg></span><h3>${L(x[1],x[2])}</h3><ul>${(LANG==='EN'?x[5]:x[4]).map(f=>`<li>${f}</li>`).join('')}</ul><button class="dgb" onclick="DG.jenis='${x[1]}';digitalPage();$('#dgform').scrollIntoView({behavior:'smooth',block:'start'})">${L('Konsultasi','Consult')} →</button></div>`).join('')}</div>
+    <div class="chwhy dgwhy">${[[L('Bisa di HP & komputer','Phone & desktop'),L('Tampilan menyesuaikan layar.','Adapts to any screen.')],[L('Data tersimpan aman','Data kept safe'),L('Dicadangkan & bisa diunduh ke Excel.','Backed up & exportable to Excel.')],[L('Dilatih sampai bisa','Hands-on training'),L('Kami ajari tim Anda memakainya.','We train your team to use it.')],[L('Pendampingan','Ongoing support'),L('Bantuan perbaikan & pengembangan.','Fixes and improvements when needed.')]].map(x=>`<div><h4>${x[0]}</h4><p>${x[1]}</p></div>`).join('')}</div>
+    <div class="kicker">${L('Alur kerja','How it works')}</div><h2 class="svh">${L('Dari ide sampai dipakai','From idea to launch')}</h2>
+    <div class="dgsteps">${[[L('Konsultasi gratis','Free consultation'),L('Ceritakan usaha & kebutuhan Anda.','Tell us about your business.')],[L('Penawaran & desain','Quote & design'),L('Rincian fitur, biaya, dan contoh tampilan.','Features, cost and a design preview.')],[L('Pembuatan','Build'),L('Dikerjakan bertahap, Anda bisa mencoba.','Built in stages you can try.')],[L('Serah terima','Handover'),L('Pelatihan, lalu aplikasi siap dipakai.','Training, then you go live.')]].map((x,i)=>`<div><span>0${i+1}</span><h4>${x[0]}</h4><p>${x[1]}</p></div>`).join('')}</div>
+    <form class="cform chform" id="dgform" onsubmit="event.preventDefault();dgSubmit()">
+      <div class="cstep"><b>✓</b>${L('Minta penawaran gratis','Request a free quote')}</div>
+      <div class="cgrid">
+        <label>${L('Nama','Name')}<input id="dgNama" required autocomplete="name" value="${esc(DG.nama||'')}" oninput="DG.nama=this.value"></label>
+        <label>WhatsApp<input id="dgTel" type="tel" inputmode="tel" placeholder="08…" required autocomplete="tel" value="${esc(DG.telp||'')}" oninput="DG.telp=this.value"></label>
+        <label>${L('Jenis usaha','Business type')}<select onchange="DG.jenis=this.value">${o([...DGSOL.map(x=>x[1]),'Lainnya'],DG.jenis)}</select></label>
+        <label>${L('Lokasi terdekat','Nearest region')}<select onchange="DG.wilayah=this.value">${o(Object.keys(REG),DG.wilayah)}</select></label>
+        <div class="full dgneed"><span>${L('Yang dibutuhkan','What you need')}</span>${['Website','Aplikasi','Website + Aplikasi'].map(n=>`<label class="dgchip"><input type="radio" name="dgb" ${DG.butuh[0]===n?'checked':''} onchange="DG.butuh=['${n}']"><span>${n==='Aplikasi'?L('Aplikasi','App'):n==='Website + Aplikasi'?L('Website + Aplikasi','Website + App'):'Website'}</span></label>`).join('')}</div>
+        <label class="full">${L('Ceritakan kebutuhan Anda','Describe your needs')}<input id="dgCat" value="${esc(DG.cat||'')}" oninput="DG.cat=this.value" placeholder="${L('mis. kasir + stok untuk 2 cabang kafe','e.g. POS + stock for 2 café branches')}"></label>
+      </div>
+      <input id="dgHp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <button class="cgo" id="dggo"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>${L('Kirim via WhatsApp','Send via WhatsApp')}</button>
+      <div class="err" id="dgerr"></div>
+      <p class="cnote">${L('Biaya mulai Rp 300rb-an untuk kebutuhan sederhana; harga final mengikuti fitur yang dipilih.','From around Rp 300k for simple needs; the final price depends on the features you choose.')}</p>
+    </form>
+  </div>`;
+}
+async function dgSubmit(){
+  const e=$('#dgerr'),name=(DG.nama||'').trim(),tel=(DG.telp||'').trim();
+  if(!name){e.textContent=L('Isi nama Anda.','Enter your name.');return}
+  if(tel.replace(/\D/g,'').length<9){e.textContent=L('Isi nomor WhatsApp yang valid.','Enter a valid WhatsApp number.');return}
+  e.textContent='';const btn=$('#dggo');btn.disabled=true;
+  const wa=(SETTINGS.whatsapp||'').replace(/\D/g,'');let w=null;if(wa){try{w=window.open('about:blank','_blank')}catch(_){}}
+  const lines=['Permintaan Web & Aplikasi',`Jenis usaha: ${DG.jenis}`,`Kebutuhan: ${DG.butuh[0]}`,DG.cat?`Detail: ${DG.cat}`:null,`Lokasi: ${DG.wilayah}`,`Nama: ${name}`,`WhatsApp: ${tel}`].filter(x=>x!==null);
+  let id='';if(SET_READY)await SET_READY;
+  if(ONLINE()){try{const r=await api('POST','/public/request',{nama:name,telp:tel,wilayah:DG.wilayah,properti:DG.jenis,layanan:'Web & Aplikasi',tanggal:iso(new Date()),catatan:lines.join('\n'),website:$('#dgHp').value||''},false);id=r.id||''}
+    catch(err){btn.disabled=false;if(w)try{w.close()}catch(_){}e.textContent=L('Gagal mengirim: ','Could not send: ')+err.message;return}}
+  const url=wa?`https://wa.me/${wa}?text=${encodeURIComponent((id?'No. '+id+'\n':'')+lines.join('\n'))}`:'';
+  if(url){if(w&&!w.closed){try{w.location.href=url}catch(_){location.href=url}}else location.href=url}
+  else if(!ONLINE()){btn.disabled=false;e.textContent=L('Permintaan online belum aktif. Hubungi kami lewat WhatsApp di bagian bawah halaman.','Online requests are not active yet. Contact us on WhatsApp at the bottom of the page.');return}
+  DG.cat='';
+  $('#dgform').innerHTML=`<div class="okbox" style="padding:30px 10px"><div class="ic">✓</div><h3>${L('Permintaan terkirim','Request sent')}</h3><p>${id?L('No. permintaan','Request no.')+`: <b>${id}</b><br><br>`:''}${url?L('WhatsApp sudah terbuka — tekan <b>Kirim</b> agar tim JAGA menghubungi Anda.','WhatsApp has opened — press <b>Send</b> so JAGA can contact you.'):L('Tim JAGA akan menghubungi Anda melalui WhatsApp.','The JAGA team will contact you on WhatsApp.')}</p>${url?`<p style="margin-top:14px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">${L('WhatsApp belum terbuka? Klik di sini','WhatsApp didn’t open? Click here')} →</a></p>`:''}</div>`;
+}
+
 /* ================= ADMIN: kelola properti ================= */
 const savePropsFiles=()=>[{path:'properties.json',b64:txtB64(JSON.stringify({properties:PROPS},null,2)+'\n')}];
 function apropsPage(){
@@ -3364,7 +3448,7 @@ function route(){
   const h=location.hash.slice(1);
   if(h==='portal'){$('#site').classList.remove('on');$('#portal').classList.add('on');scrollTo(0,0);if(USER)enterPortal();else{$('#portal').classList.add('locked');renderLogin()}return}
   $('#portal').classList.remove('on');$('#site').classList.add('on');updateSiteCounts();
-  if(h==='properti'||h.startsWith('p-')||h==='cleaning'||h==='manajemen'||h==='chemical'||h==='karier'){$('#site').classList.add('pmode');renderPropRoute();scrollTo(0,0);nav.classList.add('solid');const k=h==='karier'?'#karier':(h==='cleaning'||h==='manajemen'||h==='chemical')?'#layanan':'#properti';$$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')===k));return}
+  if(h==='properti'||h.startsWith('p-')||h==='cleaning'||h==='manajemen'||h==='chemical'||h==='karier'||h==='digital'){$('#site').classList.add('pmode');renderPropRoute();scrollTo(0,0);nav.classList.add('solid');const k=h==='karier'?'#karier':(h==='cleaning'||h==='manajemen'||h==='chemical'||h==='digital')?'#layanan':'#properti';$$('#links a').forEach(a=>a.classList.toggle('act',a.getAttribute('href')===k));return}
   if($('#site').classList.contains('pmode')){$('#site').classList.remove('pmode');$('#propPage').innerHTML=''}
   const el=document.getElementById(SITE_IDS.includes(h)?h:'beranda');
   requestAnimationFrame(()=>el.scrollIntoView({behavior:h?'smooth':'auto'}));
@@ -3461,7 +3545,7 @@ const JM=(()=>{
       const dx=(e.clientX-r.left)/r.width-.5,dy=(e.clientY-r.top)/r.height-.5;c.style.transform=`perspective(1100px) rotateX(${(-dy*4).toFixed(2)}deg) rotateY(${(dx*5).toFixed(2)}deg) translateY(-4px)`},{passive:true});
     document.addEventListener('pointerout',e=>{const c=e.target.closest?.(TILT);if(c&&!c.contains(e.relatedTarget))c.style.transform=''})}
   /* ---------- transisi halaman (membungkus router yang sudah ada) ---------- */
-  const pageKey=h=>h==='portal'?'portal':/^(properti|cleaning|manajemen|chemical|karier)$/.test(h)||h.startsWith('p-')?h:'home';
+  const pageKey=h=>h==='portal'?'portal':/^(properti|cleaning|manajemen|chemical|karier|digital)$/.test(h)||h.startsWith('p-')?h:'home';
   let curKey=pageKey(location.hash.slice(1)),busy=0;const bar=document.createElement('div');bar.className='ptbar';
   function onHash(){const h=location.hash.slice(1),k=pageKey(h);
     if(RM||k===curKey){curKey=k;route();return}
