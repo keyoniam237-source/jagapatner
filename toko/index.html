@@ -1063,6 +1063,20 @@ body.is-owner .dtop{z-index:20}
 .wbig span{display:block;opacity:.9;font-size:12.5px}
 .whow ol{margin:0;padding-left:20px;color:#3b4a66;font-size:13.5px;line-height:1.55}
 .wchips{display:flex;gap:6px;flex-wrap:wrap}
+#notifs{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(440px,calc(100vw - 20px));z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.nfy{pointer-events:auto;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;background:#0f1d40;color:#fff;border-radius:18px;padding:13px 12px 15px 14px;box-shadow:0 18px 40px -10px rgba(5,12,35,.55),0 0 0 1px rgba(255,255,255,.08) inset;cursor:pointer;animation:nfyIn .32s cubic-bezier(.2,.9,.3,1.2)}
+.nfy .e3d,.nfy img{width:34px;height:34px;flex:none}
+.nfy .grow{min-width:0}.nfy b{display:block;font-size:15px;line-height:1.25}.nfy small{display:block;font-size:13px;color:#c9d6f5;margin-top:2px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nfy.k-order{background:linear-gradient(120deg,#1f4fd1,#2f6bff)}.nfy.k-chat{background:linear-gradient(120deg,#0f1d40,#23407f)}.nfy.k-done{background:linear-gradient(120deg,#0d7a4f,#18a86b)}.nfy.k-ride{background:linear-gradient(120deg,#1f4fd1,#5a3df0)}
+.nfx{flex:none;width:30px;height:30px;border-radius:99px;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:18px;line-height:1;cursor:pointer}
+.nbar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:#ffc93c;transform-origin:left;animation:nbar linear forwards}
+.nfy.out{animation:nfyOut .26s ease forwards}
+@keyframes nfyIn{from{opacity:0;transform:translateY(-24px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes nfyOut{to{opacity:0;transform:translateY(-16px) scale(.97)}}
+@keyframes nbar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.sndcard{background:#fff;border:1px solid var(--line);border-radius:18px;margin-bottom:14px;overflow:hidden}.sndcard>button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:none;border:0;font:inherit;text-align:left;cursor:pointer}.sndcard small{display:block;color:#6a7894;font-size:12px}
+.tgl{flex:none;width:44px;height:26px;border-radius:99px;background:#cfd7e6;position:relative;transition:.2s}.tgl i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:99px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:.2s}
+.tgl.on{background:#2f6bff}.tgl.on i{left:21px}
 .askbox .sub{display:flex;align-items:center;gap:8px}.askn{font-style:normal;background:#e5484d;color:#fff;font-size:11px;border-radius:99px;padding:2px 8px}
 .askrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:10px 2px;cursor:pointer;font:inherit;color:inherit}
 .askrow:first-of-type{border-top:0}.askrow .grow{min-width:0}.askrow b{display:block;font-size:14px}.askrow small{display:block;color:#6a7894;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1520,7 +1534,7 @@ body.is-driver .pinst{margin:0 16px 12px!important}
 <nav class="bottomnav" id="bnav"></nav>
 <div id="cartbar"></div>
 <div id="modal"></div>
-<div id="toast"></div>
+<div id="toast"></div><div id="notifs" aria-live="assertive"></div>
 
 <script>
 /* ============ Konfigurasi ============ */
@@ -2235,6 +2249,7 @@ function viewSeller(){
   if(["ringkasan","pesanan"].includes(S.sellerTab || "ringkasan")) h += askInbox(s);
   if((S.sup.unread||{})["store:"+s.id]) h += '<button class="supnote" data-act="sup-open" data-v="store:'+esc(s.id)+'">'+I("chat")+'<div class="grow"><b>Ada pesan baru dari tim JAGA</b><small>Ketuk untuk membaca dan membalas</small></div><em>'+S.sup.unread["store:"+s.id]+'</em></button>';
   if(S.sellerTab === "ringkasan") h += portalInstallCard("seller");
+  if(S.sellerTab === "pengaturan") h += '<div class="plist sndcard">'+soundRow()+'</div>';
   h += pushCard("store", "Bunyikan notifikasi saat ada pesanan baru, walau aplikasi ditutup.");
   if(S.sellerTab === "ringkasan") h += sellerDashboard(s, orders);
   else if(S.sellerTab === "pesanan") h += sellerOrders(s, orders);
@@ -3051,6 +3066,7 @@ function appProfile(){
       '<button data-act="nav" data-v="orders">'+E("receipt")+'<div class="grow">Pesanan saya<small>'+n+' pesanan</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="nav" data-v="pesan">'+E("bell")+'<div class="grow">Pesan ke toko<small>'+((S.ask.mine||[]).filter(t => askUnread(t, "pembeli")).length ? '<b style="color:#e5484d">'+(S.ask.mine||[]).filter(t => askUnread(t, "pembeli")).length+' pesan baru</b>' : 'Tanya stok & harga langsung ke penjual')+'</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="nav" data-v="poin">'+E("gift")+'<div class="grow">Poin & saldo JAGA<small>'+(S.pts.buyer && S.pts.buyer.points != null ? S.pts.buyer.points+' poin · saldo '+rp(S.pts.buyer.balance||0) : '10 transaksi sehari = 5 poin')+'</small></div><span class="chev">'+I("chev")+'</span></button>'+
+      soundRow()+
       (PUSH_OK ? '<button data-act="push-on" data-v="buyer">'+E("bell")+'<div class="grow">Notifikasi pesanan<small>'+(pushOn("buyer") ? "Aktif ✓" : "Ketuk untuk mengaktifkan")+'</small></div><span class="chev">'+I("chev")+'</span></button>' : '')+
       '<button data-act="nav" data-v="jago">'+E("scooter")+'<div class="grow">Jago · ojek online<small>'+S.rides.length+' perjalanan</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="nav" data-v="fav">'+E("heart")+'<div class="grow">Favorit<small>'+FAV.size+' produk disimpan</small></div><span class="chev">'+I("chev")+'</span></button>'+
@@ -3372,7 +3388,7 @@ async function askPoll(){
   if(document.hidden || S.role === "owner" || S.role === "driver") return;
   try{
     const before = JSON.stringify(S.ask);
-    const notify = (list, myRole, label) => { (list || []).forEach(t => { if(!askFirst && askUnread(t, myRole) && askOpen.thv !== t.th && !(S.ask._t || {})[t.th + ":" + t.last]){ (S.ask._t = S.ask._t || {})[t.th + ":" + t.last] = 1; try{ ding(); }catch(_){} toast("💬 " + label(t) + ": " + (t.body || "pesan baru")); } }); };
+    const notify = (list, myRole, label) => { (list || []).forEach(t => { if(!askFirst && askUnread(t, myRole) && askOpen.thv !== t.th && !(S.ask._t || {})[t.th + ":" + t.last]){ (S.ask._t = S.ask._t || {})[t.th + ":" + t.last] = 1; notify("Pesan baru · " + label(t), t.body || "pesan baru", {kind:"chat", act:() => openAsk(t.storeId, myRole === "toko" ? t.th : null, myRole, null, t.name || "")}); } }); };
     if(S.role === "seller"){
       for(const st of myStores()){ const l = await ASK.threads(st.id); S.ask.store[st.id] = l; notify(l, "toko", t => "Pembeli " + (t.name || "")); }
     } else {
@@ -3536,7 +3552,7 @@ async function drvRefresh(){
     const fresh = offers.filter(o => !S.drv.seen.has(o.id));
     offers.forEach(o => S.drv.seen.add(o.id));
     S.drv.me = r.me || null; S.drv.offers = offers; S.drv.mine = r.mine || []; S.drv.wallet = r.wallet || null; S.drv.loaded = true; S.drv.err = "";
-    if(fresh.length && S.drv.me && S.drv.me.online) ding();
+    if(fresh.length && S.drv.me && S.drv.me.online) notify(fresh.length > 1 ? fresh.length + " order baru!" : (isRide(fresh[0]) ? "Order Jago baru!" : "Order antar baru!"), fresh.map(o => isRide(o) ? "Jago · " + shortAddr(o.pickup && o.pickup.address) : (o.storeName || "Toko") + (o.dist != null ? " · " + fmtDist(o.dist) : "")).join(" | ").slice(0, 120) + " — ambil sekarang", {kind:"order", tag:"drv-offer", act:() => window.scrollTo({top:0, behavior:"smooth"})});
     if(S.drv.me && S.drv.me.online) startGeo();
   }catch(e){ S.drv.loaded = true; S.drv.err = (e && e.message) || "Gagal memuat"; }
   drvBusy = false;
@@ -3571,15 +3587,85 @@ function startGeo(){
   }, {enableHighAccuracy:true, maximumAge:15000, timeout:30000});
 }
 function stopGeo(){ if(geoWatch !== null && navigator.geolocation){ navigator.geolocation.clearWatch(geoWatch); } geoWatch = null; }
-function ding(){
-  try{ navigator.vibrate && navigator.vibrate([250, 120, 250]); }catch(e){}
-  try{
-    if(!audioCtx) return;
-    [0, .22].forEach(t => { const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.frequency.value = 880; o.connect(g); g.connect(audioCtx.destination);
-      g.gain.setValueAtTime(.0001, audioCtx.currentTime + t); g.gain.exponentialRampToValueAtTime(.25, audioCtx.currentTime + t + .02); g.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + t + .18);
-      o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + .2); });
-  }catch(e){}
+/* ============ Notifikasi melayang 10 detik + nada keras (semua perangkat) ============ */
+const NOTIF_MS = 10000;
+let NOTIF_SOUND = (() => { try{ return localStorage.getItem("jt_sound") !== "0"; }catch(_){ return true; } })();
+function audioUnlock(){
+  try{ if(!audioCtx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC) audioCtx = new AC(); } if(audioCtx && audioCtx.state === "suspended") audioCtx.resume(); }catch(_){}
 }
+["pointerdown", "keydown", "touchstart"].forEach(ev => document.addEventListener(ev, audioUnlock, {passive:true}));
+function loudTone(kind){
+  if(!NOTIF_SOUND) return;
+  try{
+    audioUnlock(); if(!audioCtx) return;
+    const t0 = audioCtx.currentTime + .03;
+    const comp = audioCtx.createDynamicsCompressor(); comp.threshold.value = -12; comp.ratio.value = 6; comp.connect(audioCtx.destination);
+    const master = audioCtx.createGain(); master.gain.value = 1; master.connect(comp);
+    const notes = kind === "order" ? [988, 1319, 1568, 1319, 1568, 2093] : kind === "chat" ? [1047, 1568, 1047, 1568] : [880, 1175, 1568, 880, 1175, 1568];
+    const step = kind === "chat" ? .16 : .18;
+    const reps = kind === "order" ? 2 : 1;
+    for(let r = 0; r < reps; r++) notes.forEach((f, i) => {
+      const t = t0 + r * (notes.length * step + .35) + i * step;
+      [["triangle", 1], ["square", .35]].forEach(([type, lv]) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = type; o.frequency.value = f; o.connect(g); g.connect(master);
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.9 * lv, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + step * .95);
+        o.start(t); o.stop(t + step);
+      });
+    });
+  }catch(_){}
+  try{ navigator.vibrate && navigator.vibrate(kind === "order" ? [400, 150, 400, 150, 600] : [300, 120, 300]); }catch(_){}
+}
+function ding(){ loudTone("order"); }
+const NOTIF_IC = {order:"bell", chat:"bell", money:"money", ride:"scooter", info:"bell", done:"check"};
+let notifSeq = 0; const notifActs = {};
+function notify(title, body, o){
+  o = o || {};
+  const kind = o.kind || "info", id = "n" + (++notifSeq);
+  loudTone(kind === "money" || kind === "done" ? "info" : kind);
+  if(o.act) notifActs[id] = o.act;
+  // aplikasi terbuka tapi di belakang: tampilkan juga notifikasi sistem (jika diizinkan)
+  if(document.hidden && "Notification" in window && Notification.permission === "granted" && navigator.serviceWorker){
+    navigator.serviceWorker.ready.then(reg => reg.showNotification(title, {body:body || "", icon:"icons/icon-192.png", badge:"icons/icon-192.png", tag:o.tag || id, renotify:true, vibrate:[400, 150, 400, 150, 600], data:{url:location.href}})).catch(() => {});
+  }
+  const box = document.getElementById("notifs"); if(!box) return;
+  while(box.children.length >= 3) box.firstElementChild.remove();
+  box.insertAdjacentHTML("beforeend", '<div class="nfy k-'+esc(kind)+'" id="'+id+'" role="alert" data-act="nfy-open" data-id="'+id+'">'+E(NOTIF_IC[kind] || "bell")+
+    '<div class="grow"><b>'+esc(title)+'</b>'+(body ? '<small>'+esc(body)+'</small>' : '')+'</div><button class="nfx" data-act="nfy-close" data-id="'+id+'" aria-label="Tutup">×</button><i class="nbar" style="animation-duration:'+NOTIF_MS+'ms"></i></div>');
+  setTimeout(() => notifClose(id), NOTIF_MS);
+}
+function notifClose(id){ const el = document.getElementById(id); if(!el) return; el.classList.add("out"); setTimeout(() => { el.remove(); delete notifActs[id]; }, 260); }
+document.addEventListener("click", e => {
+  const x = e.target.closest('[data-act="nfy-close"]'); if(x){ e.stopPropagation(); notifClose(x.dataset.id); return; }
+  const el = e.target.closest('[data-act="nfy-open"]'); if(!el) return;
+  e.stopPropagation(); const f = notifActs[el.dataset.id]; notifClose(el.dataset.id); if(f) try{ f(); }catch(_){}
+}, true);
+// pesan dari service worker (push saat aplikasi sedang dibuka)
+if(navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", e => {
+  const d = e.data || {}; if(d.type !== "jt-push") return;
+  notify(d.title || "JAGA", d.body || "", {kind:/order|pesanan/i.test(d.title || "") ? "order" : "info", act:d.url ? () => { const h = String(d.url).split("#")[1]; if(h && location.hash !== "#" + h) location.hash = h; } : null});
+});
+// status pesanan pembeli berubah
+let _bOrdSeen = null;
+const B_ST_MSG = {menunggu_konfirmasi:"Pembayaran diterima, menunggu konfirmasi toko", diproses:"Pesanan dikonfirmasi & sedang disiapkan toko", mencari_driver:"Toko sedang mencari driver", driver_ke_toko:"Driver menuju toko mengambil pesananmu", diantar:"Pesanan sedang diantar ke alamatmu", selesai:"Pesanan selesai. Terima kasih!", dibatalkan:"Pesanan dibatalkan"};
+function buyerOrderNotify(){
+  if(S.role === "seller" || S.role === "driver" || S.role === "owner") return;
+  const mine = S.orders.filter(o => o.buyerId === ME || (SB && !o.buyerId && o.buyer));
+  const cur = {}; mine.forEach(o => cur[o.id] = o.status);
+  if(_bOrdSeen === null){ _bOrdSeen = cur; return; }
+  mine.forEach(o => { const old = _bOrdSeen[o.id]; if(old && old !== o.status && B_ST_MSG[o.status]) notify("Pesanan " + (o.code || "") + " · " + (o.storeName || ""), B_ST_MSG[o.status], {kind:o.status === "selesai" ? "done" : "order", act:() => go("order", {orderId:o.id})}); });
+  _bOrdSeen = cur;
+}
+function soundToggle(){ NOTIF_SOUND = !NOTIF_SOUND; try{ localStorage.setItem("jt_sound", NOTIF_SOUND ? "1" : "0"); }catch(_){} if(NOTIF_SOUND) notify("Nada notifikasi aktif", "Contoh notifikasi JAGA. Tampil 10 detik dengan nada keras.", {kind:"order"}); render(); }
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  if(el.dataset.act === "sound-toggle"){ soundToggle(); }
+  if(el.dataset.act === "sound-test"){ audioUnlock(); notify("Tes notifikasi JAGA", "Begini notifikasi akan muncul: melayang 10 detik dengan nada keras.", {kind:"order"}); }
+});
+function soundRow(){
+  return '<button data-act="sound-test">'+E("bell")+'<div class="grow">Nada & notifikasi<small>'+(NOTIF_SOUND ? 'Nada keras aktif · ketuk untuk tes' : 'Nada dimatikan')+'</small></div><span class="tgl'+(NOTIF_SOUND ? ' on' : '')+'" data-act="sound-toggle" role="switch" aria-checked="'+NOTIF_SOUND+'"><i></i></span></button>';
+}
+
 function getPos(){
   return new Promise((res, rej) => {
     if(!navigator.geolocation) return rej(new Error("HP ini tidak mendukung lokasi."));
@@ -3699,6 +3785,7 @@ function appDriver(){
     '<button class="linkbtn" data-act="drv-edit">Ubah data</button></div>'+
     '<button class="onsw press '+(me.online?"on":"")+'" data-act="drv-online" aria-pressed="'+(me.online?"true":"false")+'"><i></i><span>'+(me.online?"ONLINE":"OFFLINE")+'</span></button></div>';
   h += portalInstallCard("driver");
+  h += '<div class="plist sndcard" style="margin:0 16px 14px">'+soundRow()+'</div>';
   if(me.online){
     h += S.drv.locErr ? '<div class="notice warnbox">'+I("pin")+' '+esc(S.drv.locErr)+'</div>'
       : '<div class="locline">'+I("pin")+(S.drv.loc ? ' Lokasi aktif — kamu terlihat oleh pesanan di sekitar' : ' Mencari lokasi GPS…')+'</div>';
@@ -3834,7 +3921,7 @@ function notifyNewOrders(){
   if(_ordSeen === null){ _ordSeen = new Set(pend); return; }
   const fresh = pend.filter(id => !_ordSeen.has(id));
   pend.forEach(id => _ordSeen.add(id));
-  if(fresh.length){ try{ ding(); }catch(_){} toast("🔔 " + fresh.length + " pesanan baru menunggu konfirmasi"); }
+  if(fresh.length){ const o0 = S.orders.find(o => o.id === fresh[0]) || {}; notify(fresh.length > 1 ? fresh.length + " pesanan baru!" : "Pesanan baru!", (o0.buyer ? o0.buyer.name + " · " : "") + (o0.items ? o0.items.map(i => i.qty + "× " + i.name).join(", ").slice(0, 90) : "") + " — segera konfirmasi", {kind:"order", tag:"store-order", act:() => { go("seller", {sellerTab:"pesanan"}); }}); }
 }
 document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
@@ -3959,9 +4046,9 @@ const SUP = {
 const myThreads = () => S.role === "driver" ? (S.drv && S.drv.me && S.drv.me.id ? ["drv:" + S.drv.me.id] : []) : S.role === "seller" ? myStores().map(st => "store:" + st.id) : [];
 async function loadSupUnread(){
   if(!myThreads().length) return;
-  try{ const u = await SUP.unread(); const sig = JSON.stringify(u); if(sig !== JSON.stringify(S.sup.unread)){ S.sup.unread = u || {}; if(!typing() && !document.getElementById("supForm")) scheduleRender(); } }catch(_){}
+  try{ const u = await SUP.unread(); const sig = JSON.stringify(u); if(sig !== JSON.stringify(S.sup.unread)){ if(S.sup._init) Object.keys(u || {}).forEach(th => { if((u[th] || 0) > ((S.sup.unread || {})[th] || 0)) notify("Pesan dari tim JAGA", "Ketuk untuk membaca dan membalas", {kind:"chat", act:() => openSupport(th)}); }); S.sup.unread = u || {}; if(!typing() && !document.getElementById("supForm")) scheduleRender(); } }catch(_){}
 }
-setInterval(() => { if(!document.hidden && (S.role === "seller" || S.role === "driver")) loadSupUnread(); }, 30000);
+setInterval(() => { if(!document.hidden && (S.role === "seller" || S.role === "driver")) loadSupUnread().then(() => { S.sup._init = true; }); }, 20000);
 setTimeout(loadSupUnread, 2500);
 const supBadge = th => { const n = (S.sup.unread || {})[th] || 0; return n ? '<em class="sbadge">'+n+'</em>' : ''; };
 function supBubbles(msgs, viewer){
@@ -4012,7 +4099,7 @@ document.addEventListener("click", e => {
   const t = document.querySelector("#supForm textarea"); if(t){ t.value = el.dataset.v; t.focus(); }
 });
 /* ---------- inbox owner ---------- */
-async function loadOwnThreads(){ try{ const t = await SUP.threads(); const sig = JSON.stringify(t); if(sig !== S.own.thSig){ S.own.thSig = sig; S.own.threads = t || []; if(S.role === "owner" && !typing()) scheduleRender(); } }catch(_){ S.own.threads = S.own.threads || []; } }
+async function loadOwnThreads(){ try{ const t = await SUP.threads(); const sig = JSON.stringify(t); if(sig !== S.own.thSig){ if(S.own.threads && S.role === "owner") (t || []).forEach(x => { const old = S.own.threads.find(y => y.thread === x.thread); if(x.unread > (old ? old.unread || 0 : 0) && x.sender !== "owner") notify("Pesan masuk · " + ((x.target || {}).name || "Mitra"), x.body || "", {kind:"chat", act:() => { S.own.tab = "pesan"; S.own.thread = x.thread; loadOwnMsgs(x.thread, true); render(); }}); }); S.own.thSig = sig; S.own.threads = t || []; if(S.role === "owner" && !typing()) scheduleRender(); } }catch(_){ S.own.threads = S.own.threads || []; } }
 async function loadOwnMsgs(th, scroll){
   try{ const r = await SUP.get(th, "owner"); const old = JSON.stringify(((S.own.msgs || {})[th] || {}).msgs || []);
     S.own.msgs = S.own.msgs || {}; S.own.msgs[th] = r || {msgs:[]};
@@ -4340,7 +4427,7 @@ async function chatPoll(){
     if(!chatFirst){
       Object.entries(S.chatCounts).forEach(([oid, x]) => {
         const old = prev[oid];
-        if(x.role !== role && (!old || x.last > old.last) && chatOpen.oid !== oid){ try{ ding(); }catch(_){} toast("💬 " + (ROLE_L[x.role]||"") + ": " + (x.body||"pesan baru")); }
+        if(x.role !== role && (!old || x.last > old.last) && chatOpen.oid !== oid){ notify("Pesan dari " + (ROLE_L[x.role]||"chat"), x.body || "pesan baru", {kind:"chat", act:() => openChat(oid, role)}); }
       });
     }
     chatFirst = false;
@@ -4493,7 +4580,7 @@ function rideNotify(rows){
     const old = S.jago.seen[r.id]; S.jago.seen[r.id] = r.status;
     if(!old || old === r.status) return;
     const m = {driver_jemput:"Driver Jago ditemukan! Sedang menuju titik jemput.", dalam_perjalanan:"Selamat jalan! Perjalanan dimulai.", selesai:"Perjalanan selesai. Terima kasih sudah naik Jago!"}[r.status];
-    if(m){ toast(m); if(r.status === "driver_jemput") ding();
+    if(m){ notify("Jago " + (r.code || ""), m, {kind:r.status === "selesai" ? "done" : "ride", act:() => { go("jago", {}); S.jago.open = r.id; render(); }});
       if(typeof VA !== "undefined" && VA.used && !VA.open && window.speechSynthesis){ try{ const u = new SpeechSynthesisUtterance(m.replace("Jago", "Jago")); u.lang = "id-ID"; if(ID_VOICE) u.voice = ID_VOICE; speechSynthesis.speak(u); }catch(_){} } }
   });
 }
@@ -6023,7 +6110,7 @@ function startListening(){
   store.listen("orders", (rows, fromCache) => {
     const sig = rows ? JSON.stringify(rows) : null;
     const same = sig !== null && sig === S._ordSig && S.ready.orders;
-    if(rows){ S.orders = rows; S._ordSig = sig; notifyNewOrders(); }
+    if(rows){ S.orders = rows; S._ordSig = sig; notifyNewOrders(); buyerOrderNotify(); }
     if(!fromCache || (rows && rows.length)) S.ready.orders = true;
     if(!same) render();
   });
