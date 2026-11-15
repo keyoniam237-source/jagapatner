@@ -13,3 +13,5 @@
 
 ## Berkas aplikasi
 `index.html` hanya kerangka kecil. Gaya ada di `app.css`, logika di `app.js`. **Saat deploy, naikkan angka versi bersama-sama:** `CACHE` di `sw.js`, `?v=` pada `app.css`/`app.js` di `index.html`, dan `?v=` pada daftar `SHELL` di `sw.js`.
+
+- `sql-tests-wa.sql` (30 tes): WhatsApp privat + akun pembeli. Jalankan bersama `supabase-wa-privat-pembeli.sql` dalam satu `begin; ...` (otomatis dibatalkan).

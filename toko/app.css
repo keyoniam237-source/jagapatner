@@ -1490,3 +1490,15 @@ body.is-seller .supnote{width:100%;margin:0 0 14px}
 body.is-driver .pinst{margin:0 16px 12px!important}
 .promorow{display:flex;gap:8px}.promorow .in{flex:1}.promorow .btn{white-space:nowrap}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+
+/* daftar driver ringkas */
+.odrv .dhead{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.odrv .dstat{width:9px;height:9px;border-radius:50%;background:#c3cad8;flex-shrink:0}
+.odrv .dstat.on{background:#16a34a}
+.kmenu{position:relative;display:inline-block}
+.kmenu summary{list-style:none;cursor:pointer}
+.kmenu summary::-webkit-details-marker{display:none}
+.kpop{position:absolute;right:0;top:calc(100% + 4px);z-index:20;background:#fff;border:1px solid #e3e8f1;border-radius:12px;box-shadow:0 8px 24px rgba(20,35,70,.15);min-width:150px;padding:4px;display:flex;flex-direction:column}
+.kpop button{background:none;border:0;text-align:left;padding:10px 12px;border-radius:8px;font:inherit;font-size:14px;cursor:pointer;color:#1a2540}
+.kpop button:hover{background:#f2f5fb}
+.kpop button.dangerc{color:#dc2626}

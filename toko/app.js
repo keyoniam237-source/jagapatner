@@ -365,7 +365,12 @@ function restoreForms(snap){
   }
   app.dataset.sig = sig;
 }
-function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); try{ mountMaps(); }catch(e){} try{ mountJagoMap(); }catch(e){} lazyImgs(); }
+function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); try{ mountMaps(); }catch(e){} try{ mountJagoMap(); }catch(e){} lazyImgs(); try{ fillStoreWa(); }catch(e){} }
+/* WA toko tidak lagi publik: pemilik mengambilnya lewat RPC privat */
+const MYWA = {};
+function fillStoreWa(){ const f = document.getElementById("storeForm"); if(!f || !SB) return; const id = f.dataset.id, inp = f.elements.wa; if(!id || !inp) return;
+  if(MYWA[id] !== undefined){ if(!inp.value) inp.value = MYWA[id]; return; }
+  MYWA[id] = ""; sbStore.rpc("jt_store_wa_get", {p_store:id}).then(w => { MYWA[id] = w || ""; const g = document.getElementById("storeForm"); if(g && g.dataset.id === id && g.elements.wa && !g.elements.wa.value) g.elements.wa.value = MYWA[id]; }).catch(() => { delete MYWA[id]; }); }
 function renderInner(){
   document.body.classList.toggle("is-driver", S.role === "driver" || S.role === "owner");
   document.body.classList.toggle("is-owner", S.role === "owner");
@@ -686,7 +691,7 @@ function viewOrder(){
     (o.promo && o.promo.disc ? '<div class="row"><span>Promo '+esc(o.promo.code)+'</span><span class="free">−'+rp(o.promo.disc)+'</span></div>' : '')+'<div class="row"><span>Biaya admin</span><span class="free">Rp0</span></div><div class="row total"><span>Total belanja</span><span>'+rp(o.total)+'</span></div>'+
     (o.voucher > 0 && !o.selfDelivery ? '<div class="row"><span>Potongan saldo JAGA</span><span class="free">−'+rp(o.voucher)+'</span></div>' : '')+
     (o.selfDelivery ? '' : '<div class="row"><span>Ongkir (ke driver)</span><span>'+(typeof o.ongkirFinal==="number" ? rp(o.ongkirFinal) : ongkirEstOf(o)==null ? ONGKIR_LBL : '±'+rp(ongkirEstOf(o))+' <small class="muted">nego</small>')+'</span></div>')+
-    '<h3 class="sub" style="margin-top:16px">Dikirim ke</h3><div><b>'+esc(o.buyer.name)+'</b> · '+esc(o.buyer.wa)+'</div><div class="small">'+esc(o.buyer.address)+'</div>'+
+    '<h3 class="sub" style="margin-top:16px">Dikirim ke</h3><div><b>'+esc(o.buyer.name)+'</b>'+(o.buyer.wa ? ' · '+esc(o.buyer.wa) : '')+'</div><div class="small">'+esc(o.buyer.address)+'</div>'+
     (o.buyer.maps?'<div class="small"><a target="_blank" rel="noopener" href="'+esc(o.buyer.maps)+'">Lihat di peta</a></div>':'')+
     (o.buyer.note?'<div class="small muted" style="margin-top:6px">Catatan: '+esc(o.buyer.note)+'</div>':'')+'</div></div>';
   return h;
@@ -745,7 +750,7 @@ function sellerDashboard(s, orders){
     '<div class="card stat" data-act="nav" data-v="seller" data-t="laporan" style="cursor:pointer"><div class="l">Bagi hasil 3% bulan ini</div><div class="v">'+rp(monthShare(orders, new Date()))+'</div><div class="small muted">'+prods.filter(p=>p.active!==false).length+' produk aktif'+(low.length?' · <span style="color:var(--warn);font-weight:700">'+low.length+' stok menipis</span>':'')+'</div></div></div>';
   const p = s.pay || {};
   const steps = [
-    ["Lengkapi profil toko", !!(s.name && s.address && s.wa)],
+    ["Lengkapi profil toko", !!(s.name && s.address && (s.wa || s.hasWa))],
     ["Atur akun pembayaran", payMethodsOf(s).length>0],
     ["Tambahkan logo toko", !!s.logo],
     ["Tambahkan produk pertama", prods.length>0],
@@ -1157,8 +1162,40 @@ function changeQty(pid, d){
   saveCart(); render();
 }
 
+/* ===== Akun pembeli: tamu boleh melihat; memesan wajib daftar dan disetujui owner ===== */
+const BUYER = {gate:false, me:null, loaded:false};
+async function loadBuyer(){
+  if(!SB) return;
+  try{ const r = await sbStore.rpc("jt_buyer_me", {}); BUYER.gate = !!(r && r.gate); BUYER.me = (r && r.me) || null; }
+  catch(e){ BUYER.gate = false; BUYER.me = null; }   // database lama: tanpa gerbang
+  BUYER.loaded = true;
+}
+const buyerOk = () => !SB || !BUYER.gate || !!(BUYER.me && BUYER.me.status === "approved");
+async function ensureBuyer(){
+  if(!SB) return true;
+  if(!BUYER.loaded || (BUYER.gate && !buyerOk())) await loadBuyer();
+  if(buyerOk()) return true;
+  buyerModal(); return false;
+}
+function buyerModal(){
+  const m = BUYER.me, p = getProf();
+  let body;
+  if(m && m.status === "pending"){
+    body = '<h2 class="sec">Menunggu persetujuan</h2><p class="muted" style="margin-top:0">Pendaftaran <b>'+esc(m.name)+'</b> sudah terkirim. Owner JAGA akan memeriksa data Anda. Setelah disetujui, Anda bisa langsung memesan.</p>'+
+      '<div class="actions"><button type="button" class="btn" data-act="buyer-check">Cek status</button><button type="button" class="btn ghost" onclick="closeModal()">Tutup</button></div>';
+  } else {
+    body = '<form id="buyerForm"><h2 class="sec">Daftar akun pembeli</h2><p class="muted" style="margin-top:0">Anda bebas melihat-lihat. Untuk memesan, daftar dulu. Data diperiksa dan disetujui owner JAGA. Nomor WhatsApp Anda hanya diketahui sistem JAGA, tidak dibagikan ke toko atau driver.</p>'+
+      (m && m.status === "rejected" ? '<div class="notice">Pendaftaran sebelumnya ditolak'+(m.note ? ': '+esc(m.note) : '')+'. Perbaiki data lalu kirim ulang.</div>' : '')+
+      '<label class="f">Nama lengkap</label><input class="in" name="name" required maxlength="60" value="'+esc((m && m.name) || p.name || "")+'">'+
+      '<label class="f">No. WhatsApp</label><input class="in" name="wa" required inputmode="tel" placeholder="08xxxxxxxxxx" value="'+esc((m && m.wa) || p.wa || "")+'">'+
+      '<label class="f">Alamat</label><input class="in" name="address" required maxlength="200" placeholder="Jalan, RT/RW, Desa" value="'+esc((m && m.address) || p.address || "")+'">'+
+      '<div class="actions"><button class="btn" type="submit">Kirim pendaftaran</button><button type="button" class="btn ghost" onclick="closeModal()">Batal</button></div></form>';
+  }
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal">'+body+'</div></div>';
+}
 async function placeOrder(form){
   const s = storeById(S.cart.storeId); if(!s) return;
+  if(!(await ensureBuyer())) return;
   const fd = new FormData(form);
   const buyer = {name:fd.get("name").trim(), wa:fd.get("wa").trim(), address:fd.get("address").trim(), maps:(fd.get("maps")||"").trim(), note:(fd.get("note")||"").trim()};
   const blat = parseFloat(fd.get("blat")), blng = parseFloat(fd.get("blng"));
@@ -1185,7 +1222,7 @@ async function placeOrder(form){
   const order = {code, storeId:s.id, storeName:s.name, buyerId:ME, buyer,
     items:t2.items.map(i=>({pid:i.pid, name:i.name, price:i.price, qty:i.qty})),
     subtotal:t2.subtotal, ongkir:0, ongkirPer500:ONGKIR_PER, admin:0, total:t2.total, shareRate:BAGI_HASIL, share:commCalc(t2.total,"store"), pay,
-    storeAddress:s.address||"", storeWa:s.wa||"",
+    storeAddress:s.address||"",
     status: k === "cod" ? "menunggu_konfirmasi" : "menunggu_pembayaran", createdAt:now, updatedAt:now};
   if(typeof s.lat === "number" && typeof s.lng === "number") order.storeLoc = {lat:s.lat, lng:s.lng};
   if(locOk(order.storeLoc) && locOk(buyer)){ order.ongkirDist = Math.round(distM(order.storeLoc, buyer)); order.ongkirEst = ongkirByDist(order.ongkirDist); }
@@ -1293,7 +1330,7 @@ document.addEventListener("click", async e => {
   if(a === "nav"){ if(v === "seller") go("seller", {sellerTab: el.dataset.t || "ringkasan"}); else go(v); return; }
   if(a === "preview-store"){ go("store", {storeId:id, preview:true}); return; }
   if(a === "quick-add"){ pending.pimg = undefined; openProdModal(); return; }
-  if(a === "share-store"){ const s = storeById(id); if(s) copyText(s.name+" sekarang ada di JAGA! Pesan langsung, diantar driver terdekat & tanpa biaya admin. Cari \""+s.name+"\" di JAGA."+(s.wa?" WA: "+s.wa:"")); return; }
+  if(a === "share-store"){ const s = storeById(id); if(s) copyText(s.name+" sekarang ada di JAGA! Pesan langsung, diantar driver terdekat & tanpa biaya admin. Cari \""+s.name+"\" di JAGA."+""); return; }
   if(a === "cat"){ S.cat = (S.cat === v && v !== "Semua") ? "Semua" : v; if(S.view !== "home") go("home"); else render(); return; }
   if(a === "clear-filter"){ S.cat = "Semua"; S.q = ""; document.getElementById("q").value = ""; render(); return; }
   if(a === "open-prod"){ go("product", {prodId:id}); return; }
@@ -2765,11 +2802,13 @@ function appOwner(){
   const D = (SB ? S.own.data : null) || (SB ? {stores:[], orders:[], drivers:[], rides:[]} : {stores:S.stores.map(s => Object.assign({}, s, {products:(S.products[s.id]||[]).length})), orders:S.orders.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), drivers:S.drivers, rides:S.ridesAll.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), reportsOpen:(S.localReports||[]).filter(r => r.status !== "selesai").length});
   const RD = D.rides || [];
   const pendDrv = (D.drivers||[]).filter(d => d.verify === "pending").length;
+  if(SB && S.own.buyers === undefined){ S.own.buyers = null; loadOwnerBuyers(); }
+  const pendBuy = S.own.buyers ? S.own.buyers.list.filter(x => x.status === "pending").length : 0;
   if(S.own.threads === undefined){ S.own.threads = []; loadOwnThreads(); }
   const unreadMsg = (S.own.threads || []).reduce((a, t) => a + (t.unread || 0), 0);
   const stuckN = (D.orders || []).filter(ownStuck).length;
-  const tabs = [["ringkasan","Ringkasan","dashboard",0],["pesanan","Pesanan","receipt",stuckN],["pesan","Pesan","chat",unreadMsg],["laporan","Laporan masalah","note",D.reportsOpen||0],["toko","Toko","store",0],["driver","Driver","truck",pendDrv],["saldo","Saldo","cash",0],["cabang","Cabang","pin",0],["akun","Akun","settings",0]];
-  const TT = {ringkasan:["Ringkasan","Kondisi bisnis JAGA secara keseluruhan"], pesanan:["Pesanan","Semua pesanan belanja dan perjalanan Jago"], pesan:["Pesan","Tanya jawab dengan toko dan driver"], laporan:["Laporan masalah","Keluhan dari pembeli, toko, dan driver"], toko:["Toko","Kelola toko mitra: pesan, nonaktifkan, atau hapus"], driver:["Driver","Verifikasi dan kelola akun driver"], saldo:["Saldo","Isi saldo, bagi hasil, dan komisi"], cabang:["Cabang","Wilayah layanan JAGA"], akun:["Akun","Link penting dan keamanan"]};
+  const tabs = [["ringkasan","Ringkasan","dashboard",0],["pesanan","Pesanan","receipt",stuckN],["pesan","Pesan","chat",unreadMsg],["laporan","Laporan masalah","note",D.reportsOpen||0],["toko","Toko","store",0],["driver","Driver","truck",pendDrv],["pembeli","Pembeli","user",pendBuy],["saldo","Saldo","cash",0],["cabang","Cabang","pin",0],["akun","Akun","settings",0]];
+  const TT = {ringkasan:["Ringkasan","Kondisi bisnis JAGA secara keseluruhan"], pesanan:["Pesanan","Semua pesanan belanja dan perjalanan Jago"], pesan:["Pesan","Tanya jawab dengan toko dan driver"], laporan:["Laporan masalah","Keluhan dari pembeli, toko, dan driver"], toko:["Toko","Kelola toko mitra: pesan, nonaktifkan, atau hapus"], driver:["Driver","Verifikasi dan kelola akun driver"], pembeli:["Pembeli","Setujui pendaftaran akun pembeli"], saldo:["Saldo","Isi saldo, bagi hasil, dan komisi"], cabang:["Cabang","Wilayah layanan JAGA"], akun:["Akun","Link penting dan keamanan"]};
   const tt = TT[S.own.tab] || TT.ringkasan;
   const nav = cls => tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+I(t[2])+'<span>'+t[1]+'</span>'+(t[3]?'<em class="'+(t[0]==="pesan"||t[0]==="driver"||t[0]==="laporan"?"red":"amb")+'">'+t[3]+'</em>':'')+'</button>').join("");
   const side = '<aside class="oside"><div class="obrand">'+JMARK()+'<div><b>JAGA</b><small>Portal Owner</small></div></div><nav>'+nav()+'</nav><div class="ofoot"><a href="'+esc(APP_URL)+'" target="_blank" rel="noopener">'+I("eye")+' Buka aplikasi pembeli</a></div></aside>';
@@ -2864,6 +2903,8 @@ function appOwner(){
         '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="store:'+esc(s.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-exempt" data-k="s" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("percent")+' Bebas komisi</button>'+exTag("s", s.id)+'<button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("cash")+' Saldo</button>'+
         '<button class="btn ghost sm" data-act="own-store-active" data-id="'+esc(s.id)+'" data-v="'+(off?"1":"0")+'">'+(off?"Aktifkan":"Nonaktifkan")+'</button><button class="btn ghost sm dangerc" data-act="own-store-del" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Hapus</button></div></div>';
     }).join("") : '<div class="card pad muted small">Belum ada toko terdaftar.</div>')+'</div>';
+  } else if(S.own.tab === "pembeli"){
+    h += ownerBuyersTab();
   } else if(S.own.tab === "laporan"){
     h += ownerReportsTab();
   } else if(S.own.tab === "cabang"){
@@ -2885,10 +2926,15 @@ function appOwner(){
       '<div class="r"><button class="btn sm" data-act="drv-verify" data-id="'+esc(d.id)+'" data-v="1">Setujui</button>'+(d.verify !== "rejected" ? '<button class="btn ghost sm" data-act="drv-verify" data-id="'+esc(d.id)+'" data-v="0">Tolak</button>' : '')+
       ((d.docsAt || d.hasDocs) ? '<button class="linkbtn" data-act="drv-docs" data-id="'+esc(d.id)+'" data-v="'+esc(d.name)+'">Dokumen</button>' : '')+'<button class="linkbtn small" data-act="own-msg" data-v="drv:'+esc(d.id)+'">Pesan</button>'+'</div></div>').join("")+'</div>';
     h += '<div class="otool"><input class="in" id="ownFind" placeholder="Cari nama atau plat driver…" autocomplete="off"><button class="btn ghost sm" data-act="own-msg-new">'+I("chat")+' Kirim pesan</button></div>';
-    h += '<div class="card pad">'+(ds.length ? ds.map(x => '<div class="orow odrv'+(x.d.suspended?' off':'')+(S.own.focus===x.d.id?' focus':'')+'" data-n="'+esc((String(x.d.name||"")+" "+String(x.d.plate||"")).toLowerCase())+'"><div class="drv-av">'+esc(initials(x.d.name))+'</div><div class="grow"><b>'+esc(x.d.name)+'</b> '+(x.d.suspended ? '<span class="tag amber">Dinonaktifkan</span>' : x.d.verify && x.d.verify !== "verified" ? '<span class="tag">Belum verifikasi</span>' : '<span class="tag green">Terverifikasi</span>')+' '+starTxt(((D.ratings||S.ratings).driver||{})[x.d.id])+'<small>'+esc([x.d.vehicle, x.d.plate, x.d.area].filter(Boolean).join(" · "))+'</small>'+
-      '<small>'+(x.on ? '<b style="color:#15803d">● Online</b>'+(x.busy?' · sedang mengantar':'') : '<span class="muted">○ Offline</span>')+(x.d.locAt ? ' · lokasi '+ago(x.d.locAt) : '')+'</small>'+(x.d.suspended && x.d.suspendNote ? '<small class="warnc">Alasan: '+esc(x.d.suspendNote)+'</small>' : '')+
-      '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="drv:'+esc(x.d.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-drv-active" data-id="'+esc(x.d.id)+'" data-v="'+(x.d.suspended?"1":"0")+'" data-name="'+esc(x.d.name)+'">'+(x.d.suspended?"Aktifkan":"Nonaktifkan")+'</button><button class="btn ghost sm dangerc" data-act="own-drv-del" data-id="'+esc(x.d.id)+'" data-v="'+esc(x.d.name)+'">Hapus</button></div></div>'+
-      '<div class="r"><b>'+x.trips+' trip</b><small>'+(x.rides?x.rides+' Jago · ':'')+rp(x.ongkir)+'</small><small>hari ini '+x.today+'</small><small>saldo '+(x.bal == null ? '…' : rp(x.bal))+'</small><button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(x.d.id)+'" data-v="Driver '+esc(x.d.name)+'">Saldo</button>'+'<button class="linkbtn small" data-act="own-msg" data-v="drv:'+esc(x.d.id)+'">Pesan</button>'+'<button class="linkbtn small" data-act="own-exempt" data-k="d" data-id="'+esc(x.d.id)+'" data-v="Driver '+esc(x.d.name)+'">Bebas komisi</button>'+exTag("d", x.d.id)+'</div></div>').join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/toko/#driver ke calon driver.</div>')+'</div>';
+    h += '<div class="card pad">'+(ds.length ? ds.map(x => {
+      const d = x.d, st = d.suspended ? '<span class="tag amber">Nonaktif</span>' : d.verify && d.verify !== "verified" ? '<span class="tag">Belum verifikasi</span>' : '';
+      return '<div class="orow odrv'+(d.suspended?' off':'')+(S.own.focus===d.id?' focus':'')+'" data-n="'+esc((String(d.name||"")+" "+String(d.plate||"")).toLowerCase())+'"><div class="drv-av">'+esc(initials(d.name))+'</div><div class="grow">'+
+      '<div class="dhead"><span class="dstat '+(x.on?'on':'')+'"></span><b>'+esc(d.name)+'</b> '+st+' '+starTxt(((D.ratings||S.ratings).driver||{})[d.id])+exTag("d", d.id)+'</div>'+
+      '<small>'+esc([d.vehicle, d.plate].filter(Boolean).join(" · "))+(x.on ? ' · <b style="color:#15803d">Online</b>'+(x.busy?' (mengantar)':'') : ' · Offline'+(d.locAt ? ' '+ago(d.locAt) : ''))+'</small>'+
+      '<small>'+x.trips+' trip'+(x.rides?' ('+x.rides+' Jago)':'')+' · hari ini '+x.today+' · saldo <b>'+(x.bal == null ? '…' : rp(x.bal))+'</b></small>'+(d.suspended && d.suspendNote ? '<small class="warnc">Alasan: '+esc(d.suspendNote)+'</small>' : '')+
+      '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="drv:'+esc(d.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">'+I("cash")+' Saldo</button>'+
+      '<details class="kmenu"><summary class="btn ghost sm">Lainnya ▾</summary><div class="kpop"><button data-act="own-exempt" data-k="d" data-id="'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">Bebas komisi</button><button data-act="own-drv-active" data-id="'+esc(d.id)+'" data-v="'+(d.suspended?"1":"0")+'" data-name="'+esc(d.name)+'">'+(d.suspended?"Aktifkan":"Nonaktifkan")+'</button><button class="dangerc" data-act="own-drv-del" data-id="'+esc(d.id)+'" data-v="'+esc(d.name)+'">Hapus</button></div></details></div></div></div>';
+    }).join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/toko/#driver ke calon driver.</div>')+'</div>';
   } else {
     h += '<div class="card pad"><h3 class="sub">Link penting</h3>'+
       [["Aplikasi pembeli",APP_URL],["Portal toko",APP_URL+"#mitra"],["Portal driver",APP_URL+"#driver"]].map(l => '<div class="orow"><div class="grow"><b>'+l[0]+'</b><small>'+esc(l[1])+'</small></div><button class="btn ghost sm" data-act="copy" data-v="'+esc(l[1])+'">Salin</button></div>').join("")+'</div>';
@@ -2937,7 +2983,10 @@ document.addEventListener("click", async e => {
   }
   if(a === "own-range"){ S.own.range = v; render(); return; }
   if(a === "own-ofilter"){ S.own.ofilter = v; render(); return; }
-  if(a === "own-refresh"){ S.own.sig = ""; await ownRefresh(); toast("Data diperbarui"); return; }
+  if(a === "buyer-check"){ await loadBuyer(); if(buyerOk()){ closeModal(); toast("Akun disetujui. Silakan memesan."); } else buyerModal(); return; }
+  if(a === "own-buyer-do"){ const ok = el.dataset.v === "1"; let note = ""; if(!ok){ const n = prompt("Alasan penolakan (boleh dikosongkan)"); if(n === null) return; note = n; } await safe(async () => { await sbStore.rpc("jt_owner_buyer_decide", {p_id:el.dataset.id, p_ok:ok, p_note:note}); await loadOwnerBuyers(); }, ok ? "Pembeli disetujui" : "Pendaftaran ditolak"); return; }
+  if(a === "own-buyer-gate"){ await safe(async () => { await sbStore.rpc("jt_owner_buyer_gate", {p_on:el.dataset.v === "1"}); await loadOwnerBuyers(); }, el.dataset.v === "1" ? "Pendaftaran pembeli diwajibkan" : "Pendaftaran pembeli dimatikan"); return; }
+  if(a === "own-refresh"){ loadOwnerBuyers(); S.own.sig = ""; await ownRefresh(); toast("Data diperbarui"); return; }
   if(a === "own-logout"){ confirmModal("Keluar dari portal owner di perangkat ini?", "Keluar", async () => { try{ await SB.rpc("jt_owner_logout", {p_key: KEY}); }catch(_){} S.own.sig = ""; await ownRefresh(); render(); }); return; }
   if(a === "own-store-active"){
     const id = el.dataset.id, on = v === "1";
@@ -3555,8 +3604,18 @@ document.addEventListener("click", async e => {
 });
 document.addEventListener("submit", async e => {
   const f = e.target;
+  if(f.id === "buyerForm"){
+    e.preventDefault();
+    const fd = new FormData(f), data = {name:(fd.get("name")||"").trim(), wa:(fd.get("wa")||"").trim(), address:(fd.get("address")||"").trim()};
+    if(!waOk(data.wa)) return toast(WA_BAD);
+    const btn = f.querySelector("button[type=submit]"); if(btn) btn.disabled = true;
+    try{ const r = await sbStore.rpc("jt_buyer_register", {p_data:data}); BUYER.gate = !!(r && r.gate); BUYER.me = (r && r.me) || null; BUYER.loaded = true; setProf(Object.assign(getProf(), data)); buyerModal(); toast("Pendaftaran terkirim"); }
+    catch(err){ toast(String((err && err.message) || "Gagal, coba lagi").replace(/^.*?:\s*/, "").slice(0, 140)); if(btn) btn.disabled = false; }
+    return;
+  }
   if(f.id === "jagoForm"){
     e.preventDefault();
+    if(!(await ensureBuyer())) return;
     const fd = new FormData(f), J = S.jago;
     const rider = {name:(fd.get("name")||"").trim(), wa:(fd.get("wa")||"").trim()};
     if(!rider.name || rider.wa.replace(/\D/g, "").length < 9) return toast("Isi nama dan nomor WhatsApp yang benar.");
@@ -4225,6 +4284,28 @@ const OWNX = {
 };
 S.own.reports = null;
 async function loadOwnerReports(){ try{ S.own.reports = await REP.all(); }catch(e){ S.own.reports = []; } if(S.role === "owner" && !typing()) scheduleRender(); }
+async function loadOwnerBuyers(){
+  if(!SB) return;
+  try{ S.own.buyers = await sbStore.rpc("jt_owner_buyers", {}); }catch(e){ S.own.buyers = {gate:false, list:[], err:true}; }
+  render();
+}
+function ownerBuyersTab(){
+  if(!SB) return '<div class="card pad muted small">Pendaftaran pembeli aktif di website asli (terhubung database).</div>';
+  const B = S.own.buyers;
+  if(!B) return '<div class="empty">'+I("loader")+' Memuat…</div>';
+  if(B.err) return '<div class="card pad muted small">Fitur akun pembeli belum aktif di database.</div>';
+  const pend = B.list.filter(x => x.status === "pending"), rest = B.list.filter(x => x.status !== "pending");
+  const stTag = st => st === "approved" ? '<span class="tag green">Disetujui</span>' : '<span class="tag amber">Ditolak</span>';
+  let h = '<div class="card pad"><div class="orow"><div class="grow"><b>Wajib daftar untuk memesan</b><small>'+(B.gate ? 'AKTIF: pembeli baru harus disetujui owner dulu. Tamu tetap bisa melihat-lihat.' : 'MATI: siapa pun bisa memesan.')+'</small></div>'+
+    '<div class="r"><button class="btn sm'+(B.gate?' ghost':'')+'" data-act="own-buyer-gate" data-v="'+(B.gate?"0":"1")+'">'+(B.gate?"Matikan":"Aktifkan")+'</button></div></div></div>';
+  h += '<div class="card pad"><h3 class="sub">Menunggu persetujuan ('+pend.length+')</h3>'+(pend.length ? pend.map(x =>
+    '<div class="orow"><div class="drv-av">'+esc(initials(x.name))+'</div><div class="grow"><b>'+esc(x.name)+'</b><small>'+esc(x.wa)+'</small><small>'+I("pin")+' '+esc(x.address)+'</small><small>Daftar '+ago(x.at)+'</small></div>'+
+    '<div class="r"><button class="btn sm" data-act="own-buyer-do" data-id="'+esc(x.id)+'" data-v="1">Setujui</button><button class="btn ghost sm" data-act="own-buyer-do" data-id="'+esc(x.id)+'" data-v="0">Tolak</button></div></div>').join("") : '<div class="muted small">Tidak ada pendaftar baru.</div>')+'</div>';
+  h += '<div class="card pad"><h3 class="sub">Semua pembeli ('+rest.length+')</h3>'+(rest.length ? rest.slice(0, 100).map(x =>
+    '<div class="orow"><div class="drv-av">'+esc(initials(x.name))+'</div><div class="grow"><b>'+esc(x.name)+'</b> '+stTag(x.status)+'<small>'+esc(x.wa)+' · '+esc(x.address)+'</small></div>'+
+    '<div class="r">'+(x.status === "approved" ? '<button class="linkbtn small dangerc" data-act="own-buyer-do" data-id="'+esc(x.id)+'" data-v="0">Cabut</button>' : '<button class="linkbtn small" data-act="own-buyer-do" data-id="'+esc(x.id)+'" data-v="1">Setujui</button>')+'</div></div>').join("") : '<div class="muted small">Belum ada.</div>')+'</div>';
+  return h;
+}
 function ownerReportsTab(){
   const list = S.own.reports;
   if(!list){ loadOwnerReports(); return '<div class="empty">'+I("loader")+' Memuat laporan…</div>'; }
@@ -4731,7 +4812,7 @@ document.addEventListener("click", async e => {
   if(a === "proof-view"){ proofView(el.dataset.id); return; }
   if(a === "own-fraud"){ fraudOpen(); return; }
   if(a === "own-audit"){
-    const AL = {"wallet.adjust":"Sesuaikan saldo","wallet.cfg":"Ubah pengaturan saldo/komisi","topup.decide":"Putusan isi saldo","place.delete":"Hapus tempat", "comm.exempt":"Bebas komisi", "fraud.cfg":"Aturan kecurangan", "driver.verify":"Verifikasi driver","driver.active":"Aktif/nonaktif driver","driver.delete":"Hapus driver","store.active":"Aktif/nonaktif toko","store.delete":"Hapus toko","order.set":"Ubah status order","report.set":"Tangani laporan","areas.save":"Ubah wilayah","owner.setpass":"Ganti password owner"};
+    const AL = {"wallet.adjust":"Sesuaikan saldo","wallet.cfg":"Ubah pengaturan saldo/komisi","topup.decide":"Putusan isi saldo","place.delete":"Hapus tempat", "comm.exempt":"Bebas komisi", "fraud.cfg":"Aturan kecurangan", "buyer.decide":"Putusan akun pembeli", "buyer.gate":"Gerbang akun pembeli", "driver.verify":"Verifikasi driver","driver.active":"Aktif/nonaktif driver","driver.delete":"Hapus driver","store.active":"Aktif/nonaktif toko","store.delete":"Hapus toko","order.set":"Ubah status order","report.set":"Tangani laporan","areas.save":"Ubah wilayah","owner.setpass":"Ganti password owner"};
     document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Jejak audit</h2><div id="auditBox" class="muted small">Memuat…</div><div class="actions"><button type="button" class="btn ghost" onclick="closeModal()">Tutup</button></div></div></div>';
     try{
       const rows = SB ? await sbStore.rpc("jt_owner_audit", {p_limit:100}) : [];
@@ -4847,7 +4928,7 @@ function startListening(){
   if(SB){
     S.mode = "supabase";
     try{ ME = localStorage.getItem("jt_uid") || ""; if(!ME){ ME = uid("u"); localStorage.setItem("jt_uid", ME); } }catch(e){ ME = uid("u"); }
-    refreshMyStores(); startListening(); if(S.role === "driver") startDriver(); if(S.role === "owner") startOwner(); startChatPoll(); render(); return;
+    refreshMyStores(); loadBuyer(); startListening(); if(S.role === "driver") startDriver(); if(S.role === "owner") startOwner(); startChatPoll(); render(); return;
   }
   try{
     if(window.claude && typeof window.claude.use === "function"){
