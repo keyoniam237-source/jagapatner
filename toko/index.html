@@ -2212,6 +2212,7 @@ function viewOrder(){
   } else if(o.status === "selesai"){
     h += '<div class="paybox">'+I("badge")+' Pesanan selesai. Terima kasih sudah belanja!'+(typeof o.ongkirFinal==="number"?'<div class="small" style="margin-top:6px">Ongkir dibayar ke driver'+(o.driver?' '+esc(o.driver.name):'')+': <b>'+rp(o.ongkirFinal)+'</b></div>':'')+'</div>';
   }
+  h += proofBtn(o);
   if(o.proof && o.status !== "menunggu_pembayaran") h += '<div class="small muted" style="margin-top:10px">Bukti pembayaran Anda:</div><img class="proof" alt="Bukti pembayaran" src="'+esc(o.proof)+'">';
   h += '<div class="actions">'+chatBtn(o, "pembeli", "Chat toko & driver", "ghost sm")+
     (["menunggu_pembayaran","menunggu_konfirmasi"].includes(o.status) || (o.status==="diproses" && o.pay && o.pay.k==="cod" && false) ?'<button class="btn danger sm" data-act="buyer-cancel" data-id="'+esc(o.id)+'">Batalkan pesanan</button>':'')+'</div>';
@@ -2325,6 +2326,7 @@ function orderCard(s, o){
     }
     if(o.status==="mencari_driver"){ info = searchBox(o, "Mencari driver terdekat dari toko Anda…", true); acts = (searchElapsed(o) >= 210 ? '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">Cari ulang</button>' : '')+selfBtn; }
     if(o.status==="driver_ke_toko"){ info = driverBox(o, "Driver menuju toko Anda. Siapkan pesanan."+(cod?" (COD — atur pembayaran barang dengan driver)":""), true) + liveMap(o, "toko"); }
+    if(o.status==="selesai") info += proofBtn(o);
     if(o.status==="diantar"){ if(o.driverId) info = driverBox(o, "Pesanan sedang diantar driver ke pembeli.", true); else acts = '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="selesai">Tandai selesai</button>'; }
     if(!["selesai","dibatalkan","diantar"].includes(o.status)) acts += '<button class="btn danger sm" data-act="seller-cancel" data-id="'+esc(o.id)+'">Tolak / batalkan</button>';
     if(o.status==="menunggu_konfirmasi" && s && typeof s.lat !== "number") info += '<div class="small" style="margin-top:8px;color:var(--warn);font-weight:600">'+I("pin")+' Lokasi toko belum diatur — driver dicari dari semua yang online. Atur di Pengaturan agar dapat driver terdekat.</div>';
@@ -2582,6 +2584,56 @@ function openProdModal(pid){
 function confirmModal(text, okLabel, fn){
   document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><p style="margin-top:0;font-weight:600">'+esc(text)+'</p><div class="actions"><button class="btn danger" id="cOk">'+esc(okLabel)+'</button><button class="btn ghost" data-act="close-modal">Batal</button></div></div></div>';
   document.getElementById("cOk").onclick = async () => { closeModal(); await fn(); };
+}
+
+
+/* Foto bukti jemput/antar: opsional (atau wajib bila owner mengaktifkan). Foto dikompres lalu dikirim ke server. */
+async function proofReq(){
+  if(!SB) return false;
+  if(S.proofReq === undefined){ try{ const { data } = await SB.rpc("jt_fraud_cfg"); S.proofReq = !!(data && data.proofReq); }catch(_){ S.proofReq = false; } }
+  return S.proofReq;
+}
+async function proofConfirm(text, okLabel, fn){
+  const req = await proofReq();
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><p style="margin-top:0;font-weight:600">'+esc(text)+'</p>'+
+    '<label class="f">Foto bukti '+(req ? '(wajib)' : '(disarankan)')+'</label><input type="file" accept="image/*" capture="environment" class="in" id="proofPhoto"><div class="hint">Foto paket/serah terima melindungi Anda bila ada sengketa.</div>'+
+    '<div class="actions"><button class="btn danger" id="cOk">'+esc(okLabel)+'</button><button class="btn ghost" data-act="close-modal">Batal</button></div></div></div>';
+  document.getElementById("cOk").onclick = async () => {
+    const f = document.getElementById("proofPhoto").files[0];
+    if(req && !f) return toast("Foto bukti wajib diunggah.");
+    let photo = ""; if(f){ try{ photo = await compressImage(f, 800); }catch(_){ return toast("Foto tidak bisa dibaca, coba foto lain."); } }
+    closeModal(); await fn(photo);
+  };
+}
+function proofBtn(o){
+  if(!SB || !(o.hasPickPhoto || o.hasDonePhoto)) return "";
+  return '<button class="btn ghost sm" style="margin-top:8px" data-act="proof-view" data-id="'+esc(o.id)+'">'+I("receipt")+' Lihat foto bukti</button>';
+}
+async function proofView(id){
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Foto bukti</h2><div id="proofBox" class="muted small">Memuat…</div><div class="actions"><button type="button" class="btn ghost" onclick="closeModal()">Tutup</button></div></div></div>';
+  try{
+    const r = await sbStore.rpc("jt_proof_get", {p_order:id}); const box = document.getElementById("proofBox"); if(!box) return;
+    const L = {pick:"Saat diambil dari toko", done:"Saat diserahkan ke pembeli"};
+    const k = Object.keys(r || {});
+    box.innerHTML = k.length ? k.map(x => '<div class="small muted" style="margin-top:8px">'+esc(L[x] || x)+' · '+esc(new Date(r[x].at).toLocaleString("id-ID"))+'</div><img class="proof" style="max-width:100%" alt="Foto bukti" src="'+esc(r[x].photo)+'">').join("") : "Belum ada foto.";
+  }catch(err){ const box = document.getElementById("proofBox"); if(box) box.textContent = "Gagal memuat: " + String(err.message || err); }
+}
+const FR_RULE = {fast_done:"Selesai terlalu cepat", ongkir_high:"Ongkir jauh di atas estimasi", pair_repeat:"Driver & pembeli sama berulang", cancel_many:"Sering dibatalkan pembeli", no_photo:"Tanpa foto bukti"};
+function fraudCard(){
+  return '<div class="card pad"><h3 class="sub">Deteksi kecurangan</h3><div class="hint">Menandai pola mencurigakan 14 hari terakhir untuk Anda tinjau. Tidak ada akun yang dihukum otomatis.</div><button class="btn ghost sm" data-act="own-fraud">'+I("shield")+' Periksa sekarang</button></div>';
+}
+async function fraudOpen(){
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Deteksi kecurangan</h2><div id="frBox" class="muted small">Memeriksa…</div><div class="actions"><button type="button" class="btn ghost" onclick="closeModal()">Tutup</button></div></div></div>';
+  try{
+    if(!SB) throw new Error("Aktif pada mode online.");
+    const r = await sbStore.rpc("jt_owner_fraud_scan", {}); const box = document.getElementById("frBox"); if(!box) return;
+    const c = r.cfg || {}, fl = r.flags || [], sev = {high:"Tinggi", med:"Sedang", low:"Rendah"};
+    box.innerHTML = '<form id="frCfg" class="card pad" style="margin:0 0 12px"><label class="f" style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="proofReq" '+(c.proofReq?'checked':'')+'> Wajibkan driver mengunggah foto bukti</label>'+
+      '<div class="row2"><div><label class="f">Selesai tercepat (detik)</label><input class="in" name="fastSec" type="number" min="10" value="'+esc(c.fastSec)+'"></div><div><label class="f">Batas ongkir (× estimasi)</label><input class="in" name="ongkirX" type="number" step="0.1" min="1.2" value="'+esc(c.ongkirX)+'"></div></div>'+
+      '<div class="row2"><div><label class="f">Ulang driver-pembeli (≥)</label><input class="in" name="pairN" type="number" min="2" value="'+esc(c.pairN)+'"></div><div><label class="f">Batal pembeli 24 jam (≥)</label><input class="in" name="cancelN" type="number" min="2" value="'+esc(c.cancelN)+'"></div></div>'+
+      '<button class="btn sm" type="submit">Simpan aturan</button></form>'+
+      (fl.length ? fl.map(x => '<div class="orow"><div class="grow"><b>'+esc(FR_RULE[x.rule] || x.rule)+'</b><small>'+esc(x.ref)+' · '+esc(x.who)+'</small><small>'+esc(x.detail)+'</small></div><div class="r"><small>'+esc(sev[x.sev] || x.sev)+'</small><small>'+esc(new Date(x.at).toLocaleDateString("id-ID"))+'</small></div></div>').join("") : '<div class="muted">Tidak ada tanda mencurigakan. 👍</div>');
+  }catch(err){ const box = document.getElementById("frBox"); if(box) box.textContent = "Gagal memuat: " + String(err.message || err); }
 }
 
 /* ============ Aksi ============ */
@@ -3702,7 +3754,7 @@ function driverBox(o, text, compact){
   }
   return '<div class="drvbox"><div class="drv-av">'+E("scooter")+'</div><div class="grow"><small>'+esc(text)+'</small><b>'+esc(d.name || "Driver")+' '+driverStars(o.driverId)+'</b>'+
     '<div class="small muted">'+esc([d.vehicle, d.plate].filter(Boolean).join(" · "))+(near ? ' · <b class="near">'+near+'</b>' : '')+'</div></div>'+
-    chatBtn(o, compact ? "toko" : "pembeli", "Chat")+'</div>';
+    chatBtn(o, compact ? "toko" : "pembeli", "Chat")+'</div>'+proofBtn(o);
 }
 function ongkirNego(o){
   const est = ongkirEstOf(o), cod = o.pay && o.pay.k === "cod";
@@ -3849,14 +3901,16 @@ document.addEventListener("click", async e => {
   const rj = (S.drv.offers || []).concat(S.drv.mine || []).find(o => o.id === id); const ride = isRide(rj);
   if(a === "drv-accept"){ el.disabled = true; await drvDo(() => DRV.act(id, "accept"), ride ? "Order Jago diambil! Segera jemput penumpang." : "Pesanan diambil! Segera menuju toko."); return; }
   if(a === "drv-decline"){ await drvDo(() => DRV.act(id, "decline")); return; }
-  if(a === "drv-pickup"){ confirmModal(ride ? "Penumpang sudah naik dan siap berangkat?" : "Pesanan sudah diambil dari toko dan siap diantar?", ride ? "Ya, berangkat" : "Ya, antar sekarang", () => drvDo(() => DRV.act(id, "pickup"), ride ? "Selamat jalan, hati-hati di jalan!" : "Selamat mengantar!")); return; }
+  if(a === "drv-pickup"){
+    if(!ride && SB){ proofConfirm("Pesanan sudah diambil dari toko dan siap diantar?", "Ya, antar sekarang", ph => drvDo(() => DRV.act(id, "pickup", ph ? {photo:ph} : null), "Selamat mengantar!")); return; }
+    confirmModal(ride ? "Penumpang sudah naik dan siap berangkat?" : "Pesanan sudah diambil dari toko dan siap diantar?", ride ? "Ya, berangkat" : "Ya, antar sekarang", () => drvDo(() => DRV.act(id, "pickup"), ride ? "Selamat jalan, hati-hati di jalan!" : "Selamat mengantar!")); return; }
   if(a === "drv-release"){ confirmModal(ride ? "Batal mengambil order Jago ini? Order akan ditawarkan ke driver lain." : "Batal mengambil pesanan ini? Pesanan akan ditawarkan ke driver lain.", "Batal ambil", () => drvDo(() => DRV.act(id, "release"), "Pesanan dilepas")); return; }
   if(a === "drv-done"){
     const inp = document.getElementById("ongkir-" + id);
     const v = parseInt(String(inp ? inp.value : "").replace(/\D/g, ""), 10);
     if(!isFinite(v) || v < 0) return toast(ride ? "Isi tarif yang disepakati." : "Isi ongkir yang disepakati.");
     if(ride){ confirmModal("Sudah sampai tujuan dengan tarif " + rp(v) + "? Komisi 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Perjalanan selesai. Tarif " + rp(v) + " tercatat.")); return; }
-    confirmModal("Pesanan sudah diterima pembeli dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat."));
+    (SB ? proofConfirm : (t, l, f) => confirmModal(t, l, () => f("")))("Pesanan sudah diterima pembeli dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", ph => drvDo(() => DRV.act(id, "done", ph ? {ongkir:v, photo:ph} : {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat."));
     return;
   }
   if(a === "self-deliver"){
@@ -6074,6 +6128,7 @@ function ownerWalletTab(D){
     return '<div class="orow"><div class="grow"><b>'+esc(d.name)+'</b><small>Potongan 3% terpotong: '+rp(f)+' · '+(PT["drv:"+d.id]||0)+' poin</small></div><div class="r"><b class="'+(low?'neg':'')+'">'+rp(b)+'</b>'+(low?'<small class="warnc">order tidak masuk</small>'+'<button class="linkbtn small" data-act="own-msg" data-v="drv:'+esc(d.id)+'">Ingatkan lewat pesan</button>':'')+
       '<button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">Sesuaikan</button></div></div>';
   }).join("") : '<div class="muted small">Belum ada driver.</div>')+'</div>';
+  h += fraudCard();
   h += '<div class="card pad"><h3 class="sub">Jejak audit</h3><div class="hint">Catatan permanen semua tindakan owner (saldo, verifikasi, hapus, pengaturan). Tidak bisa diubah atau dihapus.</div><button class="btn ghost sm" data-act="own-audit">'+I("receipt")+' Lihat 100 catatan terakhir</button></div>';
   h += '<form class="card pad" id="walletCfg"><h3 class="sub">Pengaturan saldo</h3>'+
     '<div class="cols2"><div><label class="f">Minimal saldo (Rp)</label><input class="in" name="minBalance" inputmode="numeric" value="'+esc(c.minBalance)+'"></div><div><label class="f">Bonus toko/driver baru (Rp)</label><input class="in" name="bonus" inputmode="numeric" value="'+esc(c.bonus)+'"></div></div>'+
@@ -6124,6 +6179,8 @@ document.addEventListener("click", async e => {
     RD.filter(r => (r.createdAt || 0) >= f).sort((a,b) => (a.createdAt||0) - (b.createdAt||0)).forEach(r => rows.push(["Jago", csvDate(r.createdAt), r.code || r.id, "", r.status, r.fareFinal || r.fareEst || 0, 0, 0, r.status === "selesai" ? (r.fee || 0) : 0]));
     csvDownload("transaksi-jaga-" + new Date().toISOString().slice(0,10) + ".csv", rows); toast("Transaksi diunduh"); return;
   }
+  if(a === "proof-view"){ proofView(el.dataset.id); return; }
+  if(a === "own-fraud"){ fraudOpen(); return; }
   if(a === "own-audit"){
     const AL = {"wallet.adjust":"Sesuaikan saldo","wallet.cfg":"Ubah pengaturan saldo/komisi","topup.decide":"Putusan isi saldo","driver.verify":"Verifikasi driver","driver.active":"Aktif/nonaktif driver","driver.delete":"Hapus driver","store.active":"Aktif/nonaktif toko","store.delete":"Hapus toko","order.set":"Ubah status order","report.set":"Tangani laporan","areas.save":"Ubah wilayah","owner.setpass":"Ganti password owner"};
     document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Jejak audit</h2><div id="auditBox" class="muted small">Memuat…</div><div class="actions"><button type="button" class="btn ghost" onclick="closeModal()">Tutup</button></div></div></div>';
@@ -6170,6 +6227,12 @@ document.addEventListener("submit", async e => {
       await OWAL.cfg(d); applyComm(d); toast("Pengaturan saldo disimpan");
     }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
     await loadOwnerWallet(); render();
+  }
+  if(f.id === "frCfg"){
+    e.preventDefault(); const fd = new FormData(f);
+    try{ await sbStore.rpc("jt_owner_fraud_cfg", {p_data:{proofReq:fd.get("proofReq") === "on", fastSec:+fd.get("fastSec"), ongkirX:+fd.get("ongkirX"), pairN:+fd.get("pairN"), cancelN:+fd.get("cancelN")}}); S.proofReq = undefined; toast("Aturan disimpan"); fraudOpen(); }
+    catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/,"")); }
+    return;
   }
   if(f.id === "adjForm"){
     e.preventDefault();
