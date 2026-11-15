@@ -33,6 +33,7 @@ begin
   select count(*) into n from public.jt_audit where action = 'place.delete' and actor = 'zz_test_owner';
   insert into _t values ('P13 hapus tercatat di audit', n = 1, n::text);
   insert into _t select 'P14 tabel tertutup untuk anon/authenticated', not (has_table_privilege('anon', 'public.jt_places', 'select') or has_table_privilege('authenticated', 'public.jt_places', 'select')), '';
+  insert into _t values ('P15 kata kunci abaikan spasi/titik/urutan', jsonb_array_length(public.jt_place_search('sd 010', null, null)) = 1 and jsonb_array_length(public.jt_place_search('ujung batu pasar', null, null)) >= 1 and jsonb_array_length(public.jt_place_search('x', null, null)) = 0, '');
   select string_agg(case when ok then 'PASS ' else 'FAIL ' end || tn || coalesce(' [' || left(info, 80) || ']', ''), E'\n' order by tn) into res from _t;
   raise exception 'RESULT %', E'\n' || res;
 end $tests$;

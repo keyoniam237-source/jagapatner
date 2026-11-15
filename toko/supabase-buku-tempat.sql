@@ -8,20 +8,23 @@ create index if not exists jt_places_name on public.jt_places (lower(name));
 alter table public.jt_places enable row level security;
 revoke all on public.jt_places from anon, authenticated;
 
--- cari: buku tempat + toko aktif (publik; hanya nama/alamat/titik)
+-- cari: buku tempat + toko aktif (publik). Pencocokan mengabaikan spasi/titik/urutan kata ("sd 010" = "SD N. 010", "ujung batu" = "Ujungbatu")
 create or replace function public.jt_place_search(p_q text, p_lat double precision default null, p_lng double precision default null) returns jsonb
 language plpgsql stable security definer set search_path to 'public' as $$
-declare q text := lower(trim(coalesce(p_q, ''))); pat text;
+declare toks text[];
 begin
-  if length(q) < 2 then return '[]'::jsonb; end if;
-  pat := '%' || replace(replace(q, '%', ''), '_', '') || '%';
+  select coalesce(array_agg(t), '{}') into toks from (
+    select regexp_replace(x, '[^a-z0-9]', '', 'g') t from unnest(regexp_split_to_array(lower(trim(coalesce(p_q, ''))), '\s+')) x) s where t <> '';
+  if coalesce(array_length(toks, 1), 0) = 0 or length(array_to_string(toks, '')) < 2 then return '[]'::jsonb; end if;
   return coalesce((select jsonb_agg(x) from (
     select * from (
-      select name, addr as address, lat, lng, 'jaga' as src, uses as w from public.jt_places where lower(name) like pat or lower(addr) like pat
+      select name, addr as address, lat, lng, 'jaga' as src, uses as w from public.jt_places p
+       where not exists (select 1 from unnest(toks) k where regexp_replace(lower(p.name || ' ' || p.addr), '[^a-z0-9]', '', 'g') not like '%' || k || '%')
       union all
       select data->>'name', coalesce(data->>'address', ''), (data->>'lat')::double precision, (data->>'lng')::double precision, 'toko', 0
-        from public.docs where id ~ '^stores/[^/]+$' and coalesce(data->>'active', 'true') <> 'false'
-         and jsonb_typeof(data->'lat') = 'number' and jsonb_typeof(data->'lng') = 'number' and lower(data->>'name') like pat
+        from public.docs d where id ~ '^stores/[^/]+$' and coalesce(data->>'active', 'true') <> 'false'
+         and jsonb_typeof(data->'lat') = 'number' and jsonb_typeof(data->'lng') = 'number'
+         and not exists (select 1 from unnest(toks) k where regexp_replace(lower(data->>'name'), '[^a-z0-9]', '', 'g') not like '%' || k || '%')
     ) u order by (case when p_lat is null then 0 else (u.lat - p_lat)^2 + (u.lng - p_lng)^2 end), w desc limit 8) x), '[]'::jsonb);
 end $$;
 grant execute on function public.jt_place_search(text, double precision, double precision) to anon, authenticated;
@@ -60,3 +63,12 @@ begin
   return jsonb_build_object('ok', true);
 end $$;
 grant execute on function public.jt_owner_place_del(uuid, text) to anon, authenticated;
+
+-- Data awal (dari tautan Google Maps yang diberikan owner, 15 Nov 2026)
+insert into public.jt_places (name, addr, lat, lng, uses) select * from (values
+  ('SD N. 010 Ujungbatu', 'Ujungbatu, Rokan Hulu', 0.70786, 100.54544, 1),
+  ('SMK Negeri 1 Ujungbatu', 'Ujungbatu, Rokan Hulu', 0.7178906, 100.5594241, 1),
+  ('Pasar Baru Ujung Batu', 'Ujungbatu, Rokan Hulu', 0.7077657, 100.5272828, 1),
+  ('Indomaret Sudirman 2 Ujungbatu', 'Jl. Sudirman, Ujungbatu, Rokan Hulu', 0.7035258, 100.544647, 1),
+  ('Pondok Pesantren Riyadhul Ulum Ujung Batu (LDII)', 'Ujungbatu, Rokan Hulu', 0.7117148, 100.5505075, 1)) v(n, a, la, lo, u)
+where not exists (select 1 from public.jt_places p where lower(p.name) = lower(v.n));
