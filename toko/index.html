@@ -1315,6 +1315,149 @@ body.is-owner .dtop{z-index:20}
 .rgrp .rh .e3d{width:28px;height:28px}
 .rgrp ol{margin:6px 0 0;padding-left:20px;color:#3d4b66;font-size:13px;line-height:1.5}
 .rgrp li{margin:3px 0}
+.stk-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.stk-bar .tabs{flex:1}
+.stk-head{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.stk-head .in{max-width:260px}
+.stk-row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.stk-row:last-child{border-bottom:0}
+.stk-num{min-width:76px;text-align:center;border-radius:14px;padding:6px 8px;background:#eef4ff}
+.stk-num b{display:block;font-size:22px;letter-spacing:-.03em;line-height:1.1;color:#1f4fd1}
+.stk-num small{font-size:11px;font-weight:700;color:var(--muted)}
+.stk-num.low{background:var(--warn-soft)} .stk-num.low b{color:var(--warn)}
+.stk-num.out{background:var(--danger-soft)} .stk-num.out b{color:var(--danger)}
+.stk-num.na{background:#f2f4f8} .stk-num.na b{color:var(--muted)}
+.stk-acts{display:flex;flex-direction:column;gap:6px}
+.stk-acts .btn{white-space:nowrap}
+.stk-log .li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.stk-log .li:last-child{border-bottom:0}
+.stk-ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;font-size:17px}
+.stk-ic.plus{background:#e7f7ee;color:#16a34a}.stk-ic.minus{background:var(--danger-soft);color:var(--danger)}.stk-ic.eq{background:#eef4ff;color:#2f6bff}
+.stk-q{font-weight:800;min-width:60px;text-align:right;font-size:16px}
+.stk-q small{display:block;font-size:11px;font-weight:600;color:var(--muted)}
+.stk-q.plus{color:#16a34a}.stk-q.minus{color:var(--danger)}.stk-q.eq{color:#2f6bff}
+.stk-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stk-seg label{cursor:pointer;position:relative}
+.stk-seg input{position:absolute;opacity:0;pointer-events:none}
+.stk-seg span{display:block;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;height:100%;box-sizing:border-box}
+.stk-seg input:checked+span{border-color:#2f6bff;background:#eef4ff}
+.stk-seg small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+@media(max-width:560px){.stk-seg{grid-template-columns:1fr}.stk-head .in{max-width:none}.stk-bar .tabs{flex-basis:100%}.stk-bar .btn{flex:1}.stk-row{flex-wrap:wrap;row-gap:8px}.stk-row .grow{flex:1 1 0;min-width:0}.stk-num{min-width:64px}.stk-acts{flex-direction:row;flex-basis:100%;justify-content:flex-end}}
+.stats .stat:first-child .small{color:rgba(255,255,255,.88)}
+/* ===== Portal owner v2 ===== */
+.tag.amber{background:#fff1d6;color:#92400e}
+.dangerc{color:var(--danger)!important;border-color:#f6c9cb!important}
+.oside{display:none}
+.otabs button{display:inline-flex;align-items:center;gap:6px}
+.otabs button .ic{font-size:16px}
+.otabs button em,.oside nav button em{font-style:normal;font-size:11px;font-weight:800;min-width:18px;height:18px;padding:0 5px;border-radius:99px;display:inline-grid;place-items:center;background:#ffd23f;color:#3d2c00}
+.otabs button em.red,.oside nav button em.red{background:#ff5a5f;color:#fff}
+.ohead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0 14px}
+.ohead h1{margin:0;font-size:22px;letter-spacing:-.03em}
+.ohead p{margin:2px 0 0;color:#6a7894;font-size:13px}
+.ohead-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ohead-r .oranges{margin:0}
+.otodo .tdh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.otodo .tdl{display:grid;gap:8px;margin-top:12px}
+.otodo .td{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid #f1e3c4;background:#fffaf0;border-radius:14px;padding:10px 12px;cursor:pointer;font:inherit;color:inherit}
+.otodo .td:hover{border-color:#f0c96b}
+.otodo .ti{width:36px;height:36px;border-radius:11px;background:#fff1d6;color:#b45309;display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.otodo .td b{display:block;font-size:14px}
+.otodo .td small{display:block;color:#7a869e;font-size:12px}
+.otodo .go{color:#b45309}
+.otool{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.otool .in{flex:1}
+.oacts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.ost .oacts{border-top:1px solid #eef1f6;padding-top:10px}
+.odrv.off{background:#fffaf0;margin:0 -10px;padding:10px;border-radius:12px}
+.focus{box-shadow:0 0 0 2px #2f6bff!important}
+.drv-av.st{background:linear-gradient(150deg,#e6f7ee,#c9eed9);color:#15803d}
+/* inbox */
+.inbox{display:grid;grid-template-columns:1fr;overflow:hidden;padding:0;min-height:520px}
+.ilist{padding:12px;border-right:1px solid #eef1f6;min-width:0}
+.itools{display:flex;gap:8px}
+.itools .in{flex:1;min-width:0}
+.ith{display:flex;gap:10px;width:100%;text-align:left;border:0;background:none;padding:10px;border-radius:14px;cursor:pointer;font:inherit;color:inherit;align-items:flex-start}
+.ith:hover{background:#f5f8fe}
+.ith.on{background:#eef4ff}
+.ith .drv-av{width:42px;height:42px;font-size:14px}
+.ith .r1{display:flex;justify-content:space-between;gap:8px}
+.ith .r1 small{color:#9aa6bd;font-size:11.5px;white-space:nowrap}
+.ith .r2{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:2px}
+.ith .r2 span{color:#6a7894;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ith .r2 em{font-style:normal;background:#ff5a5f;color:#fff;font-size:11px;font-weight:800;border-radius:99px;min-width:18px;height:18px;display:grid;place-items:center;padding:0 5px;flex-shrink:0}
+.ith.un .r2 span{color:var(--ink);font-weight:700}
+.ith .kind{display:block;color:#9aa6bd;font-size:11px;margin-top:2px}
+.iconv{display:flex;flex-direction:column;min-width:0;min-height:520px;background:#f7f9fd}
+.iconv.empty-c{display:grid;place-items:center}
+.ichead{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-bottom:1px solid #eef1f6}
+.ichead small{display:block;color:#6a7894;font-size:12px}
+.ichead .back{display:none}
+.sbody{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:6px;max-height:60vh;min-height:220px}
+.sday{align-self:center;font-size:11.5px;color:#7a869e;background:#eef1f6;border-radius:99px;padding:3px 10px;margin:8px 0 4px}
+.sb{max-width:78%;padding:9px 12px 6px;border-radius:16px;font-size:14px;line-height:1.45;box-shadow:0 2px 6px -4px rgba(10,22,51,.3)}
+.sb small{display:block;font-size:10.5px;opacity:.7;text-align:right;margin-top:2px}
+.sb .who{text-align:left;font-weight:800;opacity:1;color:#2f6bff;margin:0 0 2px}
+.sb.me{align-self:flex-end;background:linear-gradient(135deg,#2f6bff,#4d86ff);color:#fff;border-bottom-right-radius:6px}
+.sb.them{align-self:flex-start;background:#fff;border-bottom-left-radius:6px}
+.sempty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;color:#6a7894;padding:24px;margin:auto}
+.sempty .e3d{width:56px;height:56px;margin-bottom:6px}
+.sempty b{color:var(--ink)}
+.sempty span{font-size:13px;max-width:300px}
+.squick{display:flex;gap:6px;overflow-x:auto;padding:8px 12px 0;scrollbar-width:none}
+.squick .chip{font-size:12.5px;padding:7px 12px}
+.scomp{display:flex;gap:8px;align-items:flex-end;padding:10px 12px 12px}
+.scomp textarea{flex:1;resize:none;min-height:44px;max-height:140px;line-height:1.4}
+.smodal{padding:0!important;overflow:hidden;display:flex;flex-direction:column;max-width:520px}
+.smodal .shead{display:flex;align-items:center;gap:10px;padding:14px 16px;background:linear-gradient(120deg,#1a1033,#2d2370 55%,#18337a);color:#fff}
+.smodal .shead small{display:block;color:#c9d3ea;font-size:12px}
+.smodal .shead .ibtn{background:rgba(255,255,255,.14);color:#fff;box-shadow:none}
+.smodal .shead .jmark{width:28px;height:36px}
+.smodal .sbody{background:#f7f9fd;max-height:52vh}
+.sbadge{font-style:normal;background:#ff5a5f;color:#fff;font-size:10.5px;font-weight:800;border-radius:99px;min-width:17px;height:17px;display:inline-grid;place-items:center;padding:0 4px;margin-left:4px}
+.dtop .sup-btn{position:relative}
+.dtop .sup-btn .sbadge{position:absolute;top:-4px;right:-4px;margin:0}
+.supnote{display:flex;align-items:center;gap:12px;width:calc(100% - 32px);margin:0 16px 12px;padding:12px 14px;border:0;border-radius:16px;background:linear-gradient(120deg,#eef4ff,#e3ecff);cursor:pointer;text-align:left;font:inherit;color:inherit;box-shadow:0 0 0 1.5px #c9d8ff inset}
+.supnote>.ic{font-size:22px;color:#2f6bff}
+.supnote b{display:block}
+.supnote small{display:block;color:#6a7894;font-size:12px}
+.supnote em{font-style:normal;background:#ff5a5f;color:#fff;font-weight:800;font-size:12px;border-radius:99px;min-width:22px;height:22px;display:grid;place-items:center}
+body.is-seller .supnote{width:100%;margin:0 0 14px}
+@media(max-width:979px){
+  .hide-m{display:none!important}
+  .inbox .ilist{border-right:0}
+  .ichead .back{display:grid}
+  .iconv{min-height:70vh}
+  .sbody{max-height:none}
+}
+@media(min-width:980px){
+  body.is-owner #app.wrap{max-width:none;background:#f3f6fc}
+  .oshell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+  .oside{display:flex;flex-direction:column;position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#0b1a3d,#132a62);color:#fff;padding:22px 14px 18px;box-sizing:border-box}
+  .obrand{display:flex;align-items:center;gap:12px;padding:0 10px 22px}
+  .obrand .jmark{width:34px;height:44px}
+  .obrand b{display:block;letter-spacing:.24em;font-size:15px}
+  .obrand small{display:block;color:#9fb0d6;font-size:12px}
+  .oside nav{display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+  .oside nav button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:#c9d3ea;padding:11px 12px;border-radius:12px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;text-align:left}
+  .oside nav button .ic{font-size:19px;opacity:.85}
+  .oside nav button span{flex:1}
+  .oside nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+  .oside nav button.on{background:#fff;color:#0b1a3d;font-weight:800}
+  .oside nav button.on .ic{color:#2f6bff;opacity:1}
+  .ofoot{margin-top:auto;padding:12px 10px 0;border-top:1px solid rgba(255,255,255,.1)}
+  .ofoot a{color:#9fb0d6;font-size:13px;display:flex;align-items:center;gap:8px;text-decoration:none}
+  .omain{min-width:0}
+  .omain>.otop,.omain>.otabs{display:none}
+  .omain>.notice{margin:16px 32px 0}
+  .owrap{max-width:1200px;padding:26px 32px 48px}
+  .ohead h1{font-size:28px}
+  .okpi{grid-template-columns:repeat(6,1fr)}
+  .okpi .k.main{grid-column:span 2}
+  .inbox{grid-template-columns:340px 1fr}
+  .iconv{min-height:620px}
+  .sbody{max-height:520px}
+}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1599,7 +1742,8 @@ function renderNav(){
   const seller = S.role === "seller";
   document.body.classList.toggle("is-seller", seller);
   if(!seller){ renderAppNav(); return; }
-  const navs = S.view === "welcome" ? [] : seller ? NAV_SELLER : NAV_BUYER;
+  const curStore = seller ? (storeById(S.sellerStoreId) || myStores()[0]) : null;
+  const navs = S.view === "welcome" ? [] : seller ? (isGrocer(curStore) ? NAV_SELLER.slice(0,3).concat([{v:"seller", t:"stok", l:"Stok", ic:I("basket")}], NAV_SELLER.slice(3)) : NAV_SELLER) : NAV_BUYER;
   const activeB = {home:"home", store:"home", product:"home", cart:"cart", checkout:"cart", orders:"orders", order:"orders"}[S.view];
   const isOn = n => seller ? (S.view === "seller" && S.sellerTab === n.t) || (S.view === "register" && n.t === "ringkasan") : activeB === n.v;
   const badge = n => { const c = n.v==="cart" ? cartCount() : n.v==="orders" ? myActiveOrders() : n.t==="pesanan" ? sellerPending() : 0; return c ? '<span class="badge">'+c+'</span>' : ""; };
@@ -2031,18 +2175,22 @@ function viewSeller(){
   S.sellerStoreId = s.id;
   if(prodUnsubFor !== s.id) setTimeout(() => watchProducts(s.id), 0);
   const orders = S.orders.filter(o => o.storeId === s.id);
-  const titles = {ringkasan:"Ringkasan", pesanan:"Pesanan masuk", produk:"Produk", laporan:"Laporan penjualan", saldo:"Saldo & bagi hasil", pengaturan:"Pengaturan & pembayaran"};
+  const titles = {ringkasan:"Ringkasan", pesanan:"Pesanan masuk", produk:"Produk", laporan:"Laporan penjualan", stok:"Stok & pencatatan barang", saldo:"Saldo & bagi hasil", pengaturan:"Pengaturan & pembayaran"};
   let h = '<div class="dash-hero">'+avatarHtml(s)+'<div class="grow"><div class="small muted">'+esc(titles[S.sellerTab]||"")+'</div><h2>'+esc(s.name)+'</h2><div class="small muted">'+esc(s.category)+' · '+esc(s.area||"")+'</div></div>'+
     '<div class="actions" style="margin:0;align-items:center">'+(ms.length>1?'<select class="in" style="width:auto" data-act="pick-store">'+ms.map(m=>'<option value="'+esc(m.id)+'" '+(m.id===s.id?"selected":"")+'>'+esc(m.name)+'</option>').join("")+'</select>':'')+
     '<span class="switch '+(s.open===false?"":"on")+'" data-act="toggle-open"><i></i>'+(s.open===false?"Toko tutup":"Toko buka")+'</span>'+
     '<button class="btn ghost sm" data-act="preview-store" data-id="'+esc(s.id)+'">'+I("eye")+' Lihat toko</button>'+
     '<button class="btn ghost sm" data-act="store-link" data-id="'+esc(s.id)+'">'+I("megaphone")+' Salin link toko</button>'+
+    '<button class="btn ghost sm sup-btn" data-act="sup-open" data-v="store:'+esc(s.id)+'">'+I("chat")+' Tanya JAGA'+supBadge("store:"+s.id)+'</button>'+
     '<button class="btn ghost sm" data-act="go" data-v="register" data-new="1">+ Toko baru</button></div></div>';
+  if(s.active === false) h += '<div class="notice warnbox">'+I("bell")+' <b>Toko Anda sedang dinonaktifkan tim JAGA</b> dan tidak tampil di aplikasi pembeli. <button class="linkbtn" data-act="sup-open" data-v="store:'+esc(s.id)+'">Tanya tim JAGA</button></div>';
+  if((S.sup.unread||{})["store:"+s.id]) h += '<button class="supnote" data-act="sup-open" data-v="store:'+esc(s.id)+'">'+I("chat")+'<div class="grow"><b>Ada pesan baru dari tim JAGA</b><small>Ketuk untuk membaca dan membalas</small></div><em>'+S.sup.unread["store:"+s.id]+'</em></button>';
   h += pushCard("store", "Bunyikan notifikasi saat ada pesanan baru, walau aplikasi ditutup.");
   if(S.sellerTab === "ringkasan") h += sellerDashboard(s, orders);
   else if(S.sellerTab === "pesanan") h += sellerOrders(s, orders);
   else if(S.sellerTab === "produk") h += sellerProducts(s);
   else if(S.sellerTab === "laporan") h += sellerReport(s, orders);
+  else if(S.sellerTab === "stok") h += isGrocer(s) ? sellerStock(s, orders) : sellerProducts(s);
   else if(S.sellerTab === "saldo") h += sellerWallet(s);
   else h += storeForm(s) + storeLoginSettings(s) + (SB ? '<div class="card pad" style="margin-top:16px"><h3 class="sub">'+I("settings")+' Kode akses toko</h3><p class="small muted" style="margin:0 0 12px">Kode ini membuktikan bahwa Anda pemilik toko. Gunakan untuk membuka dashboard di HP/laptop lain. <b>Jangan bagikan ke siapa pun.</b></p><div class="actions"><button class="btn ghost sm" data-act="akses-copy">Salin kode akses</button><button class="btn ghost sm" data-act="akses">Masuk dengan kode lain</button></div></div>' : '');
   return h;
@@ -2077,7 +2225,7 @@ function sellerDashboard(s, orders){
     '<div class="card qa" data-act="nav" data-v="seller" data-t="laporan"><div class="ico">'+I("chart")+'</div><div><b>Laporan</b><span class="small muted">Omzet & terlaris</span></div></div></div>';
   h += '<div class="sec-head"><h2 style="font-size:20px">Perlu tindakan</h2>'+(need.length?'<button class="btn ghost sm" data-act="nav" data-v="seller" data-t="pesanan">Semua pesanan →</button>':'')+'</div>';
   h += need.length ? need.slice(0,5).map(o => orderCard(s,o)).join("") : '<div class="empty card"><div class="big">'+I("coffee")+'</div><b>Semua beres.</b><p>Pesanan baru akan muncul di sini.</p></div>';
-  if(low.length) h += '<div class="card pad" style="margin-top:16px"><h3 class="sub">Stok menipis</h3>'+low.map(p=>'<div class="line-item"><div class="thumb">'+(p.img?'<img alt="" src="'+esc(p.img)+'">':I("package"))+'</div><div class="grow"><b>'+esc(p.name)+'</b><div class="small muted">Sisa '+p.stock+'</div></div><button class="btn ghost sm" data-act="edit-prod" data-id="'+esc(p.id)+'">Tambah stok</button></div>').join("")+'</div>';
+  if(low.length) h += '<div class="card pad" style="margin-top:16px"><h3 class="sub">Stok menipis</h3>'+low.map(p=>'<div class="line-item"><div class="thumb">'+(p.img?'<img alt="" src="'+esc(p.img)+'">':I("package"))+'</div><div class="grow"><b>'+esc(p.name)+'</b><div class="small muted">Sisa '+p.stock+'</div></div><button class="btn ghost sm" data-act="'+(isGrocer(s)?"stk-in":"edit-prod")+'" data-id="'+esc(p.id)+'">Tambah stok</button></div>').join("")+'</div>';
   return h;
 }
 function sellerOrders(s, orders){
@@ -2128,6 +2276,135 @@ function sellerProducts(s){
     '<div class="line-item"><div class="thumb">'+(p.img?'<img alt="" src="'+esc(p.img)+'">':I("package"))+'</div><div class="grow"><div style="font-weight:700">'+esc(p.name)+' '+(p.active===false?'<span class="tag gray">Disembunyikan</span>':'')+'</div><div class="small muted">'+rp(p.price)+(typeof p.stock==="number"?' · stok '+p.stock:' · stok tidak dibatasi')+'</div></div>'+
     '<button class="btn ghost sm" data-act="edit-prod" data-id="'+esc(p.id)+'">Ubah</button></div>').join("")+'</div>';
 }
+
+/* ============ Stok & pencatatan barang (khusus toko sembako) ============ */
+const isGrocer = st => !!st && /sembako/i.test(st.category || "");
+S.stk = {p:7, f:"semua", log:{}};
+const STK = {
+  async add(sid, pid, type, qty, note){
+    if(SB) return await sbStore.rpc("jt_stock_add", {p_store:sid, p_pid:pid, p_type:type, p_qty:qty, p_note:note});
+    const p = (S.products[sid] || []).find(x => x.id === pid); if(!p) throw srvErr("Barang tidak ditemukan");
+    const old = typeof p.stock === "number" ? p.stock : null; let nw;
+    if(type === "masuk") nw = (old || 0) + qty;
+    else if(type === "keluar"){ if((old || 0) < qty) throw srvErr("Stok tidak cukup (sisa " + (old || 0) + ")"); nw = (old || 0) - qty; }
+    else nw = qty;
+    await store.update("stores/" + sid + "/products/" + pid, {stock:nw});
+    const e = {t:Date.now(), pid, name:p.name, type, qty, before:old, after:nw, note:(note || "").slice(0, 120)};
+    const k = "jt_stocklog_" + sid; let a = []; try{ a = JSON.parse(localStorage.getItem(k) || "[]"); }catch(_){}
+    a.unshift(e); try{ localStorage.setItem(k, JSON.stringify(a.slice(0, 300))); }catch(_){}
+    return e;
+  },
+  async list(sid){
+    if(SB) return (await sbStore.rpc("jt_stock_log", {p_store:sid})) || [];
+    try{ return JSON.parse(localStorage.getItem("jt_stocklog_" + sid) || "[]"); }catch(_){ return []; }
+  }
+};
+async function loadStockLog(sid){
+  try{ S.stk.log[sid] = await STK.list(sid); }catch(e){ S.stk.log[sid] = S.stk.log[sid] || []; }
+  if(S.role === "seller" && S.sellerTab === "stok" && !typing()) scheduleRender();
+}
+const stkMin = p => typeof p.minStock === "number" ? p.minStock : 5;
+function stkFrom(days){ const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - (days - 1)); return d.getTime(); }
+function stkSold(orders, days){
+  const from = stkFrom(days), m = {};
+  orders.filter(o => o.status === "selesai" && (o.doneAt || o.createdAt || 0) >= from).forEach(o => (o.items || []).forEach(i => { const x = m[i.pid] = m[i.pid] || {q:0, rp:0}; x.q += i.qty; x.rp += i.qty * (i.price || 0); }));
+  return m;
+}
+function stkStat(l, v, sub, color){ return '<div class="card stat"><div class="l">'+l+'</div><div class="v"'+(color?' style="color:'+color+'"':'')+'>'+v+'</div><div class="small muted">'+sub+'</div></div>'; }
+function sellerStock(s, orders){
+  const prods = S.products[s.id];
+  if(!prods) return '<div class="empty">'+I("loader")+' Memuat…</div>';
+  if(S.stk.log[s.id] === undefined){ S.stk.log[s.id] = null; loadStockLog(s.id); }
+  if(!prods.length) return '<div class="empty card"><div class="big">'+I("basket")+'</div><b>Belum ada barang.</b><p>Tambahkan barang di menu Produk, lalu catat stoknya di sini.</p><button class="btn sm" data-act="edit-prod">+ Tambah barang</button></div>';
+  const P = S.stk.p, sold = stkSold(orders, P), act = {};
+  orders.filter(o => !["selesai","dibatalkan"].includes(o.status)).forEach(o => (o.items || []).forEach(i => { act[i.pid] = (act[i.pid] || 0) + i.qty; }));
+  const tracked = prods.filter(p => typeof p.stock === "number");
+  const isOut = p => typeof p.stock === "number" && p.stock <= 0, isLow = p => typeof p.stock === "number" && p.stock > 0 && p.stock <= stkMin(p);
+  const low = prods.filter(isLow), out = prods.filter(isOut), untracked = prods.length - tracked.length;
+  const units = tracked.reduce((a, p) => a + p.stock, 0), value = tracked.reduce((a, p) => a + p.stock * (p.price || 0), 0);
+  const soldQ = Object.values(sold).reduce((a, x) => a + x.q, 0), soldRp = Object.values(sold).reduce((a, x) => a + x.rp, 0);
+  const PL = {1:"hari ini", 7:"7 hari", 30:"30 hari"}[P];
+  let h = '<div class="stats">'+
+    stkStat("Stok tersisa", units.toLocaleString("id-ID")+" pcs", tracked.length+" dari "+prods.length+" barang dicatat")+
+    stkStat("Terjual "+PL, soldQ.toLocaleString("id-ID")+" pcs", rp(soldRp))+
+    stkStat("Nilai stok", rp(value), "harga jual × stok tersisa")+
+    stkStat("Perlu belanja", (low.length + out.length)+" barang", out.length+" habis · "+low.length+" menipis", (low.length + out.length) ? "var(--warn)" : "")+'</div>';
+  h += '<div class="stk-bar"><div class="tabs" style="margin:0">'+[[1,"Hari ini"],[7,"7 hari"],[30,"30 hari"]].map(t => '<button class="chip '+(P===t[0]?"on":"")+'" data-act="stk-p" data-v="'+t[0]+'">'+t[1]+'</button>').join("")+'</div>'+
+    '<button class="btn sm" data-act="stk-new">'+I("plus")+' Catat stok</button><button class="btn ghost sm" data-act="stk-csv">Unduh CSV</button></div>';
+  h += '<div class="card pad"><div class="stk-head"><h3 class="sub" style="margin:0">Daftar barang</h3><input class="in" id="stkq" placeholder="Cari barang…" autocomplete="off"></div>'+
+    '<div class="tabs" style="margin:10px 0 2px">'+[["semua","Semua",prods.length],["menipis","Menipis",low.length],["habis","Habis",out.length],["belum","Belum dicatat",untracked]].map(t => '<button class="chip '+(S.stk.f===t[0]?"on":"")+'" data-act="stk-f" data-v="'+t[0]+'">'+t[1]+' ('+t[2]+')</button>').join("")+'</div>';
+  let list = prods.slice();
+  if(S.stk.f === "menipis") list = low; else if(S.stk.f === "habis") list = out; else if(S.stk.f === "belum") list = prods.filter(p => typeof p.stock !== "number");
+  const rank = p => isOut(p) ? 0 : isLow(p) ? 1 : typeof p.stock === "number" ? 2 : 3;
+  list = list.slice().sort((a, b) => rank(a) - rank(b) || String(a.name).localeCompare(String(b.name), "id"));
+  h += list.length ? list.map(p => {
+    const tr = typeof p.stock === "number", cls = !tr ? "na" : isOut(p) ? "out" : isLow(p) ? "low" : "";
+    const sq = (sold[p.id] || {}).q || 0, aq = act[p.id] || 0;
+    return '<div class="stk-row" data-n="'+esc(String(p.name).toLowerCase())+'"><div class="thumb">'+(p.img?'<img alt="" src="'+esc(p.img)+'">':I("package"))+'</div>'+
+      '<div class="grow"><b>'+esc(p.name)+'</b><div class="small muted">'+rp(p.price)+' · terjual '+PL+': <b style="color:var(--ink)">'+sq+'</b>'+(aq?' · '+aq+' sedang dipesan':'')+'</div></div>'+
+      '<div class="stk-num '+cls+'"><b>'+(tr ? p.stock.toLocaleString("id-ID") : "–")+'</b><small>'+(!tr ? "belum dicatat" : isOut(p) ? "habis" : isLow(p) ? "menipis" : "sisa")+'</small></div>'+
+      '<div class="stk-acts">'+(tr
+        ? '<button class="btn ghost sm" data-act="stk-in" data-id="'+esc(p.id)+'">+ Masuk</button><button class="btn ghost sm" data-act="stk-out" data-id="'+esc(p.id)+'">− Keluar</button>'
+        : '<button class="btn ghost sm" data-act="stk-op" data-id="'+esc(p.id)+'">Mulai catat</button>')+'</div></div>';
+  }).join("") : '<div class="empty" style="padding:22px 0">Tidak ada barang di daftar ini.</div>';
+  h += '</div>';
+  // riwayat
+  const logs = S.stk.log[s.id];
+  const ev = (logs || []).map(e => ({t:e.t, name:e.name, type:e.type, qty:e.qty, after:e.after, note:e.note}));
+  orders.filter(o => o.status === "selesai" && (o.doneAt || o.createdAt || 0) >= stkFrom(30)).forEach(o => (o.items || []).forEach(i => ev.push({t:o.doneAt || o.createdAt, name:i.name, type:"terjual", qty:i.qty, note:"Pesanan "+(o.code || "")})));
+  ev.sort((a, b) => (b.t || 0) - (a.t || 0));
+  const TY = {masuk:["Masuk","plus","+"], keluar:["Keluar","minus","−"], opname:["Stok opname","eq","="], terjual:["Terjual","minus","−"]};
+  h += '<div class="card pad stk-log" style="margin-top:16px"><h3 class="sub">Riwayat stok</h3>'+
+    (logs === null ? '<div class="empty" style="padding:16px 0">'+I("loader")+' Memuat…</div>' : ev.length ? ev.slice(0, 40).map(e => { const ty = TY[e.type] || TY.masuk;
+      return '<div class="li"><span class="stk-ic '+ty[1]+'">'+(e.type==="terjual"?I("cart"):e.type==="masuk"?I("plus"):e.type==="opname"?I("note"):I("package"))+'</span><div class="grow"><b>'+esc(e.name || "")+'</b><div class="small muted">'+ty[0]+' · '+fmtDate(e.t)+(e.note?' · '+esc(e.note):'')+'</div></div><div class="stk-q '+ty[1]+'">'+ty[2]+e.qty+(typeof e.after==="number"?'<small>sisa '+e.after+'</small>':'')+'</div></div>'; }).join("")
+      : '<div class="empty" style="padding:16px 0">Belum ada catatan. Tekan <b>Catat stok</b> setiap ada barang masuk atau keluar.</div>')+'</div>';
+  return h;
+}
+function openStock(pid, type){
+  const s = storeById(S.sellerStoreId); if(!s) return;
+  const prods = (S.products[s.id] || []).slice().sort((a, b) => String(a.name).localeCompare(String(b.name), "id"));
+  if(!prods.length) return toast("Tambahkan barang dulu di menu Produk.");
+  const sel = prods.find(p => p.id === pid) || prods[0];
+  const TYP = [["masuk","Barang masuk","Kulakan / restok"],["keluar","Barang keluar","Rusak, hilang, dipakai"],["opname","Stok opname","Hitung ulang stok"]];
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><form class="modal" id="stkForm"><h2 class="sec" style="margin-top:0">Catat stok barang</h2>'+
+    '<label class="f">Barang</label><select class="in" name="pid">'+prods.map(p => '<option value="'+esc(p.id)+'" '+(p.id===sel.id?"selected":"")+'>'+esc(p.name)+' · '+(typeof p.stock==="number"?"sisa "+p.stock:"belum dicatat")+'</option>').join("")+'</select>'+
+    '<label class="f">Jenis catatan</label><div class="stk-seg">'+TYP.map(t => '<label><input type="radio" name="type" value="'+t[0]+'" '+(t[0]===type?"checked":"")+'><span><b>'+t[1]+'</b><small>'+t[2]+'</small></span></label>').join("")+'</div>'+
+    '<label class="f" id="stkQl">'+stkQLabel(type)+'</label><input class="in" name="qty" type="number" min="0" step="1" inputmode="numeric" required placeholder="0">'+
+    '<label class="f">Catatan (opsional)</label><input class="in" name="note" maxlength="120" placeholder="Contoh: kulakan dari agen, 2 karung">'+
+    '<div class="actions" style="margin-top:16px"><button class="btn" style="flex:1">Simpan catatan</button><button type="button" class="btn ghost" data-act="close-modal">Batal</button></div></form></div>';
+  setTimeout(() => { const q = document.querySelector("#stkForm [name=qty]"); if(q) q.focus(); }, 50);
+}
+const stkQLabel = t => t === "keluar" ? "Jumlah keluar" : t === "opname" ? "Stok sebenarnya sekarang" : "Jumlah masuk";
+async function saveStock(f){
+  const s = storeById(S.sellerStoreId); if(!s) return;
+  const fd = new FormData(f), pid = fd.get("pid"), type = fd.get("type") || "masuk", qty = Math.round(Number(fd.get("qty")));
+  if(!(qty >= 0) || (type !== "opname" && qty < 1)) return toast("Isi jumlah barang.");
+  const btn = f.querySelector("button.btn"); if(btn) btn.disabled = true;
+  let e = null;
+  const ok = await safe(async () => { e = await STK.add(s.id, pid, type, qty, (fd.get("note") || "").trim()); });
+  if(btn) btn.disabled = false;
+  if(!ok || !e) return;
+  const p = (S.products[s.id] || []).find(x => x.id === pid); if(p && typeof e.after === "number") p.stock = e.after;
+  if(S.stk.log[s.id]) S.stk.log[s.id].unshift(e);
+  closeModal(); toast("Stok "+(e.name || "barang")+" sekarang "+e.after); render(); loadStockLog(s.id);
+}
+function stockCsv(){
+  const s = storeById(S.sellerStoreId); if(!s) return;
+  const prods = S.products[s.id] || [], orders = S.orders.filter(o => o.storeId === s.id), P = S.stk.p, sold = stkSold(orders, P);
+  const q = v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+  const rows = [["Barang","Harga","Stok tersisa","Batas menipis","Terjual ("+P+" hari)","Omzet ("+P+" hari)","Nilai stok"]].concat(prods.map(p => [p.name, p.price || 0, typeof p.stock==="number"?p.stock:"", stkMin(p), (sold[p.id]||{}).q||0, (sold[p.id]||{}).rp||0, typeof p.stock==="number"?p.stock*(p.price||0):""]));
+  const blob = new Blob(["﻿" + rows.map(r => r.map(q).join(",")).join("\n")], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "stok-" + (s.name||"toko").toLowerCase().replace(/[^a-z0-9]+/g,"-") + "-" + new Date().toISOString().slice(0,10) + ".csv";
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+document.addEventListener("input", e => {
+  if(e.target && e.target.id === "ownFind"){ const v = e.target.value.trim().toLowerCase(); document.querySelectorAll(".ost[data-n],.odrv[data-n]").forEach(r => { r.style.display = !v || r.dataset.n.includes(v) ? "" : "none"; }); }
+  if(e.target && e.target.id === "ownIq"){ S.own.iq = e.target.value; const v = e.target.value.trim().toLowerCase(); document.querySelectorAll(".ith").forEach(r => { r.style.display = !v || r.textContent.toLowerCase().includes(v) ? "" : "none"; }); }
+  if(e.target && e.target.id === "stkq"){ const v = e.target.value.trim().toLowerCase(); document.querySelectorAll(".stk-row").forEach(r => { r.style.display = !v || r.dataset.n.includes(v) ? "" : "none"; }); }
+});
+document.addEventListener("change", e => {
+  if(e.target && e.target.name === "type" && e.target.closest("#stkForm")){ const l = document.getElementById("stkQl"); if(l) l.textContent = stkQLabel(e.target.value); }
+});
 function monthKey(t){ const d = new Date(t); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
 function monthShare(orders, date){ const k = monthKey(date); return orders.filter(o => o.status==="selesai" && monthKey(o.doneAt||o.createdAt)===k).reduce((a,o)=>a+(typeof o.share==="number"?o.share:shareOf(o)),0); }
 function shareTable(s, orders){
@@ -2222,6 +2499,7 @@ function openProdModal(pid){
     '<label class="f">Nama produk *</label><input class="in" name="name" required value="'+esc(p.name||"")+'">'+
     '<div class="cols2"><div><label class="f">Harga (Rp) *</label><input class="in" name="price" required type="number" min="0" step="100" value="'+esc(p.price??"")+'"></div>'+
     '<div><label class="f">Stok</label><input class="in" name="stock" type="number" min="0" placeholder="kosong = tidak dibatasi" value="'+(typeof p.stock==="number"?p.stock:"")+'"></div></div>'+
+    (isGrocer(storeById(S.sellerStoreId)) ? '<label class="f">Batas stok menipis</label><input class="in" name="minStock" type="number" min="0" placeholder="5" value="'+(typeof p.minStock==="number"?p.minStock:"")+'"><div class="hint">Barang ditandai “menipis” saat stok sama atau di bawah angka ini.</div>' : '')+
     '<label class="f">Deskripsi</label><textarea class="in" name="desc">'+esc(p.desc||"")+'</textarea>'+
     '<label class="check"><input type="checkbox" name="active" '+(p.active===false?"":"checked")+'> Tampilkan di toko</label>'+
     '<div class="actions" style="margin-top:16px"><button class="btn">Simpan</button><button type="button" class="btn ghost" data-act="close-modal">Batal</button>'+(p.id?'<button type="button" class="btn danger" data-act="del-prod" data-id="'+esc(p.id)+'" style="margin-left:auto">Hapus</button>':'')+'</div></form></div>';
@@ -2341,6 +2619,7 @@ async function saveProduct(form){
   const data = {name:fd.get("name").trim(), price:Math.max(0, Number(fd.get("price"))||0), desc:(fd.get("desc")||"").trim(),
     stock: stockRaw === "" ? null : Math.max(0, parseInt(stockRaw,10)||0), active:!!fd.get("active"),
     img: pending.pimg !== undefined ? pending.pimg : (old ? old.img || "" : "")};
+  if(fd.has("minStock")){ const m = (fd.get("minStock")||"").trim(); data.minStock = m === "" ? null : Math.max(0, parseInt(m,10)||0); }
   if(!data.name) return toast("Nama produk wajib diisi.");
   const pid = id || uid("p");
   const ok = await safe(() => old ? store.update("stores/"+s.id+"/products/"+pid, data) : store.set("stores/"+s.id+"/products/"+pid, Object.assign(data,{createdAt:Date.now()})), "Produk disimpan");
@@ -2398,6 +2677,11 @@ document.addEventListener("click", async e => {
   if(a === "clear-cart"){ S.cart = {storeId:null, items:{}}; saveCart(); render(); return; }
   if(a === "btab"){ S.buyerTab = v; render(); return; }
   if(a === "stab"){ S.sellerTab = v; render(); return; }
+  if(a === "stk-p"){ S.stk.p = +v; render(); return; }
+  if(a === "stk-f"){ S.stk.f = v; render(); return; }
+  if(a === "stk-new"){ openStock("", "masuk"); return; }
+  if(a === "stk-in" || a === "stk-out" || a === "stk-op"){ openStock(id, a === "stk-in" ? "masuk" : a === "stk-out" ? "keluar" : "opname"); return; }
+  if(a === "stk-csv"){ stockCsv(); return; }
   if(a === "ofilter"){ S.orderFilter = v; render(); return; }
   if(a === "copy"){ copyText(v); return; }
   if(a === "close-modal"){ closeModal(); return; }
@@ -2450,6 +2734,16 @@ document.addEventListener("submit", e => {
   if(f.id === "checkout") placeOrder(f);
   else if(f.id === "storeForm") saveStore(f);
   else if(f.id === "prodForm") saveProduct(f);
+  else if(f.id === "stkForm") saveStock(f);
+  else if(f.id === "supForm") supSend(f, S.sup.open, "party", () => supRefreshOpen(true));
+  else if(f.id === "ownSupForm") supSend(f, S.own.thread, "owner", async () => { await loadOwnMsgs(S.own.thread, true); loadOwnThreads(); });
+  else if(f.id === "ownNewMsg"){ const fd = new FormData(f), th = fd.get("th"); supSend(f, th, "owner", async () => { closeModal(); S.own.tab = "pesan"; S.own.thread = th; await loadOwnThreads(); render(); loadOwnMsgs(th, true); toast("Pesan terkirim"); }); }
+  else if(f.id === "ownSuspend"){ const id = f.dataset.id, note = (new FormData(f).get("note") || "").trim(); if(!note) return toast("Tulis alasannya.");
+    closeModal(); ownAct("off", async () => {
+      if(SB) await ownRpc("jt_owner_driver_active", {p_driver:id, p_active:false, p_note:note});
+      else { if(S.orders.concat(S.ridesAll||[]).some(o => o.driverId === id && DRV_BUSY.includes(o.status))) throw srvErr("Driver sedang membawa pesanan. Tunggu selesai dulu"); await store.update("drivers/"+id, {suspended:true, suspendNote:note, online:false}); }
+      try{ await SUP.send("drv:"+id, "Akun driver Anda dinonaktifkan sementara oleh tim JAGA. Alasan: "+note+"\nBalas pesan ini kalau ada pertanyaan.", "owner"); }catch(_){}
+    }, "Driver dinonaktifkan")(); }
 });
 document.addEventListener("click", e => {
   const el = e.target.closest("[data-act='go'][data-new]"); if(el){ pending.logo = pending.qris = undefined; }
@@ -3187,7 +3481,7 @@ function drvJob(o, offer){
 }
 function appDriver(){
   let h = '<div class="dtop">'+JMARK()+'<div class="grow"><b>JAGA</b><small>Portal Driver</small></div>'+
-    '<a class="ibtn" target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo JAGA, saya driver butuh bantuan."))+'" aria-label="Bantuan">'+I("chat")+'</a></div>'+
+    (S.drv.me && S.drv.me.id ? '<button class="ibtn sup-btn" data-act="sup-open" data-v="drv:'+esc(S.drv.me.id)+'" aria-label="Tanya tim JAGA">'+I("chat")+supBadge("drv:"+S.drv.me.id)+'</button>' : '<a class="ibtn" target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo JAGA, saya driver butuh bantuan."))+'" aria-label="Bantuan">'+I("chat")+'</a>')+'</div>'+
     PREVIEW_BANNER().replace("Toko & pesanan", "Akun driver & pesanan")+(S.mode === "local" ? '<div class="notice">Mode demo: data hanya tersimpan di perangkat ini.</div>' : '');
   if(!S.drv.loaded) return h + '<div class="empty">'+I("loader")+' Memuat…</div>';
   if(S.drv.err && S.drv.me === undefined) return h + '<div class="notice">'+esc(S.drv.err)+'</div>';
@@ -3201,6 +3495,8 @@ function appDriver(){
   }
   if(S.drv.editing) return h + '<h2 class="sec" style="margin:8px 16px">Ubah data driver</h2>' + driverForm(me);
   if(S.drv.walletOpen) return h + drvWallet();
+  if(me.id && (S.sup.unread||{})["drv:"+me.id]) h += '<button class="supnote" data-act="sup-open" data-v="drv:'+esc(me.id)+'">'+I("chat")+'<div class="grow"><b>Ada pesan baru dari tim JAGA</b><small>Ketuk untuk membaca dan membalas</small></div><em>'+S.sup.unread["drv:"+me.id]+'</em></button>';
+  if(me.suspended) h += '<div class="card pad vrfy"><div><b>Akun driver dinonaktifkan</b><p class="small muted" style="margin:6px 0 10px">Tim JAGA menonaktifkan akunmu sementara'+(me.suspendNote?': '+esc(me.suspendNote):'.')+' Kamu tidak bisa ONLINE sampai akun diaktifkan lagi.</p><button class="btn sm" data-act="sup-open" data-v="drv:'+esc(me.id)+'">'+I("chat")+' Tanya tim JAGA</button></div></div>';
   if(me.verify && me.verify !== "verified") return h + drvVerifyView(me);
   const mine = S.drv.mine || [];
   const today = new Date().toDateString();
@@ -3248,6 +3544,7 @@ document.addEventListener("click", async e => {
   if(a === "drv-online"){
     const me = S.drv.me; if(!me) return;
     if(me.verify && me.verify !== "verified") return toast("Akun driver belum diverifikasi tim JAGA.");
+    if(me.suspended && !me.online) return toast("Akun driver dinonaktifkan tim JAGA. Tanya lewat tombol pesan.");
     try{ if(!audioCtx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC) audioCtx = new AC(); } else if(audioCtx.state === "suspended") audioCtx.resume(); }catch(_){}
     const on = !me.online; el.disabled = true;
     if(on){
@@ -3434,6 +3731,139 @@ function ownStats(D, from){
     active: orders.filter(o => !["selesai","dibatalkan"].includes(o.status))
   };
 }
+
+/* ============ Tanya jawab toko/driver <-> tim JAGA ============ */
+S.sup = {unread:{}, msgs:{}, open:null};
+const supLocal = () => { try{ return JSON.parse(localStorage.getItem("jt_support") || "[]"); }catch(_){ return []; } };
+const supLocalSave = a => { try{ localStorage.setItem("jt_support", JSON.stringify(a.slice(-2000))); }catch(_){} };
+function supTargetLocal(th){
+  if(th.startsWith("store:")){ const st = storeById(th.slice(6)); return st ? {kind:"store", name:st.name, wa:st.wa, active:st.active !== false} : null; }
+  if(th.startsWith("drv:")){ const d = (S.drivers || []).find(x => x.id === th.slice(4)) || (S.drv && S.drv.me && S.drv.me.id === th.slice(4) ? S.drv.me : null); return d ? {kind:"driver", name:d.name, wa:d.wa, active:!d.suspended} : null; }
+  return null;
+}
+const SUP = {
+  async send(th, body, as){
+    if(SB) return await sbStore.rpc("jt_support_send", {p_thread:th, p_body:body, p_as:as});
+    body = String(body || "").trim().slice(0, 1000); if(!body) throw srvErr("Tulis pesan dulu");
+    const a = supLocal(), m = {id:Date.now() + Math.random(), thread:th, sender:as === "owner" ? "owner" : (th.startsWith("drv:") ? "driver" : "store"), body, at:Date.now()};
+    m.ro = m.sender === "owner"; m.rp = m.sender !== "owner"; a.push(m); supLocalSave(a); return m;
+  },
+  async get(th, as){
+    if(SB) return await sbStore.rpc("jt_support_get", {p_thread:th, p_as:as});
+    const a = supLocal(); a.forEach(m => { if(m.thread !== th) return; if(as === "owner" && m.sender !== "owner") m.ro = true; if(as !== "owner" && m.sender === "owner") m.rp = true; }); supLocalSave(a);
+    return {target:supTargetLocal(th), msgs:a.filter(m => m.thread === th).slice(-200)};
+  },
+  async threads(){
+    if(SB) return await sbStore.rpc("jt_support_threads", {});
+    const by = {}; supLocal().forEach(m => { const t = by[m.thread] = by[m.thread] || {thread:m.thread, unread:0}; t.body = m.body; t.sender = m.sender; t.at = m.at; if(m.sender !== "owner" && !m.ro) t.unread++; });
+    return Object.values(by).map(t => Object.assign(t, {target:supTargetLocal(t.thread)})).sort((a, b) => b.at - a.at);
+  },
+  async unread(){
+    if(SB) return (await sbStore.rpc("jt_support_unread", {})) || {};
+    const out = {}; supLocal().forEach(m => { if(m.sender === "owner" && !m.rp) out[m.thread] = (out[m.thread] || 0) + 1; }); return out;
+  }
+};
+const myThreads = () => S.role === "driver" ? (S.drv && S.drv.me && S.drv.me.id ? ["drv:" + S.drv.me.id] : []) : S.role === "seller" ? myStores().map(st => "store:" + st.id) : [];
+async function loadSupUnread(){
+  if(!myThreads().length) return;
+  try{ const u = await SUP.unread(); const sig = JSON.stringify(u); if(sig !== JSON.stringify(S.sup.unread)){ S.sup.unread = u || {}; if(!typing() && !document.getElementById("supForm")) scheduleRender(); } }catch(_){}
+}
+setInterval(() => { if(!document.hidden && (S.role === "seller" || S.role === "driver")) loadSupUnread(); }, 30000);
+setTimeout(loadSupUnread, 2500);
+const supBadge = th => { const n = (S.sup.unread || {})[th] || 0; return n ? '<em class="sbadge">'+n+'</em>' : ''; };
+function supBubbles(msgs, viewer){
+  if(!msgs.length) return '<div class="sempty">'+E("chat")+'<b>Belum ada pesan</b><span>'+(viewer === "owner" ? "Mulai percakapan dengan menulis pesan di bawah." : "Ceritakan masalahmu, tim JAGA akan membalas di sini.")+'</span></div>';
+  let last = "";
+  return msgs.map(m => {
+    const mine = viewer === "owner" ? m.sender === "owner" : m.sender !== "owner";
+    const day = new Date(m.at).toLocaleDateString("id-ID", {weekday:"long", day:"numeric", month:"long"});
+    const sep = day !== last ? '<div class="sday">'+esc(day)+'</div>' : ''; last = day;
+    const who = m.sender === "owner" ? "Tim JAGA" : m.sender === "driver" ? "Driver" : "Toko";
+    return sep + '<div class="sb '+(mine?"me":"them")+'">'+(!mine?'<small class="who">'+who+'</small>':'')+'<div>'+esc(m.body).replace(/\n/g,"<br>")+'</div><small>'+new Date(m.at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+'</small></div>';
+  }).join("");
+}
+async function openSupport(th){
+  S.sup.open = th;
+  const md = document.getElementById("modal");
+  md.innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal smodal"><div class="shead">'+JMARK()+'<div class="grow"><b>Tanya tim JAGA</b><small>Biasanya dibalas di hari yang sama</small></div><button class="ibtn" data-act="close-modal" aria-label="Tutup">✕</button></div>'+
+    '<div class="sbody" id="supBody"><div class="empty">'+I("loader")+' Memuat…</div></div>'+
+    '<div class="squick">'+["Saldo saya belum masuk","Pesanan bermasalah","Akun saya tidak bisa dipakai","Cara mengubah data"].map(q => '<button type="button" class="chip" data-act="sup-quick" data-v="'+esc(q)+'">'+esc(q)+'</button>').join("")+'</div>'+
+    '<form class="scomp" id="supForm"><textarea class="in" name="body" rows="1" maxlength="1000" placeholder="Tulis pesan…" required></textarea><button class="btn" aria-label="Kirim">Kirim</button></form></div></div>';
+  await supRefreshOpen(true);
+}
+async function supRefreshOpen(scroll){
+  const th = S.sup.open, box = document.getElementById("supBody"); if(!th || !box) return;
+  try{
+    const r = await SUP.get(th, "party"); const msgs = (r && r.msgs) || [];
+    const sig = JSON.stringify(msgs.map(m => m.id)); if(sig === box.dataset.sig) return; box.dataset.sig = sig;
+    const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+    box.innerHTML = supBubbles(msgs, "party");
+    if(scroll || atBottom) box.scrollTop = box.scrollHeight;
+    if((S.sup.unread || {})[th]){ S.sup.unread[th] = 0; }
+  }catch(e){ box.innerHTML = '<div class="notice">'+esc(String(e.message || "Gagal memuat").replace(/^.*?:\s*/, ""))+'</div>'; }
+}
+setInterval(() => { if(!document.hidden && S.sup.open && document.getElementById("supBody")) supRefreshOpen(false); else if(S.sup.open && !document.getElementById("supBody")){ S.sup.open = null; scheduleRender(); } }, 5000);
+async function supSend(f, th, as, after){
+  const ta = f.querySelector("textarea"), body = (ta.value || "").trim(); if(!body) return;
+  const btn = f.querySelector("button"); btn.disabled = true;
+  const ok = await safe(() => SUP.send(th, body, as));
+  btn.disabled = false; if(ok){ ta.value = ""; ta.style.height = ""; if(after) await after(); }
+}
+document.addEventListener("input", e => { if(e.target && e.target.matches && e.target.matches(".scomp textarea")){ e.target.style.height = "auto"; e.target.style.height = Math.min(140, e.target.scrollHeight) + "px"; } });
+document.addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey && e.target && e.target.matches && e.target.matches(".scomp textarea") && window.innerWidth > 700){ e.preventDefault(); e.target.form.requestSubmit(); } });
+
+
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act='sup-open'],[data-act='sup-quick']"); if(!el) return;
+  if(el.dataset.act === "sup-open"){ openSupport(el.dataset.v); return; }
+  const t = document.querySelector("#supForm textarea"); if(t){ t.value = el.dataset.v; t.focus(); }
+});
+/* ---------- inbox owner ---------- */
+async function loadOwnThreads(){ try{ const t = await SUP.threads(); const sig = JSON.stringify(t); if(sig !== S.own.thSig){ S.own.thSig = sig; S.own.threads = t || []; if(S.role === "owner" && !typing()) scheduleRender(); } }catch(_){ S.own.threads = S.own.threads || []; } }
+async function loadOwnMsgs(th, scroll){
+  try{ const r = await SUP.get(th, "owner"); const old = JSON.stringify(((S.own.msgs || {})[th] || {}).msgs || []);
+    S.own.msgs = S.own.msgs || {}; S.own.msgs[th] = r || {msgs:[]};
+    const t = (S.own.threads || []).find(x => x.thread === th); if(t) t.unread = 0;
+    if(old !== JSON.stringify((r || {}).msgs || []) && !typing()){ render(); }
+    if(scroll){ const b = document.getElementById("ownSupBody"); if(b) b.scrollTop = b.scrollHeight; }
+  }catch(e){ toast(String(e.message || "Gagal memuat").replace(/^.*?:\s*/, "")); }
+}
+setInterval(() => { if(!document.hidden && S.role === "owner" && S.own && S.own.authed){ loadOwnThreads(); if(S.own.tab === "pesan" && S.own.thread) loadOwnMsgs(S.own.thread); } }, 6000);
+function thName(th, D){
+  if(th.startsWith("store:")){ const st = (D.stores || []).find(x => x.id === th.slice(6)); return st ? st.name : "Toko"; }
+  const d = (D.drivers || []).find(x => x.id === th.slice(4)); return d ? d.name : "Driver";
+}
+function ownerInboxTab(D){
+  const f = S.own.ifilter || "semua", q = (S.own.iq || "").toLowerCase();
+  let th = (S.own.threads || []).map(t => Object.assign({}, t, {name:(t.target && t.target.name) || thName(t.thread, D), kind:t.thread.startsWith("drv:") ? "driver" : "store"}));
+  const unreadN = th.filter(t => t.unread).length;
+  const list = th.filter(t => (f === "semua" || (f === "baru" && t.unread) || f === t.kind) && (!q || t.name.toLowerCase().includes(q)));
+  const sel = S.own.thread;
+  const left = '<div class="ilist'+(sel?' hide-m':'')+'"><div class="itools"><input class="in" id="ownIq" placeholder="Cari toko atau driver…" value="'+esc(S.own.iq||"")+'" autocomplete="off"><button class="btn sm" data-act="own-msg-new">'+I("plus")+' Pesan baru</button></div>'+
+    '<div class="oranges" style="margin:8px 0">'+[["semua","Semua"],["baru","Belum dibaca"+(unreadN?" ("+unreadN+")":"")],["store","Toko"],["driver","Driver"]].map(t => '<button class="chip '+(f===t[0]?"on":"")+'" data-act="own-ifilter" data-v="'+t[0]+'">'+t[1]+'</button>').join("")+'</div>'+
+    (list.length ? list.map(t => '<button class="ith'+(t.thread===sel?' on':'')+(t.unread?' un':'')+'" data-act="own-thread" data-v="'+esc(t.thread)+'"><div class="drv-av'+(t.kind==="store"?" st":"")+'">'+esc(initials(t.name))+'</div><div class="grow"><div class="r1"><b>'+esc(t.name)+'</b><small>'+ago(t.at)+'</small></div><div class="r2"><span>'+(t.sender==="owner"?"Anda: ":"")+esc(String(t.body||"").slice(0,80))+'</span>'+(t.unread?'<em>'+t.unread+'</em>':'')+'</div><small class="kind">'+(t.kind==="store"?"Toko":"Driver")+(t.target && t.target.active===false?' · nonaktif':'')+'</small></div></button>').join("")
+      : '<div class="sempty" style="padding:30px 10px">'+E("chat")+'<b>'+(th.length ? "Tidak ada percakapan di filter ini" : "Belum ada pesan")+'</b><span>Pertanyaan dari toko dan driver akan muncul di sini. Tekan “Pesan baru” untuk menghubungi mereka lebih dulu.</span></div>')+'</div>';
+  let right = '<div class="iconv empty-c'+(sel?'':' hide-m')+'"><div class="sempty">'+E("chat")+'<b>Pilih percakapan</b><span>Atau mulai pesan baru ke toko atau driver.</span></div></div>';
+  if(sel){
+    const r = (S.own.msgs || {})[sel], tg = (r && r.target) || {}, name = tg.name || thName(sel, D), kind = sel.startsWith("drv:") ? "driver" : "store", id = sel.split(":")[1];
+    if(!r) setTimeout(() => loadOwnMsgs(sel, true), 0);
+    right = '<div class="iconv"><div class="ichead"><button class="ibtn back" data-act="own-thread" data-v="" aria-label="Kembali">←</button><div class="drv-av'+(kind==="store"?" st":"")+'">'+esc(initials(name))+'</div><div class="grow"><b>'+esc(name)+'</b><small>'+(kind==="store"?"Toko":"Driver")+(tg.active===false?' · <span class="warnc">dinonaktifkan</span>':' · aktif')+'</small></div>'+
+      (tg.wa ? '<a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(tg.wa, "Halo "+name+", ini dari tim JAGA."))+'">WA</a>' : '')+
+      '<button class="btn ghost sm" data-act="own-tab" data-v="'+(kind==="store"?"toko":"driver")+'" data-focus="'+esc(id)+'">Kelola</button></div>'+
+      '<div class="sbody" id="ownSupBody">'+(r ? supBubbles(r.msgs || [], "owner") : '<div class="empty">'+I("loader")+' Memuat…</div>')+'</div>'+
+      '<div class="squick">'+["Baik, kami cek dulu ya.","Mohon kirim foto buktinya.","Masalah sudah kami selesaikan. Terima kasih.","Saldo sudah kami tambahkan."].map(q => '<button type="button" class="chip" data-act="own-quick" data-v="'+esc(q)+'">'+esc(q)+'</button>').join("")+'</div>'+
+      '<form class="scomp" id="ownSupForm"><textarea class="in" name="body" rows="1" maxlength="1000" placeholder="Balas ke '+esc(name)+'…" required></textarea><button class="btn">Kirim</button></form></div>';
+  }
+  return '<div class="inbox card">'+left+right+'</div>';
+}
+function openOwnNewMsg(D, pre){
+  const opts = '<optgroup label="Toko">'+(D.stores||[]).map(st => '<option value="store:'+esc(st.id)+'" '+(pre==="store:"+st.id?"selected":"")+'>'+esc(st.name)+'</option>').join("")+'</optgroup><optgroup label="Driver">'+(D.drivers||[]).map(d => '<option value="drv:'+esc(d.id)+'" '+(pre==="drv:"+d.id?"selected":"")+'>'+esc(d.name)+(d.plate?' · '+esc(d.plate):'')+'</option>').join("")+'</optgroup>';
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><form class="modal" id="ownNewMsg"><h2 class="sec" style="margin-top:0">Kirim pesan</h2><label class="f">Kepada</label><select class="in" name="th" required>'+opts+'</select>'+
+    '<label class="f">Pesan</label><textarea class="in" name="body" rows="4" maxlength="1000" required placeholder="Contoh: Halo, mohon perbarui foto produk dan lokasi toko ya."></textarea><div class="hint">Pesan muncul di aplikasi toko/driver dengan tanda merah sampai dibaca.</div>'+
+    '<div class="actions" style="margin-top:16px"><button class="btn" style="flex:1">Kirim pesan</button><button type="button" class="btn ghost" data-act="close-modal">Batal</button></div></form></div>';
+}
+async function ownRpc(fn, args){ const { error, data } = await SB.rpc(fn, Object.assign({p_key: KEY}, args)); if(error) throw sbErr(error); return data; }
+function ownAct(label, fn, okMsg){ return async () => { try{ await fn(); toast(okMsg); }catch(err){ toast(String(err.message || "Gagal").replace(/^.*?:\s*/, "")); } S.own.sig = ""; await ownRefresh(); loadOwnThreads(); render(); }; }
 function ago(t){ const m = Math.max(0, Math.round((Date.now() - t) / 60000)); return m < 1 ? "baru saja" : m < 60 ? m + " mnt lalu" : m < 1440 ? Math.round(m/60) + " jam lalu" : Math.round(m/1440) + " hari lalu"; }
 function ownLogin(){
   return '<section class="dhero" style="padding-top:26px">'+E("money")+'<h1>Portal Owner</h1><p>Pantau seluruh aplikasi JAGA.</p></section>'+
@@ -3460,13 +3890,17 @@ function ownFeed(orders){
   if(!ev.length) return '<div class="muted small">Belum ada aktivitas.</div>';
   return '<div class="ofeed">'+ev.slice(0, 25).map(e => '<div class="fe">'+E(e.ic)+'<div class="grow">'+e.h+'<small>'+fmtDate(e.t)+' · '+ago(e.t)+'</small></div></div>').join("")+'</div>';
 }
-function ownOrderRow(o){
+function ownStuck(o){
   const age = Date.now() - (o.status === "mencari_driver" ? (o.searchAt||o.updatedAt||o.createdAt) : (o.updatedAt||o.createdAt));
-  const stuck = (o.status === "mencari_driver" && age > 5*60000) || (o.status === "menunggu_konfirmasi" && age > 15*60000) || (o.status === "driver_ke_toko" && age > 30*60000);
+  return (o.status === "mencari_driver" && age > 5*60000) || (o.status === "menunggu_konfirmasi" && age > 15*60000) || (o.status === "driver_ke_toko" && age > 30*60000);
+}
+function ownOrderRow(o){
+  const stuck = ownStuck(o);
   return '<div class="orow'+(stuck?' stuck':'')+'"><div class="grow"><b>'+esc(o.code)+'</b> · '+esc(o.storeName)+'<small>'+esc(o.buyer ? o.buyer.name : "")+' · '+esc(o.items ? o.items.map(i => i.qty+'× '+i.name).join(", ") : "")+'</small>'+
     '<small>'+fmtDate(o.createdAt)+(o.driver?' · driver '+esc(o.driver.name):'')+(stuck?' · <b class="warnc">perlu dicek ('+ago(o.updatedAt||o.createdAt)+')</b>':'')+'</small></div>'+
     '<div class="r">'+statusTag(o.status)+'<b>'+rp(o.total)+'</b>'+ownCloseBtn("order", o)+(o.buyer && o.buyer.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(o.buyer.wa, "Halo "+o.buyer.name+", ini dari JAGA tentang pesanan "+o.code+"."))+'">WA pembeli</a>' : '')+'</div></div>';
 }
+function ownD(){ return (SB ? S.own.data : null) || (SB ? {stores:[], orders:[], drivers:[], rides:[]} : {stores:S.stores, orders:S.orders, drivers:S.drivers, rides:S.ridesAll}); }
 function appOwner(){
   let h = '<div class="dtop otop">'+JMARK()+'<div class="grow"><b>JAGA</b><small>Portal Owner</small></div>'+(S.own.authed ? '<button class="ibtn" data-act="own-refresh" aria-label="Muat ulang">'+I("repeat")+'</button>' : '')+'</div>';
   if(!SB) h += '<div class="notice">Pratinjau: angka di bawah memakai data pratinjau. Di website asli portal ini dikunci dengan login owner.</div>';
@@ -3475,17 +3909,35 @@ function appOwner(){
   const D = (SB ? S.own.data : null) || (SB ? {stores:[], orders:[], drivers:[], rides:[]} : {stores:S.stores.map(s => Object.assign({}, s, {products:(S.products[s.id]||[]).length})), orders:S.orders.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), drivers:S.drivers, rides:S.ridesAll.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)), reportsOpen:(S.localReports||[]).filter(r => r.status !== "selesai").length});
   const RD = D.rides || [];
   const pendDrv = (D.drivers||[]).filter(d => d.verify === "pending").length;
-  const tabs = [["ringkasan","Ringkasan"],["pesanan","Pesanan"],["laporan","Laporan"+(D.reportsOpen?" ("+D.reportsOpen+")":"")],["toko","Toko"],["saldo","Saldo"],["driver","Driver"+(pendDrv?" ("+pendDrv+")":"")],["cabang","Cabang"],["akun","Akun"]];
-  h += '<div class="otabs">'+tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+t[1]+'</button>').join("")+'</div>';
+  if(S.own.threads === undefined){ S.own.threads = []; loadOwnThreads(); }
+  const unreadMsg = (S.own.threads || []).reduce((a, t) => a + (t.unread || 0), 0);
+  const stuckN = (D.orders || []).filter(ownStuck).length;
+  const tabs = [["ringkasan","Ringkasan","dashboard",0],["pesanan","Pesanan","receipt",stuckN],["pesan","Pesan","chat",unreadMsg],["laporan","Laporan masalah","note",D.reportsOpen||0],["toko","Toko","store",0],["driver","Driver","truck",pendDrv],["saldo","Saldo","cash",0],["cabang","Cabang","pin",0],["akun","Akun","settings",0]];
+  const TT = {ringkasan:["Ringkasan","Kondisi bisnis JAGA secara keseluruhan"], pesanan:["Pesanan","Semua pesanan belanja dan perjalanan Jago"], pesan:["Pesan","Tanya jawab dengan toko dan driver"], laporan:["Laporan masalah","Keluhan dari pembeli, toko, dan driver"], toko:["Toko","Kelola toko mitra: pesan, nonaktifkan, atau hapus"], driver:["Driver","Verifikasi dan kelola akun driver"], saldo:["Saldo","Isi saldo, bagi hasil, dan komisi"], cabang:["Cabang","Wilayah layanan JAGA"], akun:["Akun","Link penting dan keamanan"]};
+  const tt = TT[S.own.tab] || TT.ringkasan;
+  const nav = cls => tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+I(t[2])+'<span>'+t[1]+'</span>'+(t[3]?'<em class="'+(t[0]==="pesan"||t[0]==="driver"||t[0]==="laporan"?"red":"amb")+'">'+t[3]+'</em>':'')+'</button>').join("");
+  const side = '<aside class="oside"><div class="obrand">'+JMARK()+'<div><b>JAGA</b><small>Portal Owner</small></div></div><nav>'+nav()+'</nav><div class="ofoot"><a href="'+esc(APP_URL)+'" target="_blank" rel="noopener">'+I("eye")+' Buka aplikasi pembeli</a></div></aside>';
   const ranges = [["hari","Hari ini"],["7hari","7 hari"],["bulan","Bulan ini"],["semua","Semua"]];
   const rangeBar = '<div class="oranges">'+ranges.map(r => '<button class="chip '+(S.own.range===r[0]?"on":"")+'" data-act="own-range" data-v="'+r[0]+'">'+r[1]+'</button>').join("")+'</div>';
   const st = ownStats(D, rangeStart(S.own.range));
   const stores = D.stores || [], drivers = D.drivers || [];
   const now = Date.now();
   const onlineDrv = drivers.filter(d => d.online && (d.locAt||0) > now - 20*60000).length;
-  h += '<div class="owrap">';
+  const top = h;
+  h = '<div class="oshell">'+side+'<div class="omain">'+top+'<div class="otabs">'+nav()+'</div><div class="owrap">'+
+    '<div class="ohead"><div><h1>'+tt[0]+'</h1><p>'+tt[1]+'</p></div><div class="ohead-r">'+((S.own.tab==="ringkasan"||S.own.tab==="toko") ? rangeBar : '')+'<button class="btn ghost sm hide-m" data-act="own-refresh">'+I("repeat")+' Muat ulang</button></div></div>';
   if(S.own.tab === "ringkasan"){
-    h += rangeBar;
+    const reportsOpen = D.reportsOpen || 0, noLoc = stores.filter(s => s.active !== false && typeof s.lat !== "number").length, offStores = stores.filter(s => s.active === false).length, suspD = drivers.filter(d => d.suspended).length;
+    const todo = [
+      [pendDrv, "driver menunggu verifikasi", "Setujui atau tolak pendaftaran", "driver", "truck"],
+      [unreadMsg, "pesan belum dibaca", "Dari toko dan driver", "pesan", "chat"],
+      [reportsOpen, "laporan masalah terbuka", "Tindak lanjuti dengan Garansi JAGA", "laporan", "note"],
+      [stuckN, "pesanan perlu dicek", "Belum bergerak terlalu lama", "pesanan", "clock"],
+      [noLoc, "toko belum mengatur lokasi", "Driver tidak bisa dicarikan otomatis", "toko", "pin"]
+    ].filter(x => x[0] > 0);
+    h += '<div class="card pad otodo"><div class="tdh"><h3 class="sub" style="margin:0">Perlu tindakan</h3>'+(todo.length ? '<span class="tag amber">'+todo.length+' hal</span>' : '<span class="tag green">Semua aman</span>')+'</div>'+
+      (todo.length ? '<div class="tdl">'+todo.map(x => '<button class="td" data-act="own-tab" data-v="'+x[3]+'"><span class="ti">'+I(x[4])+'</span><div class="grow"><b>'+x[0]+' '+x[1]+'</b><small>'+x[2]+'</small></div><span class="go">'+I("chev")+'</span></button>').join("")+'</div>'
+        : '<p class="muted small" style="margin:8px 0 0">Tidak ada driver menunggu, pesan, laporan, atau pesanan macet.'+(offStores||suspD?' '+offStores+' toko dan '+suspD+' driver sedang dinonaktifkan.':'')+'</p>')+'</div>';
     h += '<div class="okpi">'+
       '<div class="k main"><small>Pendapatan JAGA (bagi hasil 3%)</small><b>'+rp(st.share)+'</b><span>dari '+st.done.length+' pesanan selesai</span></div>'+
       '<div class="k"><small>Penjualan selesai (masuk ke toko)</small><b>'+rp(st.gmv)+'</b></div>'+
@@ -3522,8 +3974,10 @@ function appOwner(){
     h += '<div class="card pad">'+(list.length ? list.map(ownOrderRow).join("") : '<div class="muted small">Belum ada pesanan.</div>')+'</div>';
     const rl = RD.filter(o => f === "semua" ? true : f === "aktif" ? RIDE_ACTIVE.includes(o.status) : f === "selesai" ? o.status === "selesai" : o.status === "dibatalkan").slice(0, 100);
     h += '<h3 class="sub" style="margin:16px 4px 8px">Perjalanan Jago ('+rl.length+')</h3><div class="card pad">'+(rl.length ? rl.map(ownRideRow).join("") : '<div class="muted small">Belum ada perjalanan.</div>')+'</div>';
+  } else if(S.own.tab === "pesan"){
+    h += ownerInboxTab(D);
   } else if(S.own.tab === "toko"){
-    h += rangeBar;
+    h += '<div class="otool"><input class="in" id="ownFind" placeholder="Cari nama toko…" autocomplete="off"><button class="btn ghost sm" data-act="own-msg-new">'+I("chat")+' Kirim pesan</button></div>';
     const mStart = rangeStart("bulan");
     const rows = stores.map(s => {
       const os = (D.orders||[]).filter(o => o.storeId === s.id);
@@ -3534,11 +3988,13 @@ function appOwner(){
     h += '<div class="ostores">'+(rows.length ? rows.map(r => {
       const s = r.s, off = s.active === false;
       const month = new Date().toLocaleDateString("id-ID",{month:"long",year:"numeric"});
-      return '<div class="card ost'+(off?' off':'')+'"><div class="oh"><div class="grow"><b>'+esc(s.name)+'</b><small>'+esc(s.category||"")+' · '+esc(s.area||"")+' · '+(s.products||0)+' produk'+(typeof s.lat==="number"?' · 📍':' · <span class="warnc">lokasi belum diatur</span>')+'</small>'+
+      return '<div class="card ost'+(off?' off':'')+(S.own.focus===s.id?' focus':'')+'" data-n="'+esc(String(s.name||"").toLowerCase())+'"><div class="oh"><div class="grow"><b>'+esc(s.name)+'</b><small>'+esc(s.category||"")+' · '+esc(s.area||"")+' · '+(s.products||0)+' produk'+(typeof s.lat==="number"?' · 📍':' · <span class="warnc">lokasi belum diatur</span>')+'</small>'+
         '<small>'+(off?'<span class="warnc">Dinonaktifkan</span>':s.open===false?'Tutup':'Buka')+(s.hasLogin===false?' · belum ada login':'')+(r.last?' · pesanan terakhir '+ago(r.last):'')+'</small></div>'+
-        '<button class="btn ghost sm" data-act="own-store-active" data-id="'+esc(s.id)+'" data-v="'+(off?"1":"0")+'">'+(off?"Aktifkan":"Nonaktifkan")+'</button></div>'+
+        (off ? '<span class="tag amber">Nonaktif</span>' : '<span class="tag green">Aktif</span>')+'</div>'+
         '<div class="om"><div><small>Pesanan</small><b>'+r.n+'</b></div><div><small>Penjualan</small><b>'+rp(r.gmv)+'</b></div><div><small>Bagi hasil</small><b>'+rp(r.share)+'</b></div></div>'+
-        '<div class="obill"><span>Saldo toko: <b class="'+(S.ownW && S.ownW.balances && (S.ownW.balances[s.id]||0) < ((S.ownW.cfg||{}).minBalance||0) ? 'neg' : '')+'">'+(S.ownW && S.ownW.balances ? rp(S.ownW.balances[s.id]||0) : '…')+'</b></span>'+(s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", ini dari JAGA."))+'">WA toko</a>' : '')+'</div></div>';
+        '<div class="obill"><span>Saldo toko: <b class="'+(S.ownW && S.ownW.balances && (S.ownW.balances[s.id]||0) < ((S.ownW.cfg||{}).minBalance||0) ? 'neg' : '')+'">'+(S.ownW && S.ownW.balances ? rp(S.ownW.balances[s.id]||0) : '…')+'</b></span>'+(s.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(s.wa,"Halo "+s.name+", ini dari JAGA."))+'">WA toko</a>' : '')+'</div>'+
+        '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="store:'+esc(s.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("cash")+' Saldo</button>'+
+        '<button class="btn ghost sm" data-act="own-store-active" data-id="'+esc(s.id)+'" data-v="'+(off?"1":"0")+'">'+(off?"Aktifkan":"Nonaktifkan")+'</button><button class="btn ghost sm dangerc" data-act="own-store-del" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Hapus</button></div></div>';
     }).join("") : '<div class="card pad muted small">Belum ada toko terdaftar.</div>')+'</div>';
   } else if(S.own.tab === "laporan"){
     h += ownerReportsTab();
@@ -3560,8 +4016,10 @@ function appOwner(){
       '<small>'+(d.verify === "rejected" ? '<b class="warnc">Ditolak</b>'+(d.verifyNote?': '+esc(d.verifyNote):'') : '<b style="color:#1f4fd1">Daftar '+(d.createdAt ? ago(d.createdAt) : '')+'</b>')+'</small></div>'+
       '<div class="r"><button class="btn sm" data-act="drv-verify" data-id="'+esc(d.id)+'" data-v="1">Setujui</button>'+(d.verify !== "rejected" ? '<button class="btn ghost sm" data-act="drv-verify" data-id="'+esc(d.id)+'" data-v="0">Tolak</button>' : '')+
       ((d.docsAt || d.hasDocs) ? '<button class="linkbtn" data-act="drv-docs" data-id="'+esc(d.id)+'" data-v="'+esc(d.name)+'">Dokumen</button>' : '')+(d.wa ? '<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(d.wa, "Halo "+d.name+", ini tim JAGA soal verifikasi driver."))+'">WA</a>' : '')+'</div></div>').join("")+'</div>';
-    h += '<div class="card pad">'+(ds.length ? ds.map(x => '<div class="orow"><div class="drv-av">'+esc(initials(x.d.name))+'</div><div class="grow"><b>'+esc(x.d.name)+'</b> '+(x.d.verify && x.d.verify !== "verified" ? '<span class="tag">Belum verifikasi</span>' : '<span class="tag green">Terverifikasi</span>')+' '+starTxt(((D.ratings||S.ratings).driver||{})[x.d.id])+'<small>'+esc([x.d.vehicle, x.d.plate, x.d.area].filter(Boolean).join(" · "))+'</small>'+
-      '<small>'+(x.on ? '<b style="color:#15803d">● Online</b>'+(x.busy?' · sedang mengantar':'') : '<span class="muted">○ Offline</span>')+(x.d.locAt ? ' · lokasi '+ago(x.d.locAt) : '')+'</small></div>'+
+    h += '<div class="otool"><input class="in" id="ownFind" placeholder="Cari nama atau plat driver…" autocomplete="off"><button class="btn ghost sm" data-act="own-msg-new">'+I("chat")+' Kirim pesan</button></div>';
+    h += '<div class="card pad">'+(ds.length ? ds.map(x => '<div class="orow odrv'+(x.d.suspended?' off':'')+(S.own.focus===x.d.id?' focus':'')+'" data-n="'+esc((String(x.d.name||"")+" "+String(x.d.plate||"")).toLowerCase())+'"><div class="drv-av">'+esc(initials(x.d.name))+'</div><div class="grow"><b>'+esc(x.d.name)+'</b> '+(x.d.suspended ? '<span class="tag amber">Dinonaktifkan</span>' : x.d.verify && x.d.verify !== "verified" ? '<span class="tag">Belum verifikasi</span>' : '<span class="tag green">Terverifikasi</span>')+' '+starTxt(((D.ratings||S.ratings).driver||{})[x.d.id])+'<small>'+esc([x.d.vehicle, x.d.plate, x.d.area].filter(Boolean).join(" · "))+'</small>'+
+      '<small>'+(x.on ? '<b style="color:#15803d">● Online</b>'+(x.busy?' · sedang mengantar':'') : '<span class="muted">○ Offline</span>')+(x.d.locAt ? ' · lokasi '+ago(x.d.locAt) : '')+'</small>'+(x.d.suspended && x.d.suspendNote ? '<small class="warnc">Alasan: '+esc(x.d.suspendNote)+'</small>' : '')+
+      '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="drv:'+esc(x.d.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-drv-active" data-id="'+esc(x.d.id)+'" data-v="'+(x.d.suspended?"1":"0")+'" data-name="'+esc(x.d.name)+'">'+(x.d.suspended?"Aktifkan":"Nonaktifkan")+'</button><button class="btn ghost sm dangerc" data-act="own-drv-del" data-id="'+esc(x.d.id)+'" data-v="'+esc(x.d.name)+'">Hapus</button></div></div>'+
       '<div class="r"><b>'+x.trips+' trip</b><small>'+(x.rides?x.rides+' Jago · ':'')+rp(x.ongkir)+'</small><small>hari ini '+x.today+'</small><small>saldo '+(x.bal == null ? '…' : rp(x.bal))+'</small><button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(x.d.id)+'" data-v="Driver '+esc(x.d.name)+'">Saldo</button>'+(x.d.wa?'<a class="small" target="_blank" rel="noopener" href="'+esc(waLink(x.d.wa,"Halo "+x.d.name+", ini dari JAGA."))+'">WA</a>':'')+'</div></div>').join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/toko/#driver ke calon driver.</div>')+'</div>';
   } else {
     h += '<div class="card pad"><h3 class="sub">Link penting</h3>'+
@@ -3569,13 +4027,46 @@ function appOwner(){
     if(SB) h += '<form class="card pad" id="ownerPass"><h3 class="sub">Ganti password owner</h3><label class="f">Password baru (min. 8 karakter)</label><input class="in" type="password" name="pass" minlength="8" required autocomplete="new-password"><div class="hint">Setelah diganti, perangkat lain yang login owner otomatis keluar.</div><button class="btn sm" style="margin-top:10px">Simpan password</button></form>'+
       '<div class="card pad"><button class="btn danger sm" data-act="own-logout">Keluar dari portal owner</button></div>';
   }
-  return h + '</div>';
+  return h + '</div></div></div>';
 }
 document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
   const a = el.dataset.act, v = el.dataset.v;
   if(a === "ver-tap"){ S._vt = (S._vtT && Date.now() - S._vtT < 1500 ? (S._vt||0) : 0) + 1; S._vtT = Date.now(); if(S._vt >= 5){ S._vt = 0; location.hash = "owner"; } return; }
-  if(a === "own-tab"){ S.own.tab = v; if(v === "laporan") loadOwnerReports(); if(v === "saldo" || v === "toko" || v === "driver") loadOwnerWallet(); render(); window.scrollTo(0,0); return; }
+  if(a === "own-tab"){ S.own.tab = v; S.own.focus = el.dataset.focus || null; if(v === "laporan") loadOwnerReports(); if(v === "saldo" || v === "toko" || v === "driver") loadOwnerWallet(); if(v === "pesan") loadOwnThreads(); render(); window.scrollTo(0,0);
+    if(S.own.focus) setTimeout(() => { const f = document.querySelector(".focus"); if(f) f.scrollIntoView({block:"center", behavior:"smooth"}); }, 120); return; }
+  if(a === "own-thread"){ S.own.thread = v || null; render(); if(v) loadOwnMsgs(v, true); return; }
+  if(a === "own-ifilter"){ S.own.ifilter = v; render(); return; }
+  if(a === "own-msg"){ S.own.tab = "pesan"; S.own.thread = v; render(); window.scrollTo(0,0); loadOwnMsgs(v, true); return; }
+  if(a === "own-msg-new"){ const D = ownD(); if(!(D.stores||[]).length && !(D.drivers||[]).length) return toast("Belum ada toko atau driver."); openOwnNewMsg(D, ""); return; }
+  if(a === "own-quick"){ const t = document.querySelector("#ownSupForm textarea"); if(t){ t.value = v; t.focus(); } return; }
+  if(a === "own-store-del"){
+    const id = el.dataset.id;
+    confirmModal("Hapus toko “"+v+"” secara permanen? Semua produk, login, dan catatan stoknya ikut terhapus. Riwayat pesanan tetap disimpan. Tindakan ini tidak bisa dibatalkan.", "Hapus toko", ownAct("del", async () => {
+      if(SB) await ownRpc("jt_owner_store_delete", {p_store:id});
+      else { if(S.orders.some(o => o.storeId === id && !["selesai","dibatalkan"].includes(o.status))) throw srvErr("Toko masih punya pesanan berjalan. Selesaikan atau tutup pesanan itu dulu"); for(const pr of (S.products[id]||[])) await store.del("stores/"+id+"/products/"+pr.id); await store.del("stores/"+id); }
+    }, "Toko dihapus"));
+    return;
+  }
+  if(a === "own-drv-active"){
+    const id = el.dataset.id, on = v === "1", name = el.dataset.name || "driver";
+    if(on){ confirmModal("Aktifkan kembali akun "+name+"? Driver bisa ONLINE dan menerima order lagi.", "Aktifkan", ownAct("on", async () => {
+      if(SB) await ownRpc("jt_owner_driver_active", {p_driver:id, p_active:true, p_note:""}); else await store.update("drivers/"+id, {suspended:false, suspendNote:""});
+      try{ await SUP.send("drv:"+id, "Akun driver Anda sudah diaktifkan kembali. Selamat narik lagi!", "owner"); }catch(_){}
+    }, "Driver diaktifkan")); return; }
+    document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><form class="modal" id="ownSuspend" data-id="'+esc(id)+'"><h2 class="sec" style="margin-top:0">Nonaktifkan '+esc(name)+'?</h2><p class="muted">Driver langsung OFFLINE dan tidak bisa menerima order sampai diaktifkan lagi. Alasan dikirim ke driver lewat pesan.</p>'+
+      '<label class="f">Alasan</label><textarea class="in" name="note" rows="3" maxlength="200" required placeholder="Contoh: banyak keluhan pelanggan, mohon hubungi tim JAGA."></textarea>'+
+      '<div class="actions" style="margin-top:16px"><button class="btn danger" style="flex:1">Nonaktifkan</button><button type="button" class="btn ghost" data-act="close-modal">Batal</button></div></form></div>';
+    return;
+  }
+  if(a === "own-drv-del"){
+    const id = el.dataset.id;
+    confirmModal("Hapus akun driver “"+v+"” secara permanen? Riwayat pesanan dan saldo tetap tercatat, tetapi akun dan pesannya terhapus. Nomor WA dan platnya bisa dipakai mendaftar lagi.", "Hapus driver", ownAct("del", async () => {
+      if(SB) await ownRpc("jt_owner_driver_delete", {p_driver:id});
+      else { if(S.orders.concat(S.ridesAll||[]).some(o => o.driverId === id && DRV_BUSY.includes(o.status))) throw srvErr("Driver sedang membawa pesanan. Tunggu selesai dulu"); await store.del("drivers/"+id); }
+    }, "Driver dihapus"));
+    return;
+  }
   if(a === "own-range"){ S.own.range = v; render(); return; }
   if(a === "own-ofilter"){ S.own.ofilter = v; render(); return; }
   if(a === "own-refresh"){ S.own.sig = ""; await ownRefresh(); toast("Data diperbarui"); return; }
