@@ -4637,11 +4637,24 @@ const PLACE = {
           return {name:(p.mainText && p.mainText.text) || p.text.text, address:(p.secondaryText && p.secondaryText.text) || "", dist:near ? p.distanceMeters : null, pred:p}; });
       }catch(e){ if(GM_FAIL) return this.suggest(q, near); throw e; }
     }
-    const r = await fetch("https://photon.komoot.io/api/?limit=12&bbox=" + [AU.w, AU.s, AU.e, AU.n].join(",") + "&lat=" + c.lat + "&lon=" + c.lng + "&q=" + encodeURIComponent(q));
-    const j = await r.json();
-    return (j.features || []).map(f => { const p = f.properties || {}, a = photonAddr(p), ll = {lat:+f.geometry.coordinates[1].toFixed(6), lng:+f.geometry.coordinates[0].toFixed(6)};
-      return Object.assign(ll, {name:a[0] || q, address:a.slice(1, 4).join(", "), dist:near ? distM(c, ll) : null, county:String(p.county || "")}); })
-      .filter(x => inArea(x) && (!x.county || AREAS.some(a => x.county.toLowerCase().includes(String(a.short || "").toLowerCase())))).slice(0, 8);
+    let out = [];
+    try{
+      const r = await fetch("https://photon.komoot.io/api/?limit=12&bbox=" + [AU.w, AU.s, AU.e, AU.n].join(",") + "&lat=" + c.lat + "&lon=" + c.lng + "&q=" + encodeURIComponent(q));
+      const j = await r.json();
+      out = (j.features || []).map(f => { const p = f.properties || {}, a = photonAddr(p), ll = {lat:+f.geometry.coordinates[1].toFixed(6), lng:+f.geometry.coordinates[0].toFixed(6)};
+        return Object.assign(ll, {name:a[0] || q, address:a.slice(1, 4).join(", "), dist:near ? distM(c, ll) : null}); }).filter(inArea);
+    }catch(e){}
+    if(out.length < 4){ /* cadangan: Nominatim (OSM) di dalam batas wilayah, mencakup jalan, desa, dan tempat yang tidak ada di Photon */
+      try{
+        const r2 = await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=10&accept-language=id&addressdetails=0&bounded=1&viewbox=" + [AU.w, AU.n, AU.e, AU.s].join(",") + "&q=" + encodeURIComponent(q));
+        const j2 = await r2.json();
+        (j2 || []).forEach(x => { const ll = {lat:+(+x.lat).toFixed(6), lng:+(+x.lon).toFixed(6)}; if(!inArea(ll)) return;
+          if(out.some(o => Math.abs(o.lat - ll.lat) < 0.0004 && Math.abs(o.lng - ll.lng) < 0.0004)) return;
+          const parts = String(x.display_name || "").split(", ");
+          out.push(Object.assign(ll, {name:x.name || parts[0] || q, address:parts.slice(1, 4).join(", "), dist:near ? distM(c, ll) : null})); });
+      }catch(e){}
+    }
+    return out.slice(0, 8);
   },
   async resolve(it){
     if(it.pred){
@@ -4710,7 +4723,7 @@ async function psSearch(q){
   try{
     const list = await PLACE.suggest(q, near);
     if(PS_Q !== q || !document.getElementById("psres")) return;
-    box.innerHTML = list.length ? psRows(list, "") : '<div class="ps-t">Tidak ketemu di '+esc(AREA_NAME)+'. Coba kata lain, atau ketuk “Pilih di peta”.</div>';
+    S.jago.sugg = S.jago.sugg || []; box.innerHTML = list.length ? psRows(list, "") : '<div class="ps-t">Belum ada “'+esc(q)+'” di data peta (banyak tempat di kampung belum terdaftar).<br>Tidak masalah: tunjuk lokasinya langsung di peta, tulisanmu dipakai sebagai nama alamat.</div><div class="ps-quick" style="margin-top:10px"><button data-act="ps-map-label" data-q="'+esc(q)+'">'+I("grid")+' Pilih di peta: '+esc(q.slice(0,28))+'</button></div>';
   }catch(e){ if(PS_Q === q) box.innerHTML = '<div class="ps-t">Pencarian gagal. Periksa koneksi internet.</div>'; }
 }
 document.addEventListener("input", e => { if(e.target.id !== "psq") return; clearTimeout(PS_T); const q = e.target.value.trim(); PS_T = setTimeout(() => psSearch(q), 320); });
@@ -4721,6 +4734,7 @@ document.addEventListener("click", async e => {
   if(a === "jago-sheet"){ openPlaceSheet(el.dataset.v); return; }
   if(a === "ps-close"){ closeModal(); return; }
   if(a === "ps-map"){ closeModal(); render(); toast(S.jago.mode === "pick" ? "Ketuk peta atau geser pin biru untuk titik jemput" : "Ketuk peta untuk memilih tujuan"); const m = document.querySelector(".jmapbox"); if(m) m.scrollIntoView({behavior:"smooth", block:"center"}); return; }
+  if(a === "ps-map-label"){ S.jago.label = {kind:S.jago.sheet, text:String(el.dataset.q || "")}; closeModal(); render(); toast("Ketuk peta di lokasi “" + S.jago.label.text.slice(0,30) + "”"); const m = document.querySelector(".jmapbox"); if(m) m.scrollIntoView({behavior:"smooth", block:"center"}); return; }
   if(a === "ps-gps"){
     el.disabled = true; el.innerHTML = I("loader") + " Mengambil lokasi…";
     try{ const c = await getPos(); setProf(Object.assign(getProf(), c)); closeModal(); if(!inArea(c)){ S.jago.outside = true; toast("Lokasimu di luar wilayah layanan. " + AREA_MSG); render(); return; } await setJagoPoint("pick", c); if(JMAP) JMAP.map.setView([c.lat, c.lng], 16); if(!S.jago.dest) openPlaceSheet("dest"); }
@@ -4740,11 +4754,13 @@ document.addEventListener("click", async e => {
 });
 
 async function setJagoPoint(kind, c, address){
+  const LB = S.jago.label; let labelText = "";
+  if(LB && LB.kind === kind && !address){ labelText = LB.text; S.jago.label = null; }
   if(!inArea(c)){ toast((kind === "pick" ? "Titik jemput" : "Tujuan") + " di luar wilayah layanan. " + AREA_MSG); S.jago.outside = kind === "pick" || S.jago.outside; render(); return; }
   S.jago[kind] = {lat:c.lat, lng:c.lng, address:address || ""};
   if(kind === "pick" && !S.jago.dest) S.jago.mode = "dest";
   render();
-  if(!address){ const a = await revGeo(c); const cur = S.jago[kind]; if(cur && cur.lat === c.lat && cur.lng === c.lng){ cur.address = a || ("Titik " + fmtLL(c)); if(S.view === "jago") render(); } }
+  if(!address){ const a = await revGeo(c); const cur = S.jago[kind]; if(cur && cur.lat === c.lat && cur.lng === c.lng){ cur.address = labelText ? (labelText + (a ? " (dekat " + a + ")" : "")) : (a || ("Titik " + fmtLL(c))); if(S.view === "jago") render(); } }
 }
 
 /* ---------- tampilan penumpang ---------- */
