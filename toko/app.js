@@ -388,6 +388,7 @@ function renderInner(){
     if(S.role === "driver") html += appDriver();
     else if(S.role === "owner") html += appOwner();
     else if(v === "login") html += appLogin();
+    else if(v === "masuk") html += appMasuk();
     else if(v === "store") html += appStore();
     else if(v === "product") html += appProduct();
     else if(v === "cart" || v === "checkout") html += appCart();
@@ -1438,19 +1439,66 @@ Object.assign(ICONS, {
   logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
   minus:'<path d="M5 12h14"/>'
 });
-const COURIER_SVG = '<svg class="courier" viewBox="0 0 320 240" aria-hidden="true"><defs><linearGradient id="cgb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f6bff"/><stop offset="1" stop-color="#5aa2ff"/></linearGradient><linearGradient id="cgj" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a86ff"/><stop offset="1" stop-color="#2a5fe6"/></linearGradient></defs>'+
-  '<ellipse cx="166" cy="220" rx="122" ry="9" fill="#0a1633" opacity=".1"/>'+
-  '<g class="cr-lines" stroke="#a9c8ff" stroke-width="6" stroke-linecap="round"><path d="M10 118h38"/><path d="M0 148h32"/><path d="M16 178h26"/></g>'+
-  '<g class="cr-wheel"><circle cx="92" cy="188" r="29" fill="#0f1b2d"/><circle cx="92" cy="188" r="14" fill="#dbe6fb"/><path d="M92 174v28M78 188h28" stroke="#0f1b2d" stroke-width="3"/><circle cx="92" cy="188" r="4.5" fill="#0f1b2d"/></g>'+
-  '<g class="cr-wheel"><circle cx="246" cy="188" r="29" fill="#0f1b2d"/><circle cx="246" cy="188" r="14" fill="#dbe6fb"/><path d="M246 174v28M232 188h28" stroke="#0f1b2d" stroke-width="3"/><circle cx="246" cy="188" r="4.5" fill="#0f1b2d"/></g>'+
-  '<g class="cr-bob"><rect x="38" y="80" width="70" height="56" rx="11" fill="#0f1b2d"/><rect x="38" y="80" width="70" height="13" rx="6.5" fill="#b08d4f"/><path d="M62 126v-14l8-4v18zM76 126v-21l8-4v25z" fill="#fff" opacity=".85"/><path d="M89 126v-28l7-3.5v31.5z" fill="#b08d4f"/>'+
-  '<path d="M50 180c-3-32 22-48 62-46l72 6 10 40-84 6c-18-14-42-12-60-6z" fill="url(#cgb)"/><path d="M60 168c10-8 28-10 44-6" stroke="#fff" stroke-opacity=".35" stroke-width="5" stroke-linecap="round" fill="none"/>'+
-  '<path d="M116 176h96l-7 11h-82z" fill="#1f4fd1"/><path d="M207 184l16-82h13l-9 82z" fill="#1f4fd1"/><path d="M210 178c9-24 56-26 66 0h-13c-9-13-32-13-40 0z" fill="url(#cgb)"/>'+
-  '<circle cx="241" cy="118" r="8" fill="#ffd66b"/><circle cx="241" cy="118" r="3.5" fill="#fff4cc"/><path d="M214 100l36-9" stroke="#0f1b2d" stroke-width="7" stroke-linecap="round"/><path d="M90 133c11-13 54-13 66-4l-2 9H92z" fill="#0f1b2d"/>'+
-  '<path d="M128 128l50 5 10 37" fill="none" stroke="#0b1a3d" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M183 173h20" stroke="#0f1b2d" stroke-width="9" stroke-linecap="round"/>'+
-  '<path d="M109 136c-7-32 6-55 33-61l19 6c7 21 1 42-10 55z" fill="url(#cgj)"/><path d="M119 97l38 11" stroke="#b08d4f" stroke-width="5" stroke-linecap="round"/>'+
-  '<path d="M150 90l27 23 40-11" fill="none" stroke="#2a5fe6" stroke-width="12.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="219" cy="101" r="6.5" fill="#f2c39d"/>'+
-  '<rect x="143" y="68" width="12" height="10" rx="4" fill="#e3ad85"/><circle cx="150" cy="56" r="17" fill="#f2c39d"/><circle cx="158" cy="59" r="1.8" fill="#0f1b2d"/><path d="M131 59c-1-26 39-29 39 0z" fill="#0f1b2d"/><path d="M152 47c9 0 15 4 18 11h-18z" fill="#7cc2ff"/><path d="M131 59h21" stroke="#0f1b2d" stroke-width="4" stroke-linecap="round"/></g></svg>';
+const JAGA_MARK = (x, y, sc, c, gold, id) => '<g transform="translate('+x+' '+y+') scale('+sc+') translate(-30 -24)"><mask id="'+id+'" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="220"><rect width="200" height="220" fill="#fff"/><path d="M36 172 L156 106 V126 L36 192 Z" fill="#000"/></mask><g mask="url(#'+id+')"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" fill="'+c+'"/><path d="M74 132 V84 L96 72 V132 Z" fill="'+c+'"/><path d="M104 132 V64 L120 55 V132 Z" fill="'+gold+'"/></g><path d="M40 176 L152 114.4 V126.4 L40 188 Z" fill="'+gold+'"/></g>';
+const CR_WHEEL = (cx) => '<g class="cr-wheel"><circle cx="'+cx+'" cy="186" r="30" fill="#141c2f"/><circle cx="'+cx+'" cy="186" r="25" fill="#222c42"/><circle cx="'+cx+'" cy="186" r="17" fill="#c9d3e6"/>'+
+  [0,72,144,216,288].map(d => '<path d="M'+cx+' 186 L'+cx+' 171" stroke="#6b7690" stroke-width="3.5" stroke-linecap="round" transform="rotate('+d+' '+cx+' 186)"/>').join("")+'<circle cx="'+cx+'" cy="186" r="5.5" fill="#3a4560"/></g>';
+const COURIER_SVG = '<svg class="courier" viewBox="0 0 320 240" aria-hidden="true"><defs>'+
+  '<linearGradient id="cr2b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b7bff"/><stop offset="1" stop-color="#1f4fd1"/></linearGradient>'+
+  '<linearGradient id="cr2j" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a5fe6"/><stop offset="1" stop-color="#173f9e"/></linearGradient>'+
+  '<linearGradient id="cr2k" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16306e"/><stop offset="1" stop-color="#0b1a3d"/></linearGradient>'+
+  '<linearGradient id="cr2v" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b3f74"/><stop offset="1" stop-color="#0b1430"/></linearGradient></defs>'+
+  '<ellipse cx="168" cy="219" rx="128" ry="8" fill="#0a1633" opacity=".12"/>'+
+  '<g class="cr-lines" stroke="#a9c8ff" stroke-width="5" stroke-linecap="round"><path d="M4 92h40"/><path d="M0 122h52"/><path d="M8 152h36"/><path d="M2 182h30"/></g>'+
+  '<g class="cr-ride">'+
+  '<g class="cr-dust" fill="#c9d3e6"><circle cx="52" cy="210" r="9"/><circle cx="38" cy="206" r="6"/><circle cx="26" cy="211" r="4"/></g>'+
+  CR_WHEEL(90) + CR_WHEEL(250)+
+  '<g class="cr-bob">'+
+  /* knalpot & rak box */
+  '<rect x="54" y="184" width="44" height="8" rx="4" fill="#8a94aa"/><rect x="94" y="185" width="8" height="6" rx="2" fill="#5d667c"/>'+
+  /* bodi skuter */
+  '<path d="M60 176c2-20 54-22 62-2" fill="none" stroke="#173f9e" stroke-width="7" stroke-linecap="round"/>'+
+  '<path d="M48 178c-5-26 12-46 44-49l66-2c11 0 17 6 19 14l6 31c-34 9-78 11-135 6z" fill="url(#cr2b)"/>'+
+  '<path d="M60 160c8-14 30-20 58-20" stroke="#fff" stroke-opacity=".35" stroke-width="4" stroke-linecap="round" fill="none"/>'+
+  '<path d="M148 176h68l-7 11h-66z" fill="#16306e"/>'+
+  '<path d="M200 180c3-36 12-62 31-80l12 4c-10 22-15 48-16 76z" fill="url(#cr2b)"/>'+
+  '<path d="M207 182l20-86h12l-17 86z" fill="#173f9e"/>'+
+  '<path d="M218 176c6-26 58-26 64 0h-12c-6-15-34-15-40 0z" fill="url(#cr2b)"/>'+
+  '<ellipse cx="246" cy="112" rx="6" ry="8.5" fill="#ffe08a"/><ellipse cx="247" cy="111" rx="2.5" ry="4" fill="#fffbe6"/>'+
+  '<path d="M246 108l26-6v14z" fill="#ffe9a8" opacity=".35"/>'+
+  '<path d="M238 92l-3-18" stroke="#2a3550" stroke-width="3" stroke-linecap="round"/><ellipse cx="234" cy="71" rx="6" ry="4" fill="#2a3550"/>'+
+  '<path d="M222 98l28-7" stroke="#0f1b2d" stroke-width="6" stroke-linecap="round"/>'+
+  '<path d="M62 132c4-9 88-13 104-5l-2 7H64z" fill="#0f1b2d"/>'+
+  /* penumpang */
+  '<path d="M90 126l40 7 7 31" fill="none" stroke="#3a4152" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>'+
+  '<path d="M131 162h21c3 0 4 6-1 8h-20z" fill="#1f2937"/>'+
+  '<path d="M68 132c-7-27 2-51 24-57l19 5c9 19 6 39-6 52z" fill="#2bb37a"/>'+
+  '<path d="M72 112l38 4" stroke="#ffffff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>'+
+  '<rect x="86" y="62" width="11" height="11" rx="4" fill="#c98b62"/>'+
+  '<circle cx="93" cy="52" r="14" fill="#e2a982"/><circle cx="101" cy="54" r="1.6" fill="#0f1b2d"/>'+
+  '<path d="M76 54c-1-16 9-25 20-25 10 0 17 7 17 18h-15c-3 0-5 3-5 7z" fill="#f4f6fa"/>'+
+  '<path d="M78 46c3-10 11-15 20-15" fill="none" stroke="#9aa6bd" stroke-width="4" stroke-linecap="round"/>'+
+  '<path d="M96 47h17c0 3-1 5-3 6h-14z" fill="#2b3f74" opacity=".85"/>'+
+  /* pengendara */
+  '<path d="M124 122l50 7 9 38" fill="none" stroke="#1b2a4f" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>'+
+  '<path d="M174 129l9 38" fill="none" stroke="#24365f" stroke-width="10" stroke-linecap="round" opacity=".5"/>'+
+  '<path d="M176 166h25c3 0 4 6-1 8h-24z" fill="#111827"/>'+
+  '<path d="M106 130c-8-30 4-56 31-61l24 6c11 21 6 44-8 56z" fill="url(#cr2j)"/>'+
+  '<path d="M109 116l51 6" stroke="#e8eef9" stroke-width="4.5" stroke-linecap="round" opacity=".9"/>'+
+  '<path d="M136 70l25 6c2 4 3 8 3 12" fill="none" stroke="#0f2257" stroke-width="5" stroke-linecap="round"/>'+
+  '<path d="M100 92l16 18 18 2" fill="none" stroke="#25a06d" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="136" cy="112" r="5.5" fill="#e2a982"/>'+
+  '<path d="M150 84l28 20 46-8" fill="none" stroke="#2a5fe6" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>'+
+  '<path d="M150 84l28 20" fill="none" stroke="#173f9e" stroke-width="5" stroke-linecap="round" opacity=".45"/>'+
+  '<circle cx="225" cy="95" r="7.5" fill="#111827"/>'+
+  '<rect x="140" y="62" width="13" height="11" rx="4" fill="#d9a07a"/>'+
+  /* helm full-face putih dengan logo */
+  '<path d="M126 52c0-17 12-28 27-28 15 0 25 10 25 24v10c0 6-4 10-10 10h-34c-5 0-8-4-8-9z" fill="#ffffff"/>'+
+  '<path d="M128 50c3-14 14-22 27-22" fill="none" stroke="#2f6bff" stroke-width="6" stroke-linecap="round"/>'+
+  '<path d="M150 38c14-1 25 4 28 14v6h-28z" fill="url(#cr2v)"/>'+
+  '<path d="M156 42c9 0 15 3 18 9" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-linecap="round" fill="none"/>'+
+  '<path d="M150 58h28c0 7-5 10-12 10h-16z" fill="#e3e9f4"/>'+
+  '<path d="M126 60c0 5 3 8 8 8h16" fill="none" stroke="#d6deeb" stroke-width="2"/>'+
+  JAGA_MARK(133, 42, .11, "#1f4fd1", "#d9b264", "crm4")+
+  '</g></g></svg>';
 const JMARK = () => (document.querySelector(".jmark") || {outerHTML:""}).outerHTML;
 
 /* profil & favorit (tersimpan di perangkat) */
@@ -1676,7 +1724,7 @@ function appProfile(){
       (!isStandalone() ? '<button data-act="install"><img class="e3d" src="icons/icon-192.png" alt="" style="border-radius:8px"><div class="grow">Pasang aplikasi di HP<small>Buka JAGA langsung dari layar utama</small></div><span class="chev">'+I("chev")+'</span></button>' : '')+
       '<button data-act="rules">'+E("check")+'<div class="grow">Aturan JAGA<small>Ketentuan akun pembeli, toko & driver</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa,"Halo JAGA, saya butuh bantuan."))+'">'+E("bell")+'<div class="grow">Bantuan<small>WhatsApp '+esc(CONTACT.wa)+'</small></div><span class="chev">'+I("chev")+'</span></a>'+
-      (p.name?'<button data-act="logout">'+I("logout")+'<div class="grow">Keluar</div></button>':'<button data-act="nav" data-v="login">'+E("check")+'<div class="grow">Masuk<small>Simpan nama & alamat untuk checkout cepat</small></div><span class="chev">'+I("chev")+'</span></button>')+
+      (p.name?'<button data-act="logout">'+I("logout")+'<div class="grow">Keluar</div></button><button data-act="acc-del" data-role="buyer" class="dangerrow">'+I("logout")+'<div class="grow">Hapus akun<small>Hapus data akun pembeli secara permanen</small></div></button>':'<button data-act="nav" data-v="login">'+E("check")+'<div class="grow">Masuk<small>Simpan nama & alamat untuk checkout cepat</small></div><span class="chev">'+I("chev")+'</span></button>')+
     '</div><div class="small muted" style="text-align:center;margin:8px 0 20px;user-select:none" data-act="ver-tap">JAGA · versi 1.1<br><span style="font-size:11.5px;opacity:.8">Kami JAGA Kepercayaan anda</span></div>';
 }
 function appLogin(){
@@ -1688,7 +1736,7 @@ function appLogin(){
     '<label class="lin'+ra(5)+'">'+I("pin")+'<input name="address" placeholder="Alamat / patokan (opsional)" value="'+esc(p.address||"")+'" autocomplete="street-address"></label>'+
     '<button class="lbtn press'+ra(6)+'">Masuk</button><div class="lor">atau</div>'+
     '<button type="button" class="lguest press" data-act="guest">Lihat-lihat dulu sebagai tamu</button>'+
-    '<div class="lfoot">Punya toko? <a data-act="mitra-info">Gabung jadi mitra</a><br>Punya motor? <a data-act="open-driver">Daftar jadi driver</a><br><span style="font-size:12px">Dengan masuk, kamu setuju dengan <a data-act="rules">Aturan JAGA</a></span></div></form></div>';
+    '<div class="lfoot"><a class="lmasuk" data-act="nav" data-v="masuk">Sudah punya akun toko / driver? <b>Masuk di sini</b></a></div></form></div>';
 }
 function openAddrModal(){
   const p = getProf();
@@ -1725,7 +1773,7 @@ function showSplash(){
   let seen = false; try{ seen = sessionStorage.getItem("jt_splash"); }catch(e){}
   if(seen || S.role === "seller") return;
   const sp = document.createElement("div"); sp.id = "splash";
-  sp.innerHTML = '<div class="blob"></div>'+COURIER_SVG+'<div class="sbrand">'+JMARK()+'<b>JAGA</b></div><div class="stag jslog"><span class="jl"><i></i><span><em>JA</em>minan Driver dan toko Aman</span></span><span class="jl"><i></i><span><em>GA</em>ransi pesanan pasti sampai</span></span><span class="jl"><i></i><span>Kami <em>JAGA</em> Kepercayaan anda</span></span></div><div class="sload"><i></i></div>';
+  sp.innerHTML = '<div class="blob"></div>'+COURIER_SVG;
   document.body.appendChild(sp);
   try{ sessionStorage.setItem("jt_splash", "1"); }catch(e){}
   setTimeout(() => { sp.classList.add("out"); setTimeout(() => sp.remove(), 600); }, 2400);
@@ -2311,9 +2359,10 @@ function driverForm(me){
     '<div><label class="f">Plat nomor *</label><input class="in" name="plate" required placeholder="BM 1234 XX" value="'+esc(me.plate||"")+'"></div></div>'+
     '<label class="f">Alamat rumah *</label><input class="in" name="address" required placeholder="Jalan, desa/kelurahan, kecamatan" value="'+esc(me.address||"")+'">'+
     '<label class="f">Area narik</label><input class="in" name="area" placeholder="Contoh: Ujungbatu" value="'+esc(me.area||"Ujungbatu")+'">'+
+    '<label class="f">'+(me.name ? "Password baru (kosongkan bila tidak diganti)" : "Buat password *")+'</label><div class="pwrap"><input class="in" type="password" name="pass" autocomplete="new-password" minlength="4" '+(me.name ? "" : "required")+' placeholder="Minimal 4 karakter"><button type="button" class="pw-eye" data-act="pw-toggle" aria-label="Lihat password">'+I("eye")+'</button></div><div class="hint">Dipakai untuk masuk lagi dari HP lain: nama + plat nomor + password.</div>'+
     (me.name ? '' : '<label class="check" style="margin-top:12px"><input type="checkbox" name="agree"> Saya setuju dengan <a data-act="rules" style="color:#2f6bff;font-weight:700">Aturan JAGA</a> (1 nomor WA & 1 plat = 1 akun driver)</label>')+
     '<button class="btn block press" style="margin-top:16px">'+(me.name ? "Simpan perubahan" : "Daftar & mulai narik")+'</button>'+
-    (me.name ? '<div class="hint">Ganti nomor WA atau plat nomor perlu verifikasi ulang tim JAGA.</div><button type="button" class="btn ghost block" style="margin-top:8px" data-act="drv-edit">Batal</button>' : '<div class="hint" style="text-align:center">Akun driver tersimpan di HP ini.</div>')+
+    (me.name ? '<div class="hint">Ganti nomor WA atau plat nomor perlu verifikasi ulang tim JAGA.</div><button type="button" class="btn ghost block" style="margin-top:8px" data-act="drv-edit">Batal</button><button type="button" class="btn ghost block" style="margin-top:8px" data-act="drv-logout">Keluar dari akun driver di HP ini</button><div class="delcard" style="margin-top:18px"><p class="small muted" style="margin:0 0 8px">Ingin berhenti? Akun bisa dihapus setelah tidak ada order berjalan dan bagi hasil lunas.</p><button type="button" class="btn danger block" data-act="acc-del" data-role="driver">Hapus akun driver</button></div>' : '<div class="hint" style="text-align:center">Akun driver tersimpan di HP ini.</div>')+
   '</form>';
 }
 function drvJob(o, offer){
@@ -2364,11 +2413,7 @@ function appDriver(){
   const me = S.drv.me;
   if(!me){
     return h + '<section class="dhero">'+COURIER_SVG+'<h1>Jadi Driver JAGA</h1><p>Antar pesanan dari toko & penumpang Jago di sekitarmu.</p></section>'+
-      '<div class="dperks"><div>'+E("pin")+'<b>Order terdekat</b><span>Dicari dari radius 1 km, melebar sampai 5 km</span></div>'+
-      '<div>'+E("money")+'<b>Ongkir untukmu</b><span>Rp2.000 per 500 m, bisa nego · potongan cuma 3%</span></div>'+
-      '<div>'+E("scooter")+'<b>Order ojek Jago</b><span>Antar penumpang, komisi cuma 3%</span></div>'+
-      '<div>'+E("check")+'<b>Daftar mudah</b><span>Cukup nama, WA, plat & alamat. Disetujui tim JAGA, dapat saldo gratis Rp15.000</span></div>'+
-      '<div>'+E("gift")+'<b>Poin harian</b><span>10 order selesai sehari = 5 poin = Rp2.000 saldo</span></div></div>'+ driverForm(null);
+      drvPerks()+drvLoginCard() + '<h2 class="sec" style="margin:18px 16px 0">Belum punya akun? Daftar</h2>' + driverForm(null);
   }
   if(S.drv.editing) return h + '<h2 class="sec" style="margin:8px 16px">Ubah data driver</h2>' + driverForm(me);
   if(S.drv.walletOpen) return h + drvWallet();
@@ -2479,9 +2524,11 @@ document.addEventListener("submit", async e => {
   if(data.plate.replace(/[^A-Za-z0-9]/g, "").length < 3 || data.address.length < 5) return toast("Isi plat nomor dan alamat rumah.");
   if(!S.drv.me && !fd.get("agree")) return toast("Centang persetujuan Aturan JAGA untuk mendaftar.");
   const btn = f.querySelector("button"); if(btn) btn.disabled = true;
-  const wasNew = !S.drv.me;
+  const wasNew = !S.drv.me, pass = String(fd.get("pass") || "");
+  if(pass && pass.length < 4){ if(btn) btn.disabled = false; return toast("Password minimal 4 karakter."); }
+  if(wasNew && SB && !pass){ if(btn) btn.disabled = false; return toast("Buat password untuk masuk lagi nanti."); }
   S.drv.editing = false;
-  await drvDo(() => DRV.save(data), wasNew ? "Pendaftaran terkirim! Tunggu persetujuan tim JAGA." : "Data disimpan");
+  await drvDo(async () => { const r = await DRV.save(data); if(pass && SB){ try{ await sbStore.rpc("jt_driver_setpass", {p_pass:pass}); }catch(e){ toast("Data tersimpan, tetapi password gagal disimpan: " + ((e && e.message) || "coba lagi")); } } return r; }, wasNew ? "Pendaftaran terkirim! Tunggu persetujuan tim JAGA." : "Data disimpan");
 });
 /* perbarui tampilan pencarian driver di sisi pembeli & toko */
 setInterval(() => {
@@ -2512,7 +2559,8 @@ function storeLoginSettings(s){
     '<div class="cols2"><div><label class="f">Nama login</label><input class="in" name="login" autocapitalize="none" required value="'+esc(cur || (s.name||"").toLowerCase())+'"></div>'+
     '<div><label class="f">Password baru</label><input class="in" type="password" name="pass" autocomplete="new-password" required minlength="4"></div></div>'+
     '<div class="hint">Gunakan password yang sulit ditebak (minimal 6 karakter, campur huruf & angka).</div>'+
-    '<div class="actions"><button class="btn sm">Simpan login</button><button type="button" class="btn ghost sm" data-act="store-logout" data-id="'+esc(s.id)+'">Keluar dari toko di perangkat ini</button></div></form>';
+    '<div class="actions"><button class="btn sm">Simpan login</button><button type="button" class="btn ghost sm" data-act="store-logout" data-id="'+esc(s.id)+'">Keluar dari toko di perangkat ini</button></div></form>'+
+    '<div class="card pad delcard"><h3 class="sub">Hapus akun toko</h3><p class="small muted" style="margin:0 0 10px">Toko, produk, dan login dihapus permanen. Syarat: tidak ada pesanan berjalan dan bagi hasil sudah lunas.</p><button type="button" class="btn danger sm" data-act="acc-del" data-role="store" data-id="'+esc(s.id)+'">Hapus akun toko</button></div>';
 }
 let _ordSeen = null;
 function notifyNewOrders(){
@@ -4184,9 +4232,10 @@ async function loadRatings(){
   try{ S.ratings = await RATE.summary() || S.ratings; S.myRatings = await RATE.mine() || {}; }catch(e){}
   if(!typing()) scheduleRender();
 }
-const starTxt = r => r && r.n ? '<span class="rstar">★ '+String(r.avg).replace(".", ",")+' <i>('+r.n+')</i></span>' : '';
-const storeStars = id => starTxt((S.ratings.store || {})[id]);
-const driverStars = id => starTxt((S.ratings.driver || {})[id]);
+const starBar = a => '<span class="sbar" aria-hidden="true">★★★★★<span style="width:'+Math.max(0, Math.min(100, (Number(a)||0) / 5 * 100)).toFixed(0)+'%">★★★★★</span></span>';
+const starTxt = (r, showNew) => r && r.n ? '<span class="rstar" aria-label="Nilai '+String(r.avg).replace(".", ",")+' dari 5, '+r.n+' penilaian">'+starBar(r.avg)+' <b>'+String(r.avg).replace(".", ",")+'</b> <i>('+r.n+')</i></span>' : (showNew ? '<span class="rstar new" aria-label="Belum ada penilaian">'+starBar(0)+' <i>Baru</i></span>' : '');
+const storeStars = id => starTxt((S.ratings.store || {})[id], true);
+const driverStars = id => starTxt((S.ratings.driver || {})[id], true);
 
 /* ---------- laporan masalah ---------- */
 const REASONS = {
@@ -4995,3 +5044,144 @@ function autoPrompt(){
 /* ajakan pasang hanya di halaman awal pendaftaran: hilang saat pindah halaman, muncul lagi bila kembali ke halaman itu */
 setInterval(() => { if(document.getElementById("instsheet") && !onRegPage()) closeInstSheet(); else if(!document.getElementById("instsheet") && onRegPage()) showInstSheet(); }, 700);
 
+
+/* ============ Hapus akun sendiri (pembeli, toko, driver): harus tanpa pesanan berjalan & bagi hasil lunas ============ */
+const ACC = {
+  async status(role, id){
+    if(SB) return sbStore.rpc("jt_account_status", {p_role:role, p_id:id || null});
+    const wid = role === "store" ? id : role === "driver" ? "drv:" + (S.drv.me ? S.drv.me.id : DRIVER_ID_LOCAL) : "";
+    const bal = wid ? balLocal(wid) : 0, fin = o => ["selesai","dibatalkan"].includes(o.status);
+    const act = role === "store" ? S.orders.filter(o => o.storeId === id && !fin(o)).length : role === "buyer" ? S.orders.concat(S.rides || []).filter(o => (o.buyerId === ME || o.riderId === ME) && !fin(o)).length : 0;
+    const why = []; if(act) why.push("Masih ada " + act + " pesanan berjalan. Selesaikan atau batalkan dulu."); if(bal < 0) why.push("Masih ada tanggungan bagi hasil " + rp(-bal) + ". Lunasi dulu lewat Isi saldo.");
+    return {name:"", balance:bal, due:Math.max(-bal, 0), pending:0, active:act, ok:!why.length, why};
+  },
+  async del(role, id){
+    if(SB) return sbStore.rpc("jt_account_delete", {p_role:role, p_id:id || null});
+    if(role === "store") await store.del("stores/" + id); else if(role === "driver" && S.drv.me) await store.del("drivers/" + S.drv.me.id);
+    return {ok:true};
+  }
+};
+async function openAccDel(role, id){
+  const M = document.getElementById("modal"), label = ({buyer:"akun pembeli", store:"akun toko", driver:"akun driver"})[role];
+  M.innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Hapus '+label+'</h2><p class="muted">Memeriksa pesanan dan bagi hasil…</p></div></div>';
+  let st; try{ st = await ACC.status(role, id); }catch(e){ M.innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Hapus '+label+'</h2><p>'+esc((e && e.message) || "Gagal memeriksa akun. Coba lagi.")+'</p><div class="actions"><button class="btn ghost" data-act="close-modal">Tutup</button></div></div></div>'; return; }
+  const money = role !== "buyer", row = (l, v, bad) => '<div class="accrow'+(bad?' bad':'')+'"><span>'+l+'</span><b>'+v+'</b></div>';
+  let h = '<div class="modal-bg" data-act="modal-bg"><div class="modal accdel"><h2 class="sec">Hapus '+label+(st.name ? ' “'+esc(st.name)+'”' : '')+'</h2>'+
+    '<div class="accbox">'+row("Pesanan berjalan", st.active ? st.active + " pesanan" : "Tidak ada ✓", st.active > 0)+
+    (money ? row("Tanggungan bagi hasil", st.due > 0 ? rp(st.due) : "Lunas ✓", st.due > 0) + row("Isi saldo menunggu", st.pending > 0 ? rp(st.pending) : "Tidak ada ✓", st.pending > 0) + row("Sisa saldo", rp(Math.max(st.balance, 0))) : '')+'</div>';
+  if(!st.ok){
+    h += '<div class="notice warnbox" style="margin:12px 0"><b>Akun belum bisa dihapus.</b><ul style="margin:6px 0 0;padding-left:18px">'+(st.why||[]).map(w => '<li>'+esc(w)+'</li>').join("")+'</ul></div>'+
+      '<div class="actions">'+(money && st.due > 0 ? '<button class="btn" data-act="acc-pay" data-role="'+role+'" data-id="'+esc(id||"")+'">Isi saldo untuk melunasi</button>' : '')+'<button class="btn ghost" data-act="close-modal">Tutup</button></div>';
+  } else {
+    h += '<p class="small" style="margin:12px 0 6px">'+(role === "buyer" ? 'Data akun (nama, WhatsApp, alamat) dihapus permanen. Riwayat pesanan lama tetap tersimpan di toko untuk pembukuan.' : 'Semua tanggung jawab sudah selesai. Akun dihapus <b>permanen</b> dan tidak bisa dikembalikan.'+(st.balance > 0 ? ' Sisa saldo '+rp(st.balance)+' tidak ikut berpindah: hubungi tim JAGA <b>sebelum</b> menghapus bila ingin menanyakannya.' : ''))+'</p>'+
+      '<label class="f">Ketik <b>HAPUS</b> untuk melanjutkan</label><input class="in" id="accWord" autocomplete="off" autocapitalize="characters" placeholder="HAPUS">'+
+      '<div class="actions" style="margin-top:14px"><button class="btn danger" id="accGo" disabled>Hapus permanen</button><button class="btn ghost" data-act="close-modal">Batal</button></div>';
+  }
+  M.innerHTML = h + '</div></div>';
+  const w = document.getElementById("accWord"), g = document.getElementById("accGo"); if(!w || !g) return;
+  w.oninput = () => { g.disabled = w.value.trim().toUpperCase() !== "HAPUS"; };
+  g.onclick = async () => {
+    g.disabled = true; g.textContent = "Menghapus…";
+    try{ await ACC.del(role, id); }catch(e){ toast((e && e.message) || "Gagal menghapus akun"); g.disabled = false; g.textContent = "Hapus permanen"; return; }
+    closeModal();
+    try{
+      if(role === "buyer"){ localStorage.removeItem("st_buyer"); localStorage.removeItem("jt_onb"); if(typeof BUYER !== "undefined") BUYER.me = null; go("login"); }
+      else if(role === "store"){ S.myStoreIds = null; S.stores = S.stores.filter(x => x.id !== id); if(S.sellerStoreId === id) S.sellerStoreId = null; await refreshMyStores(); go("seller", {sellerTab:"ringkasan"}); }
+      else { S.drv.me = null; S.drv.editing = false; S.drv.offers = []; S.drv.mine = []; S.drv.sig = ""; render(); drvRefresh(); }
+    }catch(_){ render(); }
+    toast("Akun sudah dihapus. Terima kasih sudah memakai JAGA.");
+  };
+}
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return; const a = el.dataset.act;
+  if(a === "acc-del"){ e.preventDefault(); openAccDel(el.dataset.role, el.dataset.id || ""); }
+  else if(a === "acc-pay"){ closeModal(); if(el.dataset.role === "store") go("seller", {sellerTab:"saldo"}); else { const b = document.querySelector('[data-act="drv-wallet"]'); if(b) b.click(); else toast("Buka menu Saldo driver untuk mengisi saldo"); } }
+});
+
+/* ============ Halaman masuk untuk yang sudah punya akun toko / driver ============ */
+S.masukTab = "toko";
+const pwField = (name, ac) => '<div class="pwrap"><input class="in" type="password" name="'+name+'" autocomplete="'+ac+'" required><button type="button" class="pw-eye" data-act="pw-toggle" aria-label="Lihat password">'+I("eye")+'</button></div>';
+function drvLoginCard(){
+  return '<form class="card pad slogin" id="drvLogin" autocomplete="on"><div class="sl-head">'+E("scooter")+'<div><h2>Masuk driver</h2><small>Sudah punya akun driver? Masuk dengan nama, plat nomor, dan password.</small></div></div>'+
+    '<label class="f">Nama lengkap</label><input class="in" name="name" autocomplete="name" required placeholder="Sesuai saat mendaftar">'+
+    '<label class="f">Plat nomor</label><input class="in" name="plate" autocapitalize="characters" autocomplete="off" required placeholder="Contoh: BM 1234 AB">'+
+    '<label class="f">Password</label>'+pwField("pass", "current-password")+
+    '<button class="btn block press" style="margin-top:14px">Masuk</button>'+
+    '<div class="hint" style="text-align:center">Belum pernah membuat password? Buka akun dari HP tempat mendaftar, ketuk <b>Ubah data</b>, lalu isi password.</div></form>';
+}
+function storeLoginCard2(){
+  return '<form class="card pad slogin" id="storeLogin2" autocomplete="on"><div class="sl-head">'+E("store")+'<div><h2>Masuk toko</h2><small>Sudah punya akun toko? Masuk dengan nama login dan password toko.</small></div></div>'+
+    '<label class="f">Nama toko / login</label><input class="in" name="login" autocomplete="username" autocapitalize="none" required placeholder="Contoh: wahyu">'+
+    '<label class="f">Password</label>'+pwField("pass", "current-password")+
+    '<button class="btn block press" style="margin-top:14px">Masuk</button>'+
+    '<div class="hint" style="text-align:center">Nama login & password dibuat di menu <b>Pengaturan → Login toko</b>.</div></form>';
+}
+function appMasuk(){
+  const t = S.masukTab === "driver" ? "driver" : "toko";
+  return '<div class="masuk"><div class="mhead"><button class="ibtn press" data-act="masuk-back" aria-label="Kembali">'+I("back")+'</button><div class="wmk">'+JMARK()+'<b>JAGA</b></div></div>'+
+    '<h1>Masuk ke akun Anda</h1><p class="msub">Untuk mitra toko dan driver yang sudah terdaftar.</p>'+
+    '<div class="mtabs" role="tablist"><button role="tab" class="'+(t==="toko"?"on":"")+'" data-act="masuk-tab" data-v="toko">'+E("store")+' Mitra toko</button><button role="tab" class="'+(t==="driver"?"on":"")+'" data-act="masuk-tab" data-v="driver">'+E("scooter")+' Driver</button></div>'+
+    (t === "toko" ? storeLoginCard2() : drvLoginCard())+
+    '<p class="mfoot">Belum punya akun? '+(t === "toko" ? '<a data-act="mitra-info">Daftar jadi mitra toko</a>' : '<a data-act="open-driver">Daftar jadi driver</a>')+'</p></div>';
+}
+document.addEventListener("click", async e => {
+  const el = e.target.closest("[data-act]"); if(!el) return; const a = el.dataset.act;
+  if(a === "masuk-tab"){ S.masukTab = el.dataset.v; render(); }
+  else if(a === "masuk-back"){ let onb = false; try{ onb = !!localStorage.getItem("jt_onb"); }catch(_){} go(onb ? "home" : "login"); }
+  else if(a === "drv-logout"){
+    confirmModal("Keluar dari akun driver di HP ini? Anda bisa masuk lagi dengan nama, plat nomor, dan password.", "Keluar", async () => {
+      if(!SB) return toast("Keluar akun driver hanya tersedia di jagapatner.my.id");
+      try{
+        const r = await sbStore.rpc("jt_driver_logout", {});
+        if(r && r.linked){ S.drv.me = null; S.drv.editing = false; S.drv.offers = []; S.drv.mine = []; S.drv.sig = ""; render(); await drvRefresh(); toast("Sudah keluar dari akun driver"); }
+        else toast("HP ini adalah HP pendaftar akun, jadi tetap terhubung.");
+      }catch(err){ toast((err && err.message) || "Gagal keluar"); }
+    });
+  }
+});
+document.addEventListener("submit", async e => {
+  const f = e.target; if(f.id !== "drvLogin" && f.id !== "storeLogin2") return;
+  e.preventDefault();
+  if(!SB) return toast("Masuk akun hanya tersedia di jagapatner.my.id/toko. Ini halaman pratinjau.");
+  const fd = new FormData(f), btn = f.querySelector("button.btn"); btn.disabled = true; btn.textContent = "Memeriksa…";
+  try{
+    if(f.id === "drvLogin"){
+      const r = await sbStore.rpc("jt_driver_login", {p_name:String(fd.get("name")||"").trim(), p_plate:String(fd.get("plate")||"").trim(), p_pass:String(fd.get("pass")||"")});
+      if(!r || !r.ok) throw new Error((r && r.error) || "Nama, plat nomor, atau password salah");
+      try{ localStorage.setItem("jt_home_role", "driver"); }catch(_){}
+      S.drv.sig = ""; S.drv.loaded = false;
+      if(S.role === "driver"){ await drvRefresh(); render(); } else location.hash = "driver";
+      toast("Berhasil masuk. Selamat narik lagi!");
+    } else {
+      const { data, error } = await SB.rpc("jt_store_login", {p_login: fd.get("login"), p_pass: fd.get("pass"), p_key: KEY});
+      if(error) throw sbErr(error);
+      if(!data || !data.ok) throw new Error((data && data.error) || "Nama toko atau password salah");
+      try{ localStorage.setItem("jt_home_role", "seller"); }catch(_){}
+      S.myStoreIds = null; await refreshMyStores(); if(ORD_REFRESH) await ORD_REFRESH();
+      S.sellerStoreId = data.storeId;
+      if(S.role === "seller") go("seller", {sellerTab:"pesanan"}); else location.hash = "mitra";
+      toast("Berhasil masuk. Pesanan baru tampil di sini.");
+    }
+  }catch(err){ toast(String((err && err.message) || "Gagal masuk").replace(/^.*?:\s*/, "")); btn.disabled = false; btn.textContent = "Masuk"; }
+});
+
+/* ============ Keuntungan driver: angka diambil dari aturan yang berlaku di server ============ */
+let PUB_RULES = null;
+async function loadRules(){
+  try{ PUB_RULES = SB ? await sbStore.rpc("jt_public_rules", {}) : Object.assign({}, WCFG_DEF, wCfgLocal()); }catch(e){ PUB_RULES = null; }
+  if(PUB_RULES && S.role === "driver" && !(S.drv && S.drv.me)) scheduleRender();
+}
+function drvPerks(){
+  const r = Object.assign({}, WCFG_DEF, PUB_RULES || {}), pct = fmtPct(PUB_RULES && PUB_RULES.drvPct != null ? PUB_RULES.drvPct : COMM.drvPct) + "%";
+  const per = rp(ONGKIR_PER) + " per " + ONGKIR_STEP + " m";
+  const it = (e, t, d) => '<div>'+E(e)+'<b>'+t+'</b><span>'+d+'</span></div>';
+  return '<div class="dperks">'+
+    it("pin", "Order terdekat", "Order dicari mulai radius 1 km dari lokasimu, melebar sampai 5 km")+
+    it("money", "Ongkir untukmu", "Antar barang: ongkir "+per+", bisa nego dan dibayar pembeli langsung ke kamu. Potongan JAGA "+pct+" dari ongkir")+
+    it("scooter", "Order ojek Jago", "Antar penumpang dengan tarif "+per+". Potongan JAGA "+pct+" dari tarif")+
+    it("card", "Saldo minimal "+rp(r.minBalance), "Potongan diambil otomatis dari saldo driver. Order baru masuk selama saldo minimal "+rp(r.minBalance))+
+    it("check", "Daftar mudah", "Cukup nama, WA, plat, alamat & password. Setelah disetujui tim JAGA, dapat saldo gratis "+rp(r.bonus))+
+    it("gift", "Poin harian", r.ptTarget+" order selesai sehari = "+r.ptEarn+" poin. Setiap "+r.ptRedeem+" poin = "+rp(r.ptValue)+" saldo")+
+  '</div>';
+}
+loadRules();

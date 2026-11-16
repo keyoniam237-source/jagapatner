@@ -15,3 +15,5 @@
 `index.html` hanya kerangka kecil. Gaya ada di `app.css`, logika di `app.js`. **Saat deploy, naikkan angka versi bersama-sama:** `CACHE` di `sw.js`, `?v=` pada `app.css`/`app.js` di `index.html`, dan `?v=` pada daftar `SHELL` di `sw.js`.
 
 - `sql-tests-wa.sql` (30 tes): WhatsApp privat + akun pembeli. Jalankan bersama `supabase-wa-privat-pembeli.sql` dalam satu `begin; ...` (otomatis dibatalkan).
+- `sql-tests-hapus-akun.sql` (17 tes): hapus akun sendiri (pembeli/toko/driver) hanya bila tanpa pesanan berjalan, bagi hasil lunas, dan tanpa isi saldo menunggu. Jalankan bersama `supabase-hapus-akun.sql` dalam satu `begin; ...`.
+- Login driver (nama + plat + password, `supabase-login-driver.sql`): 16 tes dijalankan langsung dalam blok rollback saat pemasangan (tautan HP baru, kunci 15 menit setelah 5 salah, keluar, hapus akun membersihkan tautan).
