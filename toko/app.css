@@ -1562,3 +1562,14 @@ div.delcard:not(.card){padding:14px;border-radius:16px}
 .courier .cr-lines path:nth-child(4){animation-delay:.1s}
 @keyframes wheelie{0%,12%{transform:rotate(0)}30%,58%{transform:rotate(-15deg)}64%{transform:rotate(-13deg)}74%{transform:rotate(0)}78%{transform:translateY(-2px) rotate(.8deg)}84%,100%{transform:translateX(0) rotate(0)}}
 @keyframes dust{0%,70%{opacity:0;transform:scale(.4) translateX(0)}76%{opacity:.9;transform:scale(1) translateX(-4px)}100%{opacity:0;transform:scale(1.5) translateX(-26px)}}
+
+/* tombol navigasi driver */
+.dj-links a.navbtn{background:linear-gradient(135deg,#2f6bff,#1f4fd1);color:#fff;font-size:14px;padding:10px 16px;box-shadow:0 8px 18px -10px rgba(31,79,209,.8)}
+.navsheet .nvhead{display:flex;align-items:center;gap:12px}
+.navsheet .nvhead .e3d{width:44px;height:44px;font-size:38px;flex:none}
+.navsheet .nvhead small{display:block;color:#5b6478;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+.navsheet .nvhead b{display:block;font-size:19px;color:#0b1a3d}
+.navsheet .nvdist{margin-left:auto;background:#eef3ff;color:#1f4fd1;font-weight:800;border-radius:99px;padding:5px 11px;font-size:13px;white-space:nowrap}
+.navsheet .nvaddr{margin:12px 0 14px;font-size:15px;color:#26304a;line-height:1.45}
+.navsheet .nvgo{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-size:16px;padding:15px}
+.navsheet .nvnote{font-size:12.5px;color:#5b6478;line-height:1.5;margin:10px 0}

@@ -2070,6 +2070,7 @@ function radiusM(el){ return el < 90 ? 1000 : el < 150 ? 2000 : el < 210 ? 3000 
 function distM(a, b){ const R = 6371000, r = x => x * Math.PI / 180; const dl = r(b.lat - a.lat), dg = r(b.lng - a.lng); const q = Math.sin(dl/2)**2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dg/2)**2; return 2 * R * Math.asin(Math.sqrt(q)); }
 const fmtDist = m => m == null ? "" : m < 1000 ? Math.round(m) + " m" : (m/1000).toFixed(1).replace(".", ",") + " km";
 const hasLoc = x => x && typeof x.lat === "number" && typeof x.lng === "number";
+const navLink = (loc, addr) => "https://www.google.com/maps/dir/?api=1&travelmode=two-wheeler&dir_action=navigate&destination=" + (hasLoc(loc) ? loc.lat + "," + loc.lng : encodeURIComponent(String(addr || "").trim()));
 const dirLink = (loc, addr) => hasLoc(loc) ? "https://www.google.com/maps/dir/?api=1&destination=" + loc.lat + "," + loc.lng : "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr || "");
 function searchElapsed(o){ return Math.max(0, (Date.now() - (o.searchAt || o.updatedAt || Date.now())) / 1000); }
 
@@ -2225,7 +2226,7 @@ function startGeo(){
     const first = !S.drv.loc; S.drv.loc = c; S.drv.locErr = "";
     const moved = lastSent.t ? distM(lastSent, c) : 1e9;
     const busy = (S.drv.mine || []).some(o => DRV_BUSY.includes(o.status));
-    if(Date.now() - lastSent.t > (busy ? 15000 : 60000) || moved > (busy ? 20 : 40)) sendLoc(c);
+    if(Date.now() - lastSent.t > (busy ? 6000 : 60000) || moved > (busy ? 10 : 40)) sendLoc(c);
     if(first && S.role === "driver" && !typing()) scheduleRender();
   }, err => {
     S.drv.locErr = err.code === 1 ? "Izin lokasi ditolak. Aktifkan lokasi untuk JAGA di pengaturan browser agar bisa menerima order terdekat." : "Lokasi belum ditemukan. Pastikan GPS menyala.";
@@ -2379,10 +2380,10 @@ function drvJob(o, offer){
   }
   h += '<div class="dj-route">'+
     '<div class="pt a"><i></i><div><small>Ambil di toko</small><b>'+esc(o.storeName)+'</b><span>'+esc(o.storeAddress || "")+'</span>'+
-      (!offer && o.status==="driver_ke_toko" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(dirLink(o.storeLoc, (o.storeAddress||"")+" "+(o.storeName||"")))+'">'+I("pin")+' Rute ke toko</a>'+'</div>' : '')+
+      (!offer && o.status==="driver_ke_toko" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(navLink(o.storeLoc, (o.storeAddress||"")+" "+(o.storeName||"")))+'">'+I("pin")+' Navigasi ke toko</a>'+'</div>' : '')+
     '</div></div>'+
     '<div class="pt b"><i></i><div><small>Antar ke</small><b>'+esc(offer ? (o.buyer.address||"").split(",")[0] : o.buyer.name)+'</b><span>'+esc(o.buyer.address||"")+'</span>'+
-      (!offer && o.status==="diantar" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(hasLoc(o.buyer) ? dirLink(o.buyer) : (o.buyer.maps || dirLink(null, o.buyer.address)))+'">'+I("pin")+' Rute ke pembeli</a>'+'</div>' : '')+
+      (!offer && o.status==="diantar" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(hasLoc(o.buyer) ? navLink(o.buyer) : (o.buyer.maps || navLink(null, o.buyer.address)))+'">'+I("pin")+' Navigasi ke pembeli</a>'+'</div>' : '')+
       (o.buyer.note ? '<span class="note">'+I("note")+' '+esc(o.buyer.note)+'</span>' : '')+
     '</div></div></div>';
   h += '<div class="small" style="margin:8px 0 2px">'+items+'</div>' + voucherNote(o, "driver");
@@ -3494,8 +3495,8 @@ function rideSteps(o){
   return '<div class="steps">'+flow.map((f, i) => '<div class="step '+(i <= idx ? "done" : "")+'"><div class="bar"></div>'+L_[i]+'</div>').join("")+'</div>';
 }
 function rideRoute(o, drv){
-  const linkP = drv && o.status === "driver_jemput" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(dirLink(o.pickup))+'">'+I("pin")+' Rute ke titik jemput</a></div>' : '';
-  const linkD = drv && o.status === "dalam_perjalanan" ? '<div class="dj-links"><a target="_blank" rel="noopener" href="'+esc(dirLink(o.dest))+'">'+I("pin")+' Rute ke tujuan</a></div>' : '';
+  const linkP = drv && o.status === "driver_jemput" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(navLink(o.pickup, o.pickup && o.pickup.address))+'">'+I("pin")+' Navigasi ke titik jemput</a></div>' : '';
+  const linkD = drv && o.status === "dalam_perjalanan" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(navLink(o.dest, o.dest && o.dest.address))+'">'+I("pin")+' Navigasi ke tujuan</a></div>' : '';
   return '<div class="dj-route">'+
     '<div class="pt a"><i></i><div><small>Jemput'+(drv && o.rider ? ' · '+esc(o.rider.name) : '')+'</small><b>'+esc(shortAddr(o.pickup.address) || fmtLL(o.pickup))+'</b>'+(o.pickup.address && shortAddr(o.pickup.address) !== o.pickup.address ? '<span>'+esc(o.pickup.address)+'</span>' : '')+linkP+
       (o.note ? '<span class="note">'+I("note")+' '+esc(o.note)+'</span>' : '')+'</div></div>'+
@@ -5185,3 +5186,51 @@ function drvPerks(){
   '</div>';
 }
 loadRules();
+
+/* ============ Navigasi langsung setelah menerima order + lokasi live untuk tamu ============ */
+const NAV_SEEN = {}; let NAV_INIT = false;
+function navTarget(o){
+  const ride = isRide(o);
+  if(o.status === "driver_jemput") return {t:"Jemput penumpang", who:o.rider && o.rider.name, loc:o.pickup, addr:o.pickup && o.pickup.address, lbl:"titik jemput"};
+  if(o.status === "dalam_perjalanan") return {t:"Antar ke tujuan", who:o.rider && o.rider.name, loc:o.dest, addr:o.dest && o.dest.address, lbl:"tujuan"};
+  if(!ride && o.status === "driver_ke_toko") return {t:"Ambil pesanan di toko", who:o.storeName, loc:o.storeLoc, addr:((o.storeAddress||"") + " " + (o.storeName||"")).trim(), lbl:"toko"};
+  if(!ride && o.status === "diantar") return {t:"Antar ke pembeli", who:o.buyer && o.buyer.name, loc:o.buyer, addr:o.buyer && o.buyer.address, lbl:"pembeli", url:o.buyer && !hasLoc(o.buyer) ? o.buyer.maps : ""};
+  return null;
+}
+function navSheet(o){
+  const n = navTarget(o); if(!n) return;
+  const url = n.url || navLink(hasLoc(n.loc) ? n.loc : null, n.addr), me = S.drv.loc;
+  const dist = me && hasLoc(n.loc) ? fmtDist(distM(me, n.loc)) : "";
+  const M = document.getElementById("modal");
+  M.innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal navsheet"><div class="nvhead">'+E(n.lbl === "toko" ? "store" : "pin")+'<div><small>'+esc(n.t)+'</small><b>'+esc(n.who || "")+'</b></div>'+(dist ? '<span class="nvdist">'+dist+'</span>' : '')+'</div>'+
+    '<p class="nvaddr">'+esc(shortAddr(n.addr) || (hasLoc(n.loc) ? fmtLL(n.loc) : "Alamat belum ada"))+'</p>'+
+    '<a class="btn block press nvgo" target="_blank" rel="noopener" href="'+esc(url)+'" data-act="nav-go">'+I("pin")+' Mulai navigasi ke '+n.lbl+'</a>'+
+    '<p class="nvnote">Google Maps terbuka dengan rute motor. Lokasimu dibagikan live ke '+(["driver_jemput","dalam_perjalanan"].includes(o.status) ? "penumpang" : o.status === "driver_ke_toko" ? "toko dan pembeli" : "pembeli")+'. Saat memakai Google Maps, sesekali buka lagi JAGA agar lokasimu tetap terbaru.</p>'+
+    '<button class="btn ghost block" data-act="close-modal">Lihat peta di aplikasi</button></div></div>';
+}
+function navCheck(){
+  const mine = (S.drv && S.drv.mine) || [];
+  if(!NAV_INIT){ mine.forEach(o => { NAV_SEEN[o.id + ":" + o.status] = 1; }); NAV_INIT = !!(S.drv && S.drv.me); return; }
+  for(const o of mine){
+    const k = o.id + ":" + o.status; if(NAV_SEEN[k]) continue; NAV_SEEN[k] = 1;
+    if(navTarget(o) && S.role === "driver" && !document.getElementById("modal").innerHTML.trim()){ if(S.drv.loc) sendLoc(S.drv.loc); navSheet(o); break; }
+  }
+  keepAwake(mine.some(o => DRV_BUSY.includes(o.status)));
+}
+{ const _dr = drvRefresh; drvRefresh = async function(){ const r = await _dr.apply(this, arguments); try{ navCheck(); }catch(_){} return r; }; }
+document.addEventListener("click", e => { const a = e.target.closest('[data-act="nav-go"]'); if(a) setTimeout(closeModal, 400); });
+/* layar tetap menyala selama membawa order, dan kirim lokasi segera saat kembali ke aplikasi */
+let WAKE = null;
+async function keepAwake(on){
+  try{
+    if(on && !WAKE && navigator.wakeLock && !document.hidden){ WAKE = await navigator.wakeLock.request("screen"); WAKE.addEventListener("release", () => { WAKE = null; }); }
+    else if(!on && WAKE){ await WAKE.release(); WAKE = null; }
+  }catch(_){ WAKE = null; }
+}
+document.addEventListener("visibilitychange", () => {
+  if(document.hidden || S.role !== "driver") return;
+  const busy = ((S.drv && S.drv.mine) || []).some(o => DRV_BUSY.includes(o.status));
+  if(!busy) return;
+  keepAwake(true);
+  if(navigator.geolocation) navigator.geolocation.getCurrentPosition(p => { const c = {lat:+p.coords.latitude.toFixed(6), lng:+p.coords.longitude.toFixed(6)}; S.drv.loc = c; sendLoc(c); }, () => {}, {enableHighAccuracy:true, maximumAge:5000, timeout:15000});
+});
