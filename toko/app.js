@@ -2883,45 +2883,46 @@ function appOwner(){
     h += '<div class="card pad otodo"><div class="tdh"><h3 class="sub" style="margin:0">Perlu tindakan</h3>'+(todo.length ? '<span class="tag amber">'+todo.length+' hal</span>' : '<span class="tag green">Semua aman</span>')+'</div>'+
       (todo.length ? '<div class="tdl">'+todo.map(x => '<button class="td" data-act="own-tab" data-v="'+x[3]+'"><span class="ti">'+I(x[4])+'</span><div class="grow"><b>'+x[0]+' '+x[1]+'</b><small>'+x[2]+'</small></div><span class="go">'+I("chev")+'</span></button>').join("")+'</div>'
         : '<p class="muted small" style="margin:8px 0 0">Tidak ada driver menunggu, pesan, laporan, atau pesanan macet.'+(offStores||suspD?' '+offStores+' toko dan '+suspD+' driver sedang dinonaktifkan.':'')+'</p>')+'</div>';
-    h += '<div class="okpi">'+
-      '<div class="k main"><small>Pendapatan JAGA (bagi hasil 3%)</small><b>'+rp(st.share)+'</b><span>dari '+st.done.length+' pesanan selesai</span></div>'+
-      (() => { const f = rangeStart(S.own.range); const rf = RD.filter(r => r.status === "selesai" && (r.doneAt||r.createdAt||0) >= f).reduce((a,r)=>a+(r.fee||0),0), df = st.done.reduce((a,o)=>a+(o.drvFee||0),0);
-        return '<div class="k main"><small>Total semua komisi JAGA</small><b>'+rp(st.share + df + rf)+'</b><span>toko '+rp(st.share)+' · ongkir antar '+rp(df)+' · Jago '+rp(rf)+'</span></div>'; })()+
-      '<div class="k"><small>Penjualan selesai (masuk ke toko)</small><b>'+rp(st.gmv)+'</b></div>'+
-      '<div class="k"><small>Ongkir diterima driver</small><b>'+rp(st.ongkir)+'</b></div>'+
-      '<div class="k"><small>Pesanan dibuat</small><b>'+st.created.length+'</b><span>'+st.cancel.length+' batal'+(st.created.length?' ('+Math.round(st.cancel.length/st.created.length*100)+'%)':'')+'</span></div>'+
-      '<div class="k"><small>Pembeli unik</small><b>'+st.buyers+'</b></div>'+
-      '<div class="k"><small>Toko aktif</small><b>'+stores.filter(s => s.active !== false).length+'<em>/'+stores.length+'</em></b><span>'+stores.filter(s => s.active !== false && s.open !== false).length+' sedang buka</span></div>'+
-      '<div class="k"><small>Driver online</small><b>'+onlineDrv+'<em>/'+drivers.length+'</em></b></div>'+
-      '<div class="k"><small>Pesanan berjalan</small><b>'+st.active.length+'</b></div>'+
-      (() => { const f = rangeStart(S.own.range); const rd = RD.filter(r => r.status === "selesai" && (r.doneAt||r.createdAt||0) >= f); const ra = RD.filter(r => RIDE_ACTIVE.includes(r.status));
-        return '<div class="k"><small>Komisi Jago 3%</small><b>'+rp(rd.reduce((a,r)=>a+(r.fee||0),0))+'</b><span>'+rd.length+' perjalanan selesai</span></div>'+
-          '<div class="k"><small>Tarif Jago ke driver</small><b>'+rp(rd.reduce((a,r)=>a+(r.fareFinal||0),0))+'</b><span>'+ra.length+' sedang berjalan</span></div>'; })()+'</div>';
-    h += '<div class="card pad oflow"><h3 class="sub">Arus uang '+esc(ranges.find(r => r[0]===S.own.range)[1].toLowerCase())+'</h3>'+
-      '<div class="fl"><div>'+E("cart")+'<small>Pembeli membayar</small><b>'+rp(st.gmv + st.ongkir)+'</b></div><i>→</i>'+
-      '<div>'+E("store")+'<small>Masuk ke toko</small><b>'+rp(st.gmv)+'</b></div><i>+</i>'+
-      '<div>'+E("scooter")+'<small>Masuk ke driver</small><b>'+rp(st.ongkir)+'</b></div></div>'+
-      '<div class="fl2">'+E("money")+'<div><small>Toko menyetor bagi hasil 3% ke JAGA</small><b>'+rp(st.share)+'</b></div></div></div>';
-    const days = [];
-    for(let i = 13; i >= 0; i--){
-      const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i);
-      const k = dayKey(d), dn = (D.orders||[]).filter(o => o.status === "selesai" && dayKey(doneT(o)) === k);
-      days.push({label:d.toLocaleDateString("id-ID",{day:"numeric",month:"short"}), short:String(d.getDate()), gmv:dn.reduce((a,o)=>a+(o.total||0),0), share:dn.reduce((a,o)=>a+shareVal(o),0)});
-    }
-    h += '<div class="card pad"><h3 class="sub">Penjualan 14 hari terakhir</h3>'+bars(days)+'</div>';
-    { const cnt = [], inc = [], lab = [];
+    { /* ---- Ringkasan ringkas: angka utama, satu grafik, aktivitas singkat ---- */
+      const f = rangeStart(S.own.range), rLbl = ranges.find(r => r[0]===S.own.range)[1].toLowerCase();
+      const rDone = RD.filter(r => r.status === "selesai" && (r.doneAt||r.createdAt||0) >= f);
+      const dlvFee = st.done.reduce((a,o)=>a+(o.drvFee||0),0), rideFee_ = rDone.reduce((a,r)=>a+(r.fee||0),0);
+      const nominal = st.share + dlvFee + rideFee_;
+      const W = S.ownW && !S.ownW.err ? S.ownW : null; if(!S.ownW) loadOwnerWallet();
+      const cut = W && W.feeLog ? W.feeLog.filter(x => x[0] >= f).reduce((a,x)=>a+(+x[1]||0),0) : null;
+      const gap = cut == null ? 0 : Math.max(0, nominal - cut);
+      const trx = st.done.length + rDone.length, cancelPct = st.created.length ? Math.round(st.cancel.length/st.created.length*100) : 0;
+      h += '<div class="ohero"><small>Pendapatan JAGA · '+esc(rLbl)+'</small><b>'+rp(cut == null ? nominal : cut)+'</b>'+
+        '<span>'+(cut == null ? 'Menghitung potongan saldo…' : 'Terpotong dari saldo toko & driver')+' · '+trx+' transaksi selesai</span>'+
+        '<div class="ohsplit"><div><small>Toko</small><b>'+rp(st.share)+'</b></div><div><small>Ongkir antar</small><b>'+rp(dlvFee)+'</b></div><div><small>Jago</small><b>'+rp(rideFee_)+'</b></div></div>'+
+        (gap > 0 ? '<p class="ohgap">'+I("note")+' Seharusnya '+rp(nominal)+'. Sebanyak <b>'+rp(gap)+'</b> tidak terpotong dari saldo karena toko/driver dibebaskan owner atau pesanannya terjadi sebelum fitur saldo aktif.</p>' : '')+'</div>';
+      const k = (lbl, v, sub) => '<div class="k"><small>'+lbl+'</small><b>'+v+'</b>'+(sub ? '<span>'+sub+'</span>' : '')+'</div>';
+      h += '<div class="okpi okpi3">'+
+        k("Penjualan toko", rp(st.gmv), st.done.length+" pesanan selesai")+
+        k("Ongkir & tarif driver", rp(st.ongkir + rDone.reduce((a,r)=>a+(r.fareFinal||0),0)), "antar "+rp(st.ongkir)+" · Jago "+rp(rDone.reduce((a,r)=>a+(r.fareFinal||0),0)))+
+        k("Pesanan masuk", String(st.created.length), st.cancel.length+" batal ("+cancelPct+"%)")+
+        k("Pembeli unik", String(st.buyers), "")+
+        k("Toko", stores.filter(s => s.active !== false && s.open !== false).length+'<em> buka / '+stores.length+'</em>', "")+
+        k("Driver online", onlineDrv+'<em> / '+drivers.length+'</em>', st.active.length + RD.filter(r => RIDE_ACTIVE.includes(r.status)).length ? (st.active.length + RD.filter(r => RIDE_ACTIVE.includes(r.status)).length)+" order berjalan" : "tidak ada order berjalan")+
+      '</div>';
+      const cnt = [], inc = [], gmv = [], lab = [];
       for(let i = 13; i >= 0; i--){
-        const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i); const k = dayKey(d);
-        const dn = (D.orders||[]).filter(o => o.status === "selesai" && dayKey(doneT(o)) === k), dr = RD.filter(r => r.status === "selesai" && dayKey(r.doneAt||r.createdAt||0) === k);
-        cnt.push(dn.length + dr.length); inc.push(dn.reduce((a,o)=>a+shareVal(o)+(o.drvFee||0),0) + dr.reduce((a,r)=>a+(r.fee||0),0));
+        const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i); const kd = dayKey(d);
+        const dn = (D.orders||[]).filter(o => o.status === "selesai" && dayKey(doneT(o)) === kd), dr = RD.filter(r => r.status === "selesai" && dayKey(r.doneAt||r.createdAt||0) === kd);
+        cnt.push(dn.length + dr.length); gmv.push(dn.reduce((a,o)=>a+(o.total||0),0));
+        inc.push(W && W.feeLog ? W.feeLog.filter(x => dayKey(x[0]) === kd).reduce((a,x)=>a+(+x[1]||0),0) : dn.reduce((a,o)=>a+shareVal(o)+(o.drvFee||0),0) + dr.reduce((a,r)=>a+(r.fee||0),0));
         lab.push(d.toLocaleDateString("id-ID",{day:"numeric",month:"short"}));
       }
-      h += '<div class="card pad"><h3 class="sub">Transaksi selesai per hari <span class="small muted" style="font-weight:600">· pesanan + Jago, 14 hari</span></h3>'+miniBars(cnt, lab, v => v + " transaksi")+'<div class="olegend"><span><i class="g"></i>Jumlah transaksi selesai</span><span>Total '+cnt.reduce((a,b)=>a+b,0)+'</span></div></div>'+
-        '<div class="card pad"><h3 class="sub">Pendapatan JAGA per hari <span class="small muted" style="font-weight:600">· semua komisi, 14 hari</span></h3>'+miniBars(inc, lab, rp, "gold")+'<div class="olegend"><span><i class="s"></i>Komisi toko + ongkir antar + Jago</span><span>Total '+rp(inc.reduce((a,b)=>a+b,0))+'</span></div>'+
-        '<button class="btn ghost sm" data-act="own-csv" style="margin-top:10px">'+I("receipt")+' Unduh transaksi (CSV) · '+esc(ranges.find(r => r[0]===S.own.range)[1].toLowerCase())+'</button></div>'; }
-    const live = st.active.slice(0, 8);
-    h += '<div class="card pad"><h3 class="sub">Sedang berjalan <span class="small muted" style="font-weight:600">· diperbarui otomatis</span></h3>'+(live.length ? live.map(ownOrderRow).join("") : '<div class="muted small">Tidak ada pesanan yang sedang berjalan.</div>')+'</div>';
-    h += '<div class="card pad"><h3 class="sub">Aktivitas terbaru</h3>'+ownFeed(D.orders || [])+'</div>';
+      const ch = S.own.chart || "jual", sum = a => a.reduce((x,y)=>x+y,0);
+      const C = {jual:["Penjualan", gmv, rp, ""], pend:["Pendapatan JAGA", inc, rp, "gold"], trx:["Transaksi", cnt, v => v + " transaksi", ""]}[ch];
+      h += '<div class="card pad ochart"><div class="ochd"><h3 class="sub" style="margin:0">14 hari terakhir</h3><div class="oseg">'+
+        [["jual","Penjualan"],["pend","Pendapatan"],["trx","Transaksi"]].map(x => '<button class="'+(ch===x[0]?"on":"")+'" data-act="own-chart" data-v="'+x[0]+'">'+x[1]+'</button>').join("")+'</div></div>'+
+        miniBars(C[1], lab, C[2], C[3])+'<div class="olegend"><span>'+C[0]+' per hari</span><span>Total '+(ch==="trx" ? sum(C[1]) : rp(sum(C[1])))+'</span></div>'+
+        '<button class="linkbtn" data-act="own-csv" style="margin-top:8px">'+I("receipt")+' Unduh transaksi (CSV) · '+esc(rLbl)+'</button></div>';
+      if(st.active.length) h += '<div class="card pad"><h3 class="sub">Sedang berjalan</h3>'+st.active.slice(0, 5).map(ownOrderRow).join("")+'</div>';
+      const feed = ownFeed(D.orders || []);
+      h += '<div class="card pad ofeedc'+(S.own.feedAll ? ' all' : '')+'"><h3 class="sub">Aktivitas terbaru</h3>'+feed+'<button class="linkbtn" data-act="own-feed-all">'+(S.own.feedAll ? 'Tampilkan lebih sedikit' : 'Lihat semua aktivitas')+'</button></div>';
+    }
   } else if(S.own.tab === "pesanan"){
     const f = S.own.ofilter || "aktif";
     const all = D.orders || [];
@@ -4737,6 +4738,7 @@ const OWAL = {
     const fees = {}; Object.entries(by(t => t.kind === "fee")).forEach(([k, v]) => fees[k] = -v);
     return {cfg:wCfgLocal(), pending:S.walletTx.filter(t => t.status === "pending").sort((a,b)=>a.at-b.at), balances:by(() => true), fees,
       totals:{fee:-sum(ok.filter(t => t.kind === "fee")), feeMonth:-sum(ok.filter(t => t.kind === "fee" && t.at >= m0)), topup:sum(ok.filter(t => t.kind === "topup")), bonus:sum(ok.filter(t => t.kind === "bonus")), reward:sum(ok.filter(t => t.kind === "reward")), saldo:sum(ok.filter(t => !String(t.storeId).startsWith("buy:")))},
+      feeLog:ok.filter(t => t.kind === "fee").map(t => [t.at || 0, -(t.amount||0)]),
       recent:S.walletTx.filter(t => t.status !== "pending" && !String(t.storeId).startsWith("buy:")).sort((a,b)=>b.at-a.at).slice(0,60)};
   },
   async decide(id, okk){ if(SB) return sbStore.rpc("jt_owner_topup_decide", {p_id:id, p_ok:okk}); await store.update("wallettx/" + id, {status: okk ? "ok" : "rejected", note: okk ? "Isi saldo (disetujui)" : "Isi saldo ditolak — hubungi JAGA"}); },
@@ -5427,3 +5429,9 @@ function roadRoute(a, b, fresh){
   if(!fresh) ROAD_P[k] = p;
   return p;
 }
+
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  if(el.dataset.act === "own-chart"){ S.own.chart = el.dataset.v; render(); }
+  else if(el.dataset.act === "own-feed-all"){ S.own.feedAll = !S.own.feedAll; render(); }
+});
