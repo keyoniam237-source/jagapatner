@@ -82,6 +82,33 @@ function sbErr(error){
   e.code = /size|too large|payload/i.test(msg) ? "invalid_argument" : (error && (error.code === "P0001" || /^[A-Z][a-z]/.test(msg)) && !/fetch|network/i.test(msg)) ? "server" : "unavailable";
   return e;
 }
+/* ============ Login tetap tersimpan: cadangan data login di IndexedDB + minta penyimpanan permanen ============ */
+const VAULT_KEYS = ["jt_key", "st_buyer", "jt_onb", "jt_home_role"];
+const VAULT = (() => {
+  let dbp = null;
+  const db = () => dbp || (dbp = new Promise((res, rej) => { try{ const r = indexedDB.open("jaga-vault", 1); r.onupgradeneeded = () => r.result.createObjectStore("kv"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }catch(e){ rej(e); } }));
+  const tx = (mode, fn) => db().then(d => new Promise((res, rej) => { const t = d.transaction("kv", mode), st = t.objectStore("kv"), out = fn(st); t.oncomplete = () => res(out && out.result); t.onerror = () => rej(t.error); }));
+  return {
+    put(k, v){ return tx("readwrite", st => v == null ? st.delete(k) : st.put(String(v), k)).catch(() => {}); },
+    all(){ return db().then(d => new Promise(res => { const out = {}, t = d.transaction("kv", "readonly"), c = t.objectStore("kv").openCursor(); c.onsuccess = () => { const cur = c.result; if(cur){ out[cur.key] = cur.value; cur.continue(); } else res(out); }; c.onerror = () => res(out); })).catch(() => ({})); }
+  };
+})();
+let VAULT_READY = false;
+try{
+  const _set = Storage.prototype.setItem, _rm = Storage.prototype.removeItem;
+  Storage.prototype.setItem = function(k, v){ _set.call(this, k, v); if(VAULT_READY && this === window.localStorage && VAULT_KEYS.includes(k)) VAULT.put(k, v); };
+  Storage.prototype.removeItem = function(k){ _rm.call(this, k); if(VAULT_READY && this === window.localStorage && VAULT_KEYS.includes(k)) VAULT.put(k, null); };
+}catch(_){}
+let VAULT_FRESH = false; try{ VAULT_FRESH = !localStorage.getItem("jt_key"); }catch(_){ VAULT_FRESH = true; }
+VAULT.all().then(saved => {
+  let restored = false;
+  VAULT_KEYS.forEach(k => { let cur = null; try{ cur = localStorage.getItem(k); }catch(_){}
+    if(saved[k] != null && (cur == null || (k === "jt_key" && VAULT_FRESH && cur !== saved[k]))){ try{ Storage.prototype.setItem.call(localStorage, k, saved[k]); restored = true; }catch(_){} }
+    else if(cur != null && saved[k] !== cur) VAULT.put(k, cur); });
+  VAULT_READY = true;
+  if(restored && VAULT_FRESH && saved.jt_key){ try{ if(sessionStorage.getItem("jt_vault_reload") !== "1"){ sessionStorage.setItem("jt_vault_reload", "1"); location.reload(); } }catch(_){} }
+});
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persisted().then(p => { if(!p) navigator.storage.persist(); }).catch(() => {}); }catch(_){}
 /* Kunci akses perangkat: membuktikan kepemilikan toko & pesanan ke server (tidak pernah ditampilkan ke orang lain) */
 let KEY = "";
 try{ KEY = localStorage.getItem("jt_key") || ""; }catch(e){}
