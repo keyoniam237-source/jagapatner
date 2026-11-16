@@ -169,6 +169,12 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 .scan-last{display:flex;justify-content:space-between;gap:10px;font-weight:600;min-height:22px}
 
 #print-area{display:none}
+.login{position:fixed;inset:0;z-index:80;background:var(--bg);overflow:auto;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.login .logo{font-size:24px}
+.login .logo b{background:var(--brand);color:var(--brand-ink)}
+.login h1{font-size:22px;font-weight:800;margin:4px 0 0}
+.lg-err{color:var(--bad);font-weight:600;font-size:13px;min-height:18px}
 @media print{
   body>*:not(#print-area){display:none!important}
   #print-area{display:block}
@@ -205,6 +211,7 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 <div id="scan-root"></div>
 <div id="toast" hidden role="status"></div>
 <div id="print-area"></div>
+<div id="login-root"></div>
 
 <script>
 "use strict";
@@ -264,7 +271,8 @@ const Store={
 };
 
 /* ============ data ============ */
-let S=null;
+let S=null,SESS=null;
+const KEY=()=>SESS==='demo'?'jk_state_demo':'jk_state';
 const blank=()=>({v:1,shop:{name:'',address:'',phone:'',footer:'Terima kasih, selamat belanja kembali',paper:58,autoPrint:false},
   products:[],sales:[],moves:[],expenses:[],modal:{},cart:[],seq:{day:'',n:0},demo:false});
 function normalize(d){const s=Object.assign(blank(),d);s.shop=Object.assign(blank().shop,d.shop||{});
@@ -301,7 +309,7 @@ function seed(){
   s.modal[tk]=100000; s.expenses=[{id:'dx1',ts:Date.now()-3600e3,note:'Beli es batu',amount:15000,demo:true}];
   return s;
 }
-const save=()=>Store.set('jk_state',S);
+const save=()=>Store.set(KEY(),S);
 const prod=id=>S.products.find(p=>p.id===id);
 const byCode=c=>S.products.find(p=>p.code&&p.code===String(c).trim());
 const liveSales=()=>S.sales.filter(s=>!s.void);
@@ -330,7 +338,7 @@ function go(v){view=TABS.some(t=>t[0]===v)?v:'kasir';try{if(location.hash!=='#'+
 function render(){
   const low=S.products.filter(p=>p.stock<=p.min).length;
   $('#tabs').innerHTML=TABS.map(t=>'<button data-act="go" data-to="'+t[0]+'"'+(t[0]===view?' aria-current="page"':'')+'>'+ico(t[0])+t[1]+(t[0]==='barang'&&low?'<i class="badge num" title="'+low+' barang menipis atau habis">'+low+'</i>':'')+'</button>').join('');
-  $('#shop-name').textContent=S.shop.name||'Nama warung belum diisi';
+  $('#shop-name').textContent=(SESS==='demo'?'DEMO · ':'')+(S.shop.name||'Nama warung belum diisi');
   $('#printer-chip').className='chip'+(PR.ch?' on':''); $('#printer-label').textContent=PR.ch?(PR.name||'Printer siap'):'Tanpa printer';
   ({kasir:vKasir,barang:vBarang,riwayat:vRiwayat,laporan:vLaporan,pengaturan:vAtur})[view]();
 }
@@ -366,7 +374,7 @@ function cartHtml(){
 function vKasir(){
   $('#view').innerHTML='<div class="kasir">'+
   '<section class="stack">'+
-    (S.demo?'<div class="note"><div class="grow"><b>Ini data contoh.</b> Barang dan penjualan di sini hanya untuk mencoba. Hapus saat warung mulai memakai.</div><button class="btn" data-act="demo-clear">Hapus data contoh</button></div>':'')+
+    (SESS==='demo'?'<div class="note"><div class="grow"><b>Akun demo.</b> Semua data di sini contoh dan terpisah dari data warung asli. Silakan coba semua fitur.</div><button class="btn" data-act="demo-reset">Atur ulang</button></div>':S.demo?'<div class="note"><div class="grow"><b>Ini data contoh.</b> Barang dan penjualan di sini hanya untuk mencoba. Hapus saat warung mulai memakai.</div><button class="btn" data-act="demo-clear">Hapus data contoh</button></div>':'')+
     (!S.demo&&(!S.shop.name||!S.products.length)?'<div class="note"><div class="grow"><b>Siapkan warung Anda.</b> '+(!S.shop.name?'Isi nama warung supaya tampil di struk. ':'')+(!S.products.length?'Daftarkan barang pertama dengan scan barcode.':'')+'</div>'+(!S.shop.name?'<button class="btn" data-act="go" data-to="pengaturan">Isi profil</button>':'<button class="btn" data-act="p-new">Tambah barang</button>')+'</div>':'')+
     (FRAMED&&!hidePrev?'<div class="note"><div class="grow"><b>Mode pratinjau.</b> Kamera, cetak struk, dan printer Bluetooth baru aktif setelah aplikasi dipasang di situs. Di sini Anda bisa mencoba alurnya dengan tombol Scan.</div><button class="btn" data-act="hide-prev">Tutup</button></div>':'')+
     '<div class="scanbar"><input type="search" id="q" placeholder="Ketik nama atau kode barang" value="'+esc(q)+'" autocomplete="off" enterkeyhint="done"><button class="btn primary" data-act="scan">'+ico('scan')+'Scan</button></div>'+
@@ -741,6 +749,7 @@ function download(name,text,type){
 function vAtur(){
   const sh=S.shop;
   $('#view').innerHTML='<div class="wrap stack"><h2>Pengaturan</h2>'+
+    '<div class="card stack"><h3>Akun</h3><p class="muted" style="margin:0">'+(SESS==='demo'?'Masuk sebagai <b>akun demo</b>. Data demo terpisah dari data warung asli.':'Tanpa akun. Data tersimpan di perangkat ini.')+'</p><div><button class="btn" data-act="logout">Keluar</button></div></div>'+
     '<div class="card stack"><h3>Profil warung (tampil di struk)</h3><label class="f">Nama warung<input type="text" id="st-name" value="'+esc(sh.name)+'" autocomplete="off"></label>'+
       '<label class="f">Alamat<input type="text" id="st-address" value="'+esc(sh.address)+'" autocomplete="off"></label>'+
       '<div class="two"><label class="f">Nomor telepon / WA<input type="tel" id="st-phone" value="'+esc(sh.phone)+'" autocomplete="off"></label>'+
@@ -756,7 +765,7 @@ function vAtur(){
     '<div class="card stack"><h3>Cadangan data</h3><p class="muted" style="margin:0">Data tersimpan di '+(Store.mode==='perangkat'?'perangkat ini':'memori sementara dan hilang saat halaman ditutup')+'. '+S.products.length+' barang, '+S.sales.length+' struk.</p>'+
       '<div class="row"><button class="btn" data-act="backup">Unduh cadangan</button><label class="btn" for="restore-file">Pulihkan dari cadangan</label><input type="file" id="restore-file" accept="application/json,.json" hidden></div>'+
       '<div class="row small"><span class="pill info">Segera</span><span class="muted grow">Cadangan online otomatis dan akun warung diaktifkan saat aplikasi dirilis.</span></div></div>'+
-    '<div class="card stack"><h3>Mulai dari awal</h3><p class="muted" style="margin:0">Menghapus semua barang, struk, dan pengaturan di perangkat ini.</p><div><button class="btn danger" data-act="reset">Hapus semua data</button></div></div>'+
+    (SESS==='demo'?'<div class="card stack"><h3>Data demo</h3><p class="muted" style="margin:0">Mengembalikan semua data demo ke contoh awal.</p><div><button class="btn danger" data-act="demo-reset">Atur ulang data demo</button></div></div>':'<div class="card stack"><h3>Mulai dari awal</h3><p class="muted" style="margin:0">Menghapus semua barang, struk, dan pengaturan di perangkat ini.</p><div><button class="btn danger" data-act="reset">Hapus semua data</button></div></div>')+
     '<p class="muted small" style="text-align:center;margin:4px 0 0">Jaga Kasir oleh JAGA · versi 1.0</p></div>';
 }
 
@@ -774,6 +783,13 @@ const A={
   manual:()=>sheet('<div class="hd"><h2>Barang tanpa daftar</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><p class="muted" style="margin:0">Untuk barang yang belum didaftarkan. Stoknya tidak dihitung.</p><label class="f">Nama barang<input type="text" id="mn-name" value="Barang lain" autocomplete="off"></label><div class="two"><label class="f">Harga satuan<input type="text" inputmode="numeric" data-rp id="mn-price" placeholder="0" autocomplete="off" autofocus></label><label class="f">Jumlah<input type="text" inputmode="numeric" id="mn-qty" value="1" autocomplete="off"></label></div><button class="btn primary block" data-act="manual-save">Masukkan ke keranjang</button>'),
   'manual-save':()=>{const price=num($('#mn-price').value),qty=num($('#mn-qty').value)||1,name=$('#mn-name').value.trim()||'Barang lain';if(!price)return toast('Isi harga satuan dulu.');S.cart.push({key:'m'+uid(),name,price,qty});closeSheet();cartSave()},
   'hide-prev':()=>{hidePrev=true;vKasir()},
+  login:()=>{const u=($('#lg-user').value||'').trim().toLowerCase(),p=$('#lg-pass').value;
+    if(u==='demo'&&p==='demo') return startSession('demo');
+    $('#lg-err').textContent='Nama pengguna atau kata sandi salah. Akun demo: demo / demo.'},
+  'login-fill':()=>{$('#lg-user').value='demo';$('#lg-pass').value='demo';$('#lg-err').textContent=''},
+  'login-local':()=>startSession('local'),
+  logout:()=>confirmSheet('Keluar dari akun?',SESS==='demo'?'Data demo tetap tersimpan di perangkat ini.':'Data warung tetap tersimpan di perangkat ini dan terbuka lagi lewat "Pakai tanpa akun".','Keluar',async()=>{SESS=null;S=null;await Store.set('jk_session','');showLogin()}),
+  'demo-reset':()=>confirmSheet('Atur ulang data demo?','Semua perubahan di akun demo dihapus dan kembali ke data contoh awal.','Atur ulang',()=>{S=seed();save();go('kasir');toast('Data demo dikembalikan ke contoh awal.')},true),
   more:()=>{rlimit+=200;vRiwayat()},
   'lunas-all':e=>{const k=e.dataset.cust,l=openDebt().filter(s=>(s.cust||'Tanpa nama')===k),t=l.reduce((a,s)=>a+s.total,0);
     confirmSheet('Lunasi kasbon '+k+'?',l.length+' struk senilai '+rp(t)+' ditandai lunas dan masuk kas hari ini.','Tandai lunas',()=>{const now=Date.now();l.forEach(s=>s.lunas=now);save();render();toast('Kasbon '+k+' lunas.')})},
@@ -850,18 +866,38 @@ document.addEventListener('keydown',ev=>{
   if(t.id==='q'){const v=t.value.trim();if(!v)return;const p=byCode(v)||(pickList().length===1?pickList()[0]:null);
     if(p){addToCart(p.id);beep(true);q='';t.value='';refreshPick();toast(p.name+' masuk keranjang.')}else if(/^\d{6,}$/.test(v)){q='';t.value='';refreshPick();onCartScan(v)}}
   else if(t.id==='scan-manual') A['scan-manual']();
+  else if(t.id==='lg-user'||t.id==='lg-pass') A.login();
   else if(t.id==='pay-cash'||t.id==='pay-cust'){if(payOk())commitSale()}
 });
 const KB={s:'',t:0};
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==view&&TABS.some(t=>t[0]===h)){view=h;render()}});
 
 /* ============ mulai ============ */
+function showLogin(){
+  PAY=null;try{if(location.hash)location.hash=''}catch(e){}$('#view').innerHTML='';$('#tabs').innerHTML='';$('#shop-name').textContent='';$('#sheet-root').innerHTML='';
+  $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
+    '<div class="logo"><b>JAGA</b>Kasir</div><h1>Masuk ke Jaga Kasir</h1><p class="muted" style="margin:0">Kasir warung: scan barang, stok, pembayaran, dan struk.</p>'+
+    '<label class="f">Nama pengguna<input type="text" id="lg-user" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
+    '<label class="f">Kata sandi<input type="password" id="lg-pass" autocomplete="current-password"></label>'+
+    '<div class="lg-err" id="lg-err" role="alert"></div>'+
+    '<button class="btn pay block" data-act="login">Masuk</button>'+
+    '<div class="note"><div class="grow"><b>Akun demo</b> untuk mencoba semua fitur dengan data contoh.<br>Pengguna <b>demo</b> · Kata sandi <b>demo</b></div><button class="btn" data-act="login-fill">Isi otomatis</button></div>'+
+    '<button class="btn ghost block" data-act="login-local">Pakai tanpa akun</button>'+
+    '<p class="muted small" style="margin:0;text-align:center">Akun warung asli dengan cadangan online menyusul. Untuk sekarang data tersimpan di perangkat ini.</p></div></div>';
+  setTimeout(()=>{const u=$('#lg-user');if(u)u.focus()},50);
+}
+async function boot(){
+  S=await Store.get(KEY());
+  if(!S||!Array.isArray(S.products)){S=SESS==='demo'?seed():blank();await save()} else S=normalize(S);
+  view='kasir'; const h=(location.hash||'').slice(1); if(TABS.some(t=>t[0]===h)) view=h;
+  q='';kc='';hidePrev=false;rf='semua';
+  render();
+}
+async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$('#login-root').innerHTML='';await boot()}
 (async function(){
   await Store.init();
-  S=await Store.get('jk_state');
-  if(!S||!Array.isArray(S.products)){S=seed();save()} else S=normalize(S);
-  const h=(location.hash||'').slice(1); if(TABS.some(t=>t[0]===h)) view=h;
-  render();
+  SESS=await Store.get('jk_session');
+  if(SESS==='demo'||SESS==='local') await boot(); else{SESS=null;showLogin()}
   try{if(!FRAMED&&navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
   if(!FRAMED&&'serviceWorker' in navigator&&location.protocol==='https:'){
     const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);
