@@ -2380,10 +2380,10 @@ function drvJob(o, offer){
   }
   h += '<div class="dj-route">'+
     '<div class="pt a"><i></i><div><small>Ambil di toko</small><b>'+esc(o.storeName)+'</b><span>'+esc(o.storeAddress || "")+'</span>'+
-      (!offer && o.status==="driver_ke_toko" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(navLink(o.storeLoc, (o.storeAddress||"")+" "+(o.storeName||"")))+'">'+I("pin")+' Navigasi ke toko</a>'+'</div>' : '')+
+      (!offer && o.status==="driver_ke_toko" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(navLink(o.storeLoc, (o.storeAddress||"")+" "+(o.storeName||"")))+'">'+I("pin")+' Google Maps</a><button type="button" class="navin" data-act="nav-in" data-id="'+esc(o.id)+'">'+I("send")+' Navigasi live ke toko</button>'+'</div>' : '')+
     '</div></div>'+
     '<div class="pt b"><i></i><div><small>Antar ke</small><b>'+esc(offer ? (o.buyer.address||"").split(",")[0] : o.buyer.name)+'</b><span>'+esc(o.buyer.address||"")+'</span>'+
-      (!offer && o.status==="diantar" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(hasLoc(o.buyer) ? navLink(o.buyer) : (o.buyer.maps || navLink(null, o.buyer.address)))+'">'+I("pin")+' Navigasi ke pembeli</a>'+'</div>' : '')+
+      (!offer && o.status==="diantar" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(hasLoc(o.buyer) ? navLink(o.buyer) : (o.buyer.maps || navLink(null, o.buyer.address)))+'">'+I("pin")+' Google Maps</a><button type="button" class="navin" data-act="nav-in" data-id="'+esc(o.id)+'">'+I("send")+' Navigasi live ke pembeli</button>'+'</div>' : '')+
       (o.buyer.note ? '<span class="note">'+I("note")+' '+esc(o.buyer.note)+'</span>' : '')+
     '</div></div></div>';
   h += '<div class="small" style="margin:8px 0 2px">'+items+'</div>' + voucherNote(o, "driver");
@@ -3495,8 +3495,8 @@ function rideSteps(o){
   return '<div class="steps">'+flow.map((f, i) => '<div class="step '+(i <= idx ? "done" : "")+'"><div class="bar"></div>'+L_[i]+'</div>').join("")+'</div>';
 }
 function rideRoute(o, drv){
-  const linkP = drv && o.status === "driver_jemput" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(navLink(o.pickup, o.pickup && o.pickup.address))+'">'+I("pin")+' Navigasi ke titik jemput</a></div>' : '';
-  const linkD = drv && o.status === "dalam_perjalanan" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(navLink(o.dest, o.dest && o.dest.address))+'">'+I("pin")+' Navigasi ke tujuan</a></div>' : '';
+  const linkP = drv && o.status === "driver_jemput" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(navLink(o.pickup, o.pickup && o.pickup.address))+'">'+I("pin")+' Google Maps</a><button type="button" class="navin" data-act="nav-in" data-id="'+esc(o.id)+'">'+I("send")+' Navigasi live ke titik jemput</button></div>' : '';
+  const linkD = drv && o.status === "dalam_perjalanan" ? '<div class="dj-links"><a class="navbtn" target="_blank" rel="noopener" href="'+esc(navLink(o.dest, o.dest && o.dest.address))+'">'+I("pin")+' Google Maps</a><button type="button" class="navin" data-act="nav-in" data-id="'+esc(o.id)+'">'+I("send")+' Navigasi live ke tujuan</button></div>' : '';
   return '<div class="dj-route">'+
     '<div class="pt a"><i></i><div><small>Jemput'+(drv && o.rider ? ' · '+esc(o.rider.name) : '')+'</small><b>'+esc(shortAddr(o.pickup.address) || fmtLL(o.pickup))+'</b>'+(o.pickup.address && shortAddr(o.pickup.address) !== o.pickup.address ? '<span>'+esc(o.pickup.address)+'</span>' : '')+linkP+
       (o.note ? '<span class="note">'+I("note")+' '+esc(o.note)+'</span>' : '')+'</div></div>'+
@@ -5204,9 +5204,10 @@ function navSheet(o){
   const M = document.getElementById("modal");
   M.innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal navsheet"><div class="nvhead">'+E(n.lbl === "toko" ? "store" : "pin")+'<div><small>'+esc(n.t)+'</small><b>'+esc(n.who || "")+'</b></div>'+(dist ? '<span class="nvdist">'+dist+'</span>' : '')+'</div>'+
     '<p class="nvaddr">'+esc(shortAddr(n.addr) || (hasLoc(n.loc) ? fmtLL(n.loc) : "Alamat belum ada"))+'</p>'+
-    '<a class="btn block press nvgo" target="_blank" rel="noopener" href="'+esc(url)+'" data-act="nav-go">'+I("pin")+' Mulai navigasi ke '+n.lbl+'</a>'+
-    '<p class="nvnote">Google Maps terbuka dengan rute motor. Lokasimu dibagikan live ke '+(["driver_jemput","dalam_perjalanan"].includes(o.status) ? "penumpang" : o.status === "driver_ke_toko" ? "toko dan pembeli" : "pembeli")+'. Saat memakai Google Maps, sesekali buka lagi JAGA agar lokasimu tetap terbaru.</p>'+
-    '<button class="btn ghost block" data-act="close-modal">Lihat peta di aplikasi</button></div></div>';
+    '<button class="btn block press nvgo" data-act="nav-in" data-id="'+esc(o.id)+'">'+I("send")+' Mulai navigasi ke '+n.lbl+'</button>'+
+    '<a class="btn ghost block nvg2" target="_blank" rel="noopener" href="'+esc(url)+'" data-act="nav-go">'+I("pin")+' Buka di Google Maps</a>'+
+    '<p class="nvnote">Navigasi di JAGA menjaga lokasimu tetap live untuk '+(["driver_jemput","dalam_perjalanan"].includes(o.status) ? "penumpang" : o.status === "driver_ke_toko" ? "toko dan pembeli" : "pembeli")+'. Kalau memakai Google Maps, lokasimu berhenti terkirim sampai kamu kembali ke JAGA.</p>'+
+    '<button class="linkbtn" style="display:block;margin:4px auto 0" data-act="close-modal">Nanti saja</button></div></div>';
 }
 function navCheck(){
   const mine = (S.drv && S.drv.mine) || [];
@@ -5233,4 +5234,139 @@ document.addEventListener("visibilitychange", () => {
   if(!busy) return;
   keepAwake(true);
   if(navigator.geolocation) navigator.geolocation.getCurrentPosition(p => { const c = {lat:+p.coords.latitude.toFixed(6), lng:+p.coords.longitude.toFixed(6)}; S.drv.loc = c; sendLoc(c); }, () => {}, {enableHighAccuracy:true, maximumAge:5000, timeout:15000});
+});
+
+/* ============ Navigasi live di dalam JAGA: rute jalan, petunjuk belokan, suara; lokasi driver tetap terkirim ============ */
+const NAVX = {open:false, id:"", route:null, idx:1, fetchAt:0, fetching:false, map:null, mk:{}, line:null, follow:true, voice:(() => { try{ return localStorage.getItem("jt_nav_voice") !== "0"; }catch(_){ return true; } })(), said:"", tick:null, arrived:false, key:""};
+const TURN_ID = {"left":"Belok kiri", "right":"Belok kanan", "slight left":"Ambil kiri", "slight right":"Ambil kanan", "sharp left":"Belok tajam ke kiri", "sharp right":"Belok tajam ke kanan", "straight":"Lurus terus", "uturn":"Putar balik"};
+const TURN_DEG = {"left":-90, "right":90, "slight left":-45, "slight right":45, "sharp left":-135, "sharp right":135, "straight":0, "uturn":180};
+function navStepText(st, lbl){
+  const m = st.maneuver || {}, nm = st.name ? " ke " + st.name : "", t = TURN_ID[m.modifier] || "Lurus terus";
+  if(m.type === "arrive") return "Sampai di " + lbl;
+  if(m.type === "depart") return "Mulai jalan" + (st.name ? " di " + st.name : "");
+  if(/roundabout|rotary/.test(m.type || "")) return "Di bundaran, ambil keluar ke-" + (m.exit || 1) + nm;
+  if(m.type === "fork") return "Ambil cabang " + (/left/.test(m.modifier || "") ? "kiri" : "kanan") + nm;
+  if(m.type === "end of road") return "Di ujung jalan, " + t.toLowerCase() + nm;
+  if(m.type === "merge") return "Masuk ke jalur" + (st.name ? " " + st.name : " utama");
+  if((m.type === "continue" || m.type === "new name") && (!m.modifier || m.modifier === "straight")) return "Lurus terus" + (st.name ? " di " + st.name : "");
+  return t + nm;
+}
+const navArrow = deg => '<svg class="nvarr" viewBox="0 0 48 48" style="transform:rotate('+deg+'deg)" aria-hidden="true"><path d="M24 4 L38 22 H29 V44 H19 V22 H10 Z" fill="currentColor"/></svg>';
+function navSay(t){
+  if(!NAVX.voice || !window.speechSynthesis || NAVX.said === t) return; NAVX.said = t;
+  try{ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/(\d+) m\b/g, "$1 meter").replace(/(\d+),(\d+) km/g, "$1 koma $2 kilometer").replace(/(\d+) km/g, "$1 kilometer")); u.lang = "id-ID"; if(typeof ID_VOICE !== "undefined" && ID_VOICE) u.voice = ID_VOICE; u.rate = 1; speechSynthesis.speak(u); }catch(_){}
+}
+function navJob(){ return ((S.drv && S.drv.mine) || []).find(o => o.id === NAVX.id); }
+async function navFetch(from, to){
+  if(NAVX.fetching) return; NAVX.fetching = true; NAVX.fetchAt = Date.now();
+  try{
+    const u = "https://router.project-osrm.org/route/v1/driving/" + from.lng + "," + from.lat + ";" + to.lng + "," + to.lat + "?overview=full&geometries=geojson&steps=true";
+    const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 9000);
+    const r = await fetch(u, {signal:ctl.signal}); clearTimeout(tm);
+    const j = await r.json(); const rt = j && j.routes && j.routes[0];
+    if(!rt) throw new Error("no route");
+    const steps = []; (rt.legs || []).forEach(l => (l.steps || []).forEach(st => steps.push(st)));
+    const pts = rt.geometry.coordinates.map(c => ({lat:c[1], lng:c[0]}));
+    steps.forEach(st => { const ml = {lat:st.maneuver.location[1], lng:st.maneuver.location[0]}; let bi = 0, bd = 1e9; pts.forEach((q, i) => { const d = distM(ml, q); if(d < bd){ bd = d; bi = i; } }); st.ri = bi; });
+    NAVX.route = {pts, steps, to:to.lat + "," + to.lng}; NAVX.idx = 1; NAVX.said = "";
+  }catch(e){ NAVX.route = {pts:[from, to], steps:[], to:to.lat + "," + to.lng, straight:true}; }
+  NAVX.fetching = false; navPaint(true);
+}
+function navOffRoute(loc){
+  const p = NAVX.route && NAVX.route.pts; if(!p || p.length < 2 || NAVX.route.straight) return 0;
+  let best = 1e9; for(let i = 0; i < p.length; i += Math.max(1, Math.floor(p.length / 400))){ const d = distM(loc, p[i]); if(d < best) best = d; }
+  return best;
+}
+function navProg(loc){
+  const p = NAVX.route && NAVX.route.pts; if(!p || p.length < 2) return null;
+  const k = Math.cos(loc.lat * Math.PI / 180); let best = {d:1e9, si:0, f:0};
+  for(let i = 0; i < p.length - 1; i++){
+    const ax = p[i].lng * k, ay = p[i].lat, bx = p[i+1].lng * k, by = p[i+1].lat, px = loc.lng * k, py = loc.lat;
+    const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy; let f = L2 ? ((px - ax) * dx + (py - ay) * dy) / L2 : 0; f = Math.max(0, Math.min(1, f));
+    const q = {lat:ay + f * dy, lng:(ax + f * dx) / k}, d = distM(loc, q); if(d < best.d) best = {d, si:i, f, q};
+  }
+  return best;
+}
+function navRemain(loc){
+  const p = NAVX.route && NAVX.route.pts, g = navProg(loc); if(!g) return null;
+  let sum = g.d + distM(g.q, p[g.si + 1]); for(let i = g.si + 1; i < p.length - 1; i++) sum += distM(p[i], p[i + 1]); return sum;
+}
+function openNav(id){
+  const o = ((S.drv && S.drv.mine) || []).find(x => x.id === id); const n = o && navTarget(o);
+  if(!n) return toast("Order ini tidak punya tujuan navigasi saat ini.");
+  if(!hasLoc(n.loc)) return toast("Titik " + n.lbl + " belum punya lokasi peta. Pakai tombol Google Maps.");
+  closeModal(); if(typeof startGeo === "function") startGeo();
+  Object.assign(NAVX, {open:true, id, route:null, idx:1, fetchAt:0, follow:true, said:"", arrived:false, key:o.status});
+  let el = document.getElementById("navx"); if(!el){ el = document.createElement("div"); el.id = "navx"; document.body.appendChild(el); }
+  el.innerHTML = '<div class="nvtop"><div class="nvicon"></div><div class="nvtxt"><b>Mencari rute…</b><small></small></div></div><div class="nvmap"></div>'+
+    '<button class="nvrecenter" data-act="nav-center" hidden>'+I("pin")+' Ikuti posisi saya</button>'+
+    '<div class="nvbot"><div class="nvinfo"><b class="nvrem">–</b><small class="nvto"></small></div><button class="nvbtn" data-act="nav-voice" aria-label="Suara navigasi">'+(NAVX.voice ? "🔊" : "🔇")+'</button><a class="nvbtn" target="_blank" rel="noopener" data-act="nav-gm" aria-label="Google Maps">'+I("pin")+'</a><button class="nvbtn end" data-act="nav-close">Tutup</button></div>';
+  document.documentElement.classList.add("navopen");
+  loadLeaflet().then(() => {
+    const node = el.querySelector(".nvmap"); NAVX.map = L.map(node, {zoomControl:false, attributionControl:true});
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(NAVX.map);
+    NAVX.mk = {}; NAVX.line = null;
+    NAVX.map.on("dragstart", () => { NAVX.follow = false; const b = el.querySelector(".nvrecenter"); if(b) b.hidden = false; });
+    const me = S.drv.loc || (o.driverLoc && hasLoc(o.driverLoc) ? o.driverLoc : null);
+    NAVX.map.setView(me ? [me.lat, me.lng] : [n.loc.lat, n.loc.lng], 16);
+    navTickFn(); NAVX.tick = setInterval(navTickFn, 1000);
+  }).catch(() => { el.querySelector(".nvtxt b").textContent = "Peta tidak bisa dimuat. Periksa internet."; });
+  keepAwake(true);
+}
+function closeNav(){
+  NAVX.open = false; clearInterval(NAVX.tick); NAVX.tick = null; try{ speechSynthesis.cancel(); }catch(_){}
+  if(NAVX.map){ NAVX.map.remove(); NAVX.map = null; }
+  const el = document.getElementById("navx"); if(el) el.remove(); document.documentElement.classList.remove("navopen");
+}
+function navTickFn(){
+  if(!NAVX.open) return;
+  const o = navJob(); const n = o && navTarget(o);
+  if(!o || !n){ closeNav(); toast("Order sudah selesai atau dialihkan."); return; }
+  if(o.status !== NAVX.key){ NAVX.key = o.status; NAVX.route = null; NAVX.arrived = false; NAVX.said = ""; NAVX.fetchAt = 0; }
+  const me = S.drv.loc;
+  const tgt = n.loc;
+  if(me && hasLoc(tgt) && (!NAVX.route || NAVX.route.to !== tgt.lat + "," + tgt.lng || (Date.now() - NAVX.fetchAt > 12000 && navOffRoute(me) > 50) || Date.now() - NAVX.fetchAt > 120000)) navFetch(me, tgt);
+  navPaint(false);
+}
+function navPaint(fit){
+  const el = document.getElementById("navx"); if(!el || !NAVX.map) return;
+  const o = navJob(), n = o && navTarget(o); if(!n) return;
+  const me = S.drv.loc, tgt = n.loc, R = NAVX.route;
+  const put = (k, loc, icon, cls) => { if(!loc || !hasLoc(loc)) return; const ll = [loc.lat, loc.lng]; if(NAVX.mk[k]) NAVX.mk[k].setLatLng(ll); else NAVX.mk[k] = L.marker(ll, {icon:mkIcon(icon, cls), zIndexOffset:k === "me" ? 1000 : 0}).addTo(NAVX.map); };
+  put("to", tgt, n.lbl === "toko" ? "store" : n.lbl === "tujuan" ? "star" : "pin", n.lbl === "toko" ? "mk-store" : "mk-buyer");
+  put("me", me, "scooter", "mk-drv");
+  if(R && (fit || !NAVX.line)){ if(NAVX.line) NAVX.map.removeLayer(NAVX.line); NAVX.line = L.polyline(R.pts.map(p => [p.lat, p.lng]), {color:"#2f6bff", weight:7, opacity:.85, dashArray:R.straight ? "8 10" : null}).addTo(NAVX.map); }
+  if(me && NAVX.follow) NAVX.map.setView([me.lat, me.lng], Math.max(NAVX.map.getZoom(), 16), {animate:true});
+  const top = el.querySelector(".nvtop"), ic = el.querySelector(".nvicon"), tb = el.querySelector(".nvtxt b"), ts = el.querySelector(".nvtxt small");
+  el.querySelector(".nvto").textContent = n.t + (n.who ? " · " + n.who : "");
+  const gm = el.querySelector('[data-act="nav-gm"]'); if(gm) gm.href = n.url || navLink(tgt, n.addr);
+  if(!me){ tb.textContent = "Menunggu sinyal GPS…"; ts.textContent = "Pastikan lokasi HP menyala"; ic.innerHTML = navArrow(0); return; }
+  const dT = distM(me, tgt), rem = R && !R.straight ? (navRemain(me) || dT) : dT;
+  el.querySelector(".nvrem").textContent = fmtDist(rem) + " · " + etaTxt(rem);
+  if(dT < 40){
+    top.classList.add("arrived"); ic.innerHTML = E(n.lbl === "toko" ? "store" : "pin");
+    tb.textContent = "Kamu sudah sampai di " + n.lbl; ts.textContent = n.lbl === "titik jemput" ? "Kabari penumpang lewat chat bila belum terlihat" : "Tutup navigasi untuk lanjut ke langkah berikutnya";
+    if(!NAVX.arrived){ NAVX.arrived = true; navSay("Kamu sudah sampai di " + n.lbl); }
+    return;
+  }
+  top.classList.remove("arrived");
+  if(!R || R.straight || !R.steps.length){
+    const brg = Math.atan2(tgt.lng - me.lng, tgt.lat - me.lat) * 180 / Math.PI;
+    ic.innerHTML = navArrow(brg); tb.textContent = R ? "Menuju " + n.lbl + " · " + fmtDist(dT) : "Mencari rute…"; ts.textContent = R ? "Rute jalan tidak tersedia, ikuti arah panah" : ""; return;
+  }
+  const g = navProg(me), pos = g ? g.si + g.f : 0;
+  let k = 1; while(k < R.steps.length - 1 && (R.steps[k].ri <= pos + 0.02 || distM(me, {lat:R.steps[k].maneuver.location[1], lng:R.steps[k].maneuver.location[0]}) < 15)) k++;
+  if(k !== NAVX.idx){ NAVX.idx = k; NAVX.said = ""; }
+  const st = R.steps[NAVX.idx] || R.steps[R.steps.length - 1], ml = {lat:st.maneuver.location[1], lng:st.maneuver.location[0]}, dM = distM(me, ml);
+  const txt = navStepText(st, n.lbl), nx = R.steps[NAVX.idx + 1];
+  ic.innerHTML = st.maneuver.type === "arrive" ? E("pin") : navArrow(/roundabout|rotary/.test(st.maneuver.type) ? 90 : (TURN_DEG[st.maneuver.modifier] || 0));
+  tb.textContent = fmtDist(dM) + " · " + txt; const nt = nx && nx.maneuver.type !== "arrive" ? navStepText(nx, n.lbl) : ""; ts.textContent = nt ? "Lalu " + nt.charAt(0).toLowerCase() + nt.slice(1) : "";
+  if(dM < 35) navSay(txt + " sekarang"); else if(dM < 220) navSay("Dalam " + (Math.round(dM / 50) * 50) + " m, " + txt.charAt(0).toLowerCase() + txt.slice(1));
+}
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return; const a = el.dataset.act;
+  if(a === "nav-in"){ e.preventDefault(); openNav(el.dataset.id); }
+  else if(a === "nav-close") closeNav();
+  else if(a === "nav-center"){ NAVX.follow = true; el.hidden = true; navPaint(false); }
+  else if(a === "nav-voice"){ NAVX.voice = !NAVX.voice; try{ localStorage.setItem("jt_nav_voice", NAVX.voice ? "1" : "0"); }catch(_){} el.textContent = NAVX.voice ? "🔊" : "🔇"; toast(NAVX.voice ? "Suara navigasi menyala" : "Suara navigasi dimatikan"); if(!NAVX.voice) try{ speechSynthesis.cancel(); }catch(_){} }
 });

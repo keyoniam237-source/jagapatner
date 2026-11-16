@@ -1573,3 +1573,26 @@ div.delcard:not(.card){padding:14px;border-radius:16px}
 .navsheet .nvaddr{margin:12px 0 14px;font-size:15px;color:#26304a;line-height:1.45}
 .navsheet .nvgo{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-size:16px;padding:15px}
 .navsheet .nvnote{font-size:12.5px;color:#5b6478;line-height:1.5;margin:10px 0}
+
+/* navigasi live di dalam JAGA */
+.dj-links .navin{display:inline-flex;align-items:center;gap:6px;border:0;background:#0b1a3d;color:#fff;font-weight:700;font-size:14px;border-radius:99px;padding:10px 16px;cursor:pointer}
+.dj-links a.navbtn{background:#eef3ff;color:#1f4fd1;box-shadow:none}
+.navsheet .nvg2{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:8px}
+html.navopen,html.navopen body{overflow:hidden}
+#navx{position:fixed;inset:0;z-index:2000;background:#e9eef6;display:flex;flex-direction:column}
+#navx .nvmap{flex:1;min-height:0}
+#navx .nvtop{position:absolute;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:500;display:flex;gap:12px;align-items:center;background:#0f5132;background:linear-gradient(135deg,#0f7a4a,#0b5e39);color:#fff;border-radius:20px;padding:14px 16px;box-shadow:0 14px 34px -14px rgba(0,0,0,.6)}
+#navx .nvtop.arrived{background:linear-gradient(135deg,#2f6bff,#1f4fd1)}
+#navx .nvicon{width:52px;height:52px;flex:none;display:grid;place-items:center}
+#navx .nvicon .e3d{width:44px;height:44px;font-size:40px}
+#navx .nvarr{width:46px;height:46px;color:#fff;transition:transform .3s}
+#navx .nvtxt b{display:block;font-size:19px;line-height:1.25}
+#navx .nvtxt small{display:block;font-size:13px;opacity:.85;margin-top:3px}
+#navx .nvbot{display:flex;align-items:center;gap:8px;background:#fff;padding:12px 12px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px -18px rgba(0,0,0,.45);z-index:500}
+#navx .nvinfo{flex:1;min-width:0}
+#navx .nvrem{display:block;font-size:18px;color:#0b1a3d}
+#navx .nvto{display:block;color:#5b6478;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#navx .nvbtn{width:46px;height:46px;border-radius:14px;border:0;background:#eef3ff;color:#1f4fd1;display:grid;place-items:center;font-size:20px;cursor:pointer;text-decoration:none;flex:none}
+#navx .nvbtn.end{width:auto;padding:0 16px;background:#0b1a3d;color:#fff;font-weight:800;font-size:14.5px}
+#navx .nvrecenter{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom));z-index:500;border:0;background:#fff;color:#1f4fd1;font-weight:800;border-radius:99px;padding:10px 16px;box-shadow:0 10px 24px -12px rgba(0,0,0,.5);display:flex;gap:6px;align-items:center}
+#navx .nvrecenter[hidden]{display:none}
