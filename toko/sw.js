@@ -1,6 +1,6 @@
 // JAGA — service worker sederhana: aplikasi cepat dibuka & tetap tampil saat sinyal lemah.
-const CACHE = "jt-v38";
-const SHELL = ["./", "./index.html", "./app.css?v=38", "./app.js?v=38", "./config.js", "./manifest.webmanifest", "./icons/icon-192.png"]; // angka ?v= harus sama dengan CACHE
+const CACHE = "jt-v41";
+const SHELL = ["./", "./index.html", "./app.css?v=41", "./app.js?v=41", "./config.js", "./manifest.webmanifest", "./icons/icon-192.png"]; // angka ?v= harus sama dengan CACHE
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", e => {

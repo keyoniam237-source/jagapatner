@@ -4952,23 +4952,46 @@ function startListening(){
 render();
 
 
-/* ===== Ajakan pasang otomatis saat aplikasi dibuka ===== */
+/* ===== Ajakan pasang otomatis saat aplikasi dibuka (panduan langsung di notifikasi) ===== */
+const UA2 = navigator.userAgent || "";
+const isInApp2 = () => /FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|TikTok|Twitter|Snapchat|GSA\/|; wv\)|WhatsApp|Telegram/i.test(UA2);
 function instSnoozed(){ try{ return Date.now() < (+localStorage.getItem("jt_inst_snooze") || 0); }catch(e){ return false; } }
 function closeInstSheet(){ const s = document.getElementById("instsheet"); if(!s) return; s.classList.add("out"); setTimeout(() => s.remove(), 260); }
+function instSheetMode(){ if(isInApp2()) return "inapp"; if(isIOS()) return "ios"; return INSTALL_EVT ? "native" : "manual"; }
+function instSheetAction(m){
+  if(m === "native") return '<button class="btn block press" data-ia="go">Pasang sekarang</button><p class="ihelp">Kotak pasang akan muncul otomatis saat Anda menyentuh layar. Tinggal ketuk <b>Instal</b>.</p>';
+  if(m === "ios") return '<ol class="isteps"><li>Ketuk tombol <b>Bagikan</b> <span class="ish2">⬆︎</span> di Safari</li><li>Pilih <b>Tambah ke Layar Utama</b></li><li>Ketuk <b>Tambah</b></li></ol>';
+  if(m === "inapp"){ const it = "intent://" + location.host + location.pathname + location.search + "#Intent;scheme=https;package=com.android.chrome;end"; return '<p class="ihelp" style="margin:0 0 10px">Browser ini tidak bisa memasang aplikasi. Buka dulu di browser utama.</p>' + (/android/i.test(UA2) ? '<a class="btn block press" href="'+it+'">Buka di Chrome</a>' : '<ol class="isteps"><li>Ketuk menu <b>⋯</b> atau <b>Bagikan</b></li><li>Pilih <b>Buka di Safari</b></li></ol>'); }
+  return '<ol class="isteps"><li>Ketuk menu <b>⋮</b> di pojok kanan atas browser</li><li>Pilih <b>Instal aplikasi</b> atau <b>Tambahkan ke layar utama</b></li></ol>';
+}
+const onRegPage = () => !!document.getElementById("loginForm");
 function showInstSheet(){
-  if(isStandalone() || instSnoozed() || document.getElementById("instsheet")) return;
+  if(isStandalone() || instSnoozed() || !onRegPage()) return;
   if(/^#(mitra|driver)/.test(location.hash)) return;
-  const el = document.createElement("div"); el.id = "instsheet"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Pasang JAGA di perangkat Anda");
-  el.innerHTML = '<div class="ish"><div class="isg"></div><div class="ist"><img src="icons/icon-192.png" alt=""><div><b>Pasang JAGA di perangkat Anda</b><small>Untuk HP, iPad, atau tablet. Buka lebih cepat dari layar utama, seperti aplikasi biasa</small></div></div>' +
-    '<ul><li>Tanpa biaya admin</li><li>Pesan makanan & ojek dalam satu aplikasi</li><li>Ringan, tanpa download dari toko aplikasi</li></ul>' +
-    '<button class="btn block press" data-ia="go">Pasang sekarang</button><button class="isl" data-ia="later">Nanti saja</button></div>';
-  document.body.appendChild(el);
+  const m = instSheetMode(); let el = document.getElementById("instsheet");
+  if(el && el.dataset.m === m) return;
+  if(!el){ el = document.createElement("div"); el.id = "instsheet"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Pasang JAGA di perangkat Anda"); document.body.appendChild(el); }
+  el.dataset.m = m;
+  el.innerHTML = '<div class="ish"><div class="isg"></div><div class="ist"><img src="icons/icon-192.png" alt=""><div><b>Pasang JAGA di perangkat Anda</b><small>Untuk HP, iPad, atau tablet. Buka lebih cepat dari layar utama</small></div></div>' + instSheetAction(m) + '<button class="isl" data-ia="later">Nanti saja</button></div>';
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-ia]"); if(!b) return;
-  if(b.dataset.ia === "go"){ closeInstSheet(); doInstall(""); }
+  if(b.dataset.ia === "go"){ if(INSTALL_EVT){ closeInstSheet(); doInstall(""); } else { doInstall(""); } }
   else { try{ localStorage.setItem("jt_inst_snooze", String(Date.now() + 3*864e5)); }catch(_){} closeInstSheet(); }
 });
 window.addEventListener("appinstalled", closeInstSheet);
-window.addEventListener("beforeinstallprompt", () => { setTimeout(showInstSheet, 900); });
-setTimeout(showInstSheet, 2200);
+window.addEventListener("beforeinstallprompt", () => { setTimeout(showInstSheet, 600); });
+setTimeout(showInstSheet, 2000);
+
+/* Sentuhan pertama di mana saja langsung memunculkan kotak pasang bawaan browser (syarat browser: harus ada sentuhan pengunjung) */
+let AUTO_TRIED = false;
+function autoPrompt(){
+  if(AUTO_TRIED || !INSTALL_EVT || !onRegPage() || isStandalone() || instSnoozed() || /^#(mitra|driver)/.test(location.hash)) return;
+  AUTO_TRIED = true; const ev = INSTALL_EVT;
+  try{ ev.prompt(); (ev.userChoice || Promise.resolve()).then(r => { INSTALL_EVT = null; closeInstSheet(); if(r && r.outcome === "dismissed"){ try{ localStorage.setItem("jt_inst_snooze", String(Date.now() + 864e5)); }catch(_){} } }).catch(() => {}); }catch(e){ AUTO_TRIED = false; }
+}
+["pointerup","touchend","click"].forEach(t => document.addEventListener(t, autoPrompt, {capture:true, passive:true}));
+
+/* ajakan pasang hanya di halaman awal pendaftaran: hilang saat pindah halaman, muncul lagi bila kembali ke halaman itu */
+setInterval(() => { if(document.getElementById("instsheet") && !onRegPage()) closeInstSheet(); else if(!document.getElementById("instsheet") && onRegPage()) showInstSheet(); }, 700);
+

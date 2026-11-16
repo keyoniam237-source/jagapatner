@@ -1518,3 +1518,8 @@ body.is-driver .pinst{margin:0 16px 12px!important}
 #instsheet .isl{display:block;width:100%;margin-top:6px;padding:12px;border:0;background:none;color:#5b6478;font-size:14px;cursor:pointer}
 @keyframes isup{from{transform:translateY(100%)}to{transform:none}}
 @media (display-mode: standalone){ #instsheet{display:none!important} }
+
+#instsheet .ihelp{font-size:13px;color:#4a5570;text-align:center;margin:10px 0 0;line-height:1.5}
+#instsheet .isteps{margin:0 0 6px;padding:12px 14px 12px 34px;background:#f1f5ff;border-radius:16px;font-size:13.5px;line-height:1.7;color:#26304a}
+#instsheet .ish2{display:inline-block;padding:0 6px;border-radius:6px;background:#dbe6ff}
+#instsheet a.btn{display:block;text-align:center;text-decoration:none}
