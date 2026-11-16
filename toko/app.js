@@ -571,7 +571,8 @@ function cartTotals(){
   const items = Object.values(S.cart.items);
   const subtotal = items.reduce((a,i)=>a+i.price*i.qty,0);
   const cs = storeById(S.cart.storeId), pf = getProf();
-  const dist = cs && locOk(cs) && locOk(pf) ? distM(cs, pf) : null;
+  const dist = cs && locOk(cs) && locOk(pf) ? (roadDist(cs, pf) || distM(cs, pf)) : null;
+  if(cs && locOk(cs) && locOk(pf)) ensureRoad(cs, pf);
   const pd = (S.promo && S.promo.sid === S.cart.storeId && S.promo.sub === subtotal) ? S.promo.disc : 0;
   return {items, subtotal, ongkir:0, ongkirEst: dist == null ? null : ongkirByDist(dist), ongkirDist: dist, admin:0, promoDisc:pd, promoCode:pd ? S.promo.code : "", total:subtotal - pd};
 }
@@ -1226,7 +1227,7 @@ async function placeOrder(form){
     storeAddress:s.address||"",
     status: k === "cod" ? "menunggu_konfirmasi" : "menunggu_pembayaran", createdAt:now, updatedAt:now};
   if(typeof s.lat === "number" && typeof s.lng === "number") order.storeLoc = {lat:s.lat, lng:s.lng};
-  if(locOk(order.storeLoc) && locOk(buyer)){ order.ongkirDist = Math.round(distM(order.storeLoc, buyer)); order.ongkirEst = ongkirByDist(order.ongkirDist); }
+  if(locOk(order.storeLoc) && locOk(buyer)){ const rd = roadDist(order.storeLoc, buyer); if(rd) order.roadDist = Math.round(rd); order.ongkirDist = Math.round(rd || distM(order.storeLoc, buyer)); order.ongkirEst = ongkirByDist(order.ongkirDist); }
   if(SB && t2.promoCode) order.promo = t2.promoCode;
   if(fd.get("useSaldo")){ order.useSaldo = true; if(!SB && order.ongkirEst > 0 && buyerAvail() > 0) order.voucher = Math.min(buyerAvail(), order.ongkirEst); }
   const btn = form.querySelector("button"); if(btn) btn.disabled = true;
@@ -3250,9 +3251,10 @@ const RIDE = {
     if(!String(r.name || "").trim() || String(r.wa || "").replace(/\D/g, "").length < 9) throw srvErr("Isi nama dan nomor WhatsApp");
     if(!locOk(p)) throw srvErr("Atur titik jemput dulu");
     if(!locOk(d)) throw srvErr("Pilih tujuan dulu");
-    const dist = distM(p, d);
-    if(dist < 100) throw srvErr("Tujuan terlalu dekat dengan titik jemput");
-    if(dist > 50000) throw srvErr("Jarak maksimal 50 km");
+    const dS = distM(p, d);
+    if(dS < 100) throw srvErr("Tujuan terlalu dekat dengan titik jemput");
+    if(dS > 50000) throw srvErr("Jarak maksimal 50 km");
+    const dist = data.roadDist >= dS && data.roadDist <= dS * 3 + 1000 ? data.roadDist : dS;
     if(S.rides.some(x => RIDE_ACTIVE.includes(x.status))) throw srvErr("Masih ada perjalanan Jago yang berjalan");
     const now = Date.now();
     const v = Object.assign({}, data, {kind:"ride", code:"JG-" + new Date().toISOString().slice(2, 10).replace(/-/g, "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase(),
@@ -3532,7 +3534,8 @@ function rideCard(o){
 }
 function jagoForm(){
   const J = S.jago, p = getProf();
-  const dist = locOk(J.pick) && locOk(J.dest) ? distM(J.pick, J.dest) : null;
+  const rdJ = locOk(J.pick) && locOk(J.dest) ? roadDist(J.pick, J.dest) : null; if(locOk(J.pick) && locOk(J.dest) && !rdJ) ensureRoad(J.pick, J.dest);
+  const dist = locOk(J.pick) && locOk(J.dest) ? (rdJ || distM(J.pick, J.dest)) : null;
   let h = (S.jago.outside || (locOk(p) && !inArea(p)) ? areaBanner() : '') + '<section class="jhero">'+E("scooter")+'<div><h2>Jago</h2><p>Ojek online di '+esc(AREAS.map(a => a.short).join(", "))+'</p><span>'+ONGKIR_LBL+' · bisa nego · bayar tunai</span></div></section>';
   h += '<div class="card jcard">';
   h += '<div class="jmode"><button class="'+(J.mode==="pick"?"on":"")+'" data-act="jago-mode" data-v="pick"><i class="dot a"></i>Atur jemput</button><button class="'+(J.mode==="dest"?"on":"")+'" data-act="jago-mode" data-v="dest"><i class="dot b"></i>Atur tujuan</button></div>';
@@ -3544,7 +3547,7 @@ function jagoForm(){
     '<button class="jpt'+(J.mode==="dest"?" on":"")+'" data-act="jago-sheet" data-v="dest"><i class="dot b"></i><div class="grow"><small>Tujuan</small><b>'+(J.dest ? esc(J.dest.address || "Mencari nama jalan…") : "Mau ke mana? Ketuk untuk cari")+'</b></div><span class="jlink">'+I("search")+'</span></button></div>';
   h += '</div>';
   if(dist != null){
-    h += '<div class="ongkirbox big jfare">'+E("money")+'<div><small>Perkiraan tarif · jarak ±'+kmTxt(dist)+' · '+ONGKIR_LBL+'</small><b>±'+rp(ongkirByDist(dist))+'</b><small>Bayar tunai langsung ke driver, bisa nego. Jarak dihitung garis lurus dari titik jemput ke tujuan.</small></div></div>';
+    h += '<div class="ongkirbox big jfare">'+E("money")+'<div><small>Perkiraan tarif · jarak ±'+kmTxt(dist)+' · '+ONGKIR_LBL+'</small><b>±'+rp(ongkirByDist(dist))+'</b><small>Bayar tunai langsung ke driver, bisa nego. '+(rdJ ? 'Jarak dihitung lewat jalan yang dilalui.' : 'Menghitung jarak lewat jalan…')+'</small></div></div>';
   }
   h += '<form class="card pad jform" id="jagoForm">'+
     '<div class="cols2"><div><label class="f">Nama *</label><input class="in" name="name" required value="'+esc(p.name||"")+'"></div>'+
@@ -3673,6 +3676,7 @@ document.addEventListener("submit", async e => {
     setProf(Object.assign(getProf(), {name:rider.name, wa:rider.wa}));
     const btn = f.querySelector("button"); if(btn) btn.disabled = true;
     const data = {riderId:ME, rider, pickup:{lat:J.pick.lat, lng:J.pick.lng, address:J.pick.address || ""}, dest:{lat:J.dest.lat, lng:J.dest.lng, address:J.dest.address || ""}, note:(fd.get("note")||"").trim()};
+    { const rd = roadDist(J.pick, J.dest) || await Promise.race([ensureRoad(J.pick, J.dest), new Promise(r => setTimeout(() => r(null), 4000))]); if(rd) data.roadDist = Math.round(rd); }
     if(fd.get("useSaldo")) data.useSaldo = true;
     try{
       const r = await RIDE.create(uid("r"), data);
@@ -5241,6 +5245,7 @@ const NAVX = {open:false, id:"", route:null, idx:1, fetchAt:0, fetching:false, m
 const TURN_ID = {"left":"Belok kiri", "right":"Belok kanan", "slight left":"Ambil kiri", "slight right":"Ambil kanan", "sharp left":"Belok tajam ke kiri", "sharp right":"Belok tajam ke kanan", "straight":"Lurus terus", "uturn":"Putar balik"};
 const TURN_DEG = {"left":-90, "right":90, "slight left":-45, "slight right":45, "sharp left":-135, "sharp right":135, "straight":0, "uturn":180};
 function navStepText(st, lbl){
+  if(st.text && (st.maneuver || {}).type !== "arrive") return st.text;
   const m = st.maneuver || {}, nm = st.name ? " ke " + st.name : "", t = TURN_ID[m.modifier] || "Lurus terus";
   if(m.type === "arrive") return "Sampai di " + lbl;
   if(m.type === "depart") return "Mulai jalan" + (st.name ? " di " + st.name : "");
@@ -5259,18 +5264,9 @@ function navSay(t){
 function navJob(){ return ((S.drv && S.drv.mine) || []).find(o => o.id === NAVX.id); }
 async function navFetch(from, to){
   if(NAVX.fetching) return; NAVX.fetching = true; NAVX.fetchAt = Date.now();
-  try{
-    const u = "https://router.project-osrm.org/route/v1/driving/" + from.lng + "," + from.lat + ";" + to.lng + "," + to.lat + "?overview=full&geometries=geojson&steps=true";
-    const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 9000);
-    const r = await fetch(u, {signal:ctl.signal}); clearTimeout(tm);
-    const j = await r.json(); const rt = j && j.routes && j.routes[0];
-    if(!rt) throw new Error("no route");
-    const steps = []; (rt.legs || []).forEach(l => (l.steps || []).forEach(st => steps.push(st)));
-    const pts = rt.geometry.coordinates.map(c => ({lat:c[1], lng:c[0]}));
-    steps.forEach(st => { const ml = {lat:st.maneuver.location[1], lng:st.maneuver.location[0]}; let bi = 0, bd = 1e9; pts.forEach((q, i) => { const d = distM(ml, q); if(d < bd){ bd = d; bi = i; } }); st.ri = bi; });
-    NAVX.route = {pts, steps, to:to.lat + "," + to.lng}; NAVX.idx = 1; NAVX.said = "";
-  }catch(e){ NAVX.route = {pts:[from, to], steps:[], to:to.lat + "," + to.lng, straight:true}; }
-  NAVX.fetching = false; navPaint(true);
+  const r = await roadRoute(from, to, true);
+  NAVX.route = r ? Object.assign({to:to.lat + "," + to.lng}, r) : {pts:[from, to], steps:[], to:to.lat + "," + to.lng, straight:true};
+  NAVX.idx = 1; NAVX.said = ""; NAVX.fetching = false; navPaint(true);
 }
 function navOffRoute(loc){
   const p = NAVX.route && NAVX.route.pts; if(!p || p.length < 2 || NAVX.route.straight) return 0;
@@ -5370,3 +5366,64 @@ document.addEventListener("click", e => {
   else if(a === "nav-center"){ NAVX.follow = true; el.hidden = true; navPaint(false); }
   else if(a === "nav-voice"){ NAVX.voice = !NAVX.voice; try{ localStorage.setItem("jt_nav_voice", NAVX.voice ? "1" : "0"); }catch(_){} el.textContent = NAVX.voice ? "🔊" : "🔇"; toast(NAVX.voice ? "Suara navigasi menyala" : "Suara navigasi dimatikan"); if(!NAVX.voice) try{ speechSynthesis.cancel(); }catch(_){} }
 });
+
+/* ============ Rute & jarak lewat jalan: Google Routes (mode motor) bila ada kunci, cadangan OpenStreetMap ============ */
+const ROAD = {}, ROAD_P = {};
+const roadKey = (a, b) => [a.lat, a.lng, b.lat, b.lng].map(v => (+v).toFixed(5)).join(",");
+function roadDist(a, b){ const r = ROAD[roadKey(a, b)]; return r && r.dist ? r.dist : null; }
+function ensureRoad(a, b){ return roadRoute(a, b, false).then(r => r ? r.dist : null); }
+function decodePoly(str){
+  const out = []; let i = 0, lat = 0, lng = 0;
+  while(i < str.length){
+    let b, sh = 0, res = 0; do{ b = str.charCodeAt(i++) - 63; res |= (b & 31) << sh; sh += 5; }while(b >= 32); lat += (res & 1) ? ~(res >> 1) : res >> 1;
+    sh = 0; res = 0; do{ b = str.charCodeAt(i++) - 63; res |= (b & 31) << sh; sh += 5; }while(b >= 32); lng += (res & 1) ? ~(res >> 1) : res >> 1;
+    out.push({lat:lat / 1e5, lng:lng / 1e5});
+  }
+  return out;
+}
+const G_MAN = {TURN_LEFT:["turn","left"], TURN_RIGHT:["turn","right"], TURN_SLIGHT_LEFT:["turn","slight left"], TURN_SLIGHT_RIGHT:["turn","slight right"], TURN_SHARP_LEFT:["turn","sharp left"], TURN_SHARP_RIGHT:["turn","sharp right"],
+  UTURN_LEFT:["turn","uturn"], UTURN_RIGHT:["turn","uturn"], STRAIGHT:["continue","straight"], NAME_CHANGE:["new name","straight"], MERGE:["merge","straight"], FORK_LEFT:["fork","slight left"], FORK_RIGHT:["fork","slight right"],
+  RAMP_LEFT:["turn","slight left"], RAMP_RIGHT:["turn","slight right"], ROUNDABOUT_LEFT:["roundabout","left"], ROUNDABOUT_RIGHT:["roundabout","right"], DEPART:["depart","straight"], FERRY:["continue","straight"]};
+async function gRoute(a, b){
+  const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 9000);
+  const r = await fetch("https://routes.googleapis.com/directions/v2:computeRoutes", {method:"POST", signal:ctl.signal,
+    headers:{"Content-Type":"application/json", "X-Goog-Api-Key":GKEY, "X-Goog-FieldMask":"routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline,routes.legs.steps.distanceMeters,routes.legs.steps.startLocation,routes.legs.steps.navigationInstruction"},
+    body:JSON.stringify({origin:{location:{latLng:{latitude:a.lat, longitude:a.lng}}}, destination:{location:{latLng:{latitude:b.lat, longitude:b.lng}}}, travelMode:"TWO_WHEELER", languageCode:"id", regionCode:"ID", units:"METRIC"})});
+  clearTimeout(tm);
+  const j = await r.json(); const rt = j && j.routes && j.routes[0];
+  if(!r.ok || !rt || !rt.distanceMeters) throw new Error((j && j.error && j.error.message) || "Google route gagal");
+  const pts = rt.polyline && rt.polyline.encodedPolyline ? decodePoly(rt.polyline.encodedPolyline) : [a, b];
+  const steps = [];
+  ((rt.legs || [])[0] || {}).steps && rt.legs.forEach(l => (l.steps || []).forEach(st => {
+    const ni = st.navigationInstruction || {}, m = G_MAN[ni.maneuver] || ["continue","straight"], ll = st.startLocation && st.startLocation.latLng;
+    if(ll) steps.push({maneuver:{type:steps.length ? m[0] : "depart", modifier:m[1], location:[ll.longitude, ll.latitude]}, text:steps.length ? (ni.instructions || "").split("\n")[0] : "", name:""});
+  }));
+  steps.push({maneuver:{type:"arrive", location:[b.lng, b.lat]}, name:""});
+  return {dist:rt.distanceMeters, pts, steps, src:"google"};
+}
+async function oRoute(a, b){
+  const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 9000);
+  const r = await fetch("https://router.project-osrm.org/route/v1/driving/" + a.lng + "," + a.lat + ";" + b.lng + "," + b.lat + "?overview=full&geometries=geojson&steps=true", {signal:ctl.signal}); clearTimeout(tm);
+  const j = await r.json(); const rt = j && j.routes && j.routes[0]; if(!rt) throw new Error("no route");
+  const steps = []; (rt.legs || []).forEach(l => (l.steps || []).forEach(st => steps.push(st)));
+  return {dist:rt.distance, pts:rt.geometry.coordinates.map(c => ({lat:c[1], lng:c[0]})), steps, src:"osm"};
+}
+function roadRoute(a, b, fresh){
+  if(!locOk(a) || !locOk(b)) return Promise.resolve(null);
+  const k = roadKey(a, b);
+  if(!fresh && ROAD[k] && !(ROAD[k].fail && Date.now() - ROAD[k].fail > 60000)) return Promise.resolve(ROAD[k].fail ? null : ROAD[k]);
+  if(!fresh && ROAD_P[k]) return ROAD_P[k];
+  const p = (async () => {
+    let r = null;
+    if(GKEY) try{ r = await gRoute(a, b); }catch(e){ r = null; }
+    if(!r) try{ r = await oRoute(a, b); }catch(e){ r = null; }
+    if(r){
+      r.pts.length > 1 && r.steps.forEach(st => { const ml = {lat:st.maneuver.location[1], lng:st.maneuver.location[0]}; let bi = 0, bd = 1e9; r.pts.forEach((q, i) => { const d = distM(ml, q); if(d < bd){ bd = d; bi = i; } }); st.ri = bi; });
+      const straight = distM(a, b); if(r.dist < straight || r.dist > straight * 3 + 1000) r.dist = null;
+      ROAD[k] = r; if(!fresh && !typing()) scheduleRender();
+    } else ROAD[k] = {fail:Date.now(), dist:null};
+    delete ROAD_P[k]; return r;
+  })();
+  if(!fresh) ROAD_P[k] = p;
+  return p;
+}
