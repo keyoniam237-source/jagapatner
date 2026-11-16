@@ -2438,7 +2438,7 @@ function appDriver(){
   }
   h += pushCard("driver", "Order baru tetap masuk walau aplikasi ditutup atau HP terkunci.");
   h += drvWalletChip();
-  h += '<div class="dstats"><div><small>Pendapatan hari ini</small><b>'+rp(doneToday.reduce((a, o) => a + (o.ongkirFinal || o.fareFinal || 0), 0))+'</b></div><div><small>Trip hari ini</small><b>'+doneToday.length+'</b></div><div><small>Total selesai</small><b>'+mine.filter(o => o.status === "selesai").length+'</b></div></div>';
+  h += '<div class="dstats"><div><small>Pendapatan hari ini</small><b>'+rp(doneToday.reduce((a, o) => a + (o.ongkirFinal || o.fareFinal || 0), 0))+'</b></div><div><small>Trip hari ini</small><b>'+doneToday.length+'</b></div><div><small>Total selesai</small><b>'+(S.drvStats && S.drvStats.trips != null ? S.drvStats.trips : mine.filter(o => o.status === "selesai").length)+'</b></div></div>';
   if(active.length){
     h += '<h2 class="dsec">Pesanan aktif</h2>' + active.map(o => drvJob(o, false)).join("");
   } else if(me.online){
@@ -2449,6 +2449,7 @@ function appDriver(){
   } else {
     h += '<div class="dwait off">'+E("scooter")+'<b>Kamu sedang offline</b><small>Nyalakan ONLINE untuk mulai menerima order dari toko di sekitarmu.</small></div>';
   }
+  h += drvAchieve();
   if(hist.length) h += '<h2 class="dsec">Riwayat</h2><div class="card dhist">'+hist.map(o => '<div class="row"><span><b>'+esc(isRide(o) ? 'Jago · '+(shortAddr(o.dest && o.dest.address) || 'perjalanan') : o.storeName)+'</b><small>'+esc(o.code)+' · '+fmtDate(o.doneAt || o.updatedAt)+'</small></span><span>'+(o.status === "selesai" ? '<b>'+rp(o.ongkirFinal || o.fareFinal || 0)+'</b>' : statusTag(o.status))+'</span></div>').join("")+'</div>';
   h += '<div class="small muted" style="text-align:center;margin:18px 0 30px">Akun driver tersimpan di HP ini · <button class="linkbtn" style="display:inline" data-act="leave-driver">Buka aplikasi belanja</button></div>';
   return h;
@@ -5466,3 +5467,43 @@ document.addEventListener("click", e => {
   if(el.dataset.act === "own-chart"){ S.own.chart = el.dataset.v; render(); }
   else if(el.dataset.act === "own-feed-all"){ S.own.feedAll = !S.own.feedAll; render(); }
 });
+
+/* ============ Prestasi driver: bintang dari tamu, level, peringkat ============ */
+S.drvStats = null; let DSTAT_AT = 0, DSTAT_BUSY = false;
+async function loadDrvStats(force){
+  if(DSTAT_BUSY || (!force && Date.now() - DSTAT_AT < 60000)) return;
+  DSTAT_BUSY = true; DSTAT_AT = Date.now();
+  try{
+    if(SB) S.drvStats = await sbStore.rpc("jt_driver_stats", {});
+    else { const mine = (S.drv && S.drv.mine) || [], m0 = rangeStart("bulan"); const done = mine.filter(o => o.status === "selesai");
+      S.drvStats = {avg:null, n:0, dist:{}, streak5:0, reviews:[], trips:done.length, monthTrips:done.filter(o => (o.doneAt || o.updatedAt || 0) >= m0).length, rank:null, drivers:1}; }
+  }catch(e){}
+  DSTAT_BUSY = false; if(S.role === "driver" && !typing()) scheduleRender();
+}
+const DRV_LEVELS = [[0,"Pemula","🌱"],[10,"Perunggu","🥉"],[50,"Perak","🥈"],[150,"Emas","🥇"],[500,"Berlian","💎"]];
+function drvAchieve(){
+  const me = S.drv && S.drv.me; if(!me || !me.id) return "";
+  loadDrvStats(false);
+  const st = S.drvStats; if(!st) return '<div class="card dach"><div class="muted small">Memuat prestasimu…</div></div>';
+  const trips = st.trips || 0; let li = 0; DRV_LEVELS.forEach((l, i) => { if(trips >= l[0]) li = i; });
+  const L = DRV_LEVELS[li], NX = DRV_LEVELS[li + 1];
+  const pct = NX ? Math.round((trips - L[0]) / (NX[0] - L[0]) * 100) : 100;
+  const avg = st.avg != null ? Number(st.avg) : null, n = st.n || 0;
+  const msg = !n ? "Belum ada penilaian. Layani tamu dengan ramah & tepat waktu, mereka bisa memberimu bintang setelah order selesai."
+    : avg >= 4.8 ? "Luar biasa! Tamu sangat puas dengan layananmu. Pertahankan!"
+    : avg >= 4.3 ? "Bagus! Sedikit lagi menuju bintang sempurna."
+    : avg >= 3.5 ? "Cukup baik. Sapa tamu, kabari lewat chat, dan antar tepat waktu supaya bintangmu naik."
+    : "Yuk tingkatkan layanan: datang tepat waktu, ramah, dan jaga barang tamu.";
+  const dist = st.dist || {}, dmax = Math.max(1, ...[5,4,3,2,1].map(k => +dist[k] || 0));
+  let h = '<div class="card dach"><div class="dach-h"><h3>Prestasimu</h3><span class="dlvl">'+L[2]+' '+L[1]+'</span></div>'+
+    '<div class="dach-top"><div class="dach-score"><b>'+(avg != null ? String(avg).replace(".", ",") : "–")+'</b>'+starBar(avg || 0)+'<small>'+(n ? n + " penilaian tamu" : "belum dinilai")+'</small></div>'+
+    '<div class="dach-dist">'+[5,4,3,2,1].map(k => '<div><span>'+k+'★</span><i><em style="width:'+Math.round((+dist[k] || 0) / dmax * 100)+'%"></em></i><small>'+(+dist[k] || 0)+'</small></div>').join("")+'</div></div>'+
+    '<p class="dach-msg">'+esc(msg)+'</p>'+
+    '<div class="dach-chips">'+
+      (st.streak5 >= 2 ? '<span>🔥 '+st.streak5+'× bintang 5 berturut-turut</span>' : '')+
+      (st.rank ? '<span>🏆 Peringkat #'+st.rank+' bulan ini</span>' : '')+
+      '<span>🛵 '+trips+' trip selesai</span><span>📅 '+(st.monthTrips || 0)+' trip bulan ini</span></div>'+
+    '<div class="dach-lv"><div><small>'+(NX ? (NX[0] - trips)+' trip lagi menuju '+NX[2]+' '+NX[1] : 'Level tertinggi tercapai! 💎')+'</small></div><i><em style="width:'+pct+'%"></em></i></div>';
+  if((st.reviews || []).length) h += '<div class="dach-rev"><small>Kata tamu</small>'+st.reviews.slice(0, 3).map(r => '<div>'+starBar(r.s)+'<p>“'+esc(r.c)+'”</p><time>'+ago(r.at)+'</time></div>').join("")+'</div>';
+  return h + '</div>';
+}

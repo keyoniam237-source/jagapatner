@@ -1,0 +1,3 @@
+-- Prestasi driver (diterapkan sebagai migrasi prestasi_driver). 5 tes lulus dalam blok rollback.
+-- jt_driver_stats(p_key): rata-rata & sebaran bintang dari tamu, bintang 5 berturut-turut, 5 ulasan terakhir
+-- (tanpa identitas tamu), total trip selesai, trip bulan ini, peringkat bulan ini di antara driver.

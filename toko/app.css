@@ -1628,3 +1628,32 @@ html.navopen,html.navopen body{overflow:hidden}
 .phview img{max-width:100%;max-height:100%;border-radius:12px}
 .phview button{position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:20px}
 .cm.me .bub .cmap{color:#fff}
+
+/* prestasi driver */
+.dach{margin:0 16px 14px;padding:16px;border-radius:20px;background:linear-gradient(160deg,#fffaf0,#ffffff 55%)}
+.dach-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.dach-h h3{margin:0;font-size:17px;color:#0b1a3d}
+.dlvl{background:#0b1a3d;color:#fff;font-weight:800;font-size:12.5px;border-radius:99px;padding:5px 11px}
+.dach-top{display:flex;gap:16px;align-items:center}
+.dach-score{text-align:center;min-width:96px}
+.dach-score>b{display:block;font-size:40px;line-height:1;color:#8a5300;letter-spacing:-.03em}
+.dach-score .sbar{font-size:16px;margin:4px 0 2px}
+.dach-score small{display:block;color:#6a7894;font-size:11.5px}
+.dach-dist{flex:1;display:grid;gap:4px}
+.dach-dist div{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#55607a}
+.dach-dist span{width:22px}
+.dach-dist i{flex:1;height:7px;border-radius:7px;background:#eef1f7;overflow:hidden}
+.dach-dist em{display:block;height:100%;background:#f5a623;border-radius:7px}
+.dach-dist small{width:18px;text-align:right}
+.dach-msg{margin:12px 0 10px;font-size:13.5px;color:#26304a;line-height:1.45}
+.dach-chips{display:flex;flex-wrap:wrap;gap:6px}
+.dach-chips span{background:#eef3ff;color:#1f3a80;font-weight:700;font-size:12px;border-radius:99px;padding:6px 10px}
+.dach-lv{margin-top:12px}
+.dach-lv small{color:#5b6478;font-size:12px}
+.dach-lv i{display:block;height:8px;border-radius:8px;background:#eef1f7;overflow:hidden;margin-top:5px}
+.dach-lv em{display:block;height:100%;background:linear-gradient(90deg,#2f6bff,#5aa2ff);border-radius:8px}
+.dach-rev{margin-top:14px;border-top:1px solid #eef1f7;padding-top:10px}
+.dach-rev>small{color:#6a7894;font-weight:700;font-size:12px}
+.dach-rev div{margin-top:8px}
+.dach-rev p{margin:3px 0 0;font-size:13.5px;color:#26304a;font-style:italic}
+.dach-rev time{font-size:11px;color:#8a96ad}
