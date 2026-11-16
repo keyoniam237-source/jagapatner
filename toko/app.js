@@ -698,9 +698,11 @@ function viewOrder(){
   } else if(o.status === "mencari_driver"){
     h += searchBox(o, "Toko sudah mengonfirmasi. Mencari driver terdekat dari toko…");
   } else if(o.status === "driver_ke_toko"){
-    h += driverBox(o, "Driver sedang menuju toko untuk mengambil pesanan Anda.") + liveMap(o, "pembeli");
+    h += o.handedAt ? driverBox(o, "Pesanan sudah diambil driver di toko. Sebentar lagi diantar.") + liveMap(o, "pembeli")
+      : driverBox(o, "Driver sedang menuju toko untuk mengambil pesanan Anda.") + liveMap(o, "pembeli");
   } else if(o.status === "diantar" && o.driverId){
-    h += driverBox(o, "Pesanan sedang diantar ke alamat Anda.") + liveMap(o, "pembeli") + ongkirNego(o);
+    h += o.arrivedAt ? driverBox(o, "Pesanan sudah sampai. Silakan terima dari driver.") + proofBtn(o) + ongkirNego(o)
+      : driverBox(o, o.codeReq ? "Paket dalam perjalanan ke alamat Anda." : "Pesanan sedang diantar ke alamat Anda.") + liveMap(o, "pembeli") + ongkirNego(o);
   } else if(o.status === "diantar"){
     h += '<div class="paybox">'+I("truck")+' Pesanan sedang diantar oleh toko ke alamat Anda.'+(o.pay&&o.pay.k==="cod"?' Siapkan <b>'+rp(o.total)+'</b> tunai.':'')+'</div><button class="btn block" data-act="buyer-done" data-id="'+esc(o.id)+'">Pesanan sudah saya terima</button>';
   } else if(o.status === "diproses"){
@@ -824,7 +826,13 @@ function orderCard(s, o){
       if(o.status==="menunggu_konfirmasi") acts = "";
     }
     if(o.status==="mencari_driver"){ info = searchBox(o, "Mencari driver terdekat dari toko Anda…", true); acts = (searchElapsed(o) >= 210 ? '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">Cari ulang</button>' : '')+selfBtn; }
-    if(o.status==="driver_ke_toko"){ info = driverBox(o, "Driver menuju toko Anda. Siapkan pesanan."+(cod?" (COD — atur pembayaran barang dengan driver)":""), true) + liveMap(o, "toko"); }
+    if(o.status==="driver_ke_toko"){
+      if(o.handedAt) info = driverBox(o, "Pesanan sudah diserahkan ke driver ✓", true);
+      else {
+        info = driverBox(o, "Driver menuju toko Anda. Siapkan pesanan."+(cod?" (COD — atur pembayaran barang dengan driver)":""), true) + liveMap(o, "toko");
+        if(o.codeReq) info += '<div class="codein"><label class="f">Kode dari driver</label><div class="codein-row"><input class="in" inputmode="numeric" maxlength="4" placeholder="• • • •" id="pcode-'+esc(o.id)+'" autocomplete="off"><button class="btn sm press" data-act="pick-verify" data-id="'+esc(o.id)+'">Cocokkan</button></div><div class="hint">Minta driver menunjukkan 4 angka kode ambil. Serahkan pesanan hanya bila kodenya cocok.</div></div>';
+      }
+    }
     if(o.status==="selesai") info += proofBtn(o);
     if(o.status==="diantar"){ if(o.driverId) info = driverBox(o, "Pesanan sedang diantar driver ke pembeli.", true); else acts = '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="selesai">Tandai selesai</button>'; }
     if(!["selesai","dibatalkan","diantar"].includes(o.status)) acts += '<button class="btn danger sm" data-act="seller-cancel" data-id="'+esc(o.id)+'">Tolak / batalkan</button>';
@@ -1092,8 +1100,8 @@ async function proofReq(){
   if(S.proofReq === undefined){ try{ const { data } = await SB.rpc("jt_fraud_cfg"); S.proofReq = !!(data && data.proofReq); }catch(_){ S.proofReq = false; } }
   return S.proofReq;
 }
-async function proofConfirm(text, okLabel, fn){
-  const req = await proofReq();
+async function proofConfirm(text, okLabel, fn, must){
+  const req = must || await proofReq();
   document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><p style="margin-top:0;font-weight:600">'+esc(text)+'</p>'+
     '<label class="f">Foto bukti '+(req ? '(wajib)' : '(disarankan)')+'</label><input type="file" accept="image/*" capture="environment" class="in" id="proofPhoto"><div class="hint">Foto paket/serah terima melindungi Anda bila ada sengketa.</div>'+
     '<div class="actions"><button class="btn danger" id="cOk">'+esc(okLabel)+'</button><button class="btn ghost" data-act="close-modal">Batal</button></div></div></div>';
@@ -1112,7 +1120,7 @@ async function proofView(id){
   document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Foto bukti</h2><div id="proofBox" class="muted small">Memuat…</div><div class="actions"><button type="button" class="btn ghost" onclick="closeModal()">Tutup</button></div></div></div>';
   try{
     const r = await sbStore.rpc("jt_proof_get", {p_order:id}); const box = document.getElementById("proofBox"); if(!box) return;
-    const L = {pick:"Saat diambil dari toko", done:"Saat diserahkan ke pembeli"};
+    const L = {pick:"Saat diambil dari toko", done:"Saat sampai & diserahkan ke pembeli"};
     const k = Object.keys(r || {});
     box.innerHTML = k.length ? k.map(x => '<div class="small muted" style="margin-top:8px">'+esc(L[x] || x)+' · '+esc(new Date(r[x].at).toLocaleString("id-ID"))+'</div><img class="proof" style="max-width:100%" alt="Foto bukti" src="'+esc(r[x].photo)+'">').join("") : "Belum ada foto.";
   }catch(err){ const box = document.getElementById("proofBox"); if(box) box.textContent = "Gagal memuat: " + String(err.message || err); }
@@ -2219,6 +2227,7 @@ const DRV = {
 };
 const typing = () => { const a = document.activeElement; return !!(a && a.closest && a.closest("#app") && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)); };
 
+const _drvHanded = new Set();
 let drvTimer = null, drvBusy = false, geoWatch = null, lastSent = {t:0, lat:0, lng:0}, audioCtx = null;
 async function drvRefresh(){
   if(drvBusy) return; drvBusy = true;
@@ -2227,12 +2236,13 @@ async function drvRefresh(){
     const offers = r.offers || [];
     const fresh = offers.filter(o => !S.drv.seen.has(o.id));
     offers.forEach(o => S.drv.seen.add(o.id));
+    (r.mine || []).forEach(o => { if(o.handedAt && o.status === "driver_ke_toko" && !_drvHanded.has(o.id)){ _drvHanded.add(o.id); if(S.drv.loaded) notify("Kode cocok ✓", (o.storeName || "Toko") + " sudah menyerahkan pesanan " + (o.code || "") + ". Tekan “Antar pesanan”.", {kind:"order"}); } });
     S.drv.me = r.me || null; S.drv.offers = offers; S.drv.mine = r.mine || []; S.drv.wallet = r.wallet || null; S.drv.blocked = r.blocked || []; S.drv.locFresh = r.locFresh !== false; S.drv.loaded = true; S.drv.err = "";
     if(fresh.length && S.drv.me && S.drv.me.online) notify(fresh.length > 1 ? fresh.length + " order baru!" : (isRide(fresh[0]) ? "Order Jago baru!" : "Order antar baru!"), fresh.map(o => isRide(o) ? "Jago · " + shortAddr(o.pickup && o.pickup.address) : (o.storeName || "Toko") + (o.dist != null ? " · " + fmtDist(o.dist) : "")).join(" | ").slice(0, 120) + " — ambil sekarang", {kind:"order", tag:"drv-offer", act:() => window.scrollTo({top:0, behavior:"smooth"})});
     if(S.drv.me && S.drv.me.online) startGeo();
   }catch(e){ S.drv.loaded = true; S.drv.err = (e && e.message) || "Gagal memuat"; }
   drvBusy = false;
-  const sig = JSON.stringify([S.drv.me, S.drv.offers.map(o => o.id + o.dist), S.drv.mine.map(o => o.id + o.status + (o.ongkirFinal || o.fareFinal || "")), S.drv.err, S.drv.wallet, (S.drv.blocked || []).map(b => b.id + b.why), S.drv.locFresh]);
+  const sig = JSON.stringify([S.drv.me, S.drv.offers.map(o => o.id + o.dist), S.drv.mine.map(o => o.id + o.status + (o.handedAt ? "h" : "") + (o.arrivedAt ? "a" : "") + (o.ongkirFinal || o.fareFinal || "")), S.drv.err, S.drv.wallet, (S.drv.blocked || []).map(b => b.id + b.why), S.drv.locFresh]);
   if(S.role === "driver" && sig !== S.drv.sig && !typing()){ S.drv.sig = sig; scheduleRender(); }
 }
 function startDriver(){
@@ -2323,13 +2333,14 @@ if(navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", 
 });
 // status pesanan pembeli berubah
 let _bOrdSeen = null;
-const B_ST_MSG = {menunggu_konfirmasi:"Pembayaran diterima, menunggu konfirmasi toko", diproses:"Pesanan dikonfirmasi & sedang disiapkan toko", mencari_driver:"Toko sedang mencari driver", driver_ke_toko:"Driver menuju toko mengambil pesananmu", diantar:"Pesanan sedang diantar ke alamatmu", selesai:"Pesanan selesai. Terima kasih!", dibatalkan:"Pesanan dibatalkan"};
+const B_ST_MSG = {menunggu_konfirmasi:"Pembayaran diterima, menunggu konfirmasi toko", diproses:"Pesanan dikonfirmasi & sedang disiapkan toko", mencari_driver:"Toko sedang mencari driver", driver_ke_toko:"Driver menuju toko mengambil pesananmu", "driver_ke_toko+a":"Pesanan sudah diambil driver di toko", diantar:"Pesanan sedang diantar ke alamatmu", "diantar+a":"Paket dalam perjalanan ke alamatmu", "diantar+a+s":"Pesanan sudah sampai. Lihat foto bukti di detail pesanan", "diantar+s":"Pesanan sudah sampai", selesai:"Pesanan selesai. Terima kasih!", dibatalkan:"Pesanan dibatalkan"};
 function buyerOrderNotify(){
   if(S.role === "seller" || S.role === "driver" || S.role === "owner") return;
   const mine = S.orders.filter(o => o.buyerId === ME || (SB && !o.buyerId && o.buyer));
-  const cur = {}; mine.forEach(o => cur[o.id] = o.status);
+  const key = o => o.status + (o.handedAt ? "+a" : "") + (o.arrivedAt ? "+s" : "");
+  const cur = {}; mine.forEach(o => cur[o.id] = key(o));
   if(_bOrdSeen === null){ _bOrdSeen = cur; return; }
-  mine.forEach(o => { const old = _bOrdSeen[o.id]; if(old && old !== o.status && B_ST_MSG[o.status]) notify("Pesanan " + (o.code || "") + " · " + (o.storeName || ""), B_ST_MSG[o.status], {kind:o.status === "selesai" ? "done" : "order", act:() => go("order", {orderId:o.id})}); });
+  mine.forEach(o => { const old = _bOrdSeen[o.id], k = key(o), msg = B_ST_MSG[k] || B_ST_MSG[o.status]; if(old && old !== k && msg) notify("Pesanan " + (o.code || "") + " · " + (o.storeName || ""), msg, {kind:o.status === "selesai" ? "done" : "order", act:() => go("order", {orderId:o.id})}); });
   _bOrdSeen = cur;
 }
 function soundToggle(){ NOTIF_SOUND = !NOTIF_SOUND; try{ localStorage.setItem("jt_sound", NOTIF_SOUND ? "1" : "0"); }catch(_){} if(NOTIF_SOUND) notify("Nada notifikasi aktif", "Contoh notifikasi JAGA. Tampil 10 detik dengan nada keras.", {kind:"order"}); render(); }
@@ -2456,13 +2467,25 @@ function drvJob(o, offer){
   } else if(o.status === "driver_ke_toko"){
     if(cod) h += '<div class="hint">COD: atur pembayaran barang '+rp(o.total)+' dengan toko (talangi dulu atau setor setelah diantar).</div>';
     h += '<div class="actions">'+chatBtn(o, "driver", "Chat toko & pembeli", "ghost")+'<button class="btn ghost sm" data-act="report" data-k="order" data-id="'+esc(o.id)+'">Lapor masalah</button></div>';
-    h += '<div class="actions"><button class="btn press grow" data-act="drv-pickup" data-id="'+esc(o.id)+'">'+I("package")+' Sudah ambil di toko</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
+    if(o.pickCode && !o.handedAt){
+      h += '<div class="pickcode"><small>Kode ambil pesanan</small><b>'+esc(o.pickCode.split("").join(" "))+'</b><span>Tunjukkan kode ini ke toko. Toko memasukkan kode untuk mencocokkan, lalu pesanan diserahkan kepadamu.</span></div>';
+      h += '<div class="actions"><button class="btn grow" disabled>'+I("clock")+' Menunggu toko cek kode</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
+    } else if(o.pickCode){
+      h += '<div class="pickok">'+I("checkc")+'<div><b>Kode cocok. Pesanan sudah kamu pegang</b><small>Pembeli sudah diberi tahu pesanan diambil dari toko.</small></div></div>';
+      h += '<div class="actions"><button class="btn press grow" data-act="drv-pickup" data-id="'+esc(o.id)+'">'+I("send")+' Antar pesanan</button></div>';
+    } else {
+      h += '<div class="actions"><button class="btn press grow" data-act="drv-pickup" data-id="'+esc(o.id)+'">'+I("package")+' Sudah ambil di toko</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
+    }
+  } else if(o.status === "diantar" && o.pickCode && !o.arrivedAt){
+    h += '<div class="actions">'+chatBtn(o, "driver", "Chat pembeli & toko", "ghost")+'</div>'+
+      '<div class="actions"><button class="btn press grow" data-act="drv-arrive" data-id="'+esc(o.id)+'">'+I("camera")+' Pesanan sudah sampai</button></div>'+
+      '<div class="hint">Sampai di alamat pembeli? Foto pesanan saat diserahkan sebagai bukti.</div>';
   } else if(o.status === "diantar"){
     const v = S.drv.draft[o.id] != null ? S.drv.draft[o.id] : (est == null ? "" : est);
     h += '<div class="negobox"><label class="f">Ongkir yang disepakati dengan pembeli</label><div class="rpin"><span>Rp</span><input class="in" inputmode="numeric" id="ongkir-'+esc(o.id)+'" data-ongkir="'+esc(o.id)+'" value="'+esc(v)+'"></div>'+
       '<div class="hint">'+(est==null?'Tarif '+ONGKIR_LBL+' dari toko ke pembeli.':'Patokan '+ONGKIR_LBL+' = '+rp(est)+(estNote?' ('+esc(estNote)+')':'')+'.')+' Boleh nego langsung dengan pembeli.'+(cod?' Tagih tunai: <b>'+rp(o.total)+'</b> + ongkir.':' Barang sudah dibayar ke toko, tagih ongkir saja.')+'</div></div>'+
       '<div class="actions">'+chatBtn(o, "driver", "Chat pembeli & toko", "ghost")+'</div>'+
-      '<div class="actions"><button class="btn press grow" data-act="drv-done" data-id="'+esc(o.id)+'">'+I("checkc")+' Pesanan sudah sampai</button></div>';
+      '<div class="actions"><button class="btn press grow" data-act="drv-done" data-id="'+esc(o.id)+'">'+I("checkc")+(o.arrivedAt ? ' Selesaikan pesanan' : ' Pesanan sudah sampai')+'</button></div>';
   } else if(o.status === "selesai"){
     h += '<div class="small" style="margin-top:6px">Ongkir diterima: <b>'+rp(o.ongkirFinal || 0)+'</b> · '+fmtDate(o.doneAt || o.updatedAt)+'</div>';
   }
@@ -2547,9 +2570,12 @@ document.addEventListener("click", async e => {
     return;
   }
   const rj = (S.drv.offers || []).concat(S.drv.mine || []).find(o => o.id === id); const ride = isRide(rj);
-  if(a === "drv-accept"){ el.disabled = true; await drvDo(() => DRV.act(id, "accept"), ride ? "Order Jago diambil! Segera jemput penumpang." : "Pesanan diambil! Segera menuju toko."); return; }
+  if(a === "drv-accept"){ el.disabled = true; await drvDo(() => DRV.act(id, "accept", ride ? null : {flow:"2"}), ride ? "Order Jago diambil! Segera jemput penumpang." : "Pesanan diambil! Segera menuju toko."); return; }
   if(a === "drv-decline"){ await drvDo(() => DRV.act(id, "decline")); return; }
+  if(a === "drv-arrive"){
+    proofConfirm("Pesanan sudah sampai di alamat pembeli? Foto pesanan saat diserahkan.", "Ya, sudah sampai", ph => drvDo(() => DRV.act(id, "arrive", {photo:ph}), "Pembeli sudah diberi tahu pesanan sampai."), true); return; }
   if(a === "drv-pickup"){
+    if(!ride && rj && rj.pickCode){ confirmModal("Mulai antar pesanan ke pembeli? Pembeli akan diberi tahu paket dalam perjalanan.", "Ya, antar sekarang", () => drvDo(() => DRV.act(id, "pickup"), "Selamat mengantar!")); return; }
     if(!ride && SB){ proofConfirm("Pesanan sudah diambil dari toko dan siap diantar?", "Ya, antar sekarang", ph => drvDo(() => DRV.act(id, "pickup", ph ? {photo:ph} : null), "Selamat mengantar!")); return; }
     confirmModal(ride ? "Penumpang sudah naik dan siap berangkat?" : "Pesanan sudah diambil dari toko dan siap diantar?", ride ? "Ya, berangkat" : "Ya, antar sekarang", () => drvDo(() => DRV.act(id, "pickup"), ride ? "Selamat jalan, hati-hati di jalan!" : "Selamat mengantar!")); return; }
   if(a === "drv-release"){ confirmModal(ride ? "Batal mengambil order Jago ini? Order akan ditawarkan ke driver lain." : "Batal mengambil pesanan ini? Pesanan akan ditawarkan ke driver lain.", "Batal ambil", () => drvDo(() => DRV.act(id, "release"), "Pesanan dilepas")); return; }
@@ -2558,7 +2584,19 @@ document.addEventListener("click", async e => {
     const v = parseInt(String(inp ? inp.value : "").replace(/\D/g, ""), 10);
     if(!isFinite(v) || v < 0) return toast(ride ? "Isi tarif yang disepakati." : "Isi ongkir yang disepakati.");
     if(ride){ confirmModal("Sudah sampai tujuan dengan tarif " + rp(v) + "? Komisi 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Perjalanan selesai. Tarif " + rp(v) + " tercatat.")); return; }
+    if(rj && rj.arrivedAt){ confirmModal("Selesaikan pesanan dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat.")); return; }
     (SB ? proofConfirm : (t, l, f) => confirmModal(t, l, () => f("")))("Pesanan sudah diterima pembeli dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", ph => drvDo(() => DRV.act(id, "done", ph ? {ongkir:v, photo:ph} : {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat."));
+    return;
+  }
+  if(a === "pick-verify"){
+    const inp = document.getElementById("pcode-" + id); const c = String(inp ? inp.value : "").replace(/\D/g, "");
+    if(c.length !== 4) return toast("Masukkan 4 angka kode dari driver.");
+    el.disabled = true;
+    try{
+      const r = await sbStore.rpc("jt_pick_verify", {p_id:id, p_code:c});
+      if(r && r.ok){ toast("Kode cocok ✓ Serahkan pesanan ke driver."); const o2 = S.orders.find(x => x.id === id); if(o2) o2.handedAt = Date.now(); render(); }
+      else { el.disabled = false; if(inp){ inp.value = ""; inp.focus(); } toast("Kode tidak cocok. Sisa " + ((r && r.left) || 0) + " kali percobaan."); }
+    }catch(err){ el.disabled = false; toast(String(err.message || err).replace(/^.*?:\s*/, "")); }
     return;
   }
   if(a === "self-deliver"){
@@ -4287,7 +4325,7 @@ function pushCard(role, text){
   if(!PUSH_OK || pushOn(role)) return "";
   return '<div class="pushcard">'+E("bell")+'<div class="grow"><b>Aktifkan notifikasi</b><small>'+esc(text)+'</small></div><button class="btn sm press" data-act="push-on" data-v="'+role+'">Aktifkan</button></div>';
 }
-const NOTIFY_RPC = {jt_order_create:"order", jt_order_update:"order", jt_driver_act:"auto", jt_ride_create:"ride", jt_ride_act:"ride", jt_owner_order_set:null};
+const NOTIFY_RPC = {jt_order_create:"order", jt_order_update:"order", jt_driver_act:"auto", jt_ride_create:"ride", jt_ride_act:"ride", jt_owner_order_set:null, jt_pick_verify:"order"};
 function notifyPush(kind, id){
   if(!SB || !id) return;
   try{

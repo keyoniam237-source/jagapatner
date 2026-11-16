@@ -1681,3 +1681,15 @@ html.navopen,html.navopen body{overflow:hidden}
 .whynot .btn{margin-top:8px}
 .searchbox .nearok{display:flex;align-items:center;gap:4px;color:#0a7a3f;font-weight:600;margin-top:4px}
 .searchbox .nearok svg{width:14px;height:14px}
+
+/* kode ambil pesanan */
+.pickcode{margin:10px 0 4px;padding:14px;border-radius:16px;background:linear-gradient(135deg,#1f4fd8,#2f6bff);color:#fff;text-align:center}
+.pickcode small{display:block;opacity:.85;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.pickcode b{display:block;font-size:40px;letter-spacing:.12em;font-variant-numeric:tabular-nums;margin:4px 0}
+.pickcode span{display:block;font-size:12.5px;opacity:.9;line-height:1.4}
+.pickok{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:12px 14px;border-radius:16px;background:#e9f9ef;border:1px solid #b8ebc9;color:#0a6a37}
+.pickok>svg{flex:none;width:22px;height:22px;margin-top:1px}
+.pickok b{display:block;font-size:14px}.pickok small{display:block;font-size:12.5px}
+.codein{margin-top:10px;padding:12px;border-radius:14px;background:#f3f6ff;border:1px dashed #9db6ff}
+.codein-row{display:flex;gap:8px}
+.codein-row .in{flex:1;font-size:22px;letter-spacing:.3em;text-align:center;font-variant-numeric:tabular-nums}
