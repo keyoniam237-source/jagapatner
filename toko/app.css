@@ -1616,3 +1616,15 @@ html.navopen,html.navopen body{overflow:hidden}
 .oseg button{border:0;background:none;border-radius:9px;padding:6px 10px;font-weight:700;font-size:12.5px;color:#5b6478;cursor:pointer}
 .oseg button.on{background:#fff;color:#1f4fd1;box-shadow:0 3px 10px -6px rgba(31,79,209,.5)}
 .ofeedc:not(.all) .ofeed>*:nth-child(n+6){display:none}
+
+/* foto & titik lokasi di chat */
+.cform .cbtn{width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:12px;background:#eef3ff;color:#1f4fd1;font-size:19px;cursor:pointer;border:0}
+.cform .cbtn[disabled]{opacity:.5}
+.cm .bub.hasph{padding:4px;overflow:hidden}
+.cm .bub .cph{display:block;width:min(240px,62vw);max-height:300px;object-fit:cover;border-radius:12px;cursor:zoom-in}
+.cm .bub .cmap{display:inline-block;margin-top:4px;font-weight:800;text-decoration:underline}
+.chint{font-size:12px;color:#5b6478;padding:8px 14px calc(8px + env(safe-area-inset-bottom));background:#f6f8fc;display:flex;gap:6px;align-items:center}
+.phview{position:fixed;inset:0;z-index:3000;background:rgba(5,10,25,.92);display:grid;place-items:center;padding:16px}
+.phview img{max-width:100%;max-height:100%;border-radius:12px}
+.phview button{position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:20px}
+.cm.me .bub .cmap{color:#fff}

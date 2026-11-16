@@ -3086,6 +3086,11 @@ const CHAT = {
     const id = Date.now();
     await store.set("chatmsgs/m" + id + Math.random().toString(36).slice(2,5), {orderId:oid, id, role, name, body:String(body).slice(0,500), at:id});
   },
+  async photo(oid, role, name, data){
+    if(SB) return sbStore.rpc("jt_chat_photo", {p_order:oid, p_role:role, p_name:name, p_photo:data, p_body:""});
+    const id = Date.now();
+    await store.set("chatmsgs/m" + id + Math.random().toString(36).slice(2,5), {orderId:oid, id, role, name, body:"📷 Foto lokasi", photo:data, at:id});
+  },
   async counts(){
     if(SB) return await sbStore.rpc("jt_chat_counts", {}) || {};
     const out = {};
@@ -3144,7 +3149,7 @@ function renderChatMsgs(){
   const near = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
   box.innerHTML = chatOpen.msgs.length ? chatOpen.msgs.map(m => {
     const mine = m.role === chatOpen.role;
-    return '<div class="cm '+(mine?"me":"them")+' r-'+esc(m.role)+'">'+(mine?'':'<small>'+esc(ROLE_L[m.role]||m.role)+(m.name?' · '+esc(m.name):'')+'</small>')+'<div class="bub">'+esc(m.body)+'</div><time>'+new Date(m.at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+'</time></div>';
+    return '<div class="cm '+(mine?"me":"them")+' r-'+esc(m.role)+'">'+(mine?'':'<small>'+esc(ROLE_L[m.role]||m.role)+(m.name?' · '+esc(m.name):'')+'</small>')+'<div class="bub'+(m.photo?' hasph':'')+'">'+(m.photo ? '<img class="cph" src="'+esc(m.photo)+'" alt="Foto lokasi" data-act="chat-photo-view" loading="lazy">' : '')+(m.photo && m.body === "📷 Foto lokasi" ? '' : chatLinkify(m.body))+'</div><time>'+new Date(m.at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+'</time></div>';
   }).join("") : '<div class="cempty">'+E("bell")+'<b>Belum ada pesan</b><small>'+(chatOrder(chatOpen.oid) && isRide(chatOrder(chatOpen.oid)) ? 'Chat ini antara penumpang dan driver.' : 'Chat ini terlihat oleh pembeli, toko, dan driver pesanan ini.')+'</small></div>';
   if(near || chatOpen.first){ box.scrollTop = box.scrollHeight; chatOpen.first = false; }
 }
@@ -3172,7 +3177,11 @@ function openChat(oid, role){
       '</div>'+
     '<div class="clist" id="chatList"><div class="empty">'+I("loader")+'</div></div>'+
     '<div class="cquick">'+chatQuick(o, role).map(q => '<button type="button" data-act="chat-quick" data-v="'+esc(q)+'">'+esc(q)+'</button>').join("")+'</div>'+
-    '<form class="cform" id="chatForm"><input class="in" name="body" maxlength="500" autocomplete="off" placeholder="Tulis pesan…"><button class="btn press" aria-label="Kirim">'+I("send")+'</button></form></div></div>';
+    '<form class="cform" id="chatForm"><label class="cbtn" aria-label="Kirim foto lokasi" title="Foto lokasi">'+I("camera")+'<input type="file" accept="image/*" capture="environment" id="chatPhoto" hidden></label>'+
+      (role !== "toko" ? '<button type="button" class="cbtn" data-act="chat-loc" aria-label="Kirim titik lokasi saya" title="Kirim titik lokasi">'+I("pin")+'</button>' : '')+
+      '<input class="in" name="body" maxlength="500" autocomplete="off" placeholder="Tulis pesan…"><button class="btn press" aria-label="Kirim">'+I("send")+'</button></form>'+
+    (o && isRide(o) && role === "pembeli" && o.status === "driver_jemput" ? '<div class="chint">'+I("camera")+' Kirim foto tempat Anda menunggu agar driver langsung menemukan Anda.</div>' : '')+
+    (o && role === "driver" && ["driver_jemput","diantar"].includes(o.status) ? '<div class="chint">'+I("camera")+' Bingung lokasinya? Minta '+(isRide(o) ? "penumpang" : "pembeli")+' mengirim foto lokasi.</div>' : '')+'</div></div>';
   chatLoad();
   clearInterval(chatOpen.timer); chatOpen.timer = setInterval(() => { if(!document.getElementById("chatList")){ clearInterval(chatOpen.timer); chatOpen.oid = null; return; } if(!document.hidden) chatLoad(); }, 3000);
 }
@@ -3189,7 +3198,29 @@ document.addEventListener("click", e => {
   if(a === "open-chat"){ e.stopPropagation(); openChat(el.dataset.id, el.dataset.role); return; }
   if(a === "close-chat"){ clearInterval(chatOpen.timer); chatOpen.oid = null; closeModal(); scheduleRender(); return; }
   if(a === "chat-quick"){ chatSend(el.dataset.v); return; }
+  if(a === "chat-photo-view"){ e.stopPropagation(); const v = document.createElement("div"); v.className = "phview"; v.innerHTML = '<img src="'+esc(el.getAttribute("src"))+'" alt="Foto lokasi"><button aria-label="Tutup">✕</button>'; v.onclick = () => v.remove(); document.body.appendChild(v); return; }
+  if(a === "chat-loc"){
+    e.stopPropagation();
+    if(!navigator.geolocation) return toast("HP ini tidak mendukung lokasi");
+    el.disabled = true;
+    navigator.geolocation.getCurrentPosition(p => { el.disabled = false; const la = p.coords.latitude.toFixed(6), ln = p.coords.longitude.toFixed(6); chatSend("📍 Lokasi saya sekarang (±" + Math.round(p.coords.accuracy) + " m): https://www.google.com/maps/search/?api=1&query=" + la + "," + ln); },
+      () => { el.disabled = false; toast("Lokasi belum didapat. Aktifkan GPS & izin lokasi."); }, {enableHighAccuracy:true, timeout:15000, maximumAge:10000});
+    return;
+  }
 }, true);
+document.addEventListener("change", async e => {
+  if(e.target.id !== "chatPhoto") return;
+  const f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f || !chatOpen.oid) return;
+  const o = chatOrder(chatOpen.oid);
+  try{
+    toast("Mengirim foto…");
+    let d = await compressImage(f, 1280); if(d.length > 440000) d = await compressImage(f, 900); if(d.length > 440000) d = await compressImage(f, 640);
+    await CHAT.photo(chatOpen.oid, chatOpen.role, chatName(o, chatOpen.role), d); await chatLoad(); chatPoll(); toast("Foto terkirim");
+  }catch(err){ toast(String((err && err.message) || "Foto gagal dikirim").replace(/^.*?:\s*/, "")); }
+});
+function chatLinkify(t){
+  return esc(t).replace(/https:\/\/www\.google\.com\/maps\/search\/\?api=1&amp;query=(-?[\d.]+),(-?[\d.]+)/g, (m, la, ln) => '<a class="cmap" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query='+la+','+ln+'">Buka di peta</a>');
+}
 document.addEventListener("submit", e => {
   if(e.target.id !== "chatForm") return;
   e.preventDefault();
