@@ -195,7 +195,7 @@ details summary{list-style:none}
 @media (max-width:760px){
   header.top{top:8px;padding:0 8px}
   .nav{display:none}
-  .bottomnav{display:flex;position:fixed;bottom:10px;left:10px;right:10px;background:rgba(10,22,51,.94);backdrop-filter:blur(14px);border-radius:22px;z-index:30;padding:7px;box-shadow:0 16px 40px -10px rgba(0,0,0,.45);margin-bottom:env(safe-area-inset-bottom)}
+  .bottomnav{display:flex;position:fixed;bottom:0;left:0;right:0;background:rgba(10,22,51,.97);backdrop-filter:blur(14px);border-radius:0;z-index:30;padding:7px 7px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -6px 22px -12px rgba(0,0,0,.5);margin:0}
   .bottomnav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:700;color:#8e9cbb;padding:7px 2px;cursor:pointer;position:relative;border-radius:15px}
   .bottomnav button .ic{font-size:21px;display:grid;place-items:center}
   .bottomnav button.on{color:#fff;background:linear-gradient(135deg,#3b74ff 0%,#4685ff 45%,#5a9dff 100%)}
@@ -748,7 +748,7 @@ input[type=file]{max-width:100%}
   input,select,textarea,.in{font-size:16px!important}
   .sellbtn .lbl{display:none}
   .sellbtn{padding:9px 11px}
-  body.is-seller header.top{top:calc(6px + env(safe-area-inset-top))}
+  body.is-seller header.top{top:0;padding:calc(env(safe-area-inset-top) + 6px) 8px 10px;background:linear-gradient(180deg,#f4f6fb 0%,#f4f6fb 78%,rgba(244,246,251,0) 100%)}
   body.is-seller .top .wrap{height:56px;padding:0 8px 0 12px}
   body.is-seller .logo .wm{font-size:15px;letter-spacing:.18em}
   body.is-seller .jmark{height:28px}
@@ -779,7 +779,7 @@ input[type=file]{max-width:100%}
   .modal{border-radius:24px 24px 0 0;max-height:92vh;padding:22px 18px calc(22px + env(safe-area-inset-bottom));animation:sheet .35s cubic-bezier(.2,.8,.2,1)}
   .imgpick{flex-wrap:wrap}
   table.t{font-size:13px}
-  .bottomnav{bottom:calc(10px + env(safe-area-inset-bottom))!important}
+  .bottomnav{bottom:0!important;left:0!important;right:0!important;margin:0!important;border-radius:0!important}
   body.app .bottomnav{bottom:0!important}
   .btn{min-height:44px}
   .btn.sm{min-height:38px}
