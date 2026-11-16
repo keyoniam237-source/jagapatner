@@ -4950,3 +4950,25 @@ function startListening(){
   render();
 })();
 render();
+
+
+/* ===== Ajakan pasang otomatis saat aplikasi dibuka ===== */
+function instSnoozed(){ try{ return Date.now() < (+localStorage.getItem("jt_inst_snooze") || 0); }catch(e){ return false; } }
+function closeInstSheet(){ const s = document.getElementById("instsheet"); if(!s) return; s.classList.add("out"); setTimeout(() => s.remove(), 260); }
+function showInstSheet(){
+  if(isStandalone() || instSnoozed() || document.getElementById("instsheet")) return;
+  if(/^#(mitra|driver)/.test(location.hash)) return;
+  const el = document.createElement("div"); el.id = "instsheet"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Pasang JAGA di HP");
+  el.innerHTML = '<div class="ish"><div class="isg"></div><div class="ist"><img src="icons/icon-192.png" alt=""><div><b>Pasang JAGA di HP Anda</b><small>Buka lebih cepat dari layar utama, seperti aplikasi biasa</small></div></div>' +
+    '<ul><li>Tanpa biaya admin</li><li>Pesan makanan & ojek dalam satu aplikasi</li><li>Ringan, tanpa download dari toko aplikasi</li></ul>' +
+    '<button class="btn block press" data-ia="go">Pasang sekarang</button><button class="isl" data-ia="later">Nanti saja</button></div>';
+  document.body.appendChild(el);
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-ia]"); if(!b) return;
+  if(b.dataset.ia === "go"){ closeInstSheet(); doInstall(""); }
+  else { try{ localStorage.setItem("jt_inst_snooze", String(Date.now() + 3*864e5)); }catch(_){} closeInstSheet(); }
+});
+window.addEventListener("appinstalled", closeInstSheet);
+window.addEventListener("beforeinstallprompt", () => { setTimeout(showInstSheet, 900); });
+setTimeout(showInstSheet, 2200);
