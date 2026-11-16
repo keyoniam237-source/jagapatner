@@ -169,6 +169,7 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 .scan-last{display:flex;justify-content:space-between;gap:10px;font-weight:600;min-height:22px}
 
 #print-area{display:none}
+.estruk{display:block;width:min(100%,320px);margin:0 auto;border-radius:10px;border:1px solid var(--line);box-shadow:var(--shadow);background:#fff}
 .login{position:fixed;inset:0;z-index:80;background:var(--bg);overflow:auto;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
 .login .logo{font-size:24px}
@@ -277,7 +278,7 @@ const blank=()=>({v:1,shop:{name:'',address:'',phone:'',footer:'Terima kasih, se
   products:[],sales:[],moves:[],expenses:[],modal:{},cart:[],seq:{day:'',n:0},demo:false});
 function normalize(d){const s=Object.assign(blank(),d);s.shop=Object.assign(blank().shop,d.shop||{});
   ['products','sales','moves','expenses','cart'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]});if(!s.modal||typeof s.modal!=='object')s.modal={};if(!s.seq||typeof s.seq!=='object')s.seq={day:'',n:0};
-  s.cart=s.cart.map(c=>Object.assign({key:c.pid||('m'+uid())},c));if(s.moves.length>3000)s.moves=s.moves.slice(-3000);return s}
+  s.cart=s.cart.map(c=>Object.assign({key:c.pid||('m'+uid())},c));if(s.moves.length>3000)s.moves=s.moves.slice(-3000);s.sales.forEach(x=>{if(x.printed===undefined)x.printed=x.ts});return s}
 function seed(){
   const s=blank(); s.demo=true; s.shop.name='Warung Contoh'; s.shop.address='Jl. Mawar No. 12, Ujungbatu';
   const P=[['8990000000011','Indomie Goreng 85 g','Makanan',2900,3500,40,10,'pcs'],['8990000000028','Beras 1 kg','Sembako',13500,15000,25,5,'kg'],
@@ -300,7 +301,7 @@ function seed(){
       const subtotal=items.reduce((a,x)=>a+x.qty*x.price,0); const m=methods[Math.floor(rnd()*methods.length)];
       const cash=m==='tunai'?Math.ceil(subtotal/5000)*5000:0;
       s.sales.push({id:uid()+k,no:'',ts:t,items,subtotal,disc:0,total:subtotal,method:m,cash,change:m==='tunai'?cash-subtotal:0,
-        cust:m==='kasbon'?['Bu Sari','Pak Dedi','Bu Rina'][k%3]:'',lunas:null,void:null,demo:true});
+        cust:m==='kasbon'?['Bu Sari','Pak Dedi','Bu Rina'][k%3]:'',lunas:null,void:null,printed:t,demo:true});
     }
   }
   s.sales.sort((a,b)=>a.ts-b.ts);
@@ -339,7 +340,7 @@ function render(){
   const low=S.products.filter(p=>p.stock<=p.min).length;
   $('#tabs').innerHTML=TABS.map(t=>'<button data-act="go" data-to="'+t[0]+'"'+(t[0]===view?' aria-current="page"':'')+'>'+ico(t[0])+t[1]+(t[0]==='barang'&&low?'<i class="badge num" title="'+low+' barang menipis atau habis">'+low+'</i>':'')+'</button>').join('');
   $('#shop-name').textContent=(SESS==='demo'?'DEMO · ':'')+(S.shop.name||'Nama warung belum diisi');
-  $('#printer-chip').className='chip'+(PR.ch?' on':''); $('#printer-label').textContent=PR.ch?(PR.name||'Printer siap'):'Tanpa printer';
+  $('#printer-chip').className='chip'+(PR.ch?' on':''); const pq=pending().length;$('#printer-label').textContent=(PR.ch?(PR.name||'Printer siap'):'Tanpa printer')+(pq?' · '+pq+' antre':'');
   ({kasir:vKasir,barang:vBarang,riwayat:vRiwayat,laporan:vLaporan,pengaturan:vAtur})[view]();
 }
 
@@ -442,14 +443,14 @@ function commitSale(){
   if(!items.length) return;
   const subtotal=items.reduce((a,i)=>a+i.qty*i.price,0), disc=Math.min(PAY.disc,subtotal), total=subtotal-disc;
   const sale={id:uid(),no:nextNo(ts),ts,items,subtotal,disc,total,method:PAY.method,cash:PAY.method==='tunai'?PAY.cash:0,
-    change:PAY.method==='tunai'?PAY.cash-total:0,cust:PAY.method==='kasbon'?PAY.cust.trim():'',lunas:null,void:null};
+    change:PAY.method==='tunai'?PAY.cash-total:0,cust:PAY.method==='kasbon'?PAY.cust.trim():'',lunas:null,void:null,printed:null};
   const hit=[];
   items.forEach(i=>{const p=i.pid&&prod(i.pid);if(!p)return;const was=p.stock;p.stock-=i.qty;S.moves.push({ts,pid:p.id,qty:-i.qty,type:'jual',ref:sale.no});if(was>p.min&&p.stock<=p.min)hit.push(p.name)});
   if(S.moves.length>3000)S.moves=S.moves.slice(-3000);
   S.sales.push(sale); S.cart=[]; PAY=null; save(); q='';
   render(); openReceipt(sale.id,true);
   if(hit.length) toast('Stok menipis: '+hit.slice(0,2).join(', ')+(hit.length>2?' dan '+(hit.length-2)+' lainnya':'')+'.');
-  if(S.shop.autoPrint&&PR.ch) printBt(sale).catch(()=>toast('Cetak otomatis gagal. Coba tombol Cetak struk.'));
+  if(S.shop.autoPrint&&PR.ch) printBt(sale).then(()=>markPrinted(sale)).catch(()=>toast('Cetak otomatis gagal. Coba tombol Cetak struk.'));
 }
 
 /* ============ STRUK ============ */
@@ -486,14 +487,46 @@ function escpos(s){
   return new Uint8Array(b);
 }
 let curSale=null;
+const pending=()=>S?S.sales.filter(s=>s.printed===null&&!s.void).sort((a,b)=>a.ts-b.ts):[];
+const printStatus=s=>s.void?'Transaksi dibatalkan':s.printed?'Sudah dicetak '+fmtTime(s.printed):PR.ch?'Belum dicetak':'Struk elektronik tersimpan. Bisa dicetak kapan saja setelah printer tersambung.';
+function markPrinted(s){s.printed=Date.now();save();const e=$('#estruk-st');if(e&&curSale===s)e.textContent=printStatus(s);render()}
+function eReceipt(s){
+  const k=2,W=32,mono='13px ui-monospace,"Courier New",monospace',L=receiptLines(s,W),i0=Math.max(0,L.findIndex(l=>/^-+$/.test(l.t))),body=L.slice(i0+1);
+  const c=document.createElement('canvas'),x=c.getContext('2d');x.font=mono;
+  const pad=18,w=Math.ceil(x.measureText('0').width*W+pad*2),nm=wrap(S.shop.name||'Warung',18);
+  const sub=[S.shop.address,S.shop.phone?'Telp/WA '+S.shop.phone:''].filter(Boolean).flatMap(t=>wrap(t,36));
+  const bandH=22+nm.length*26+sub.length*16+12,h=bandH+14+body.length*19+34;
+  c.width=w*k;c.height=h*k;x.scale(k,k);x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);x.fillStyle='#E3182D';x.fillRect(0,0,w,bandH);
+  x.textAlign='center';x.textBaseline='top';x.fillStyle='#FFFFFF';let y=18;
+  x.font='800 22px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';nm.forEach(t=>{x.fillText(t,w/2,y);y+=26});
+  x.font='500 12px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';sub.forEach(t=>{x.fillText(t,w/2,y+2);y+=16});
+  y=bandH+14;
+  body.forEach(l=>{x.font=(l.b?'700 ':'400 ')+mono;x.fillStyle=/DIBATALKAN/.test(l.t)?'#C0352B':'#111111';x.textAlign=l.a==='c'?'center':'left';x.fillText(l.t,l.a==='c'?w/2:pad,y);y+=19});
+  x.textAlign='center';x.fillStyle='#8A7275';x.font='500 11px system-ui,sans-serif';x.fillText('Struk elektronik',w/2,y+8);
+  return c.toDataURL('image/png');
+}
+const dataBlob=u=>{const i=u.indexOf(','),bin=atob(u.slice(i+1)),a=new Uint8Array(bin.length);for(let j=0;j<bin.length;j++)a[j]=bin.charCodeAt(j);return new Blob([a],{type:u.slice(5,u.indexOf(';'))})};
+const canShareFiles=()=>{try{return !FRAMED&&!!navigator.canShare&&navigator.canShare({files:[new File([''],'a.png',{type:'image/png'})]})}catch(e){return false}};
+async function printQueue(){
+  const l=pending(); if(!l.length) return toast('Semua struk sudah dicetak.');
+  if(!PR.ch&&PR.dev){try{await btAttach(PR.dev)}catch(e){}}
+  if(!PR.ch) return toast('Sambungkan printer dulu di menu Atur.');
+  let n=0; for(const s of l){try{await printBt(s);s.printed=Date.now();n++;save();await sleep(700)}catch(e){PR.ch=null;break}}
+  render(); toast(n===l.length?n+' struk tercetak.':n+' dari '+l.length+' struk tercetak. Sambungkan ulang printer lalu coba lagi.');
+}
+function offerQueue(){const n=pending().length;if(!n||!PR.ch)return;
+  confirmSheet('Cetak struk yang tertunda?',n+' struk dibuat saat printer belum tersambung. Cetak semuanya sekarang?','Cetak '+n+' struk',()=>printQueue())}
 function openReceipt(id,fresh){
   const s=S.sales.find(x=>x.id===id); if(!s) return; curSale=s;
   const txt=receiptText(s,width());
   sheet('<div class="hd"><h2>'+(fresh?'Transaksi tersimpan':'Struk '+esc(s.no))+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
     (fresh&&s.method==='tunai'?'<div class="change"><span>Kembalian</span><b class="num">'+rp(s.change)+'</b></div>':'')+
-    '<pre class="struk">'+esc(txt)+'</pre>'+
+    (!S.shop.name?'<p class="note" style="margin:0">Isi nama warung di menu Atur supaya tampil di kepala struk.</p>':'')+
+    '<img class="estruk" src="'+eReceipt(s)+'" alt="Struk elektronik '+esc(s.no)+'">'+
+    '<p class="muted small" id="estruk-st" style="margin:0;text-align:center">'+printStatus(s)+'</p>'+
     '<button class="btn primary block" data-act="print">'+ico('print')+'Cetak struk</button>'+
-    '<div class="two"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent('```'+txt+'```')+'">Kirim WhatsApp</a><button class="btn" data-act="copy-struk">Salin struk</button></div>'+
+    (canShareFiles()?'<button class="btn block" data-act="share-struk">Bagikan struk ke pembeli</button>':'')+
+    '<div class="two"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent('```'+txt+'```')+'">Kirim teks WhatsApp</a><button class="btn" data-act="save-struk">Simpan gambar</button></div>'+
     (!fresh&&s.method==='kasbon'&&!s.lunas&&!s.void?'<button class="btn block" data-act="lunas">Tandai kasbon lunas</button>':'')+
     (!fresh&&!s.void?'<button class="btn danger block" data-act="void">Batalkan transaksi ini</button>':'')+
     (fresh?'<button class="btn block" data-act="close">Transaksi baru</button>':''));
@@ -523,7 +556,7 @@ async function doPrint(s){
   try{
     if(!PR.ch&&PR.dev){try{await btAttach(PR.dev);render()}catch(e){}}
     if(!PR.ch&&btSupported()){toast('Pilih printer struk Anda…');await btConnect();render()}
-    if(PR.ch){await printBt(s);toast('Struk dikirim ke '+PR.name+'.')} else printSystem(s);
+    if(PR.ch){await printBt(s);markPrinted(s);toast('Struk dikirim ke '+PR.name+'.')} else {printSystem(s);markPrinted(s)}
   }catch(e){if(e&&e.name==='NotFoundError')return;PR.ch=null;render();toast('Gagal mencetak: '+(e&&e.message||'printer tidak merespons')+'. Coba lagi.')}
 }
 async function copyText(t,ok){try{await navigator.clipboard.writeText(t);toast(ok)}catch(e){toast('Tidak bisa menyalin di perangkat ini.')}}
@@ -676,17 +709,17 @@ const mLabel=s=>s.method==='tunai'?'Tunai':s.method==='qris'?'QRIS':s.method==='
 const openDebt=()=>S.sales.filter(s=>s.method==='kasbon'&&!s.lunas&&!s.void);
 function vRiwayat(){
   const debt=openDebt(), dsum=debt.reduce((a,s)=>a+s.total,0);
-  const all=(rf==='kasbon'?debt:S.sales).slice().sort((a,b)=>b.ts-a.ts), l=all.slice(0,rlimit);
+  const all=(rf==='kasbon'?debt:rf==='cetak'?pending():S.sales).slice().sort((a,b)=>b.ts-a.ts), l=all.slice(0,rlimit);
   let h='',cur='';
   l.forEach(s=>{const k=dayKey(s.ts);if(k!==cur){cur=k;const d=new Date(s.ts);h+='<div class="day">'+(k===dayKey(Date.now())?'Hari ini':HARI[d.getDay()]+', '+fmtDate(s.ts))+'</div>'}
     h+='<button class="item" data-act="struk" data-id="'+s.id+'"><div class="grow"><b class="num"'+(s.void?' style="text-decoration:line-through"':'')+'>'+fmtTime(s.ts)+' · No '+esc(s.no)+'</b><span class="muted small">'+s.items.reduce((a,i)=>a+i.qty,0)+' barang · '+esc(mLabel(s))+'</span></div>'+
-    '<div class="r"><div class="num" style="font-weight:700">'+rp(s.total)+'</div>'+(s.void?'<span class="pill bad">Batal</span>':s.method==='kasbon'?(s.lunas?'<span class="pill ok">Lunas</span>':'<span class="pill warn">Belum lunas</span>'):'')+'</div></button>'});
+    '<div class="r"><div class="num" style="font-weight:700">'+rp(s.total)+'</div>'+(s.void?'<span class="pill bad">Batal</span>':s.method==='kasbon'?(s.lunas?'<span class="pill ok">Lunas</span>':'<span class="pill warn">Belum lunas</span>'):'')+(!s.void&&s.printed===null?' <span class="pill info">Belum dicetak</span>':'')+'</div></button>'});
   let top='';
   if(rf==='kasbon'&&debt.length){const g={};debt.forEach(s=>{const k=s.cust||'Tanpa nama';g[k]=g[k]||{n:0,t:0};g[k].n++;g[k].t+=s.total});
     top='<div class="card"><h3 style="margin-bottom:4px">Utang per pelanggan</h3><div class="list">'+Object.keys(g).sort((a,b)=>g[b].t-g[a].t).map(k=>'<div class="item"><div class="grow"><b>'+esc(k)+'</b><span class="muted small">'+g[k].n+' struk belum lunas</span></div><div class="r num" style="font-weight:700">'+rp(g[k].t)+'</div><button class="btn" data-act="lunas-all" data-cust="'+esc(k)+'">Lunas</button></div>').join('')+'</div></div>'}
   $('#view').innerHTML='<div class="wrap stack"><h2>Struk &amp; kasbon</h2>'+
-    '<div class="seg"><button data-act="rf" data-f="semua" aria-pressed="'+(rf==='semua')+'">Semua struk</button><button data-act="rf" data-f="kasbon" aria-pressed="'+(rf==='kasbon')+'">Kasbon belum lunas'+(debt.length?' · '+rp(dsum):'')+'</button></div>'+top+
-    '<div class="card"><div class="list">'+(h||'<div class="empty">'+(rf==='kasbon'?'Tidak ada kasbon yang belum lunas.':'Belum ada transaksi.')+'</div>')+'</div></div>'+
+    '<div class="seg"><button data-act="rf" data-f="semua" aria-pressed="'+(rf==='semua')+'">Semua struk</button><button data-act="rf" data-f="kasbon" aria-pressed="'+(rf==='kasbon')+'">Kasbon belum lunas'+(debt.length?' · '+rp(dsum):'')+'</button><button data-act="rf" data-f="cetak" aria-pressed="'+(rf==='cetak')+'">Belum dicetak'+(pending().length?' · '+pending().length:'')+'</button></div>'+top+
+    '<div class="card"><div class="list">'+(h||'<div class="empty">'+(rf==='kasbon'?'Tidak ada kasbon yang belum lunas.':rf==='cetak'?'Semua struk sudah dicetak.':'Belum ada transaksi.')+'</div>')+'</div></div>'+
     (all.length>l.length?'<button class="btn block" data-act="more">Tampilkan struk lebih lama</button>':'')+'</div>';
 }
 
@@ -741,8 +774,8 @@ function salesCsv(){
   return rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
 }
 function download(name,text,type){
-  if(FRAMED) return copyText(text,'Isi berkas disalin. Unduhan berkas aktif setelah aplikasi dipasang di situs.');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  if(FRAMED) return text instanceof Blob?toast('Simpan gambar aktif setelah aplikasi dipasang di situs.'):copyText(text,'Isi berkas disalin. Unduhan berkas aktif setelah aplikasi dipasang di situs.');
+  const a=document.createElement('a');a.href=URL.createObjectURL(text instanceof Blob?text:new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
 }
 
 /* ============ PENGATURAN ============ */
@@ -758,6 +791,7 @@ function vAtur(){
     '<div class="card stack"><h3>QRIS warung</h3><p class="muted" style="margin:0">Gambar QRIS ini tampil di layar pembayaran saat pembeli memilih QRIS.</p>'+(sh.qris?'<img class="qris" src="'+esc(sh.qris)+'" alt="Kode QRIS warung">':'')+
       '<div class="row"><label class="btn" for="st-qris-file">'+(sh.qris?'Ganti gambar QRIS':'Unggah gambar QRIS')+'</label>'+(sh.qris?'<button class="btn danger" data-act="qris-del">Hapus</button>':'')+'<input type="file" id="st-qris-file" accept="image/*" hidden></div></div>'+
     '<div class="card stack"><h3>Printer struk</h3>'+
+      (!FRAMED&&pending().length?'<div class="note"><div class="grow"><b>'+pending().length+' struk belum dicetak.</b> Dibuat saat printer belum tersambung.</div><button class="btn" data-act="print-queue">Cetak semua</button></div>':'')+
       (FRAMED?'<p class="muted" style="margin:0">Sambungan printer aktif setelah aplikasi dipasang di situs.</p>':
        btSupported()?'<p class="muted" style="margin:0">'+(PR.ch?'Tersambung ke <b>'+esc(PR.name)+'</b>.':'Nyalakan printer Bluetooth, lalu sambungkan dari sini.')+'</p><div class="row"><button class="btn primary" data-act="bt-connect">'+(PR.ch?'Ganti printer':'Sambungkan printer Bluetooth')+'</button>'+(PR.ch?'<button class="btn" data-act="bt-test">Cetak tes</button>':'')+'</div>'+
         '<label class="row" style="flex-wrap:nowrap"><input type="checkbox" id="st-auto" '+(sh.autoPrint?'checked':'')+' style="width:20px;height:20px"><span>Cetak struk otomatis setelah pembayaran</span></label>':
@@ -811,6 +845,9 @@ const A={
   cash:e=>{PAY.cash=num(e.dataset.v);$('#pay-cash').value=fmt(PAY.cash);payRefresh()},
   'pay-save':()=>commitSale(),
   print:()=>doPrint(curSale),
+  'print-queue':()=>printQueue(),
+  'share-struk':async()=>{const s=curSale;try{const f=new File([dataBlob(eReceipt(s))],'struk-'+s.no+'.png',{type:'image/png'});await navigator.share({files:[f],title:'Struk '+(S.shop.name||'')+' '+s.no})}catch(e){if(!e||e.name!=='AbortError')toast('Tidak bisa membagikan dari perangkat ini. Pakai Kirim teks WhatsApp.')}},
+  'save-struk':()=>download('struk-'+curSale.no+'.png',dataBlob(eReceipt(curSale)),'image/png'),
   'copy-struk':()=>copyText(receiptText(curSale,width()),'Struk disalin.'),
   struk:e=>openReceipt(e.dataset.id),
   lunas:()=>{curSale.lunas=Date.now();save();closeSheet();render();toast('Kasbon '+(curSale.cust||'')+' ditandai lunas dan masuk kas hari ini.')},
@@ -828,7 +865,7 @@ const A={
   bf:e=>{bf=e.dataset.f;vBarang()}, rf:e=>{rf=e.dataset.f;vRiwayat()}, lp:e=>{lp=+e.dataset.p;vLaporan()},
   csv:()=>download('penjualan-jaga-kasir-'+dayKey(Date.now())+'.csv',salesCsv(),'text/csv'),
   'st-save':()=>{Object.assign(S.shop,{name:$('#st-name').value.trim(),address:$('#st-address').value.trim(),phone:$('#st-phone').value.trim(),footer:$('#st-footer').value.trim(),paper:+$('#st-paper').value});save();render();toast('Profil warung tersimpan.')},
-  'bt-connect':async()=>{try{await btConnect();render();toast('Printer '+PR.name+' tersambung.')}catch(e){if(e&&e.name!=='NotFoundError')toast('Gagal menyambung: '+(e.message||'coba lagi')+'.')}},
+  'bt-connect':async()=>{try{await btConnect();render();toast('Printer '+PR.name+' tersambung.');offerQueue()}catch(e){if(e&&e.name!=='NotFoundError')toast('Gagal menyambung: '+(e.message||'coba lagi')+'.')}},
   'bt-test':async()=>{try{await btWrite(new Uint8Array([0x1B,0x40,0x1B,0x61,1,...[...ascii('Jaga Kasir - tes cetak berhasil')].map(c=>c.charCodeAt(0)),0x0A,0x0A,0x0A,0x0A]));toast('Tes cetak dikirim.')}catch(e){toast('Tes cetak gagal. Sambungkan ulang printer.')}},
   backup:()=>download('cadangan-jaga-kasir-'+dayKey(Date.now())+'.json',JSON.stringify(S),'application/json'),
   reset:()=>confirmSheet('Hapus semua data?','Semua barang, struk, dan pengaturan di perangkat ini dihapus dan tidak bisa dikembalikan. Unduh cadangan dulu jika masih perlu.','Hapus semua',()=>{S=blank();save();go('kasir');toast('Semua data dihapus.')},true),
