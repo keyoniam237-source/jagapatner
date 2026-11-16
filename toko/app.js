@@ -4952,23 +4952,48 @@ function startListening(){
 render();
 
 
-/* ===== Ajakan pasang otomatis saat aplikasi dibuka ===== */
-function instSnoozed(){ try{ return Date.now() < (+localStorage.getItem("jt_inst_snooze") || 0); }catch(e){ return false; } }
-function closeInstSheet(){ const s = document.getElementById("instsheet"); if(!s) return; s.classList.add("out"); setTimeout(() => s.remove(), 260); }
-function showInstSheet(){
-  if(isStandalone() || instSnoozed() || document.getElementById("instsheet")) return;
-  if(/^#(mitra|driver)/.test(location.hash)) return;
-  const el = document.createElement("div"); el.id = "instsheet"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Pasang JAGA di HP");
-  el.innerHTML = '<div class="ish"><div class="isg"></div><div class="ist"><img src="icons/icon-192.png" alt=""><div><b>Pasang JAGA di HP Anda</b><small>Buka lebih cepat dari layar utama, seperti aplikasi biasa</small></div></div>' +
-    '<ul><li>Tanpa biaya admin</li><li>Pesan makanan & ojek dalam satu aplikasi</li><li>Ringan, tanpa download dari toko aplikasi</li></ul>' +
-    '<button class="btn block press" data-ia="go">Pasang sekarang</button><button class="isl" data-ia="later">Nanti saja</button></div>';
-  document.body.appendChild(el);
+/* ===== Wajib pasang: layar penuh sampai aplikasi terpasang (HP saja) ===== */
+const UA = navigator.userAgent || "";
+const isMobileDev = () => /android|iphone|ipad|ipod/i.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1);
+const isAndroid = () => /android/i.test(UA);
+const isInApp = () => /FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|TikTok|Twitter|Snapchat|GSA\/|\bwv\b|; wv\)|WhatsApp|Telegram/i.test(UA);
+const gateRole = () => /^#mitra/.test(location.hash) ? "seller" : /^#driver/.test(location.hash) ? "driver" : "";
+let GATE_SKIP = false; try{ GATE_SKIP = sessionStorage.getItem("jt_gate_skip") === "1"; }catch(_){}
+function gateMode(){
+  if(isInApp()) return "inapp";
+  if(isIOS()) return /CriOS|FxiOS|EdgiOS|OPiOS/.test(UA) ? "ioschrome" : "ios";
+  if(INSTALL_EVT) return "native";
+  return "manual";
 }
-document.addEventListener("click", e => {
-  const b = e.target.closest("[data-ia]"); if(!b) return;
-  if(b.dataset.ia === "go"){ closeInstSheet(); doInstall(""); }
-  else { try{ localStorage.setItem("jt_inst_snooze", String(Date.now() + 3*864e5)); }catch(_){} closeInstSheet(); }
+function gateBody(m){
+  const nm = ({seller:"JAGA Mitra", driver:"JAGA Driver"})[gateRole()] || "JAGA";
+  const url = location.href.split("#")[0] + location.hash;
+  const intent = "intent://" + location.host + location.pathname + location.search + location.hash + "#Intent;scheme=https;package=com.android.chrome;end";
+  if(m === "native") return '<button class="btn block press" data-ia="go">Pasang '+nm+' sekarang</button><p class="igh">Ketuk tombol, lalu pilih <b>Instal</b> pada kotak izin yang muncul.</p>';
+  if(m === "inapp") return '<p class="igh" style="margin-top:0">Browser ini (aplikasi Google, WhatsApp, Instagram, dll.) tidak bisa memasang aplikasi. Buka dulu di browser utama.</p>' +
+    (isAndroid() ? '<a class="btn block press" href="'+intent+'">Buka di Chrome</a>' : '<ol class="igs"><li>Ketuk menu <b>⋯</b> atau ikon <b>Bagikan</b></li><li>Pilih <b>Buka di Safari</b></li></ol>') +
+    '<button class="isl" data-ia="copy" data-u="'+url+'">Salin link</button>';
+  if(m === "ios" || m === "ioschrome") return '<ol class="igs"><li>Ketuk tombol <b>Bagikan</b> <span class="ish2">⬆︎</span> '+(m==="ios"?'di bawah layar Safari':'di bilah alamat')+'</li><li>Gulir lalu pilih <b>Tambah ke Layar Utama</b></li><li>Ketuk <b>Tambah</b>, lalu buka '+nm+' dari layar utama</li></ol>' + (m==="ios" ? '<div class="iarr">⬇︎</div>' : '');
+  return '<button class="btn block press" data-ia="go">Pasang '+nm+' sekarang</button><ol class="igs"><li>Buka menu <b>⋮</b> di pojok kanan atas browser</li><li>Pilih <b>Instal aplikasi</b> / <b>Tambahkan ke layar utama</b></li></ol>';
+}
+function renderGate(){
+  if(!isMobileDev() || isStandalone() || GATE_SKIP) return;
+  let g = document.getElementById("instgate");
+  if(!g){ g = document.createElement("div"); g.id = "instgate"; g.setAttribute("role","dialog"); g.setAttribute("aria-modal","true"); document.body.appendChild(g); document.documentElement.classList.add("gated"); setTimeout(() => { const s = document.getElementById("igskip"); if(s) s.hidden = false; }, 12000); }
+  const m = gateMode(); if(g.dataset.m === m && g.dataset.d === "1") return; g.dataset.m = m; g.dataset.d = "1";
+  const nm = ({seller:"JAGA Mitra", driver:"JAGA Driver"})[gateRole()] || "JAGA";
+  g.innerHTML = '<div class="igc"><img class="igi" src="icons/icon-192.png" alt=""><h1>Pasang '+nm+' di HP Anda</h1><p class="igsub">Wajib dipasang dulu agar pesanan, notifikasi, dan ojek berjalan lancar. Gratis, tanpa toko aplikasi.</p>'+gateBody(m)+
+    '<button class="igskip" id="igskip" data-ia="skip" hidden>Tidak bisa memasang? Lanjut di browser</button></div>';
+}
+function closeGate(){ const g = document.getElementById("instgate"); if(g) g.remove(); document.documentElement.classList.remove("gated"); }
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-ia]");
+  if(!b){ if(e.target.closest("#instgate") && INSTALL_EVT){ doInstall(gateRole()); } return; }
+  const a = b.dataset.ia;
+  if(a === "go"){ doInstall(gateRole()); }
+  else if(a === "skip"){ GATE_SKIP = true; try{ sessionStorage.setItem("jt_gate_skip","1"); }catch(_){} closeGate(); }
+  else if(a === "copy"){ try{ await navigator.clipboard.writeText(b.dataset.u); toast("Link disalin. Tempel di Chrome/Safari"); }catch(_){ toast("Salin link dari bilah alamat"); } }
 });
-window.addEventListener("appinstalled", closeInstSheet);
-window.addEventListener("beforeinstallprompt", () => { setTimeout(showInstSheet, 900); });
-setTimeout(showInstSheet, 2200);
+window.addEventListener("appinstalled", () => { const g = document.getElementById("instgate"); if(g){ g.dataset.d = "0"; g.innerHTML = '<div class="igc"><img class="igi" src="icons/icon-192.png" alt=""><h1>Berhasil terpasang</h1><p class="igsub">Tutup halaman ini, lalu buka <b>JAGA</b> dari layar utama HP Anda.</p></div>'; } });
+window.addEventListener("beforeinstallprompt", () => setTimeout(renderGate, 50));
+renderGate(); setTimeout(renderGate, 1500);

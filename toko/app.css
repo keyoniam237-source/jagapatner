@@ -1503,18 +1503,20 @@ body.is-driver .pinst{margin:0 16px 12px!important}
 .kpop button:hover{background:#f2f5fb}
 .kpop button.dangerc{color:#dc2626}
 
-/* ajakan pasang otomatis */
-#instsheet{position:fixed;inset:0;z-index:45;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,22,51,.38);backdrop-filter:blur(3px);animation:fade .25s}
-#instsheet.out{opacity:0;transition:opacity .25s}
-#instsheet .ish{width:100%;max-width:540px;background:#fff;border-radius:28px 28px 0 0;padding:10px 22px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -20px 50px -20px rgba(10,22,51,.5);animation:isup .38s cubic-bezier(.2,.8,.2,1)}
-#instsheet .isg{width:42px;height:5px;border-radius:5px;background:#d5dbe8;margin:0 auto 16px}
-#instsheet .ist{display:flex;gap:14px;align-items:center;margin-bottom:12px}
-#instsheet .ist img{width:62px;height:62px;border-radius:17px;box-shadow:0 10px 22px -10px rgba(31,79,209,.7)}
-#instsheet .ist b{display:block;font-size:18px;color:#0b1a3d}
-#instsheet .ist small{display:block;margin-top:2px;font-size:13px;color:#5b6478;line-height:1.35}
-#instsheet ul{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:7px}
-#instsheet li{font-size:13.5px;color:#26304a;padding-left:26px;position:relative}
-#instsheet li::before{content:"✓";position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;background:#d9b264;color:#0b1a3d;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
-#instsheet .isl{display:block;width:100%;margin-top:6px;padding:12px;border:0;background:none;color:#5b6478;font-size:14px;cursor:pointer}
-@keyframes isup{from{transform:translateY(100%)}to{transform:none}}
-@media (display-mode: standalone){ #instsheet{display:none!important} }
+/* wajib pasang */
+html.gated,html.gated body{overflow:hidden}
+#instgate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(120% 90% at 85% 0%,#2f64e0 0%,#14378c 45%,#081c56 100%);color:#fff;overflow:auto;animation:fade .25s}
+#instgate .igc{width:100%;max-width:420px;text-align:center}
+#instgate .igi{width:96px;height:96px;border-radius:26px;box-shadow:0 18px 40px -14px rgba(0,0,0,.55);margin-bottom:18px}
+#instgate h1{font-size:25px;line-height:1.2;margin:0 0 10px}
+#instgate .igsub{font-size:14.5px;line-height:1.5;opacity:.85;margin:0 0 24px}
+#instgate .igh{font-size:13px;opacity:.8;margin:14px 0 0;line-height:1.5}
+#instgate .btn{background:#fff;color:#1f4fd1;font-weight:700;box-shadow:0 14px 30px -14px rgba(0,0,0,.5);text-decoration:none;display:block}
+#instgate .igs{text-align:left;background:rgba(255,255,255,.1);border-radius:18px;padding:16px 16px 16px 36px;margin:14px 0 0;line-height:1.7;font-size:14px}
+#instgate .ish2{display:inline-block;padding:0 6px;border-radius:6px;background:rgba(255,255,255,.2)}
+#instgate .isl{background:none;border:0;color:#fff;opacity:.85;margin-top:14px;font-size:14px;text-decoration:underline;cursor:pointer}
+#instgate .iarr{font-size:34px;margin-top:10px;animation:bob 1.2s ease-in-out infinite}
+#instgate .igskip{margin-top:26px;background:none;border:0;color:#fff;opacity:.55;font-size:12.5px;text-decoration:underline;cursor:pointer}
+@keyframes bob{50%{transform:translateY(8px)}}
+@media (display-mode: standalone){ #instgate{display:none!important} }
+#instgate .igh+.btn{margin-top:18px}
