@@ -1657,3 +1657,18 @@ html.navopen,html.navopen body{overflow:hidden}
 .dach-rev div{margin-top:8px}
 .dach-rev p{margin:3px 0 0;font-size:13.5px;color:#26304a;font-style:italic}
 .dach-rev time{font-size:11px;color:#8a96ad}
+
+/* lembar penilaian otomatis */
+.ratesheet .rsh-top{display:flex;align-items:center;gap:12px;background:#f1fbf5;border-radius:16px;padding:10px 12px}
+.ratesheet .rsh-top .e3d{width:40px;height:40px;font-size:34px}
+.ratesheet .rsh-top b{display:block;font-size:16px;color:#14532d}
+.ratesheet .rsh-top small{color:#4b6b57}
+.rsh-stars{display:flex;justify-content:center;gap:6px;margin:16px 0 4px}
+.rsh-stars button{border:0;background:none;font-size:42px;line-height:1;color:#d5dbe8;cursor:pointer;transition:transform .15s,color .15s}
+.rsh-stars button.on{color:#f5a623}
+.rsh-stars button:active{transform:scale(1.2)}
+.rsh-lbl{text-align:center;font-weight:800;color:#8a5300;min-height:20px;margin-bottom:10px}
+.rsh-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:10px}
+.rsh-tags button{border:1px solid #d9e1f0;background:#fff;border-radius:99px;padding:7px 12px;font-weight:700;font-size:13px;color:#26304a;cursor:pointer}
+.rsh-tags button.on{background:#1f4fd1;border-color:#1f4fd1;color:#fff}
+.ratesheet .btn[disabled]{opacity:.45;pointer-events:none}

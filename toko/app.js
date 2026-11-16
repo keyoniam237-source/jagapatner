@@ -5507,3 +5507,54 @@ function drvAchieve(){
   if((st.reviews || []).length) h += '<div class="dach-rev"><small>Kata tamu</small>'+st.reviews.slice(0, 3).map(r => '<div>'+starBar(r.s)+'<p>“'+esc(r.c)+'”</p><time>'+ago(r.at)+'</time></div>').join("")+'</div>';
   return h + '</div>';
 }
+
+/* ============ Ajak tamu memberi bintang otomatis setelah pesanan / perjalanan selesai ============ */
+let RATE_ASKED = {}; try{ RATE_ASKED = JSON.parse(localStorage.getItem("jt_rate_asked") || "{}") || {}; }catch(_){}
+const RATE_TAGS = {good:["Ramah","Cepat sampai","Tepat waktu","Hati-hati di jalan","Barang aman","Motor bersih"], bad:["Terlambat","Kurang ramah","Sulit dihubungi","Ngebut","Barang rusak","Salah alamat"]};
+const RATE_TAGS_STORE = {good:["Barang sesuai","Cepat disiapkan","Kemasan rapi","Harga pas"], bad:["Barang kurang","Lama disiapkan","Kemasan rusak","Tidak sesuai"]};
+let RATE_Q = null;
+function rateCandidates(){
+  if(S.role === "driver" || S.role === "seller" || S.role === "owner" || S.view === "login" || S.view === "masuk") return [];
+  const now = Date.now(), out = [];
+  (S.orders || []).forEach(o => { if(o.buyerId === ME && o.status === "selesai" && o.driverId && now - (o.doneAt || o.updatedAt || 0) < 48 * 3600e3) out.push(["order", o]); });
+  (S.rides || []).forEach(o => { if(o.riderId === ME && o.status === "selesai" && o.driverId && now - (o.doneAt || o.updatedAt || 0) < 48 * 3600e3) out.push(["ride", o]); });
+  return out.filter(([k, o]) => !RATE_ASKED[o.id] && !(S.myRatings || {})[o.id + ":driver"]);
+}
+function rateAskCheck(){
+  if(RATE_Q || document.hidden || NAVX.open) return;
+  const M = document.getElementById("modal"); if(M && M.innerHTML.trim()) return;
+  const c = rateCandidates()[0]; if(!c) return;
+  const [kind, o] = c; RATE_ASKED[o.id] = Date.now(); try{ localStorage.setItem("jt_rate_asked", JSON.stringify(RATE_ASKED)); }catch(_){}
+  const targets = [["driver", o.driver && o.driver.name ? o.driver.name : "Driver", "driver"]];
+  if(kind === "order") targets.push(["store", o.storeName || "Toko", "toko"]);
+  RATE_Q = {kind, id:o.id, code:o.code, targets, i:0, stars:0, tags:[]};
+  rateSheet();
+}
+function rateSheet(){
+  const q = RATE_Q; if(!q) return; const t = q.targets[q.i];
+  const tg = t[0] === "store" ? RATE_TAGS_STORE : RATE_TAGS, list = q.stars ? (q.stars >= 4 ? tg.good : tg.bad) : [];
+  const lbl = ["", "Sangat kurang", "Kurang", "Cukup", "Bagus", "Luar biasa!"][q.stars] || "Ketuk bintang";
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="rate-later"><div class="modal ratesheet" onclick="event.stopPropagation()">'+
+    (q.i === 0 ? '<div class="rsh-top">'+E("party")+'<div><b>'+(q.kind === "ride" ? "Perjalanan selesai!" : "Pesanan selesai!")+'</b><small>'+esc(q.code || "")+'</small></div></div>' : '')+
+    '<h2 class="sec" style="margin:10px 0 2px">Bagaimana '+(t[0] === "store" ? "toko " : "driver ")+esc(t[1])+'?</h2><p class="muted small" style="margin:0">Bintangmu menyemangati '+t[2]+' dan membantu tamu lain memilih.</p>'+
+    '<div class="rsh-stars">'+[1,2,3,4,5].map(n => '<button class="'+(n <= q.stars ? "on" : "")+'" data-act="rsh-star" data-v="'+n+'" aria-label="'+n+' bintang">★</button>').join("")+'</div><div class="rsh-lbl">'+lbl+'</div>'+
+    (list.length ? '<div class="rsh-tags">'+list.map(x => '<button class="'+(q.tags.includes(x) ? "on" : "")+'" data-act="rsh-tag" data-v="'+esc(x)+'">'+esc(x)+'</button>').join("")+'</div>'+
+      '<textarea class="in" id="rshNote" rows="2" maxlength="200" placeholder="Tulis pesan untuk '+t[2]+' (opsional)">'+esc(q.note || "")+'</textarea>' : '')+
+    '<div class="actions" style="margin-top:14px"><button class="btn grow" data-act="rsh-send"'+(q.stars ? '' : ' disabled')+'>'+(q.i < q.targets.length - 1 ? "Kirim & lanjut" : "Kirim penilaian")+'</button><button class="btn ghost" data-act="rate-later">Nanti saja</button></div></div></div>';
+}
+document.addEventListener("click", async e => {
+  const el = e.target.closest("[data-act]"); if(!el || !RATE_Q) return; const a = el.dataset.act, q = RATE_Q;
+  const keepNote = () => { const n = document.getElementById("rshNote"); if(n) q.note = n.value; };
+  if(a === "rsh-star"){ keepNote(); const prevGood = q.stars >= 4; q.stars = +el.dataset.v; if((q.stars >= 4) !== prevGood) q.tags = []; rateSheet(); }
+  else if(a === "rsh-tag"){ keepNote(); const v = el.dataset.v; q.tags = q.tags.includes(v) ? q.tags.filter(x => x !== v) : q.tags.concat(v); rateSheet(); }
+  else if(a === "rate-later"){ if(e.target.closest(".ratesheet") && el.classList.contains("modal-bg")) return; RATE_Q = null; closeModal(); }
+  else if(a === "rsh-send"){
+    keepNote(); const t = q.targets[q.i], comment = [q.tags.join(", "), (q.note || "").trim()].filter(Boolean).join(". ").slice(0, 300);
+    el.disabled = true;
+    try{ await RATE.rate(q.kind, q.id, t[0], q.stars, comment); S.myRatings[q.id + ":" + t[0]] = q.stars; }
+    catch(err){ toast(String((err && err.message) || "Gagal menyimpan").replace(/^.*?:\s*/, "")); el.disabled = false; return; }
+    if(q.i < q.targets.length - 1){ q.i++; q.stars = 0; q.tags = []; q.note = ""; rateSheet(); }
+    else { RATE_Q = null; closeModal(); toast("Terima kasih! Penilaianmu sudah terkirim ⭐"); loadRatings(); scheduleRender(); }
+  }
+}, true);
+setInterval(rateAskCheck, 3000);
