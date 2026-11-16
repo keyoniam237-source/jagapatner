@@ -2227,12 +2227,12 @@ async function drvRefresh(){
     const offers = r.offers || [];
     const fresh = offers.filter(o => !S.drv.seen.has(o.id));
     offers.forEach(o => S.drv.seen.add(o.id));
-    S.drv.me = r.me || null; S.drv.offers = offers; S.drv.mine = r.mine || []; S.drv.wallet = r.wallet || null; S.drv.loaded = true; S.drv.err = "";
+    S.drv.me = r.me || null; S.drv.offers = offers; S.drv.mine = r.mine || []; S.drv.wallet = r.wallet || null; S.drv.blocked = r.blocked || []; S.drv.locFresh = r.locFresh !== false; S.drv.loaded = true; S.drv.err = "";
     if(fresh.length && S.drv.me && S.drv.me.online) notify(fresh.length > 1 ? fresh.length + " order baru!" : (isRide(fresh[0]) ? "Order Jago baru!" : "Order antar baru!"), fresh.map(o => isRide(o) ? "Jago · " + shortAddr(o.pickup && o.pickup.address) : (o.storeName || "Toko") + (o.dist != null ? " · " + fmtDist(o.dist) : "")).join(" | ").slice(0, 120) + " — ambil sekarang", {kind:"order", tag:"drv-offer", act:() => window.scrollTo({top:0, behavior:"smooth"})});
     if(S.drv.me && S.drv.me.online) startGeo();
   }catch(e){ S.drv.loaded = true; S.drv.err = (e && e.message) || "Gagal memuat"; }
   drvBusy = false;
-  const sig = JSON.stringify([S.drv.me, S.drv.offers.map(o => o.id + o.dist), S.drv.mine.map(o => o.id + o.status + (o.ongkirFinal || o.fareFinal || "")), S.drv.err, S.drv.wallet]);
+  const sig = JSON.stringify([S.drv.me, S.drv.offers.map(o => o.id + o.dist), S.drv.mine.map(o => o.id + o.status + (o.ongkirFinal || o.fareFinal || "")), S.drv.err, S.drv.wallet, (S.drv.blocked || []).map(b => b.id + b.why), S.drv.locFresh]);
   if(S.role === "driver" && sig !== S.drv.sig && !typing()){ S.drv.sig = sig; scheduleRender(); }
 }
 function startDriver(){
@@ -2352,12 +2352,47 @@ function getPos(){
 }
 
 /* ---------- tampilan bersama (pembeli & toko) ---------- */
+/* kenapa order tidak muncul untuk driver ini */
+function drvBlockedNote(){
+  const bl = S.drv.blocked || [];
+  let h = "";
+  if(S.drv.locFresh === false && !S.drv.loc) h += '<div class="whynot">'+I("pin")+'<div><b>Lokasimu belum terkirim</b><small>Order toko hanya ditawarkan ke driver yang lokasinya aktif dalam 5 km. Izinkan akses lokasi di browser lalu biarkan halaman ini terbuka.</small></div></div>';
+  bl.slice(0, 3).forEach(b => {
+    const low = /saldo/i.test(b.why);
+    h += '<div class="whynot'+(low ? ' low' : '')+'">'+(low ? E("money") : I("megaphone"))+'<div><b>'+(low ? 'Ada order, tapi saldomu kurang' : 'Ada order yang tidak bisa kamu ambil')+'</b>'+
+      '<small>'+esc((b.code ? b.code + ' · ' : '') + b.storeName)+' — '+esc(low ? 'Saldomu di bawah minimum ' + rp((S.drv.wallet || {}).minBalance || 0) + '. Isi saldo agar order bisa kamu ambil.' : b.why + '. Pesanan ini ditawarkan ke driver lain.')+'</small>'+
+      (low ? '<button class="btn sm" data-act="drv-wallet">Isi saldo</button>' : '')+'</div></div>';
+  });
+  return h;
+}
+/* jumlah driver yang bisa menerima di sekitar toko (diperbarui tiap 15 detik) */
+const NEAR = {};
+function nearInfo(o){
+  if(!o || !o.id) return null;
+  const c = NEAR[o.id];
+  if(SB && (!c || (!c.busy && Date.now() - c.at > 15000))){
+    NEAR[o.id] = Object.assign({}, c || {at:0}, {busy:true});
+    sbStore.rpc("jt_search_near", {p_order:o.id}).then(r => { NEAR[o.id] = Object.assign({}, r || {}, {at:Date.now(), ok:!!r}); render(); })
+      .catch(() => { NEAR[o.id] = {at:Date.now()}; });
+  }
+  return c && c.ok ? c : null;
+}
+function nearLine(o, compact){
+  const n = nearInfo(o); if(!n) return "";
+  if(n.near > 0) return '<small class="nearok">'+I("checkc")+' '+n.near+' driver online siap menerima di sekitar toko</small>';
+  const why = [];
+  if(n.lowbal > 0) why.push(n.lowbal+' driver di dekat toko saldonya kurang');
+  if(n.noloc > 0) why.push(n.noloc+' driver online belum mengaktifkan lokasi');
+  return '<small class="warnline">Belum ada driver online dalam 5 km dari toko'+(compact && why.length ? ' ('+esc(why.join(', '))+')' : '')+'. '+
+    (isRide(o) ? 'Coba lagi sebentar.' : compact ? 'Anda bisa menunggu atau tekan “Antar sendiri”.' : 'Toko bisa mengantar sendiri bila driver belum ada.')+'</small>';
+}
 function searchBox(o, text, compact){
   const el = searchElapsed(o), r = radiusM(el);
   const long = el >= 210;
   return '<div class="searchbox'+(compact?' compact':'')+'"><div class="radar"><span></span><span></span>'+E("scooter")+'</div><div><b>'+esc(text)+'</b>'+
     '<small>'+(hasLoc(o.storeLoc || o.pickup) ? 'Radius pencarian '+fmtDist(r)+(r < 5000 ? ' · otomatis melebar sampai 5 km' : '') : 'Ditawarkan ke semua driver yang sedang online')+'</small>'+
-    (long ? '<small class="warnline">Belum ada driver yang mengambil. '+(isRide(o) ? 'Ketuk “Cari ulang” atau coba lagi sebentar.' : compact ? 'Anda bisa cari ulang atau antar sendiri.' : 'Toko akan mencari ulang atau mengantar sendiri.')+'</small>' : '')+'</div></div>';
+    (nearLine(o, compact) || '')+
+    (long && !(nearInfo(o) && nearInfo(o).near === 0) ? '<small class="warnline">Belum ada driver yang mengambil. '+(isRide(o) ? 'Ketuk “Cari ulang” atau coba lagi sebentar.' : compact ? 'Anda bisa cari ulang atau antar sendiri.' : 'Toko akan mencari ulang atau mengantar sendiri.')+'</small>' : '')+'</div></div>';
 }
 function driverBox(o, text, compact){
   const d = o.driver || {};
@@ -2471,6 +2506,7 @@ function appDriver(){
   } else if(me.online){
     const offers = S.drv.offers || [];
     h += '<h2 class="dsec">Order masuk'+(offers.length?' <span class="cnt">'+offers.length+'</span>':'')+'</h2>';
+    h += drvBlockedNote();
     h += offers.length ? offers.map(o => drvJob(o, true)).join("")
       : '<div class="dwait">'+COURIER_SVG+'<b>Menunggu order…</b><small>Order dari toko & penumpang Jago terdekat akan muncul di sini otomatis. Biarkan halaman ini terbuka.</small></div>';
   } else {

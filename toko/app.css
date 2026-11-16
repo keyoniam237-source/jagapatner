@@ -1672,3 +1672,12 @@ html.navopen,html.navopen body{overflow:hidden}
 .rsh-tags button{border:1px solid #d9e1f0;background:#fff;border-radius:99px;padding:7px 12px;font-weight:700;font-size:13px;color:#26304a;cursor:pointer}
 .rsh-tags button.on{background:#1f4fd1;border-color:#1f4fd1;color:#fff}
 .ratesheet .btn[disabled]{opacity:.45;pointer-events:none}
+
+/* alasan order tidak tampil */
+.whynot{display:flex;gap:10px;align-items:flex-start;margin:0 16px 10px;padding:12px 14px;background:#fff7e6;border:1px solid #ffd99a;border-radius:16px;color:#7a4f00}
+.whynot>svg,.whynot>.e3d{flex:none;width:26px;height:26px}
+.whynot b{display:block;font-size:14px;color:#5c3b00}
+.whynot small{display:block;font-size:12.5px;line-height:1.4;margin-top:2px}
+.whynot .btn{margin-top:8px}
+.searchbox .nearok{display:flex;align-items:center;gap:4px;color:#0a7a3f;font-weight:600;margin-top:4px}
+.searchbox .nearok svg{width:14px;height:14px}
