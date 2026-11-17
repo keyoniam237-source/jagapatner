@@ -2234,9 +2234,11 @@ async function drvRefresh(){
   try{
     const r = await DRV.jobs() || {};
     const offers = r.offers || [];
-    const fresh = offers.filter(o => !S.drv.seen.has(o.id));
+    const fresh = offers.filter(o => !S.drv.seen.has(o.id) && o.dist == null);
     offers.forEach(o => S.drv.seen.add(o.id));
-    (r.mine || []).forEach(o => { if(isRide(o) && o.autoAssigned && o.status === "driver_jemput" && !_drvAssigned.has(o.id)){ _drvAssigned.add(o.id); if(S.drv.loaded) notify("Order Jago untukmu!", "Kamu driver terdekat (" + fmtDist(o.assignDist) + "). Jemput penumpang di " + shortAddr(o.pickup && o.pickup.address) + " sekarang.", {kind:"order", tag:"drv-assign", act:() => window.scrollTo({top:0, behavior:"smooth"})}); } });
+    (r.mine || []).forEach(o => { const ride = isRide(o); if(o.autoAssigned && o.status === (ride ? "driver_jemput" : "driver_ke_toko") && !o.handedAt && !_drvAssigned.has(o.id)){ _drvAssigned.add(o.id); if(!S.drv.loaded) return;
+      notifyPush(ride ? "ride" : "order", o.id);
+      notify(ride ? "Order Jago untukmu!" : "Pesanan antar untukmu!", "Kamu driver terdekat (" + fmtDist(o.assignDist) + "). " + (ride ? "Jemput penumpang di " + shortAddr(o.pickup && o.pickup.address) : "Ambil pesanan di " + (o.storeName || "toko")) + " sekarang.", {kind:"order", tag:"drv-assign", act:() => window.scrollTo({top:0, behavior:"smooth"})}); } });
     (r.mine || []).forEach(o => { if(o.handedAt && o.status === "driver_ke_toko" && !_drvHanded.has(o.id)){ _drvHanded.add(o.id); if(S.drv.loaded) notify("Kode cocok ✓", (o.storeName || "Toko") + " sudah menyerahkan pesanan " + (o.code || "") + ". Tekan “Antar pesanan”.", {kind:"order"}); } });
     S.drv.me = r.me || null; S.drv.offers = offers; S.drv.mine = r.mine || []; S.drv.wallet = r.wallet || null; S.drv.blocked = r.blocked || []; S.drv.locFresh = r.locFresh !== false; S.drv.loaded = true; S.drv.err = "";
     if(fresh.length && S.drv.me && S.drv.me.online) notify(fresh.length > 1 ? fresh.length + " order baru!" : (isRide(fresh[0]) ? "Order Jago baru!" : "Order antar baru!"), fresh.map(o => isRide(o) ? "Jago · " + shortAddr(o.pickup && o.pickup.address) : (o.storeName || "Toko") + (o.dist != null ? " · " + fmtDist(o.dist) : "")).join(" | ").slice(0, 120) + " — ambil sekarang", {kind:"order", tag:"drv-offer", act:() => window.scrollTo({top:0, behavior:"smooth"})});
@@ -2337,7 +2339,7 @@ let _bOrdSeen = null;
 const B_ST_MSG = {menunggu_konfirmasi:"Pembayaran diterima, menunggu konfirmasi toko", diproses:"Pesanan dikonfirmasi & sedang disiapkan toko", mencari_driver:"Toko sedang mencari driver", driver_ke_toko:"Driver menuju toko mengambil pesananmu", "driver_ke_toko+a":"Pesanan sudah diambil driver di toko", diantar:"Pesanan sedang diantar ke alamatmu", "diantar+a":"Paket dalam perjalanan ke alamatmu", "diantar+a+s":"Pesanan sudah sampai. Lihat foto bukti di detail pesanan", "diantar+s":"Pesanan sudah sampai", selesai:"Pesanan selesai. Terima kasih!", dibatalkan:"Pesanan dibatalkan"};
 function buyerOrderNotify(){
   if(S.role === "seller" || S.role === "driver" || S.role === "owner") return;
-  const mine = S.orders.filter(o => o.buyerId === ME || (SB && !o.buyerId && o.buyer));
+  const mine = S.orders.filter(o => SB ? o.isMine === true : o.buyerId === ME);
   const key = o => o.status + (o.handedAt ? "+a" : "") + (o.arrivedAt ? "+s" : "");
   const cur = {}; mine.forEach(o => cur[o.id] = key(o));
   if(_bOrdSeen === null){ _bOrdSeen = cur; return; }
@@ -2403,7 +2405,7 @@ function searchBox(o, text, compact){
   const el = searchElapsed(o), r = radiusM(el);
   const long = el >= 210;
   return '<div class="searchbox'+(compact?' compact':'')+'"><div class="radar"><span></span><span></span>'+E("scooter")+'</div><div><b>'+esc(text)+'</b>'+
-    '<small>'+(isRide(o) ? (hasLoc(o.pickup) ? 'Dari titik jemput Anda · driver terdekat (sampai 5 km) langsung ditugaskan otomatis' : 'Ditawarkan ke semua driver yang sedang online') : hasLoc(o.storeLoc || o.pickup) ? 'Radius pencarian '+fmtDist(r)+(r < 5000 ? ' · otomatis melebar sampai 5 km' : '') : 'Ditawarkan ke semua driver yang sedang online')+'</small>'+
+    '<small>'+(isRide(o) ? (hasLoc(o.pickup) ? 'Dari titik jemput Anda · driver terdekat (sampai 5 km) langsung ditugaskan otomatis' : 'Ditawarkan ke semua driver yang sedang online') : hasLoc(o.storeLoc) ? 'Dari lokasi toko · driver terdekat (sampai 5 km) langsung ditugaskan otomatis' : 'Ditawarkan ke semua driver yang sedang online')+'</small>'+
     (nearLine(o, compact) || '')+
     (long && !(nearInfo(o) && nearInfo(o).near === 0) ? '<small class="warnline">Belum ada driver yang mengambil. '+(isRide(o) ? 'Ketuk “Cari ulang” atau coba lagi sebentar.' : compact ? 'Anda bisa cari ulang atau antar sendiri.' : 'Toko akan mencari ulang atau mengantar sendiri.')+'</small>' : '')+'</div></div>';
 }
@@ -2453,6 +2455,7 @@ function drvJob(o, offer){
     h += '<div class="dj-head">'+E("bell")+'<b>Order baru</b>'+(o.dist!=null?'<span class="dist">'+fmtDist(o.dist)+' ke toko</span>':'')+'</div>';
   } else {
     h += '<div class="dj-head">'+statusTag(o.status)+'<span class="small muted">'+esc(o.code)+'</span></div>';
+    if(o.autoAssigned && o.status === "driver_ke_toko" && !o.handedAt) h += '<div class="small" style="margin:6px 0;color:#2f6bff;font-weight:700">'+I("checkc")+' Ditugaskan otomatis — kamu driver terdekat'+(o.assignDist != null ? ' ('+fmtDist(o.assignDist)+' dari toko)' : '')+'. Tidak bisa? Tekan “Batal ambil”, pesanan langsung pindah ke driver terdekat berikutnya.</div>';
   }
   h += '<div class="dj-route">'+
     '<div class="pt a"><i></i><div><small>Ambil di toko</small><b>'+esc(o.storeName)+'</b><span>'+esc(o.storeAddress || "")+'</span>'+
@@ -2580,7 +2583,7 @@ document.addEventListener("click", async e => {
     if(!ride && rj && rj.pickCode){ confirmModal("Mulai antar pesanan ke pembeli? Pembeli akan diberi tahu paket dalam perjalanan.", "Ya, antar sekarang", () => drvDo(() => DRV.act(id, "pickup"), "Selamat mengantar!")); return; }
     if(!ride && SB){ proofConfirm("Pesanan sudah diambil dari toko dan siap diantar?", "Ya, antar sekarang", ph => drvDo(() => DRV.act(id, "pickup", ph ? {photo:ph} : null), "Selamat mengantar!")); return; }
     confirmModal(ride ? "Penumpang sudah naik dan siap berangkat?" : "Pesanan sudah diambil dari toko dan siap diantar?", ride ? "Ya, berangkat" : "Ya, antar sekarang", () => drvDo(() => DRV.act(id, "pickup"), ride ? "Selamat jalan, hati-hati di jalan!" : "Selamat mengantar!")); return; }
-  if(a === "drv-release"){ confirmModal(ride ? "Batal mengambil order Jago ini? Order langsung dipindah ke driver terdekat berikutnya." : "Batal mengambil pesanan ini? Pesanan akan ditawarkan ke driver lain.", "Batal ambil", () => drvDo(() => DRV.act(id, "release"), "Pesanan dilepas")); return; }
+  if(a === "drv-release"){ confirmModal(ride ? "Batal mengambil order Jago ini? Order langsung dipindah ke driver terdekat berikutnya." : "Batal mengambil pesanan ini? Pesanan langsung dipindah ke driver terdekat berikutnya.", "Batal ambil", () => drvDo(() => DRV.act(id, "release"), "Pesanan dilepas")); return; }
   if(a === "drv-done"){
     const inp = document.getElementById("ongkir-" + id);
     const v = parseInt(String(inp ? inp.value : "").replace(/\D/g, ""), 10);
