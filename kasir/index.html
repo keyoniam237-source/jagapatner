@@ -136,7 +136,7 @@ label.f input,label.f select{color:var(--ink);font-weight:500;font-size:15px}
 .bar i{display:block;height:100%;background:var(--brand)}
 
 /* sheet */
-.veil{position:fixed;inset:0;background:rgba(42,17,20,.5);display:flex;align-items:flex-end;justify-content:center;z-index:30}
+.veil{position:fixed;inset:0;background:rgba(42,17,20,.5);display:flex;align-items:flex-end;justify-content:center;z-index:90}
 .sheet{background:var(--surface);width:100%;max-width:520px;max-height:92%;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
 .sheet .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .total-big{font-family:var(--display);font-size:34px;font-weight:800;line-height:1.1}
@@ -144,10 +144,10 @@ label.f input,label.f select{color:var(--ink);font-weight:500;font-size:15px}
 .change.short{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
 .change b{font-size:20px}
 pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin:0 auto;overflow-x:auto;width:fit-content;max-width:100%}
-#toast{pointer-events:none;position:fixed;left:50%;top:62px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:12px;font-weight:600;font-size:13.5px;z-index:60;max-width:calc(100% - 32px);text-align:center;box-shadow:var(--shadow)}
+#toast{pointer-events:none;position:fixed;left:50%;top:62px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:12px;font-weight:600;font-size:13.5px;z-index:99;max-width:calc(100% - 32px);text-align:center;box-shadow:var(--shadow)}
 
 /* scanner */
-.scan{position:fixed;inset:0;z-index:40;background:#05080F;color:#FFFFFF;display:flex;flex-direction:column}
+.scan{position:fixed;inset:0;z-index:92;background:#05080F;color:#FFFFFF;display:flex;flex-direction:column}
 .scan-top{display:flex;align-items:center;gap:8px;padding:10px 12px}
 .scan-top b{flex:1;font-family:var(--display);font-size:17px}
 .scan .btn{background:rgba(255,255,255,.12);border-color:transparent;color:#FFFFFF}
@@ -185,6 +185,17 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 .login-card .note{align-items:center}
 .lg-err{color:var(--bad);font-weight:600;font-size:13px}
 .lg-err:empty{display:none}
+.lg-ok{color:var(--ok);font-weight:600;font-size:13.5px;background:color-mix(in srgb,var(--ok) 10%,transparent);border-radius:10px;padding:10px 12px}
+.lg-links{display:flex;flex-direction:column;gap:2px;align-items:center}
+.lg-links .btn{min-height:40px}
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync.ok i{background:var(--ok)}.sync.wait i{background:var(--warn)}.sync.err i{background:var(--bad)}
+.own{position:fixed;inset:0;z-index:85;background:var(--bg);overflow:auto;padding:0 0 30px}
+.own .top{position:sticky;top:0;z-index:2}
+.own-body{max-width:860px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.acc{display:flex;flex-direction:column;gap:8px}
+.acc .row b{font-size:15.5px}
 @media print{
   body>*:not(#print-area){display:none!important}
   #print-area{display:block}
@@ -283,8 +294,26 @@ const Store={
 };
 
 /* ============ data ============ */
-let S=null,SESS=null;
-const KEY=()=>SESS==='demo'?'jk_state_demo':'jk_state';
+let S=null,SESS=null,ACC=null;
+const SB={url:'https://flwajaadllviewenerya.supabase.co',key:'sb_publishable_1zd0fWLLIKEIABemgeyj6g_3rZssbCq'};
+const isAcc=()=>typeof SESS==='string'&&SESS.startsWith('acc:');
+const KEY=()=>SESS==='demo'?'jk_state_demo':isAcc()?'jk_state_'+SESS.replace(':','_'):'jk_state';
+const randKey=()=>{const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('')};
+async function rpc(fn,args,ms){
+  if(FRAMED) throw Object.assign(new Error('Akun online aktif setelah aplikasi dipasang di situs.'),{offline:true});
+  const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),ms||20000);
+  let r;
+  try{r=await fetch(SB.url+'/rest/v1/rpc/'+fn,{method:'POST',signal:ctl.signal,headers:{'apikey':SB.key,'Content-Type':'application/json'},body:JSON.stringify(args||{})})}
+  catch(e){throw Object.assign(new Error('Tidak ada sambungan internet. Coba lagi.'),{offline:true})}
+  finally{clearTimeout(t)}
+  let d=null;try{d=await r.json()}catch(e){}
+  if(!r.ok){const m=(d&&(d.message||d.hint))||'';
+    if(/SESI_HABIS/.test(m)) throw Object.assign(new Error('Sesi berakhir. Silakan masuk lagi.'),{expired:true});
+    if(/BUKAN_PEMILIK/.test(m)) throw Object.assign(new Error('Sesi pemilik berakhir. Silakan masuk lagi.'),{owner:true});
+    throw new Error(d&&d.hint||'Server sedang bermasalah. Coba lagi sebentar.')}
+  return d;
+}
+async function devKey(){let k=await Store.get('jk_devkey');if(!k||k.length<20){k=randKey();await Store.set('jk_devkey',k)}return k}
 const blank=()=>({v:1,shop:{name:'',address:'',phone:'',footer:'Terima kasih, selamat belanja kembali',paper:58,autoPrint:false},
   products:[],sales:[],moves:[],expenses:[],modal:{},cart:[],seq:{day:'',n:0},demo:false});
 function normalize(d){const s=Object.assign(blank(),d);s.shop=Object.assign(blank().shop,d.shop||{});
@@ -321,7 +350,7 @@ function seed(){
   s.modal[tk]=100000; s.expenses=[{id:'dx1',ts:Date.now()-3600e3,note:'Beli es batu',amount:15000,demo:true}];
   return s;
 }
-const save=()=>Store.set(KEY(),S);
+const save=()=>{const p=Store.set(KEY(),S);if(isAcc())Sync.touch();return p};
 const prod=id=>S.products.find(p=>p.id===id);
 const byCode=c=>S.products.find(p=>p.code&&p.code===String(c).trim());
 const liveSales=()=>S.sales.filter(s=>!s.void);
@@ -351,7 +380,7 @@ function render(){
   const low=S.products.filter(p=>p.stock<=p.min).length;
   $('#tabs').innerHTML=TABS.map(t=>'<button data-act="go" data-to="'+t[0]+'"'+(t[0]===view?' aria-current="page"':'')+'>'+ico(t[0])+t[1]+(t[0]==='barang'&&low?'<i class="badge num" title="'+low+' barang menipis atau habis">'+low+'</i>':'')+'</button>').join('');
   const tl=$('#top-logo');if(tl&&!tl.firstChild)tl.innerHTML=MARK('mk')+'<b>JAGA</b><span>Kasir</span>';
-  $('#shop-name').textContent=(SESS==='demo'?'DEMO · ':'')+(S.shop.name||'Nama warung belum diisi');
+  $('#shop-name').textContent=(SESS==='demo'?'DEMO · ':'')+(S.shop.name||(ACC&&ACC.shop_name)||'Nama warung belum diisi');
   $('#printer-chip').className='chip'+(PR.ch?' on':''); const pq=pending().length;$('#printer-label').textContent=(PR.ch?(PR.name||'Printer siap'):'Tanpa printer')+(pq?' · '+pq+' antre':'');
   ({kasir:vKasir,barang:vBarang,riwayat:vRiwayat,laporan:vLaporan,pengaturan:vAtur})[view]();
 }
@@ -794,7 +823,9 @@ function download(name,text,type){
 function vAtur(){
   const sh=S.shop;
   $('#view').innerHTML='<div class="wrap stack"><h2>Pengaturan</h2>'+
-    '<div class="card stack"><h3>Akun</h3><p class="muted" style="margin:0">'+(SESS==='demo'?'Masuk sebagai <b>akun demo</b>. Data demo terpisah dari data warung asli.':'Tanpa akun. Data tersimpan di perangkat ini.')+'</p><div><button class="btn" data-act="logout">Keluar</button></div></div>'+
+    '<div class="card stack"><h3>Akun</h3>'+(isAcc()&&ACC?'<p class="muted" style="margin:0">Masuk sebagai <b>'+esc(ACC.username)+'</b> · '+esc(ACC.shop_name)+'</p><div id="sync-line">'+Sync.html()+'</div>':
+      '<p class="muted" style="margin:0">'+(SESS==='demo'?'Masuk sebagai <b>akun demo</b>. Data demo terpisah dari data warung asli.':'Tanpa akun. Data tersimpan di perangkat ini.')+'</p>')+
+      '<div class="row">'+(isAcc()?'<button class="btn primary" data-act="sync-now">Simpan online sekarang</button><button class="btn" data-act="pass-change">Ganti kata sandi</button>':'')+'<button class="btn" data-act="logout">Keluar</button></div></div>'+
     '<div class="card stack"><h3>Profil warung (tampil di struk)</h3><label class="f">Nama warung<input type="text" id="st-name" value="'+esc(sh.name)+'" autocomplete="off"></label>'+
       '<label class="f">Alamat<input type="text" id="st-address" value="'+esc(sh.address)+'" autocomplete="off"></label>'+
       '<div class="two"><label class="f">Nomor telepon / WA<input type="tel" id="st-phone" value="'+esc(sh.phone)+'" autocomplete="off"></label>'+
@@ -810,7 +841,7 @@ function vAtur(){
        '<p class="muted" style="margin:0">Browser di perangkat ini tidak bisa menyambung langsung ke printer Bluetooth (berlaku untuk iPhone dan iPad). Tombol Cetak struk akan membuka layar cetak perangkat, dan struk tetap bisa dikirim lewat WhatsApp.</p>')+'</div>'+
     '<div class="card stack"><h3>Cadangan data</h3><p class="muted" style="margin:0">Data tersimpan di '+(Store.mode==='perangkat'?'perangkat ini':'memori sementara dan hilang saat halaman ditutup')+'. '+S.products.length+' barang, '+S.sales.length+' struk.</p>'+
       '<div class="row"><button class="btn" data-act="backup">Unduh cadangan</button><label class="btn" for="restore-file">Pulihkan dari cadangan</label><input type="file" id="restore-file" accept="application/json,.json" hidden></div>'+
-      '<div class="row small"><span class="pill info">Segera</span><span class="muted grow">Cadangan online otomatis dan akun warung diaktifkan saat aplikasi dirilis.</span></div></div>'+
+      (isAcc()?'<p class="muted small" style="margin:0">Cadangan online berjalan otomatis setiap ada perubahan. Masuk dengan akun yang sama di HP lain untuk membuka data ini.</p>':'')+'</div>'+
     (SESS==='demo'?'<div class="card stack"><h3>Data demo</h3><p class="muted" style="margin:0">Mengembalikan semua data demo ke contoh awal.</p><div><button class="btn danger" data-act="demo-reset">Atur ulang data demo</button></div></div>':'<div class="card stack"><h3>Mulai dari awal</h3><p class="muted" style="margin:0">Menghapus semua barang, struk, dan pengaturan di perangkat ini.</p><div><button class="btn danger" data-act="reset">Hapus semua data</button></div></div>')+
     '<p class="muted small" style="text-align:center;margin:4px 0 0">Jaga Kasir oleh JAGA · versi 1.0</p></div>';
 }
@@ -831,10 +862,32 @@ const A={
   'hide-prev':()=>{hidePrev=true;vKasir()},
   login:()=>{const u=($('#lg-user').value||'').trim().toLowerCase(),p=$('#lg-pass').value;
     if(u==='demo'&&p==='demo') return startSession('demo');
+    if(u&&p&&u!=='demo') return loginAccount(u,p);
     $('#lg-err').textContent='Nama pengguna atau kata sandi salah. Akun demo: demo / demo.'},
   'login-fill':()=>{$('#lg-user').value='demo';$('#lg-pass').value='demo';$('#lg-err').textContent=''},
   'login-local':()=>startSession('local'),
-  logout:()=>confirmSheet('Keluar dari akun?',SESS==='demo'?'Data demo tetap tersimpan di perangkat ini.':'Data warung tetap tersimpan di perangkat ini dan terbuka lagi lewat "Pakai tanpa akun".','Keluar',async()=>{SESS=null;S=null;await Store.set('jk_session','');showLogin()}),
+  'to-register':()=>showRegister(), 'to-login':()=>showLogin(), register:()=>doRegister(),
+  'to-owner':async()=>{OWN.key=await Store.get('jk_owner_key');if(OWN.key)ownerOpen();else showOwnerLogin()},
+  'owner-login':()=>ownerLogin(), 'owner-refresh':()=>ownerOpen(), 'owner-f':e=>{OWN.f=e.dataset.f;ownerRender()},
+  'owner-logout':async()=>{try{await rpc('jt_owner_logout',{p_key:OWN.key})}catch(e){}OWN.key=null;await Store.set('jk_owner_key','');showLogin()},
+  'owner-set':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id),s=e.dataset.s,lbl={active:'Aktifkan',rejected:'Tolak',disabled:'Nonaktifkan'}[s];
+    sheet('<div class="hd"><h2>'+lbl+' '+esc(a.shop_name)+'?</h2></div><p class="muted" style="margin:0">'+(s==='active'?'Warung bisa langsung masuk dan memakai Jaga Kasir.':s==='rejected'?'Warung tidak bisa masuk. Alasan tampil saat mereka mencoba masuk.':'Warung keluar dari semua perangkat dan tidak bisa masuk. Data cadangan tetap disimpan.')+'</p>'+
+      (s!=='active'?'<label class="f">Alasan (opsional)<input type="text" id="ow-note" autocomplete="off"></label>':'')+
+      '<input type="hidden" id="ow-id" value="'+a.id+'"><input type="hidden" id="ow-s" value="'+s+'"><div class="two"><button class="btn" data-act="close">Batal</button><button class="btn '+(s==='active'?'primary':'danger')+'" data-act="owner-set-yes">'+lbl+'</button></div>')},
+  'owner-set-yes':async()=>{const id=$('#ow-id').value,s=$('#ow-s').value,n=$('#ow-note')?$('#ow-note').value:'';
+    try{const r=await rpc('jk_owner_decide',{p_key:OWN.key,p_id:id,p_status:s,p_note:n});if(!r.ok)return toast(r.error);closeSheet();await ownerOpen();toast(s==='active'?'Akun aktif. Kabari warung lewat tombol WhatsApp.':'Status akun diperbarui.')}catch(e){toast(e.message)}},
+  'owner-pass':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id);
+    sheet('<div class="hd"><h2>Atur ulang kata sandi</h2></div><p class="muted" style="margin:0">'+esc(a.shop_name)+' · pengguna <b>'+esc(a.username)+'</b>. Warung keluar dari semua perangkat dan masuk lagi dengan kata sandi baru.</p><input type="hidden" id="ow-id" value="'+a.id+'"><label class="f">Kata sandi baru (min. 6)<input type="text" id="ow-np" autocomplete="off"></label><div class="two"><button class="btn" data-act="close">Batal</button><button class="btn primary" data-act="owner-pass-yes">Simpan</button></div>')},
+  'owner-pass-yes':async()=>{try{const r=await rpc('jk_owner_resetpass',{p_key:OWN.key,p_id:$('#ow-id').value,p_new:$('#ow-np').value});if(!r.ok)return toast(r.error);closeSheet();toast('Kata sandi baru tersimpan. Beri tahu warung lewat WhatsApp.')}catch(e){toast(e.message)}},
+  'sync-now':async()=>{Sync.dirty=true;await Sync.push();if(Sync.state==='ok')toast('Data tersimpan online.');else if(Sync.state!=='err')toast(Sync.err||'Belum tersambung internet.')},
+  'sync-pull':async()=>{closeSheet();try{await pullServer();render();toast('Data online dipakai.')}catch(e){toast(e.message)}},
+  'sync-force':async()=>{closeSheet();Sync.dirty=true;await Sync.push(true);if(Sync.state==='ok')toast('Data HP ini disimpan online.')},
+  'pass-change':()=>sheet('<div class="hd"><h2>Ganti kata sandi</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><label class="f">Kata sandi sekarang<input type="password" id="pc-old" autocomplete="current-password"></label><label class="f">Kata sandi baru (min. 6)<input type="password" id="pc-new" autocomplete="new-password"></label><label class="f">Ulangi kata sandi baru<input type="password" id="pc-new2" autocomplete="new-password"></label><button class="btn primary block" data-act="pass-save">Simpan kata sandi</button>'),
+  'pass-save':async()=>{const n=$('#pc-new').value;if(n.length<6)return toast('Kata sandi baru minimal 6 karakter.');if(n!==$('#pc-new2').value)return toast('Kedua kata sandi baru tidak sama.');
+    try{const r=await rpc('jk_change_pass',{p_key:await devKey(),p_old:$('#pc-old').value,p_new:n});if(!r.ok)return toast(r.error);closeSheet();toast('Kata sandi diganti. Perangkat lain perlu masuk lagi.')}catch(e){if(e.expired)return sessionEnded(e.message);toast(e.message)}},
+  logout:()=>confirmSheet('Keluar dari akun?',SESS==='demo'?'Data demo tetap tersimpan di perangkat ini.':isAcc()?(Sync.dirty?'Ada perubahan yang belum tersimpan online. Sambungkan internet dulu supaya tidak hilang. ':'Semua data sudah tersimpan online. ')+'Masuk lagi dengan nama pengguna dan kata sandi yang sama.':'Data warung tetap tersimpan di perangkat ini.','Keluar',async()=>{
+    if(isAcc()){if(Sync.dirty){try{await Sync.push()}catch(e){}}if(!Sync.dirty){try{await rpc('jk_logout',{p_key:await devKey()})}catch(e){}}ACC=null}
+    SESS=null;S=null;await Store.set('jk_session','');showLogin()}),
   'demo-reset':()=>confirmSheet('Atur ulang data demo?','Semua perubahan di akun demo dihapus dan kembali ke data contoh awal.','Atur ulang',()=>{S=seed();save();go('kasir');toast('Data demo dikembalikan ke contoh awal.')},true),
   more:()=>{rlimit+=200;vRiwayat()},
   'lunas-all':e=>{const k=e.dataset.cust,l=openDebt().filter(s=>(s.cust||'Tanpa nama')===k),t=l.reduce((a,s)=>a+s.total,0);
@@ -916,23 +969,167 @@ document.addEventListener('keydown',ev=>{
     if(p){addToCart(p.id);beep(true);q='';t.value='';refreshPick();toast(p.name+' masuk keranjang.')}else if(/^\d{6,}$/.test(v)){q='';t.value='';refreshPick();onCartScan(v)}}
   else if(t.id==='scan-manual') A['scan-manual']();
   else if(t.id==='lg-user'||t.id==='lg-pass') A.login();
+  else if(t.id==='ow-user'||t.id==='ow-pass') ownerLogin();
+  else if(/^rg-/.test(t.id)) doRegister();
   else if(t.id==='pay-cash'||t.id==='pay-cust'){if(payOk())commitSale()}
 });
 const KB={s:'',t:0};
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==view&&TABS.some(t=>t[0]===h)){view=h;render()}});
+
+/* ============ akun online & sinkron ============ */
+const Sync={state:'idle',at:null,err:'',timer:null,busy:false,dirty:false,rev:0,
+  html(){const st=this.state,c=st==='ok'?'ok':st==='saving'?'wait':st==='offline'||st==='err'?'err':'wait';
+    const t=st==='ok'?'Tersimpan online '+(this.at?fmtTime(this.at):''):st==='saving'?'Menyimpan online…':st==='offline'?'Belum tersimpan online: menunggu internet':st==='err'?'Belum tersimpan online: '+this.err:this.dirty?'Menunggu disimpan online':'Siap';
+    return '<span class="sync '+c+'"><i></i>'+esc(t)+'</span>'},
+  show(){const e=$('#sync-line');if(e)e.innerHTML=this.html()},
+  async load(){this.rev=(await Store.get('jk_rev_'+SESS))||0;this.dirty=!!(await Store.get('jk_dirty_'+SESS));this.at=(await Store.get('jk_at_'+SESS))||null;this.state=this.dirty?'idle':'ok'},
+  touch(){if(!isAcc())return;this.dirty=true;Store.set('jk_dirty_'+SESS,true);this.show();clearTimeout(this.timer);this.timer=setTimeout(()=>this.push(),4000)},
+  async push(force){
+    if(!isAcc()||this.busy)return; if(!this.dirty&&!force)return;
+    this.busy=true;this.state='saving';this.show();const sess=SESS;
+    try{
+      const r=await rpc('jk_backup_put',{p_key:await devKey(),p_data:S,p_base_rev:this.rev,p_force:!!force},45000);
+      if(sess!==SESS)return;
+      if(r&&r.ok){this.rev=r.rev;this.dirty=false;this.at=Date.now();this.state='ok';await Store.set('jk_rev_'+SESS,this.rev);await Store.set('jk_dirty_'+SESS,false);await Store.set('jk_at_'+SESS,this.at)}
+      else if(r&&r.conflict){this.state='err';this.err='data di HP lain lebih baru';conflictSheet(r)}
+      else{this.state='err';this.err=(r&&r.error)||'gagal'}
+    }catch(e){if(e.expired)return sessionEnded(e.message);this.state=e.offline?'offline':'err';this.err=e.message}
+    finally{this.busy=false;this.show()}
+  }
+};
+function conflictSheet(r){
+  sheet('<div class="hd"><h2>Data berbeda dengan HP lain</h2></div><p class="muted" style="margin:0">Akun ini juga dipakai di perangkat lain dan datanya diperbarui '+(r.updated_at?fmtDate(Date.parse(r.updated_at))+' '+fmtTime(Date.parse(r.updated_at)):'baru-baru ini')+'. Pilih data mana yang dipakai.</p>'+
+    '<button class="btn primary block" data-act="sync-pull">Pakai data online (terbaru)</button><button class="btn danger block" data-act="sync-force">Timpa dengan data HP ini</button>'+
+    '<p class="muted small" style="margin:0">Menimpa membuat perubahan di perangkat lain hilang. Jika ragu, pilih data online.</p>');
+}
+async function pullServer(){
+  const r=await rpc('jk_backup_get',{p_key:await devKey()},45000);
+  if(r&&r.data){S=normalize(r.data);await Store.set(KEY(),S)}
+  Sync.rev=r.rev||0;Sync.dirty=false;Sync.at=Date.now();Sync.state='ok';
+  await Store.set('jk_rev_'+SESS,Sync.rev);await Store.set('jk_dirty_'+SESS,false);await Store.set('jk_at_'+SESS,Sync.at);
+}
+async function sessionEnded(msg){
+  if(!isAcc())return; const old=SESS; SESS=null;S=null;ACC=null;await Store.set('jk_session','');
+  showLogin(); const e=$('#lg-err'); if(e) e.textContent=msg||'Sesi berakhir. Silakan masuk lagi.';
+}
+window.addEventListener('online',()=>{if(isAcc()&&Sync.dirty)Sync.push()});
+setInterval(()=>{if(isAcc()&&Sync.dirty&&!Sync.busy&&navigator.onLine!==false)Sync.push()},60000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&isAcc()&&Sync.dirty){clearTimeout(Sync.timer);Sync.push()}});
+
+async function loginAccount(u,p){
+  const btn=$('#lg-btn'),err=$('#lg-err'); if(btn)btn.disabled=true; if(err)err.textContent='';
+  try{
+    const r=await rpc('jk_login',{p_username:u,p_pass:p,p_key:await devKey()});
+    if(!r||!r.ok){if(err)err.textContent=(r&&r.error)||'Gagal masuk.';return}
+    ACC=r.account; SESS='acc:'+ACC.id; await Store.set('jk_account_'+SESS,ACC); await Store.set('jk_session',SESS);
+    await Sync.load(); S=null;
+    const local=await Store.get(KEY());
+    if(r.backup_rev>0){
+      if(local&&Array.isArray(local.products)&&(Sync.rev===r.backup_rev||Sync.dirty)) S=normalize(local);  // sama, atau ada perubahan lokal: simpan lalu dorong (bentrok ditangani)
+      else await pullServer();
+    } else {
+      if(local&&Array.isArray(local.products)) S=normalize(local);
+      else{
+        S=blank(); S.shop.name=ACC.shop_name; S.shop.address=ACC.address||''; S.shop.phone=ACC.wa?'0'+String(ACC.wa).replace(/^62/,''):'';
+        const old=await Store.get('jk_state');
+        if(old&&Array.isArray(old.products)&&!old.demo&&(old.products.length||(old.sales||[]).length)){S=normalize(old);if(!S.shop.name)S.shop.name=ACC.shop_name;toast('Data warung di perangkat ini dipindahkan ke akun Anda.')}
+      }
+      await Store.set(KEY(),S); Sync.rev=0; Sync.dirty=true; await Store.set('jk_dirty_'+SESS,true);
+    }
+    $('#login-root').innerHTML=''; await boot(); if(Sync.dirty)Sync.push();
+  }catch(e){if(err)err.textContent=e.message}
+  finally{const b=$('#lg-btn');if(b)b.disabled=false}
+}
+function showRegister(){
+  $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
+    '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Daftar akun warung</h1><p>Akun aktif setelah disetujui JAGA. Kami kabari lewat WhatsApp.</p></div>'+
+    '<label class="f">Nama warung<input type="text" id="rg-shop" autocomplete="organization"></label>'+
+    '<label class="f">Nama pemilik<input type="text" id="rg-name" autocomplete="name"></label>'+
+    '<label class="f">Nomor WhatsApp<input type="tel" id="rg-wa" inputmode="tel" placeholder="0812xxxxxxxx" autocomplete="tel"></label>'+
+    '<label class="f">Alamat warung<input type="text" id="rg-addr" autocomplete="street-address"></label>'+
+    '<label class="f">Nama pengguna (untuk masuk)<input type="text" id="rg-user" autocapitalize="none" spellcheck="false" placeholder="contoh: warungsari" autocomplete="username"></label>'+
+    '<div class="two"><label class="f">Kata sandi<input type="password" id="rg-pass" autocomplete="new-password"></label><label class="f">Ulangi kata sandi<input type="password" id="rg-pass2" autocomplete="new-password"></label></div>'+
+    '<div class="lg-err" id="lg-err" role="alert"></div>'+
+    '<button class="btn pay block" data-act="register" id="rg-btn">Kirim pendaftaran</button>'+
+    '<button class="btn ghost block" data-act="to-login">Sudah punya akun? Masuk</button></div></div>';
+  setTimeout(()=>{const u=$('#rg-shop');if(u)u.focus()},50);
+}
+async function doRegister(){
+  const v=id=>($('#'+id).value||'').trim(),err=$('#lg-err');err.textContent='';
+  const d={p_username:v('rg-user').toLowerCase(),p_pass:$('#rg-pass').value,p_shop:v('rg-shop'),p_name:v('rg-name'),p_wa:v('rg-wa'),p_address:v('rg-addr')};
+  if(d.p_shop.length<2)return err.textContent='Isi nama warung.';
+  if(d.p_name.length<2)return err.textContent='Isi nama pemilik warung.';
+  if(!/^[0-9+\-\s]{9,}$/.test(d.p_wa))return err.textContent='Isi nomor WhatsApp yang benar.';
+  if(!/^[a-z0-9_.]{3,24}$/.test(d.p_username))return err.textContent='Nama pengguna 3-24 huruf kecil, angka, titik, atau garis bawah, tanpa spasi.';
+  if(d.p_pass.length<6)return err.textContent='Kata sandi minimal 6 karakter.';
+  if(d.p_pass!==$('#rg-pass2').value)return err.textContent='Kedua kata sandi tidak sama.';
+  const b=$('#rg-btn');b.disabled=true;
+  try{const r=await rpc('jk_register',d);
+    if(!r||!r.ok){err.textContent=(r&&r.error)||'Pendaftaran gagal.';return}
+    showLogin(); $('#lg-user').value=d.p_username;
+    const ok=$('#lg-ok');ok.hidden=false;ok.textContent='Pendaftaran '+d.p_shop+' terkirim. Akun aktif setelah disetujui JAGA, lalu masuk dengan nama pengguna dan kata sandi tadi.';
+  }catch(e){err.textContent=e.message}finally{const bb=$('#rg-btn');if(bb)bb.disabled=false}
+}
+
+/* ---- portal pemilik JAGA ---- */
+let OWN={key:null,list:[],f:'pending'};
+function showOwnerLogin(){
+  $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
+    '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Portal pemilik JAGA</h1><p>Masuk dengan akun pemilik JAGA untuk menyetujui pendaftaran warung.</p></div>'+
+    '<label class="f">Login pemilik<input type="text" id="ow-user" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
+    '<label class="f">Kata sandi<input type="password" id="ow-pass" autocomplete="current-password"></label>'+
+    '<div class="lg-err" id="lg-err" role="alert"></div>'+
+    '<button class="btn pay block" data-act="owner-login" id="ow-btn">Masuk ke portal</button>'+
+    '<button class="btn ghost block" data-act="to-login">Kembali</button></div></div>';
+  setTimeout(()=>{const u=$('#ow-user');if(u)u.focus()},50);
+}
+async function ownerLogin(){
+  const err=$('#lg-err'),b=$('#ow-btn');err.textContent='';b.disabled=true;
+  try{const k=randKey();const r=await rpc('jt_owner_login',{p_login:$('#ow-user').value.trim(),p_pass:$('#ow-pass').value,p_key:k});
+    if(!r||!r.ok){err.textContent=(r&&r.error)||'Gagal masuk.';return}
+    OWN.key=k;await Store.set('jk_owner_key',k);await ownerOpen();
+  }catch(e){err.textContent=e.message}finally{const bb=$('#ow-btn');if(bb)bb.disabled=false}
+}
+async function ownerOpen(){
+  try{OWN.list=await rpc('jk_owner_list',{p_key:OWN.key})||[]}
+  catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin();$('#lg-err').textContent=e.message;return}toast(e.message);if(!$('.own'))showLogin();return}
+  ownerRender();
+}
+const ST={pending:['Menunggu','warn'],active:['Aktif','ok'],rejected:['Ditolak','bad'],disabled:['Nonaktif','bad']};
+function ownerRender(){
+  const L=OWN.list,cnt=k=>L.filter(a=>a.status===k).length,l=L.filter(a=>OWN.f==='semua'||a.status===OWN.f);
+  const wa=a=>'https://wa.me/'+a.wa+'?text='+encodeURIComponent(a.status==='active'?'Halo '+a.owner_name+', akun Jaga Kasir untuk '+a.shop_name+' sudah aktif. Masuk di https://jagapatner.my.id/kasir/ dengan nama pengguna: '+a.username:'Halo '+a.owner_name+', ini JAGA tentang pendaftaran Jaga Kasir untuk '+a.shop_name+'.');
+  $('#login-root').innerHTML='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Akun warung Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header>'+
+    '<div class="own-body"><div class="row"><h2 class="grow">Akun warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button></div>'+
+    '<div class="tiles"><div class="stat"><small>Menunggu persetujuan</small><b class="num" style="color:'+(cnt('pending')?'var(--warn)':'inherit')+'">'+cnt('pending')+'</b></div><div class="stat"><small>Aktif</small><b class="num">'+cnt('active')+'</b></div><div class="stat"><small>Total warung</small><b class="num">'+L.length+'</b></div></div>'+
+    '<div class="seg">'+[['pending','Menunggu'],['active','Aktif'],['disabled','Nonaktif'],['rejected','Ditolak'],['semua','Semua']].map(f=>'<button data-act="owner-f" data-f="'+f[0]+'" aria-pressed="'+(OWN.f===f[0])+'">'+f[1]+(f[0]!=='semua'&&cnt(f[0])?' · '+cnt(f[0]):'')+'</button>').join('')+'</div>'+
+    (l.length?l.map(a=>'<div class="card acc"><div class="row"><b class="grow">'+esc(a.shop_name)+'</b><span class="pill '+ST[a.status][1]+'">'+ST[a.status][0]+'</span></div>'+
+      '<div class="small muted">'+esc(a.owner_name)+' · <span class="num">+'+esc(a.wa)+'</span> · pengguna <b>'+esc(a.username)+'</b></div>'+
+      (a.address?'<div class="small muted">'+esc(a.address)+'</div>':'')+
+      '<div class="small muted">Daftar '+fmtDate(Date.parse(a.created_at))+(a.last_login?' · terakhir masuk '+fmtDate(Date.parse(a.last_login)):'')+(a.backup_at?' · cadangan '+fmtDate(Date.parse(a.backup_at))+' '+fmtTime(Date.parse(a.backup_at)):'')+'</div>'+
+      (a.note?'<div class="small">Catatan: '+esc(a.note)+'</div>':'')+
+      '<div class="row">'+(a.status!=='active'?'<button class="btn primary" data-act="owner-set" data-id="'+a.id+'" data-s="active">'+(a.status==='pending'?'Setujui':'Aktifkan')+'</button>':'')+
+        (a.status==='pending'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="rejected">Tolak</button>':'')+
+        (a.status==='active'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="disabled">Nonaktifkan</button>':'')+
+        '<button class="btn" data-act="owner-pass" data-id="'+a.id+'">Atur ulang sandi</button><a class="btn" target="_blank" rel="noopener" href="'+wa(a)+'">WhatsApp</a></div></div>').join(''):
+      '<div class="card empty">'+(OWN.f==='pending'?'Tidak ada pendaftaran yang menunggu.':'Tidak ada akun di daftar ini.')+'</div>')+
+    '</div></div>';
+}
 
 /* ============ mulai ============ */
 function showLogin(){
   PAY=null;try{if(location.hash)location.hash=''}catch(e){}$('#view').innerHTML='';$('#tabs').innerHTML='';$('#shop-name').textContent='';$('#sheet-root').innerHTML='';
   $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
     '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Masuk ke akun warung</h1><p>Kasir warung: scan barang, stok, pembayaran, dan struk.</p></div>'+
+    '<div class="lg-ok" id="lg-ok" role="status" hidden></div>'+
     '<label class="f">Nama pengguna<input type="text" id="lg-user" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
     '<label class="f">Kata sandi<input type="password" id="lg-pass" autocomplete="current-password"></label>'+
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
-    '<button class="btn pay block" data-act="login">Masuk</button>'+
+    '<button class="btn pay block" data-act="login" id="lg-btn">Masuk</button>'+
+    '<button class="btn block" data-act="to-register">Daftar akun warung baru</button>'+
     '<div class="note"><div class="grow"><b>Akun demo</b> untuk mencoba semua fitur dengan data contoh.<br>Pengguna <b>demo</b> · Kata sandi <b>demo</b></div><button class="btn" data-act="login-fill">Isi otomatis</button></div>'+
-    '<button class="btn ghost block" data-act="login-local">Pakai tanpa akun</button>'+
-    '<p class="muted small" style="margin:0;text-align:center">Akun warung asli dengan cadangan online menyusul. Untuk sekarang data tersimpan di perangkat ini.</p></div></div>';
+    (FRAMED?'<p class="muted small" style="margin:0;text-align:center">Mode pratinjau: daftar dan masuk akun warung aktif setelah aplikasi dipasang di situs.</p>':'')+
+    '<div class="lg-links"><button class="btn ghost" data-act="to-owner">Portal pemilik JAGA</button></div></div></div>';
   setTimeout(()=>{const u=$('#lg-user');if(u)u.focus()},50);
 }
 async function boot(){
@@ -946,7 +1143,10 @@ async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$
 (async function(){
   await Store.init();
   SESS=await Store.get('jk_session');
-  if(SESS==='demo'||SESS==='local') await boot(); else{SESS=null;showLogin()}
+  if(isAcc()){ACC=await Store.get('jk_account_'+SESS);if(!ACC){SESS=null;showLogin()}else{await Sync.load();await boot();
+      rpc('jk_me',{p_key:await devKey()}).then(r=>{if(r&&r.account){ACC=r.account;Store.set('jk_account_'+SESS,ACC);if(r.backup_rev>Sync.rev&&!Sync.dirty){pullServer().then(render).catch(()=>{})}else if(Sync.dirty)Sync.push()}})
+        .catch(e=>{if(e.expired)sessionEnded('Akun dinonaktifkan atau sesi berakhir. Hubungi JAGA jika perlu.');else{Sync.state=Sync.dirty?'offline':'ok';Sync.show()}})}}
+  else if(SESS==='demo'||SESS==='local') await boot(); else{SESS=null;showLogin()}
   try{if(!FRAMED&&navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
   if(!FRAMED&&'serviceWorker' in navigator&&location.protocol==='https:'){
     const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);
