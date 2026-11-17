@@ -2227,7 +2227,7 @@ const DRV = {
 };
 const typing = () => { const a = document.activeElement; return !!(a && a.closest && a.closest("#app") && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)); };
 
-const _drvHanded = new Set();
+const _drvHanded = new Set(), _drvAssigned = new Set();
 let drvTimer = null, drvBusy = false, geoWatch = null, lastSent = {t:0, lat:0, lng:0}, audioCtx = null;
 async function drvRefresh(){
   if(drvBusy) return; drvBusy = true;
@@ -2236,6 +2236,7 @@ async function drvRefresh(){
     const offers = r.offers || [];
     const fresh = offers.filter(o => !S.drv.seen.has(o.id));
     offers.forEach(o => S.drv.seen.add(o.id));
+    (r.mine || []).forEach(o => { if(isRide(o) && o.autoAssigned && o.status === "driver_jemput" && !_drvAssigned.has(o.id)){ _drvAssigned.add(o.id); if(S.drv.loaded) notify("Order Jago untukmu!", "Kamu driver terdekat (" + fmtDist(o.assignDist) + "). Jemput penumpang di " + shortAddr(o.pickup && o.pickup.address) + " sekarang.", {kind:"order", tag:"drv-assign", act:() => window.scrollTo({top:0, behavior:"smooth"})}); } });
     (r.mine || []).forEach(o => { if(o.handedAt && o.status === "driver_ke_toko" && !_drvHanded.has(o.id)){ _drvHanded.add(o.id); if(S.drv.loaded) notify("Kode cocok ✓", (o.storeName || "Toko") + " sudah menyerahkan pesanan " + (o.code || "") + ". Tekan “Antar pesanan”.", {kind:"order"}); } });
     S.drv.me = r.me || null; S.drv.offers = offers; S.drv.mine = r.mine || []; S.drv.wallet = r.wallet || null; S.drv.blocked = r.blocked || []; S.drv.locFresh = r.locFresh !== false; S.drv.loaded = true; S.drv.err = "";
     if(fresh.length && S.drv.me && S.drv.me.online) notify(fresh.length > 1 ? fresh.length + " order baru!" : (isRide(fresh[0]) ? "Order Jago baru!" : "Order antar baru!"), fresh.map(o => isRide(o) ? "Jago · " + shortAddr(o.pickup && o.pickup.address) : (o.storeName || "Toko") + (o.dist != null ? " · " + fmtDist(o.dist) : "")).join(" | ").slice(0, 120) + " — ambil sekarang", {kind:"order", tag:"drv-offer", act:() => window.scrollTo({top:0, behavior:"smooth"})});
@@ -2390,18 +2391,19 @@ function nearInfo(o){
 }
 function nearLine(o, compact){
   const n = nearInfo(o); if(!n) return "";
-  if(n.near > 0) return '<small class="nearok">'+I("checkc")+' '+n.near+' driver online siap menerima di sekitar toko</small>';
+  const ride = isRide(o), where = ride ? 'titik jemput Anda' : 'toko';
+  if(n.near > 0) return '<small class="nearok">'+I("checkc")+' '+n.near+' driver online siap di sekitar '+where+(ride ? ' · yang terdekat langsung ditugaskan' : '')+'</small>';
   const why = [];
-  if(n.lowbal > 0) why.push(n.lowbal+' driver di dekat toko saldonya kurang');
+  if(n.lowbal > 0) why.push(n.lowbal+' driver di dekat '+where+' saldonya kurang');
   if(n.noloc > 0) why.push(n.noloc+' driver online belum mengaktifkan lokasi');
-  return '<small class="warnline">Belum ada driver online dalam 5 km dari toko'+(compact && why.length ? ' ('+esc(why.join(', '))+')' : '')+'. '+
+  return '<small class="warnline">Belum ada driver online dalam 5 km dari '+where+(compact && why.length ? ' ('+esc(why.join(', '))+')' : '')+'. '+
     (isRide(o) ? 'Coba lagi sebentar.' : compact ? 'Anda bisa menunggu atau tekan “Antar sendiri”.' : 'Toko bisa mengantar sendiri bila driver belum ada.')+'</small>';
 }
 function searchBox(o, text, compact){
   const el = searchElapsed(o), r = radiusM(el);
   const long = el >= 210;
   return '<div class="searchbox'+(compact?' compact':'')+'"><div class="radar"><span></span><span></span>'+E("scooter")+'</div><div><b>'+esc(text)+'</b>'+
-    '<small>'+(hasLoc(o.storeLoc || o.pickup) ? 'Radius pencarian '+fmtDist(r)+(r < 5000 ? ' · otomatis melebar sampai 5 km' : '') : 'Ditawarkan ke semua driver yang sedang online')+'</small>'+
+    '<small>'+(isRide(o) ? (hasLoc(o.pickup) ? 'Dari titik jemput Anda · driver terdekat (sampai 5 km) langsung ditugaskan otomatis' : 'Ditawarkan ke semua driver yang sedang online') : hasLoc(o.storeLoc || o.pickup) ? 'Radius pencarian '+fmtDist(r)+(r < 5000 ? ' · otomatis melebar sampai 5 km' : '') : 'Ditawarkan ke semua driver yang sedang online')+'</small>'+
     (nearLine(o, compact) || '')+
     (long && !(nearInfo(o) && nearInfo(o).near === 0) ? '<small class="warnline">Belum ada driver yang mengambil. '+(isRide(o) ? 'Ketuk “Cari ulang” atau coba lagi sebentar.' : compact ? 'Anda bisa cari ulang atau antar sendiri.' : 'Toko akan mencari ulang atau mengantar sendiri.')+'</small>' : '')+'</div></div>';
 }
@@ -2578,7 +2580,7 @@ document.addEventListener("click", async e => {
     if(!ride && rj && rj.pickCode){ confirmModal("Mulai antar pesanan ke pembeli? Pembeli akan diberi tahu paket dalam perjalanan.", "Ya, antar sekarang", () => drvDo(() => DRV.act(id, "pickup"), "Selamat mengantar!")); return; }
     if(!ride && SB){ proofConfirm("Pesanan sudah diambil dari toko dan siap diantar?", "Ya, antar sekarang", ph => drvDo(() => DRV.act(id, "pickup", ph ? {photo:ph} : null), "Selamat mengantar!")); return; }
     confirmModal(ride ? "Penumpang sudah naik dan siap berangkat?" : "Pesanan sudah diambil dari toko dan siap diantar?", ride ? "Ya, berangkat" : "Ya, antar sekarang", () => drvDo(() => DRV.act(id, "pickup"), ride ? "Selamat jalan, hati-hati di jalan!" : "Selamat mengantar!")); return; }
-  if(a === "drv-release"){ confirmModal(ride ? "Batal mengambil order Jago ini? Order akan ditawarkan ke driver lain." : "Batal mengambil pesanan ini? Pesanan akan ditawarkan ke driver lain.", "Batal ambil", () => drvDo(() => DRV.act(id, "release"), "Pesanan dilepas")); return; }
+  if(a === "drv-release"){ confirmModal(ride ? "Batal mengambil order Jago ini? Order langsung dipindah ke driver terdekat berikutnya." : "Batal mengambil pesanan ini? Pesanan akan ditawarkan ke driver lain.", "Batal ambil", () => drvDo(() => DRV.act(id, "release"), "Pesanan dilepas")); return; }
   if(a === "drv-done"){
     const inp = document.getElementById("ongkir-" + id);
     const v = parseInt(String(inp ? inp.value : "").replace(/\D/g, ""), 10);
@@ -3877,6 +3879,7 @@ function rideJob(o, offer){
   if(offer){
     h += '<div class="actions"><button class="btn press grow" data-act="drv-accept" data-id="'+esc(o.id)+'">Ambil order Jago</button><button class="btn ghost press" data-act="drv-decline" data-id="'+esc(o.id)+'">Lewati</button></div>';
   } else if(o.status === "driver_jemput"){
+    if(o.autoAssigned) h += '<div class="small" style="margin:6px 0;color:#2f6bff;font-weight:700">'+I("checkc")+' Ditugaskan otomatis — kamu driver terdekat'+(o.assignDist != null ? ' ('+fmtDist(o.assignDist)+' dari titik jemput)' : '')+'. Tidak bisa? Tekan “Batal ambil”, order langsung pindah ke driver terdekat berikutnya.</div>';
     h += liveMap(o, "driver");
     h += '<div class="actions"><button class="btn press grow" data-act="drv-pickup" data-id="'+esc(o.id)+'">'+I("checkc")+' Penumpang sudah naik</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
   } else if(o.status === "dalam_perjalanan"){
