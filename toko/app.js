@@ -2671,7 +2671,7 @@ function storeLoginSettings(s){
     '<div class="actions"><button class="btn sm">Simpan login</button><button type="button" class="btn ghost sm" data-act="store-logout" data-id="'+esc(s.id)+'">Keluar dari toko di perangkat ini</button></div></form>'+
     '<div class="card pad delcard"><h3 class="sub">Hapus akun toko</h3><p class="small muted" style="margin:0 0 10px">Toko, produk, dan login dihapus permanen. Syarat: tidak ada pesanan berjalan dan bagi hasil sudah lunas.</p><button type="button" class="btn danger sm" data-act="acc-del" data-role="store" data-id="'+esc(s.id)+'">Hapus akun toko</button></div>';
 }
-let _ordSeen = null;
+let _ordSeen = null, _ordSt = null;
 function notifyNewOrders(){
   if(S.role !== "seller" || (SB && !S.myStoreIds)) return;
   const ids = new Set(myStores().map(s => s.id));
@@ -2679,6 +2679,14 @@ function notifyNewOrders(){
   if(_ordSeen === null){ _ordSeen = new Set(pend); return; }
   const fresh = pend.filter(id => !_ordSeen.has(id));
   pend.forEach(id => _ordSeen.add(id));
+  /* driver ditugaskan → toko siapkan pesanan & cocokkan kode; pesanan selesai */
+  const stk = o => o.status + (o.handedAt ? "+a" : "");
+  const mineS = S.orders.filter(o => ids.has(o.storeId));
+  if(_ordSt === null){ _ordSt = {}; mineS.forEach(o => _ordSt[o.id] = stk(o)); }
+  else mineS.forEach(o => { const k = stk(o), old = _ordSt[o.id]; _ordSt[o.id] = k; if(!old || old === k) return;
+    if(k === "driver_ke_toko") notify("Driver menuju toko Anda 🛵", (o.code || "") + " · " + ((o.driver && o.driver.name) || "Driver") + ". Siapkan pesanan, lalu cocokkan kode ambil dari driver.", {kind:"order", act:() => go("seller", {sellerTab:"pesanan"})});
+    else if(o.status === "selesai") notify("Pesanan selesai ✓", (o.code || "") + " sudah diterima pembeli.", {kind:"done"});
+  });
   if(fresh.length){ const o0 = S.orders.find(o => o.id === fresh[0]) || {}; notify(fresh.length > 1 ? fresh.length + " pesanan baru!" : "Pesanan baru!", (o0.buyer ? o0.buyer.name + " · " : "") + (o0.items ? o0.items.map(i => i.qty + "× " + i.name).join(", ").slice(0, 90) : "") + " — segera konfirmasi", {kind:"order", tag:"store-order", act:() => { go("seller", {sellerTab:"pesanan"}); }}); }
 }
 document.addEventListener("click", async e => {
