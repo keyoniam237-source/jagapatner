@@ -34,8 +34,12 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
 #app{height:100%;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr)}
 .top{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--brand);color:var(--brand-ink)}
-.logo{display:flex;align-items:baseline;gap:6px;font-family:var(--display);font-weight:800;font-size:19px}
-.logo b{background:var(--brand-ink);color:var(--brand);padding:2px 8px;border-radius:7px;letter-spacing:.04em}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:19px;line-height:1;white-space:nowrap}
+.logo .mk{width:22px;height:29px;flex:none}
+.logo b{font-weight:800;letter-spacing:.06em}
+.logo span{font-weight:600;opacity:.9}
+.top .mk .mk-a{fill:#FFFFFF}.top .mk .mk-b{fill:#FFD9DD}
+.mk .mk-a{fill:var(--brand)}.mk .mk-b{fill:#b08d4f}
 .top .shop{flex:1;min-width:0;color:var(--brand-ink);opacity:.9;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:5px 11px;font-size:12.5px;font-weight:600;white-space:nowrap}
 .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
@@ -60,7 +64,7 @@ main{overflow:auto;min-height:0;padding:16px;-webkit-overflow-scrolling:touch}
 .small{font-size:12.5px}
 .note{display:flex;gap:10px;align-items:flex-start;border:1px dashed color-mix(in srgb,var(--brand) 50%,var(--line));background:color-mix(in srgb,var(--brand) 6%,var(--surface));border-radius:12px;padding:10px 12px;font-size:13px}
 .note .btn{min-height:34px;padding:5px 10px;font-size:12.5px}
-input[type=text],input[type=tel],input[type=search],select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 12px;min-height:44px}
+input[type=text],input[type=tel],input[type=search],input[type=password],select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 12px;min-height:44px}
 label.f{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:600;color:var(--muted)}
 label.f input,label.f select{color:var(--ink);font-weight:500;font-size:15px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -171,11 +175,16 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 #print-area{display:none}
 .estruk{display:block;width:min(100%,320px);margin:0 auto;border-radius:10px;border:1px solid var(--line);box-shadow:var(--shadow);background:#fff}
 .login{position:fixed;inset:0;z-index:80;background:var(--bg);overflow:auto;display:flex;align-items:center;justify-content:center;padding:20px}
-.login-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
-.login .logo{font-size:24px}
-.login .logo b{background:var(--brand);color:var(--brand-ink)}
-.login h1{font-size:22px;font-weight:800;margin:4px 0 0}
-.lg-err{color:var(--bad);font-weight:600;font-size:13px;min-height:18px}
+.login-card{width:100%;max-width:400px;margin:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px 22px 22px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.login-head{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:4px 0 6px}
+.login-head .mk{width:58px;height:76px}
+.login-head .word{font-family:var(--display);font-size:26px;font-weight:800;line-height:1;letter-spacing:.02em}
+.login-head .word b{color:var(--brand);letter-spacing:.06em}
+.login h1{font-size:19px;font-weight:700;margin:6px 0 0}
+.login-head p{margin:0;color:var(--muted);max-width:30ch}
+.login-card .note{align-items:center}
+.lg-err{color:var(--bad);font-weight:600;font-size:13px}
+.lg-err:empty{display:none}
 @media print{
   body>*:not(#print-area){display:none!important}
   #print-area{display:block}
@@ -199,9 +208,10 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><mask id="jkm" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="220"><rect width="200" height="220" fill="#fff"/><path d="M36 172 L156 106 V126 L36 192 Z" fill="#000"/></mask></svg>
 <div id="app">
   <header class="top">
-    <div class="logo"><b>JAGA</b>Kasir</div>
+    <div class="logo" id="top-logo"></div>
     <div class="shop" id="shop-name"></div>
     <button class="chip" id="printer-chip" data-act="go" data-to="pengaturan"><span class="dot"></span><span id="printer-label">Printer</span></button>
   </header>
@@ -241,6 +251,7 @@ const I={
   plus:'<path d="M12 5v14M5 12h14"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
   print:'<path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7z"/>', trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'
 };
+const MARK=(cls)=>'<svg class="'+cls+'" viewBox="30 24 136 178" aria-hidden="true"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" class="mk-a" mask="url(#jkm)"/><path d="M74 132 V84 L96 72 V132 Z" class="mk-a" mask="url(#jkm)"/><path d="M104 132 V64 L120 55 V132 Z" class="mk-b" mask="url(#jkm)"/><path d="M40 176 L152 114.4 V126.4 L40 188 Z" class="mk-b"/></svg>';
 const ico=n=>'<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+I[n]+'</svg>';
 
 /* ============ penyimpanan (IndexedDB -> localStorage -> memori) ============ */
@@ -339,6 +350,7 @@ function go(v){view=TABS.some(t=>t[0]===v)?v:'kasir';try{if(location.hash!=='#'+
 function render(){
   const low=S.products.filter(p=>p.stock<=p.min).length;
   $('#tabs').innerHTML=TABS.map(t=>'<button data-act="go" data-to="'+t[0]+'"'+(t[0]===view?' aria-current="page"':'')+'>'+ico(t[0])+t[1]+(t[0]==='barang'&&low?'<i class="badge num" title="'+low+' barang menipis atau habis">'+low+'</i>':'')+'</button>').join('');
+  const tl=$('#top-logo');if(tl&&!tl.firstChild)tl.innerHTML=MARK('mk')+'<b>JAGA</b><span>Kasir</span>';
   $('#shop-name').textContent=(SESS==='demo'?'DEMO · ':'')+(S.shop.name||'Nama warung belum diisi');
   $('#printer-chip').className='chip'+(PR.ch?' on':''); const pq=pending().length;$('#printer-label').textContent=(PR.ch?(PR.name||'Printer siap'):'Tanpa printer')+(pq?' · '+pq+' antre':'');
   ({kasir:vKasir,barang:vBarang,riwayat:vRiwayat,laporan:vLaporan,pengaturan:vAtur})[view]();
@@ -913,7 +925,7 @@ window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h
 function showLogin(){
   PAY=null;try{if(location.hash)location.hash=''}catch(e){}$('#view').innerHTML='';$('#tabs').innerHTML='';$('#shop-name').textContent='';$('#sheet-root').innerHTML='';
   $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
-    '<div class="logo"><b>JAGA</b>Kasir</div><h1>Masuk ke Jaga Kasir</h1><p class="muted" style="margin:0">Kasir warung: scan barang, stok, pembayaran, dan struk.</p>'+
+    '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Masuk ke akun warung</h1><p>Kasir warung: scan barang, stok, pembayaran, dan struk.</p></div>'+
     '<label class="f">Nama pengguna<input type="text" id="lg-user" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
     '<label class="f">Kata sandi<input type="password" id="lg-pass" autocomplete="current-password"></label>'+
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
