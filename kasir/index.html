@@ -363,7 +363,7 @@ function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeou
 let sheetClose=null;
 function sheet(html,onClose){
   $('#sheet-root').innerHTML='<div class="veil" data-act="veil"><div class="sheet" role="dialog" aria-modal="true">'+html+'</div></div>';
-  sheetClose=onClose||null; const f=$('#sheet-root [autofocus]'); if(f) setTimeout(()=>f.focus(),30);
+  sheetClose=onClose||null; const f=$('#sheet-root [autofocus]'); if(f) setTimeout(()=>{const a=document.activeElement;if(f.isConnected&&!(a&&a!==f&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&$('#sheet-root').contains(a)))f.focus()},30);
 }
 function closeSheet(){$('#sheet-root').innerHTML='';const c=sheetClose;sheetClose=null;if(c)c()}
 function confirmSheet(title,text,yes,fn,danger){
@@ -1052,7 +1052,7 @@ function showRegister(){
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
     '<button class="btn pay block" data-act="register" id="rg-btn">Kirim pendaftaran</button>'+
     '<button class="btn ghost block" data-act="to-login">Sudah punya akun? Masuk</button></div></div>';
-  setTimeout(()=>{const u=$('#rg-shop');if(u)u.focus()},50);
+  setTimeout(()=>{const u=$('#rg-shop');if(u&&(!document.activeElement||document.activeElement===document.body))u.focus()},50);
 }
 async function doRegister(){
   const v=id=>($('#'+id).value||'').trim(),err=$('#lg-err');err.textContent='';
@@ -1080,7 +1080,7 @@ function showOwnerLogin(){
     '<label class="f">Kata sandi<input type="password" id="ow-pass" autocomplete="current-password"></label>'+
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
     '<button class="btn pay block" data-act="owner-login" id="ow-btn">Masuk ke portal</button></div></div>';
-  setTimeout(()=>{const u=$('#ow-user');if(u)u.focus()},50);
+  setTimeout(()=>{const u=$('#ow-user');if(u&&(!document.activeElement||document.activeElement===document.body))u.focus()},50);
 }
 async function ownerLogin(){
   const err=$('#lg-err'),b=$('#ow-btn');err.textContent='';b.disabled=true;
@@ -1090,7 +1090,7 @@ async function ownerLogin(){
   }catch(e){err.textContent=e.message}finally{const bb=$('#ow-btn');if(bb)bb.disabled=false}
 }
 async function ownerOpen(){
-  try{OWN.list=await rpc('jk_owner_list',{p_key:OWN.key})||[]}
+  try{OWN.list=await rpc('jk_owner_list',{p_key:OWN.key,p_app:'kasir'})||[]}
   catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin();$('#lg-err').textContent=e.message;return}toast(e.message);if(!$('.own'))showOwnerLogin();return}
   ownerRender();
 }
@@ -1128,7 +1128,7 @@ function showLogin(){
     '<button class="btn block" data-act="to-register">Daftar akun warung baru</button>'+
     (FRAMED?'<p class="muted small" style="margin:0;text-align:center">Mode pratinjau: daftar dan masuk akun warung aktif setelah aplikasi dipasang di situs.</p>':'')+
     '</div></div>';
-  setTimeout(()=>{const u=$('#lg-user');if(u)u.focus()},50);
+  setTimeout(()=>{const u=$('#lg-user');if(u&&(!document.activeElement||document.activeElement===document.body))u.focus()},50);
 }
 async function boot(){
   S=await Store.get(KEY());
