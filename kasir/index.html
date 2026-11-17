@@ -380,7 +380,7 @@ function render(){
   const low=S.products.filter(p=>p.stock<=p.min).length;
   $('#tabs').innerHTML=TABS.map(t=>'<button data-act="go" data-to="'+t[0]+'"'+(t[0]===view?' aria-current="page"':'')+'>'+ico(t[0])+t[1]+(t[0]==='barang'&&low?'<i class="badge num" title="'+low+' barang menipis atau habis">'+low+'</i>':'')+'</button>').join('');
   const tl=$('#top-logo');if(tl&&!tl.firstChild)tl.innerHTML=MARK('mk')+'<b>JAGA</b><span>Kasir</span>';
-  $('#shop-name').textContent=(SESS==='demo'?'DEMO · ':'')+(S.shop.name||(ACC&&ACC.shop_name)||'Nama warung belum diisi');
+  $('#shop-name').textContent=(S.shop.name||(ACC&&ACC.shop_name)||'Nama warung belum diisi');
   $('#printer-chip').className='chip'+(PR.ch?' on':''); const pq=pending().length;$('#printer-label').textContent=(PR.ch?(PR.name||'Printer siap'):'Tanpa printer')+(pq?' · '+pq+' antre':'');
   ({kasir:vKasir,barang:vBarang,riwayat:vRiwayat,laporan:vLaporan,pengaturan:vAtur})[view]();
 }
@@ -416,7 +416,6 @@ function cartHtml(){
 function vKasir(){
   $('#view').innerHTML='<div class="kasir">'+
   '<section class="stack">'+
-    (SESS==='demo'?'<div class="note"><div class="grow"><b>Akun demo.</b> Semua data di sini contoh dan terpisah dari data warung asli. Silakan coba semua fitur.</div><button class="btn" data-act="demo-reset">Atur ulang</button></div>':S.demo?'<div class="note"><div class="grow"><b>Ini data contoh.</b> Barang dan penjualan di sini hanya untuk mencoba. Hapus saat warung mulai memakai.</div><button class="btn" data-act="demo-clear">Hapus data contoh</button></div>':'')+
     (!S.demo&&(!S.shop.name||!S.products.length)?'<div class="note"><div class="grow"><b>Siapkan warung Anda.</b> '+(!S.shop.name?'Isi nama warung supaya tampil di struk. ':'')+(!S.products.length?'Daftarkan barang pertama dengan scan barcode.':'')+'</div>'+(!S.shop.name?'<button class="btn" data-act="go" data-to="pengaturan">Isi profil</button>':'<button class="btn" data-act="p-new">Tambah barang</button>')+'</div>':'')+
     (FRAMED&&!hidePrev?'<div class="note"><div class="grow"><b>Mode pratinjau.</b> Kamera, cetak struk, dan printer Bluetooth baru aktif setelah aplikasi dipasang di situs. Di sini Anda bisa mencoba alurnya dengan tombol Scan.</div><button class="btn" data-act="hide-prev">Tutup</button></div>':'')+
     '<div class="scanbar"><input type="search" id="q" placeholder="Ketik nama atau kode barang" value="'+esc(q)+'" autocomplete="off" enterkeyhint="done"><button class="btn primary" data-act="scan">'+ico('scan')+'Scan</button></div>'+
@@ -824,7 +823,7 @@ function vAtur(){
   const sh=S.shop;
   $('#view').innerHTML='<div class="wrap stack"><h2>Pengaturan</h2>'+
     '<div class="card stack"><h3>Akun</h3>'+(isAcc()&&ACC?'<p class="muted" style="margin:0">Masuk sebagai <b>'+esc(ACC.username)+'</b> · '+esc(ACC.shop_name)+'</p><div id="sync-line">'+Sync.html()+'</div>':
-      '<p class="muted" style="margin:0">'+(SESS==='demo'?'Masuk sebagai <b>akun demo</b>. Data demo terpisah dari data warung asli.':'Tanpa akun. Data tersimpan di perangkat ini.')+'</p>')+
+      '<p class="muted" style="margin:0">Tanpa akun. Data tersimpan di perangkat ini.</p>')+
       '<div class="row">'+(isAcc()?'<button class="btn primary" data-act="sync-now">Simpan online sekarang</button><button class="btn" data-act="pass-change">Ganti kata sandi</button>':'')+'<button class="btn" data-act="logout">Keluar</button></div></div>'+
     '<div class="card stack"><h3>Profil warung (tampil di struk)</h3><label class="f">Nama warung<input type="text" id="st-name" value="'+esc(sh.name)+'" autocomplete="off"></label>'+
       '<label class="f">Alamat<input type="text" id="st-address" value="'+esc(sh.address)+'" autocomplete="off"></label>'+
@@ -842,7 +841,7 @@ function vAtur(){
     '<div class="card stack"><h3>Cadangan data</h3><p class="muted" style="margin:0">Data tersimpan di '+(Store.mode==='perangkat'?'perangkat ini':'memori sementara dan hilang saat halaman ditutup')+'. '+S.products.length+' barang, '+S.sales.length+' struk.</p>'+
       '<div class="row"><button class="btn" data-act="backup">Unduh cadangan</button><label class="btn" for="restore-file">Pulihkan dari cadangan</label><input type="file" id="restore-file" accept="application/json,.json" hidden></div>'+
       (isAcc()?'<p class="muted small" style="margin:0">Cadangan online berjalan otomatis setiap ada perubahan. Masuk dengan akun yang sama di HP lain untuk membuka data ini.</p>':'')+'</div>'+
-    (SESS==='demo'?'<div class="card stack"><h3>Data demo</h3><p class="muted" style="margin:0">Mengembalikan semua data demo ke contoh awal.</p><div><button class="btn danger" data-act="demo-reset">Atur ulang data demo</button></div></div>':'<div class="card stack"><h3>Mulai dari awal</h3><p class="muted" style="margin:0">Menghapus semua barang, struk, dan pengaturan di perangkat ini.</p><div><button class="btn danger" data-act="reset">Hapus semua data</button></div></div>')+
+    (isAcc()?'':'<div class="card stack"><h3>Mulai dari awal</h3><p class="muted" style="margin:0">Menghapus semua barang, struk, dan pengaturan di perangkat ini.</p><div><button class="btn danger" data-act="reset">Hapus semua data</button></div></div>')+
     '<p class="muted small" style="text-align:center;margin:4px 0 0">Jaga Kasir oleh JAGA · versi 1.0</p></div>';
 }
 
@@ -861,15 +860,14 @@ const A={
   'manual-save':()=>{const price=num($('#mn-price').value),qty=num($('#mn-qty').value)||1,name=$('#mn-name').value.trim()||'Barang lain';if(!price)return toast('Isi harga satuan dulu.');S.cart.push({key:'m'+uid(),name,price,qty});closeSheet();cartSave()},
   'hide-prev':()=>{hidePrev=true;vKasir()},
   login:()=>{const u=($('#lg-user').value||'').trim().toLowerCase(),p=$('#lg-pass').value;
-    if(u==='demo'&&p==='demo') return startSession('demo');
-    if(u&&p&&u!=='demo') return loginAccount(u,p);
-    $('#lg-err').textContent='Nama pengguna atau kata sandi salah. Akun demo: demo / demo.'},
-  'login-fill':()=>{$('#lg-user').value='demo';$('#lg-pass').value='demo';$('#lg-err').textContent=''},
+    if(!u||!p){$('#lg-err').textContent='Isi nama pengguna dan kata sandi.';return}
+    return loginAccount(u,p);
+  },
   'login-local':()=>startSession('local'),
   'to-register':()=>showRegister(), 'to-login':()=>showLogin(), register:()=>doRegister(),
   'to-owner':async()=>{OWN.key=await Store.get('jk_owner_key');if(OWN.key)ownerOpen();else showOwnerLogin()},
   'owner-login':()=>ownerLogin(), 'owner-refresh':()=>ownerOpen(), 'owner-f':e=>{OWN.f=e.dataset.f;ownerRender()},
-  'owner-logout':async()=>{try{await rpc('jt_owner_logout',{p_key:OWN.key})}catch(e){}OWN.key=null;await Store.set('jk_owner_key','');showLogin()},
+  'owner-logout':async()=>{try{await rpc('jt_owner_logout',{p_key:OWN.key})}catch(e){}OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin()},
   'owner-set':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id),s=e.dataset.s,lbl={active:'Aktifkan',rejected:'Tolak',disabled:'Nonaktifkan'}[s];
     sheet('<div class="hd"><h2>'+lbl+' '+esc(a.shop_name)+'?</h2></div><p class="muted" style="margin:0">'+(s==='active'?'Warung bisa langsung masuk dan memakai Jaga Kasir.':s==='rejected'?'Warung tidak bisa masuk. Alasan tampil saat mereka mencoba masuk.':'Warung keluar dari semua perangkat dan tidak bisa masuk. Data cadangan tetap disimpan.')+'</p>'+
       (s!=='active'?'<label class="f">Alasan (opsional)<input type="text" id="ow-note" autocomplete="off"></label>':'')+
@@ -885,10 +883,9 @@ const A={
   'pass-change':()=>sheet('<div class="hd"><h2>Ganti kata sandi</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><label class="f">Kata sandi sekarang<input type="password" id="pc-old" autocomplete="current-password"></label><label class="f">Kata sandi baru (min. 6)<input type="password" id="pc-new" autocomplete="new-password"></label><label class="f">Ulangi kata sandi baru<input type="password" id="pc-new2" autocomplete="new-password"></label><button class="btn primary block" data-act="pass-save">Simpan kata sandi</button>'),
   'pass-save':async()=>{const n=$('#pc-new').value;if(n.length<6)return toast('Kata sandi baru minimal 6 karakter.');if(n!==$('#pc-new2').value)return toast('Kedua kata sandi baru tidak sama.');
     try{const r=await rpc('jk_change_pass',{p_key:await devKey(),p_old:$('#pc-old').value,p_new:n});if(!r.ok)return toast(r.error);closeSheet();toast('Kata sandi diganti. Perangkat lain perlu masuk lagi.')}catch(e){if(e.expired)return sessionEnded(e.message);toast(e.message)}},
-  logout:()=>confirmSheet('Keluar dari akun?',SESS==='demo'?'Data demo tetap tersimpan di perangkat ini.':isAcc()?(Sync.dirty?'Ada perubahan yang belum tersimpan online. Sambungkan internet dulu supaya tidak hilang. ':'Semua data sudah tersimpan online. ')+'Masuk lagi dengan nama pengguna dan kata sandi yang sama.':'Data warung tetap tersimpan di perangkat ini.','Keluar',async()=>{
+  logout:()=>confirmSheet('Keluar dari akun?',isAcc()?(Sync.dirty?'Ada perubahan yang belum tersimpan online. Sambungkan internet dulu supaya tidak hilang. ':'Semua data sudah tersimpan online. ')+'Masuk lagi dengan nama pengguna dan kata sandi yang sama.':'Data warung tetap tersimpan di perangkat ini.','Keluar',async()=>{
     if(isAcc()){if(Sync.dirty){try{await Sync.push()}catch(e){}}if(!Sync.dirty){try{await rpc('jk_logout',{p_key:await devKey()})}catch(e){}}ACC=null}
     SESS=null;S=null;await Store.set('jk_session','');showLogin()}),
-  'demo-reset':()=>confirmSheet('Atur ulang data demo?','Semua perubahan di akun demo dihapus dan kembali ke data contoh awal.','Atur ulang',()=>{S=seed();save();go('kasir');toast('Data demo dikembalikan ke contoh awal.')},true),
   more:()=>{rlimit+=200;vRiwayat()},
   'lunas-all':e=>{const k=e.dataset.cust,l=openDebt().filter(s=>(s.cust||'Tanpa nama')===k),t=l.reduce((a,s)=>a+s.total,0);
     confirmSheet('Lunasi kasbon '+k+'?',l.length+' struk senilai '+rp(t)+' ditandai lunas dan masuk kas hari ini.','Tandai lunas',()=>{const now=Date.now();l.forEach(s=>s.lunas=now);save();render();toast('Kasbon '+k+' lunas.')})},
@@ -974,7 +971,7 @@ document.addEventListener('keydown',ev=>{
   else if(t.id==='pay-cash'||t.id==='pay-cust'){if(payOk())commitSale()}
 });
 const KB={s:'',t:0};
-window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==view&&TABS.some(t=>t[0]===h)){view=h;render()}});
+window.addEventListener('hashchange',()=>{if(location.hash==='#pemilik'){location.reload();return}const h=location.hash.slice(1);if(h&&h!==view&&TABS.some(t=>t[0]===h)){view=h;render()}});
 
 /* ============ akun online & sinkron ============ */
 const Sync={state:'idle',at:null,err:'',timer:null,busy:false,dirty:false,rev:0,
@@ -1079,8 +1076,7 @@ function showOwnerLogin(){
     '<label class="f">Login pemilik<input type="text" id="ow-user" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
     '<label class="f">Kata sandi<input type="password" id="ow-pass" autocomplete="current-password"></label>'+
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
-    '<button class="btn pay block" data-act="owner-login" id="ow-btn">Masuk ke portal</button>'+
-    '<button class="btn ghost block" data-act="to-login">Kembali</button></div></div>';
+    '<button class="btn pay block" data-act="owner-login" id="ow-btn">Masuk ke portal</button></div></div>';
   setTimeout(()=>{const u=$('#ow-user');if(u)u.focus()},50);
 }
 async function ownerLogin(){
@@ -1092,7 +1088,7 @@ async function ownerLogin(){
 }
 async function ownerOpen(){
   try{OWN.list=await rpc('jk_owner_list',{p_key:OWN.key})||[]}
-  catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin();$('#lg-err').textContent=e.message;return}toast(e.message);if(!$('.own'))showLogin();return}
+  catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin();$('#lg-err').textContent=e.message;return}toast(e.message);if(!$('.own'))showOwnerLogin();return}
   ownerRender();
 }
 const ST={pending:['Menunggu','warn'],active:['Aktif','ok'],rejected:['Ditolak','bad'],disabled:['Nonaktif','bad']};
@@ -1127,14 +1123,13 @@ function showLogin(){
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
     '<button class="btn pay block" data-act="login" id="lg-btn">Masuk</button>'+
     '<button class="btn block" data-act="to-register">Daftar akun warung baru</button>'+
-    '<div class="note"><div class="grow"><b>Akun demo</b> untuk mencoba semua fitur dengan data contoh.<br>Pengguna <b>demo</b> · Kata sandi <b>demo</b></div><button class="btn" data-act="login-fill">Isi otomatis</button></div>'+
     (FRAMED?'<p class="muted small" style="margin:0;text-align:center">Mode pratinjau: daftar dan masuk akun warung aktif setelah aplikasi dipasang di situs.</p>':'')+
-    '<div class="lg-links"><button class="btn ghost" data-act="to-owner">Portal pemilik JAGA</button></div></div></div>';
+    '</div></div>';
   setTimeout(()=>{const u=$('#lg-user');if(u)u.focus()},50);
 }
 async function boot(){
   S=await Store.get(KEY());
-  if(!S||!Array.isArray(S.products)){S=SESS==='demo'?seed():blank();await save()} else S=normalize(S);
+  if(!S||!Array.isArray(S.products)){S=blank();await save()} else S=normalize(S);
   view='kasir'; const h=(location.hash||'').slice(1); if(TABS.some(t=>t[0]===h)) view=h;
   q='';kc='';hidePrev=false;rf='semua';
   render();
@@ -1142,11 +1137,15 @@ async function boot(){
 async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$('#login-root').innerHTML='';await boot()}
 (async function(){
   await Store.init();
+  if(location.hash==='#pemilik'){
+    try{const m=document.createElement('meta');m.name='robots';m.content='noindex';document.head.appendChild(m)}catch(e){}
+    OWN.key=await Store.get('jk_owner_key'); if(OWN.key) await ownerOpen(); else showOwnerLogin(); return;
+  }
   SESS=await Store.get('jk_session');
   if(isAcc()){ACC=await Store.get('jk_account_'+SESS);if(!ACC){SESS=null;showLogin()}else{await Sync.load();await boot();
       rpc('jk_me',{p_key:await devKey()}).then(r=>{if(r&&r.account){ACC=r.account;Store.set('jk_account_'+SESS,ACC);if(r.backup_rev>Sync.rev&&!Sync.dirty){pullServer().then(render).catch(()=>{})}else if(Sync.dirty)Sync.push()}})
         .catch(e=>{if(e.expired)sessionEnded('Akun dinonaktifkan atau sesi berakhir. Hubungi JAGA jika perlu.');else{Sync.state=Sync.dirty?'offline':'ok';Sync.show()}})}}
-  else if(SESS==='demo'||SESS==='local') await boot(); else{SESS=null;showLogin()}
+  else{SESS=null;await Store.set('jk_session','');showLogin()}
   try{if(!FRAMED&&navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
   if(!FRAMED&&'serviceWorker' in navigator&&location.protocol==='https:'){
     const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);
