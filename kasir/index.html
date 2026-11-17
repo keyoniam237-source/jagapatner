@@ -867,7 +867,7 @@ const A={
   'to-register':()=>showRegister(), 'to-login':()=>showLogin(), register:()=>doRegister(),
   'to-owner':async()=>{OWN.key=await Store.get('jk_owner_key');if(OWN.key)ownerOpen();else showOwnerLogin()},
   'owner-login':()=>ownerLogin(), 'owner-refresh':()=>ownerOpen(), 'owner-f':e=>{OWN.f=e.dataset.f;ownerRender()},
-  'owner-logout':async()=>{try{await rpc('jt_owner_logout',{p_key:OWN.key})}catch(e){}OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin()},
+  'owner-logout':async()=>{try{await rpc('jk_owner_logout',{p_key:OWN.key})}catch(e){}OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin()},
   'owner-set':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id),s=e.dataset.s,lbl={active:'Aktifkan',rejected:'Tolak',disabled:'Nonaktifkan'}[s];
     sheet('<div class="hd"><h2>'+lbl+' '+esc(a.shop_name)+'?</h2></div><p class="muted" style="margin:0">'+(s==='active'?'Warung bisa langsung masuk dan memakai Jaga Kasir.':s==='rejected'?'Warung tidak bisa masuk. Alasan tampil saat mereka mencoba masuk.':'Warung keluar dari semua perangkat dan tidak bisa masuk. Data cadangan tetap disimpan.')+'</p>'+
       (s!=='active'?'<label class="f">Alasan (opsional)<input type="text" id="ow-note" autocomplete="off"></label>':'')+
@@ -876,6 +876,9 @@ const A={
     try{const r=await rpc('jk_owner_decide',{p_key:OWN.key,p_id:id,p_status:s,p_note:n});if(!r.ok)return toast(r.error);closeSheet();await ownerOpen();toast(s==='active'?'Akun aktif. Kabari warung lewat tombol WhatsApp.':'Status akun diperbarui.')}catch(e){toast(e.message)}},
   'owner-pass':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id);
     sheet('<div class="hd"><h2>Atur ulang kata sandi</h2></div><p class="muted" style="margin:0">'+esc(a.shop_name)+' · pengguna <b>'+esc(a.username)+'</b>. Warung keluar dari semua perangkat dan masuk lagi dengan kata sandi baru.</p><input type="hidden" id="ow-id" value="'+a.id+'"><label class="f">Kata sandi baru (min. 6)<input type="text" id="ow-np" autocomplete="off"></label><div class="two"><button class="btn" data-act="close">Batal</button><button class="btn primary" data-act="owner-pass-yes">Simpan</button></div>')},
+  'owner-mypass':()=>sheet('<div class="hd"><h2>Ganti sandi pemilik</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><label class="f">Kata sandi sekarang<input type="password" id="om-old" autocomplete="current-password"></label><label class="f">Kata sandi baru (min. 8)<input type="password" id="om-new" autocomplete="new-password"></label><label class="f">Ulangi kata sandi baru<input type="password" id="om-new2" autocomplete="new-password"></label><button class="btn primary block" data-act="owner-mypass-save">Simpan</button>'),
+  'owner-mypass-save':async()=>{const n=$('#om-new').value;if(n.length<8)return toast('Kata sandi baru minimal 8 karakter.');if(n!==$('#om-new2').value)return toast('Kedua kata sandi baru tidak sama.');
+    try{const r=await rpc('jk_owner_setpass',{p_key:OWN.key,p_old:$('#om-old').value,p_new:n});if(!r.ok)return toast(r.error);closeSheet();toast('Sandi pemilik diganti. Perangkat lain perlu masuk lagi.')}catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');return showOwnerLogin()}toast(e.message)}},
   'owner-pass-yes':async()=>{try{const r=await rpc('jk_owner_resetpass',{p_key:OWN.key,p_id:$('#ow-id').value,p_new:$('#ow-np').value});if(!r.ok)return toast(r.error);closeSheet();toast('Kata sandi baru tersimpan. Beri tahu warung lewat WhatsApp.')}catch(e){toast(e.message)}},
   'sync-now':async()=>{Sync.dirty=true;await Sync.push();if(Sync.state==='ok')toast('Data tersimpan online.');else if(Sync.state!=='err')toast(Sync.err||'Belum tersambung internet.')},
   'sync-pull':async()=>{closeSheet();try{await pullServer();render();toast('Data online dipakai.')}catch(e){toast(e.message)}},
@@ -1072,8 +1075,8 @@ async function doRegister(){
 let OWN={key:null,list:[],f:'pending'};
 function showOwnerLogin(){
   $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
-    '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Portal pemilik JAGA</h1><p>Masuk dengan akun pemilik JAGA untuk menyetujui pendaftaran warung.</p></div>'+
-    '<label class="f">Login pemilik<input type="text" id="ow-user" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
+    '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Portal pemilik</h1><p>Kelola dan setujui akun warung Jaga Kasir.</p></div>'+
+    '<label class="f">Nama<input type="text" id="ow-user" autocomplete="username" autocapitalize="none" spellcheck="false"></label>'+
     '<label class="f">Kata sandi<input type="password" id="ow-pass" autocomplete="current-password"></label>'+
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
     '<button class="btn pay block" data-act="owner-login" id="ow-btn">Masuk ke portal</button></div></div>';
@@ -1081,7 +1084,7 @@ function showOwnerLogin(){
 }
 async function ownerLogin(){
   const err=$('#lg-err'),b=$('#ow-btn');err.textContent='';b.disabled=true;
-  try{const k=randKey();const r=await rpc('jt_owner_login',{p_login:$('#ow-user').value.trim(),p_pass:$('#ow-pass').value,p_key:k});
+  try{const k=randKey();const r=await rpc('jk_owner_login',{p_login:$('#ow-user').value.trim(),p_pass:$('#ow-pass').value,p_key:k});
     if(!r||!r.ok){err.textContent=(r&&r.error)||'Gagal masuk.';return}
     OWN.key=k;await Store.set('jk_owner_key',k);await ownerOpen();
   }catch(e){err.textContent=e.message}finally{const bb=$('#ow-btn');if(bb)bb.disabled=false}
@@ -1096,7 +1099,7 @@ function ownerRender(){
   const L=OWN.list,cnt=k=>L.filter(a=>a.status===k).length,l=L.filter(a=>OWN.f==='semua'||a.status===OWN.f);
   const wa=a=>'https://wa.me/'+a.wa+'?text='+encodeURIComponent(a.status==='active'?'Halo '+a.owner_name+', akun Jaga Kasir untuk '+a.shop_name+' sudah aktif. Masuk di https://jagapatner.my.id/kasir/ dengan nama pengguna: '+a.username:'Halo '+a.owner_name+', ini JAGA tentang pendaftaran Jaga Kasir untuk '+a.shop_name+'.');
   $('#login-root').innerHTML='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Akun warung Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header>'+
-    '<div class="own-body"><div class="row"><h2 class="grow">Akun warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button></div>'+
+    '<div class="own-body"><div class="row"><h2 class="grow">Akun warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button><button class="btn" data-act="owner-mypass">Ganti sandi pemilik</button></div>'+
     '<div class="tiles"><div class="stat"><small>Menunggu persetujuan</small><b class="num" style="color:'+(cnt('pending')?'var(--warn)':'inherit')+'">'+cnt('pending')+'</b></div><div class="stat"><small>Aktif</small><b class="num">'+cnt('active')+'</b></div><div class="stat"><small>Total warung</small><b class="num">'+L.length+'</b></div></div>'+
     '<div class="seg">'+[['pending','Menunggu'],['active','Aktif'],['disabled','Nonaktif'],['rejected','Ditolak'],['semua','Semua']].map(f=>'<button data-act="owner-f" data-f="'+f[0]+'" aria-pressed="'+(OWN.f===f[0])+'">'+f[1]+(f[0]!=='semua'&&cnt(f[0])?' · '+cnt(f[0]):'')+'</button>').join('')+'</div>'+
     (l.length?l.map(a=>'<div class="card acc"><div class="row"><b class="grow">'+esc(a.shop_name)+'</b><span class="pill '+ST[a.status][1]+'">'+ST[a.status][0]+'</span></div>'+
