@@ -332,6 +332,31 @@ label.f{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.01em}
 .sheet{border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom))}
 .sheet .hd h2{font-size:19px}
 .kv{padding:9px 0}
+.facs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.fchk{display:flex;align-items:center;gap:8px;border:1px solid #DDD6C8;border-radius:10px;padding:8px 10px;font-size:13.5px;font-weight:600;color:var(--ink);background:var(--surface);cursor:pointer}
+.fchk input{width:18px;height:18px;accent-color:var(--brand);flex:none}
+.fchk:has(input:checked){border-color:var(--brand);background:color-mix(in srgb,var(--gold) 10%,var(--surface))}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip-f{font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:99px;background:color-mix(in srgb,var(--brand) 6%,var(--surface));border:1px solid var(--line)}
+.denah{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.rtile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;min-height:84px;padding:9px 10px;border-radius:12px;border:1px solid var(--line);border-top:4px solid var(--muted);background:var(--surface);overflow:hidden}
+.rtile .rtn{font-weight:800;font-size:17px;line-height:1.1}
+.rtile .rtt{font-size:12.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.rtile .rts{font-size:11px;font-weight:600;color:var(--muted)}
+.rtile.lunas{border-top-color:var(--ok)}.rtile.lunas .rts{color:var(--ok)}
+.rtile.belum{border-top-color:var(--warn)}.rtile.belum .rts{color:var(--warn)}
+.rtile.telat{border-top-color:var(--bad);background:color-mix(in srgb,var(--bad) 5%,var(--surface))}.rtile.telat .rts{color:var(--bad)}
+.rtile.kosong{border-style:dashed;border-top:4px dashed var(--line);background:transparent}.rtile.kosong .rtt{color:var(--muted)}
+.rtile.fix{border-top-color:var(--gold)}.rtile.fix .rtt{color:var(--gold)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;font-weight:600;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.tlink{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--surface)}
+.tlink .grow{display:flex;flex-direction:column;gap:2px}
+.tlink .go{color:var(--gold);font-weight:800;font-size:18px}
+.sumg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sumg div{border:1px solid var(--line);border-radius:12px;padding:9px 11px;display:flex;flex-direction:column;gap:2px}
+.sumg small{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.sumg b{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -539,7 +564,23 @@ function shrinkFit(file,max,qual){return new Promise((res,rej)=>{const url=URL.c
     const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',qual))}catch(e){rej(e)}};
   im.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('img'))};im.src=url})}
 const VTYPES=['Motor','Mobil','Sepeda','Lainnya'];
+const FACS=['AC','Kipas angin','Kamar mandi dalam','Water heater','Kasur','Lemari','Meja & kursi','TV','Wi-Fi','Listrik termasuk','Air termasuk','Dapur bersama','Parkir motor','Parkir mobil','Laundry','CCTV','Penjaga 24 jam','Akses kunci pribadi'];
+const facList=r=>(r.facs||[]).concat(r.fac?[r.fac]:[]).filter(Boolean);
+const facChecks=(name,sel)=>'<div class="facs">'+FACS.map((f,i)=>'<label class="fchk"><input type="checkbox" name="'+name+'" value="'+esc(f)+'"'+((sel||[]).includes(f)?' checked':'')+'><span>'+esc(f)+'</span></label>').join('')+'</div>';
+const facRead=name=>$$('input[name="'+name+'"]:checked').map(x=>x.value);
+const facChips=r=>{const l=facList(r);return l.length?'<div class="chips">'+l.map(f=>'<span class="chip-f">'+esc(f)+'</span>').join('')+'</div>':'<p class="muted small" style="margin:0">Fasilitas belum diisi.</p>'};
+const monthRange=k=>{const [y,m]=k.split('-').map(Number);return [new Date(y,m-1,1).getTime(),new Date(y,m,1).getTime()-1]};
+const tenantsInMonth=(rid,k)=>{const [a,b]=monthRange(k);return S.tenants.filter(t=>t.roomId===rid&&t.start<=b&&(t.status==='aktif'||(t.out&&t.out>=a))).sort((x,y)=>y.start-x.start)};
+function roomState(r){const t=roomTenant(r.id);if(!t)return r.status==='perbaikan'?{k:'fix',t:'Perbaikan'}:{k:'kosong',t:'Kosong'};
+  const ob=openBills().filter(b=>b.tid===t.id);if(ob.some(b=>bState(b).k==='telat'))return{k:'telat',t:'Telat bayar',tn:t};
+  const cur=mKey(Date.now()),cb=S.bills.find(b=>b.tid===t.id&&b.period===cur&&!b.void&&!b.extra);
+  if(cb&&bLeft(cb)<=0)return{k:'lunas',t:'Lunas bulan ini',tn:t};
+  if(ob.length)return{k:'belum',t:'Belum bayar',tn:t};return{k:'lunas',t:'Tidak ada tagihan',tn:t}}
+const roomTile=r=>{const st=roomState(r);return '<button class="rtile '+st.k+'" data-act="room-info" data-id="'+r.id+'"><span class="rtn">'+esc(r.name)+'</span><span class="rtt">'+(st.tn?esc(st.tn.name.split(' ')[0]):st.t)+'</span><span class="rts">'+(st.tn?st.t:'')+'</span></button>'};
 const vehTxt=v=>[v.type,v.brand,v.color].filter(Boolean).join(' · ');
+
+function applySetup(st){if(!st||!st.rooms||S.rooms.length)return 0;const n=Math.min(300,st.rooms|0);
+  for(let i=1;i<=n;i++)S.rooms.push({id:uid()+i,name:String(i),type:'',floor:'',price:st.price||0,facs:(st.facs||[]).slice(),fac:st.other||'',status:'ok',note:''});return n}
 
 /* ============ tampilan ============ */
 const TABS=[['beranda','Beranda'],['kamar','Kamar'],['penghuni','Penghuni'],['tagihan','Tagihan'],['laporan','Laporan'],['pengaturan','Atur']];
@@ -574,6 +615,9 @@ function vHome(){
     '<div class="stat"><small>Diterima '+BULAN_F[new Date().getMonth()]+'</small><b class="num" style="color:var(--ok)">'+rp(inMonth)+'</b></div>'+
     '<div class="stat"><small>Belum dibayar bulan ini</small><b class="num">'+rp(curLeft)+'</b></div>'+
     '<div class="stat"><small>Tunggakan telat</small><b class="num" style="color:'+(lateSum?'var(--bad)':'inherit')+'">'+rp(lateSum)+'</b><span class="small muted">'+late.length+' tagihan</span></div></div>'+
+    (S.rooms.length?'<div class="card"><div class="row" style="margin-bottom:10px"><h3 class="grow">Denah kamar</h3><span class="muted small num">'+occ+' terisi · '+(rooms-occ)+' kosong</span></div>'+
+      '<div class="denah">'+[...S.rooms].sort((a,b)=>String(a.name).localeCompare(String(b.name),'id',{numeric:true})).map(roomTile).join('')+'</div>'+
+      '<div class="legend" style="margin-top:10px"><span><i style="background:var(--ok)"></i>Lunas</span><span><i style="background:var(--warn)"></i>Belum bayar</span><span><i style="background:var(--bad)"></i>Telat</span><span><i style="background:var(--line)"></i>Kosong</span></div></div>':'')+
     '<div class="card"><div class="row" style="margin-bottom:4px"><h3 class="grow">Perlu ditagih</h3><button class="btn" data-act="go" data-to="tagihan">Semua tagihan</button></div><div class="list">'+
       (due.length?due.slice(0,15).map(billRow).join(''):'<div class="empty">Tidak ada tagihan yang jatuh tempo dalam '+S.shop.remindBefore+' hari ke depan.</div>')+'</div></div>'+
     (ends.length?'<div class="card"><h3 style="margin-bottom:4px">Kontrak segera berakhir</h3><div class="list">'+ends.map(t=>{const d=Math.round((t.end-today0())/DAY);
@@ -594,9 +638,24 @@ function vRooms(){
   $('#view').innerHTML='<div class="wrap stack"><div class="row"><h2 class="grow">Kamar</h2><button class="btn primary" data-act="room-new">'+ico('plus')+'Tambah kamar</button></div>'+
     (S.rooms.length?'<div class="row small">'+pill('Terisi '+occ,'ok')+pill('Kosong '+(S.rooms.length-occ-fix),'info')+(fix?pill('Perbaikan '+fix,'warn'):'')+'</div>':'')+
     (l.length?'<div class="rooms">'+l.map(r=>{const t=roomTenant(r.id),s=t?'isi':r.status==='perbaikan'?'fix':'kosong';const ob=t?openBills().filter(b=>b.tid===t.id):[];const lt=ob.some(b=>bState(b).k==='telat');
-      return '<button class="room '+s+'" data-act="room-open" data-id="'+r.id+'"><span class="rn">'+esc(r.name)+'</span><span class="rt small muted">'+esc([r.type,r.floor?'Lt '+r.floor:''].filter(Boolean).join(' · ')||'Kamar')+'</span>'+
-      '<span class="rp num">'+rp(r.price)+'<small>/bln</small></span><span class="rs">'+(t?esc(t.name):s==='fix'?'Perbaikan':'Kosong')+'</span>'+(lt?'<span class="pill bad">Telat bayar</span>':'')+'</button>'}).join('')+'</div>':
+      return '<button class="room '+s+'" data-act="room-info" data-id="'+r.id+'"><span class="rn">'+esc(r.name)+'</span><span class="rt small muted">'+esc([r.type,r.floor?'Lt '+r.floor:''].filter(Boolean).join(' · ')||'Kamar')+'</span>'+
+      '<span class="rp num">'+rp(r.price)+'<small>/bln</small></span>'+(facList(r).length?'<span class="small muted">'+esc(facList(r).slice(0,3).join(' · '))+(facList(r).length>3?' +'+(facList(r).length-3):'')+'</span>':'')+'<span class="rs">'+(t?esc(t.name):s==='fix'?'Perbaikan':'Kosong')+'</span>'+(lt?'<span class="pill bad">Telat bayar</span>':'')+'</button>'}).join('')+'</div>':
       '<div class="card empty">Belum ada kamar. Tambahkan kamar pertama, misalnya "A1" atau "Kamar 1".</div>')+'</div>';
+}
+function roomInfo(id){const r=room(id);if(!r)return;const cur=mKey(Date.now()),st=roomState(r),ts=tenantsInMonth(r.id,cur);
+  const cb=S.bills.filter(b=>b.rid===r.id&&b.period===cur&&!b.void);
+  const iss=S.issues.filter(i=>i.rid===r.id&&i.status!=='selesai');
+  sheet(back('Kamar '+esc(r.name))+
+    '<div class="row small">'+pill(st.t,{lunas:'ok',belum:'warn',telat:'bad',kosong:'info',fix:'warn'}[st.k])+(r.type?'<span class="muted">'+esc(r.type)+'</span>':'')+(r.floor?'<span class="muted">Lantai '+esc(r.floor)+'</span>':'')+'</div>'+
+    '<div class="kv"><span class="muted">Harga sewa</span><b class="num">'+rp(r.price)+' / bulan</b></div>'+
+    '<div class="sec">Fasilitas</div>'+facChips(r)+
+    '<div class="sec">Penghuni '+BULAN_F[new Date().getMonth()]+'</div>'+
+    (ts.length?ts.map(t=>{const b=cb.find(x=>x.tid===t.id&&!x.extra),bs=b?bState(b):null;
+      return '<button class="tlink" data-act="t-go" data-id="'+t.id+'">'+avatar(t)+'<span class="grow"><b>'+esc(t.name)+'</b><span class="muted small">'+(t.status==='aktif'?'Masuk '+fmtDate(t.start):'Keluar '+fmtDate(t.out))+(t.wa?' · '+esc(t.wa):'')+'</span>'+
+        (b?'<span class="small">Sewa bulan ini <b class="num">'+rp(bTotal(b))+'</b> · '+pill(bs.t,bs.c)+'</span>':'<span class="muted small">Belum ada tagihan bulan ini</span>')+'</span><span class="go">›</span></button>'}).join(''):
+      '<p class="muted" style="margin:0">Kamar kosong bulan ini.</p>')+
+    (iss.length?'<div class="sec">Keluhan terbuka</div><div class="list">'+iss.map(issueRow).join('')+'</div>':'')+
+    '<div class="two">'+(roomTenant(r.id)?'<button class="btn" data-act="issue-new" data-room="'+r.id+'">Catat keluhan</button>':'<button class="btn primary" data-act="t-new" data-room="'+r.id+'">Isi penghuni</button>')+'<button class="btn" data-act="room-open" data-id="'+r.id+'">Ubah kamar</button></div>');
 }
 function roomForm(r){const n=!r;r=r||{id:'',name:'',type:'',floor:'',price:0,fac:'',status:'ok',note:''};const t=r.id&&roomTenant(r.id);
   const iss=r.id?S.issues.filter(i=>i.rid===r.id).sort((a,b)=>b.ts-a.ts).slice(0,5):[];
@@ -608,7 +667,9 @@ function roomForm(r){const n=!r;r=r||{id:'',name:'',type:'',floor:'',price:0,fac
     '<label class="f">Harga sewa per bulan<input type="text" inputmode="numeric" data-rp id="rf-price" value="'+(r.price?fmt(r.price):'')+'" placeholder="0" autocomplete="off"></label>'+
     '<div class="two"><label class="f">Lantai<input type="text" id="rf-floor" value="'+esc(r.floor)+'" autocomplete="off"></label>'+
     '<label class="f">Kondisi<select id="rf-status"><option value="ok"'+(r.status!=='perbaikan'?' selected':'')+'>Siap dihuni</option><option value="perbaikan"'+(r.status==='perbaikan'?' selected':'')+'>Sedang perbaikan</option></select></label></div>'+
-    '<label class="f">Fasilitas<input type="text" id="rf-fac" value="'+esc(r.fac)+'" placeholder="Kasur, lemari, AC, Wi-Fi" autocomplete="off"></label>'+
+    '<div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:var(--muted)">Fasilitas kamar'+facChecks('rf-facs',r.facs||[])+'</div>'+
+    '<label class="f">Fasilitas lain<input type="text" id="rf-fac" value="'+esc(r.fac||'')+'" placeholder="contoh: jendela besar, balkon" autocomplete="off"></label>'+
+    (n?'':'<label class="row" style="flex-wrap:nowrap"><input type="checkbox" id="rf-all" style="width:20px;height:20px"><span>Pakai fasilitas ini untuk semua kamar</span></label>')+
     '<label class="f">Catatan<input type="text" id="rf-note" value="'+esc(r.note)+'" autocomplete="off"></label>'+
     '<button class="btn primary block" data-act="room-save">Simpan kamar</button>'+
     (r.id?'<div class="row"><h3 class="grow">Keluhan kamar ini</h3><button class="btn" data-act="issue-new" data-room="'+r.id+'">'+ico('plus')+'Catat</button></div><div class="list">'+(iss.length?iss.map(issueRow).join(''):'<div class="muted small">Belum ada keluhan.</div>')+'</div>'+
@@ -692,6 +753,14 @@ function saveTenant(){
   TF.delF.forEach(f=>Files.del(f));TF.newF=[];TF.delF=[];
   save();const made=genBills();closeSheet();render();toast(made?'Tersimpan. '+made+' tagihan dibuat.':'Data penghuni tersimpan.');
 }
+function tenantSummary(t){const bs=S.bills.filter(b=>b.tid===t.id&&!b.void),paid=bs.reduce((a,b)=>a+bPaid(b),0),billed=bs.reduce((a,b)=>a+bTotal(b),0);
+  const done=bs.filter(b=>bLeft(b)<=0&&b.pays.length),onTime=done.filter(b=>Math.max(...b.pays.map(p=>p.ts))<=b.due+DAY).length;
+  const end=t.status==='keluar'&&t.out?t.out:Date.now(),months=Math.max(0,Math.round((end-t.start)/(30.44*DAY)));
+  const late=openBills().filter(b=>b.tid===t.id).reduce((a,b)=>a+bLeft(b),0);
+  return '<div class="sec">Laporan penghuni</div><div class="sumg">'+
+    '<div><small>Total dibayar</small><b style="color:var(--ok)">'+rp(paid)+'</b></div><div><small>Belum dibayar</small><b style="color:'+(late?'var(--bad)':'inherit')+'">'+rp(late)+'</b></div>'+
+    '<div><small>Total tagihan</small><b>'+rp(billed)+'</b><span class="muted small">'+bs.length+' tagihan</span></div><div><small>Lama tinggal</small><b>'+(months<1?'< 1 bulan':months+' bulan')+'</b></div>'+
+    '<div style="grid-column:1/-1"><small>Pembayaran tepat waktu</small><b>'+(done.length?onTime+' dari '+done.length+' tagihan lunas':'Belum ada tagihan lunas')+'</b></div></div>'}
 function tenantSheet(id){const t=tenant(id);if(!t)return;const r=room(t.roomId)||{},bl=billsOf(t.id).slice(0,12);
   const left=openBills().filter(b=>b.tid===t.id).reduce((a,b)=>a+bLeft(b),0);
   const pays=S.bills.filter(b=>b.tid===t.id&&!b.void).flatMap(b=>b.pays.map(p=>({b,p}))).sort((a,b)=>b.p.ts-a.p.ts);
@@ -700,7 +769,8 @@ function tenantSheet(id){const t=tenant(id);if(!t)return;const r=room(t.roomId)|
   sheet(back('Data penghuni')+
     '<div class="row" style="flex-wrap:nowrap">'+avatar(t,'avatar')+'<div class="grow"><h3 style="font-size:19px">'+esc(t.name)+'</h3><div class="row small" style="margin-top:4px">'+pill(t.status==='aktif'?'Aktif · kamar '+(r.name||'-'):'Sudah keluar',t.status==='aktif'?'ok':'info')+(left?pill('Belum dibayar '+rp(left),'bad'):pill('Tidak ada tunggakan','ok'))+'</div></div></div>'+
     '<div class="two">'+(t.wa?'<a class="btn" target="_blank" rel="noopener" href="https://wa.me/'+waNum(t.wa)+'">Chat WhatsApp</a>':'<span></span>')+'<button class="btn" data-act="t-edit" data-id="'+t.id+'">Ubah data</button></div>'+
-    '<div class="sec">Data diri</div>'+kv([t.gender?['Jenis kelamin',t.gender]:null,t.birth?['Tanggal lahir',fmtDate(new Date(t.birth+'T00:00:00').getTime())+(age!=null?' ('+age+' th)':'')]:null,t.origin?['Alamat asal',t.origin]:null,t.job?['Pekerjaan / kampus',t.job]:null])+
+    tenantSummary(t)+
+    '<div class="sec">Data diri</div'+'>'+kv([t.gender?['Jenis kelamin',t.gender]:null,t.birth?['Tanggal lahir',fmtDate(new Date(t.birth+'T00:00:00').getTime())+(age!=null?' ('+age+' th)':'')]:null,t.origin?['Alamat asal',t.origin]:null,t.job?['Pekerjaan / kampus',t.job]:null])+
     (t.ktp?'<button class="ktp-thumb" data-act="ktp-view" data-id="'+t.id+'">'+fImg(t.ktp,'Foto KTP '+t.name)+'<span>Foto KTP · ketuk untuk memperbesar</span></button>':'<div class="note"><div class="grow">Foto KTP belum ada.</div><button class="btn" data-act="t-edit" data-id="'+t.id+'">Tambah</button></div>')+
     '<div class="sec">Kontak</div>'+kv([['WhatsApp',t.wa||'-'],['Orang di kamar',String(t.people||1)],t.emName||t.emWa?['Kontak darurat',[t.emName,t.emRel?'('+t.emRel+')':'',t.emWa].filter(Boolean).join(' ')]:null])+
     (t.emWa?'<a class="btn block" target="_blank" rel="noopener" href="https://wa.me/'+waNum(t.emWa)+'">Hubungi kontak darurat</a>':'')+
@@ -907,12 +977,14 @@ const A={
   go:e=>go(e.dataset.to), close:()=>closeSheet(),
   veil:(e,ev)=>{if(ev.target===e)closeSheet()},
   'confirm-yes':()=>{const f=confirmFn;confirmFn=null;closeSheet();if(f)f()},
-  'room-new':()=>roomForm(null), 'room-open':e=>roomForm(room(e.dataset.id)),
+  'room-new':()=>roomForm(null), 'room-open':e=>roomForm(room(e.dataset.id)), 'room-info':e=>roomInfo(e.dataset.id),
+  't-go':e=>{const t=tenant(e.dataset.id);if(!t)return;pf=t.status;pq='';closeSheet();go('penghuni');tenantSheet(t.id)},
   'room-save':()=>{const id=$('#rf-id').value,name=$('#rf-name').value.trim(),price=num($('#rf-price').value);
     if(!name)return toast('Isi nama kamar.');if(!price)return toast('Isi harga sewa per bulan.');
     if(S.rooms.some(r=>r.name.toLowerCase()===name.toLowerCase()&&r.id!==id))return toast('Nama kamar ini sudah dipakai.');
-    const d={name,type:$('#rf-type').value.trim(),floor:$('#rf-floor').value.trim(),price,fac:$('#rf-fac').value.trim(),status:$('#rf-status').value,note:$('#rf-note').value.trim()};
-    const r=room(id);if(r)Object.assign(r,d);else S.rooms.push(Object.assign({id:uid()},d));save();closeSheet();render();toast('Kamar '+name+' tersimpan.')},
+    const d={name,type:$('#rf-type').value.trim(),floor:$('#rf-floor').value.trim(),price,facs:facRead('rf-facs'),fac:$('#rf-fac').value.trim(),status:$('#rf-status').value,note:$('#rf-note').value.trim()};
+    const r=room(id);if(r)Object.assign(r,d);else S.rooms.push(Object.assign({id:uid()},d));
+    if($('#rf-all')&&$('#rf-all').checked)S.rooms.forEach(x=>{x.facs=d.facs.slice();x.fac=d.fac});save();closeSheet();render();toast('Kamar '+name+' tersimpan.')},
   'room-del':e=>{const r=room(e.dataset.id);confirmSheet('Hapus kamar '+r.name+'?','Kamar hilang dari daftar. Riwayat tagihan lama tetap tersimpan.','Hapus kamar',()=>{S.rooms=S.rooms.filter(x=>x.id!==r.id);save();render();toast('Kamar dihapus.')},true)},
   't-new':e=>tenantForm(null,{room:e.dataset.room}), 't-edit':e=>tenantForm(tenant(e.dataset.id)), 't-open':e=>{if(e.dataset.id)tenantSheet(e.dataset.id)},
   't-save':()=>saveTenant(),
@@ -1050,6 +1122,7 @@ async function loginAccount(u,p){
       if(local&&Array.isArray(local.rooms)) S=normalize(local);
       else{
         S=blank(); S.shop.name=ACC.shop_name; S.shop.address=ACC.address||''; S.shop.phone=ACC.wa?'0'+String(ACC.wa).replace(/^62/,''):'';
+        applySetup(ACC.setup);
       }
       await Store.set(KEY(),S); Sync.rev=0; Sync.dirty=true; await Store.set('jko_dirty_'+SESS,true);
     }
@@ -1064,6 +1137,12 @@ function showRegister(){
     '<label class="f">Nama pemilik<input type="text" id="rg-name" autocomplete="name"></label>'+
     '<label class="f">Nomor WhatsApp<input type="tel" id="rg-wa" inputmode="tel" placeholder="0812xxxxxxxx" autocomplete="tel"></label>'+
     '<label class="f">Alamat kos<input type="text" id="rg-addr" autocomplete="street-address"></label>'+
+    '<div class="sec">Data kos</div>'+
+    '<div class="two"><label class="f">Jumlah kamar<input type="text" inputmode="numeric" id="rg-rooms" placeholder="contoh: 12" autocomplete="off"></label>'+
+    '<label class="f">Harga sewa per bulan<input type="text" inputmode="numeric" data-rp id="rg-price" placeholder="contoh: 750.000" autocomplete="off"></label></div>'+
+    '<div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:var(--muted)">Fasilitas yang dimiliki (centang)'+facChecks('rg-fac',[])+'</div>'+
+    '<label class="f">Fasilitas lain (opsional)<input type="text" id="rg-other" placeholder="contoh: dekat kampus, rooftop" autocomplete="off"></label>'+
+    '<div class="sec">Akun untuk masuk</div>'+
     '<label class="f">Nama pengguna (untuk masuk)<input type="text" id="rg-user" autocapitalize="none" spellcheck="false" placeholder="contoh: kosmelati" autocomplete="username"></label>'+
     '<div class="two"><label class="f">Kata sandi<input type="password" id="rg-pass" autocomplete="new-password"></label><label class="f">Ulangi kata sandi<input type="password" id="rg-pass2" autocomplete="new-password"></label></div>'+
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
@@ -1073,9 +1152,10 @@ function showRegister(){
 }
 async function doRegister(){
   const v=id=>($('#'+id).value||'').trim(),err=$('#lg-err');err.textContent='';
-  const d={p_username:v('rg-user').toLowerCase(),p_pass:$('#rg-pass').value,p_shop:v('rg-shop'),p_name:v('rg-name'),p_wa:v('rg-wa'),p_address:v('rg-addr'),p_app:'kosan'};
+  const d={p_username:v('rg-user').toLowerCase(),p_pass:$('#rg-pass').value,p_shop:v('rg-shop'),p_name:v('rg-name'),p_wa:v('rg-wa'),p_address:v('rg-addr'),p_app:'kosan',p_setup:{rooms:num(v('rg-rooms')),price:num(v('rg-price')),facs:facRead('rg-fac'),other:v('rg-other')}};
   if(d.p_shop.length<2)return err.textContent='Isi nama kos.';
   if(d.p_name.length<2)return err.textContent='Isi nama pemilik kos.';
+  if(d.p_setup.rooms<1||d.p_setup.rooms>300)return err.textContent='Isi jumlah kamar (1 sampai 300).';
   if(!/^[0-9+\-\s]{9,}$/.test(d.p_wa))return err.textContent='Isi nomor WhatsApp yang benar.';
   if(!/^[a-z0-9_.]{3,24}$/.test(d.p_username))return err.textContent='Nama pengguna 3-24 huruf kecil, angka, titik, atau garis bawah, tanpa spasi.';
   if(d.p_pass.length<6)return err.textContent='Kata sandi minimal 6 karakter.';
@@ -1121,7 +1201,7 @@ function ownerRender(){
     '<div class="seg">'+[['pending','Menunggu'],['active','Aktif'],['disabled','Nonaktif'],['rejected','Ditolak'],['semua','Semua']].map(f=>'<button data-act="owner-f" data-f="'+f[0]+'" aria-pressed="'+(OWN.f===f[0])+'">'+f[1]+(f[0]!=='semua'&&cnt(f[0])?' · '+cnt(f[0]):'')+'</button>').join('')+'</div>'+
     (l.length?l.map(a=>'<div class="card acc"><div class="row"><b class="grow">'+esc(a.shop_name)+'</b><span class="pill '+ST[a.status][1]+'">'+ST[a.status][0]+'</span></div>'+
       '<div class="small muted">'+esc(a.owner_name)+' · <span class="num">+'+esc(a.wa)+'</span> · pengguna <b>'+esc(a.username)+'</b></div>'+
-      (a.address?'<div class="small muted">'+esc(a.address)+'</div>':'')+
+      (a.address?'<div class="small muted">'+esc(a.address)+'</div>':'')+(a.setup&&a.setup.rooms?'<div class="small"><b>'+a.setup.rooms+' kamar</b>'+(a.setup.price?' · '+rp(a.setup.price)+'/bln':'')+((a.setup.facs||[]).length?' · '+esc(a.setup.facs.join(', ')):'')+'</div>':'')+
       '<div class="small muted">Daftar '+fmtDate(Date.parse(a.created_at))+(a.last_login?' · terakhir masuk '+fmtDate(Date.parse(a.last_login)):'')+(a.backup_at?' · cadangan '+fmtDate(Date.parse(a.backup_at))+' '+fmtTime(Date.parse(a.backup_at)):'')+'</div>'+
       (a.note?'<div class="small">Catatan: '+esc(a.note)+'</div>':'')+
       '<div class="row">'+(a.status!=='active'?'<button class="btn primary" data-act="owner-set" data-id="'+a.id+'" data-s="active">'+(a.status==='pending'?'Setujui':'Aktifkan')+'</button>':'')+
