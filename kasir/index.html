@@ -243,6 +243,22 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
   .wrap{max-width:860px;margin:0 auto}
 }
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.otabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:5px}
+.otabs button{flex:1;border:0;background:none;border-radius:10px;padding:10px 6px;font-weight:700;color:var(--muted)}
+.otabs button[aria-current="page"]{background:var(--brand);color:var(--brand-ink)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.citem{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px}
+.citem .pic{margin:0 0 4px}
+.citem b{font-size:13.5px;line-height:1.25;overflow-wrap:anywhere}
+.citem .small{font-size:12px}
+.crow{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0}
+.crow:first-child{border-top:0}
+.crow .th{width:52px;height:52px;border-radius:10px;flex:none}
+.crow .grow{display:flex;flex-direction:column;gap:2px}
+.catbtn{display:flex;align-items:center;gap:10px;width:100%;border:1.5px dashed color-mix(in srgb,var(--brand) 55%,var(--line));background:color-mix(in srgb,var(--brand) 5%,var(--surface));border-radius:12px;padding:10px 12px;text-align:left;color:var(--ink)}
+.catbtn b{display:block}
+.catnote{font-size:12.5px;font-weight:600;color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent);border-radius:10px;padding:8px 10px}
+.sl-row.fail.hit .nm{color:#4CC98A}
 </style>
 </head>
 <body>
@@ -661,7 +677,7 @@ async function scanLoop(){
   }
 }
 async function openScanner(cb,cont,title){
-  SC.cb=cb;SC.cont=cont;SC.last='';SC.torch=false;SC.fails=[];SC.newKey='';
+  SC.cb=cb;SC.cont=cont;SC.last='';SC.torch=false;SC.fails=[];SC.hits={};SC.newKey='';
   const manual='<input type="text" inputmode="numeric" id="scan-manual" placeholder="Ketik kode barcode" autocomplete="off"><button class="btn" data-act="scan-manual">Pakai</button>'+(FRAMED?'<button class="btn" data-act="scan-demo">Contoh</button>':'');
   $('#scan-root').innerHTML='<div class="scan'+(cont?' cart':'')+'" role="dialog" aria-modal="true"><div class="scan-top"><b>'+esc(title||'Scan barcode')+'</b><button class="btn" data-act="torch" id="torch" hidden>Lampu</button><button class="btn" data-act="scan-close">'+(cont?'Tutup':'Selesai')+'</button></div>'+
     '<div class="scan-view"><video playsinline muted autoplay></video><div id="scan-pop"></div><div class="reticle" id="reticle"></div><p class="scan-msg" id="scan-msg">Menyalakan kamera…</p></div>'+
@@ -695,7 +711,7 @@ function scanList(){const el=$('#scan-list');if(!el)return;
     return '<div class="sl-row'+(c.key===SC.newKey?' new':'')+'"><div><div class="nm">'+esc(i.name)+'</div><div class="sub num">'+rp(i.price)+' / '+esc(i.unit)+'</div></div><div class="tot num">'+rp(i.price*c.qty)+'</div>'+
       '<div class="sub">'+(c.qty>i.stock?'<span style="color:#F0A63C">stok tercatat '+i.stock+'</span>':'')+'</div>'+
       '<div class="sl-ctl"><button data-act="sc-dec" data-id="'+esc(c.key)+'" aria-label="Kurangi '+esc(i.name)+'">−</button><input type="number" min="0" inputmode="numeric" class="num" data-sq="'+esc(c.key)+'" value="'+c.qty+'" aria-label="Jumlah '+esc(i.name)+'"><button data-act="sc-inc" data-id="'+esc(c.key)+'" aria-label="Tambah '+esc(i.name)+'">+</button><button class="x" data-act="sc-del" data-id="'+esc(c.key)+'" aria-label="Hapus '+esc(i.name)+'">✕</button></div></div>'}).join('');
-  const fails=SC.fails.map(code=>'<div class="sl-row fail"><div><div class="nm">✕ Barcode belum terdaftar</div><div class="sub num">'+esc(code)+'</div></div><div class="sl-ctl"><button class="btn" data-act="sc-reg" data-code="'+esc(code)+'">Daftarkan</button><button class="x" data-act="sc-fdel" data-code="'+esc(code)+'" aria-label="Abaikan barcode '+esc(code)+'">✕</button></div></div>').join('');
+  const H=SC.hits||{};const fails=SC.fails.map(code=>H[code]?'<div class="sl-row fail hit"><div><div class="nm">Ada di Katalog JAGA</div><div class="sub">'+esc(H[code].name)+(H[code].price?' · saran '+rp(H[code].price):'')+'</div></div><div class="sl-ctl"><button class="btn" data-act="sc-cat" data-id="'+H[code].id+'">Tambahkan</button><button class="x" data-act="sc-fdel" data-code="'+esc(code)+'" aria-label="Abaikan">✕</button></div></div>':'<div class="sl-row fail"><div><div class="nm">✕ Barcode belum terdaftar</div><div class="sub num">'+esc(code)+'</div></div><div class="sl-ctl"><button class="btn" data-act="sc-reg" data-code="'+esc(code)+'">Daftarkan</button><button class="x" data-act="sc-fdel" data-code="'+esc(code)+'" aria-label="Abaikan barcode '+esc(code)+'">✕</button></div></div>').join('');
   el.innerHTML=fails+rows||'<div class="sl-empty">Belum ada barang. Arahkan barcode ke kotak di atas, barang langsung masuk ke daftar ini.</div>';
   $('#scan-sum').textContent=rp(cartTotal());$('#scan-count').textContent=cartQty()+' barang · '+S.cart.length+' jenis';$('#scan-pay').disabled=!S.cart.length;
   if(SC.newKey){el.scrollTop=0;SC.newKey=''}
@@ -705,7 +721,7 @@ function onCartScan(code){
   if(p){addToCart(p.id);const c=S.cart.find(x=>x.pid===p.id),n=c?c.qty:1;beep(true);SC.newKey=c?c.key:'';
     scanFx(true,'<span class="th">'+pict(p)+'</span><div><b>'+esc(p.name)+'</b><span class="small num">'+rp(p.sell)+' · masuk keranjang</span></div><span class="q num">×'+n+'</span>');scanInfo(p.name+' ×'+n);return}
   beep(false);
-  if($('#scan-list')){if(!SC.fails.includes(code))SC.fails.unshift(code);scanFx(false,'<div><b>Barcode belum terdaftar</b><span class="small num">'+esc(code)+'</span></div>');scanList();return}
+  if($('#scan-list')){if(!SC.fails.includes(code)){SC.fails.unshift(code);catByCode(code).then(x=>{if(x){SC.hits=SC.hits||{};SC.hits[code]=x;scanList()}})}scanFx(false,'<div><b>Barcode belum terdaftar</b><span class="small num">'+esc(code)+'</span></div>');scanList();return}
   closeScanner();
   sheet('<div class="hd"><h2>Barang belum terdaftar</h2></div><p class="muted" style="margin:0">Kode <b class="num">'+esc(code)+'</b> belum ada di daftar barang. Daftarkan sekarang supaya langsung masuk keranjang.</p>'+
     '<div class="two"><button class="btn" data-act="close">Lewati</button><button class="btn primary" data-act="p-new" data-code="'+esc(code)+'" data-tocart="1">Daftarkan barang</button></div>');
@@ -731,11 +747,43 @@ function refreshBarang(){
   $('#blist').innerHTML=l.length?grp.map(g=>'<div class="cat-h"><span>'+esc(g[0])+'</span><small>'+g[1].length+' barang</small></div>'+g[1].map(p=>'<button class="item" data-act="p-edit" data-id="'+p.id+'"><span class="th">'+pict(p)+'</span><div class="grow"><b>'+esc(p.name)+'</b><span class="muted small num">'+(p.code?esc(p.code):'tanpa barcode')+'</span></div>'+
     '<div class="r"><div class="num" style="font-weight:700">'+rp(p.sell)+'</div><div class="small num">'+p.stock+' '+esc(p.unit||'pcs')+' '+stockPill(p)+'</div></div></button>').join('')).join(''):'<div class="empty">Tidak ada barang di daftar ini.</div>';
 }
+/* ---- Katalog JAGA (warung) ---- */
+const CAT={cache:{}};
+async function catSearch(q,code){if(!isAcc())throw new Error(FRAMED?'Katalog aktif setelah aplikasi dipasang di situs.':'Masuk dengan akun warung untuk memakai katalog.');
+  const r=await rpc('jk_cat_search',{p_key:await devKey(),p_q:q||'',p_code:code||null});(r||[]).forEach(x=>CAT.cache[x.id]=x);return r||[]}
+async function catByCode(code){if(!code||!isAcc())return null;try{const r=await catSearch('',code);return r[0]||null}catch(e){return null}}
+function catPicker(opt){opt=opt||{};
+  sheet('<div class="hd"><h2>Katalog JAGA</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    '<p class="muted small" style="margin:0">Pilih barang, lalu nama, barcode, jenis, dan foto terisi otomatis. Anda cukup mengisi harga dan stok.</p>'+
+    '<input type="hidden" id="cp-tocart" value="'+(opt.tocart?1:'')+'"><div class="row" style="flex-wrap:nowrap"><input type="search" class="grow" id="cp-q" placeholder="Cari nama, jenis, atau barcode" autocomplete="off" autofocus style="width:auto"><button class="btn" data-act="cp-scan">'+ico('scan')+'Scan</button></div>'+
+    '<div class="list" id="cp-list"><div class="empty">Memuat katalog…</div></div>'+
+    '<button class="btn ghost block" data-act="cp-manual">Isi sendiri tanpa katalog</button>');
+  cpLoad('');
+}
+let cpT=0,cpSeq=0;
+async function cpLoad(q,code){const el=$('#cp-list');if(!el)return;const my=++cpSeq;
+  try{const r=await catSearch(q,code);if(my!==cpSeq||!$('#cp-list'))return;
+    const own=new Set(S.products.map(x=>x.code).filter(Boolean));
+    el.innerHTML=r.length?r.map(x=>'<button class="crow" data-act="cp-pick" data-id="'+x.id+'"><span class="th">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':esc(x.name.charAt(0)))+'</span><span class="grow"><b>'+esc(x.name)+'</b><span class="muted small">'+esc([x.cat,x.code].filter(Boolean).join(' · ')||'Tanpa barcode')+'</span>'+
+      (x.price?'<span class="small">Harga saran <b class="num">'+rp(x.price)+'</b></span>':'')+'</span>'+(x.code&&own.has(x.code)?'<span class="pill ok">Sudah ada</span>':'')+'</button>').join(''):
+      '<div class="empty">'+(q||code?'Tidak ada di katalog. Coba kata lain, atau isi sendiri.':'Katalog masih kosong.')+'</div>';
+  }catch(e){if($('#cp-list'))el.innerHTML='<div class="empty">'+esc(e.message)+'</div>'}}
+function productFromCat(x,opt){productForm(null,Object.assign({},opt||{},{cat:x}))}
+async function catFillByCode(code){
+  if(!code||$('#pf-id').value||S.products.some(x=>x.code===code))return;
+  const x=await catByCode(code);if(!x||!$('#pf-name')||$('#pf-id').value)return;
+  if(!$('#pf-name').value.trim())$('#pf-name').value=x.name;if(!$('#pf-cat').value.trim())$('#pf-cat').value=x.cat;$('#pf-unit').value=x.unit||$('#pf-unit').value;
+  if(!$('#pf-sell').value&&x.price)$('#pf-sell').value=fmt(x.price);
+  if(x.photo&&!$('#pf-img').value){$('#pf-img').value=x.photo;$('#pf-img-prev').innerHTML='<img src="'+x.photo+'" alt="">';$('#pf-img-del').hidden=false}
+  const n=$('#pf-catnote');if(n){n.hidden=false;n.textContent='Ditemukan di Katalog JAGA: '+x.name+'. Periksa harga jual dan isi stok.'}
+}
 function productForm(p,opt){
-  opt=opt||{}; const n=!p; p=p||{id:'',code:opt.code||'',name:opt.name||'',cat:'',buy:0,sell:0,stock:0,min:5,unit:'pcs'};
+  opt=opt||{}; const n=!p, cx=opt.cat||null; p=p||(cx?{id:'',code:cx.code||'',name:cx.name,cat:cx.cat||'',buy:0,sell:cx.price||0,stock:0,min:5,unit:cx.unit||'pcs',img:cx.photo||''}:{id:'',code:opt.code||'',name:opt.name||'',cat:'',buy:0,sell:0,stock:0,min:5,unit:'pcs'});
   const cats=[...new Set(S.products.map(x=>x.cat).filter(Boolean))];
   sheet('<div class="hd"><h2>'+(n?'Tambah barang':'Ubah barang')+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
     '<input type="hidden" id="pf-id" value="'+esc(p.id)+'"><input type="hidden" id="pf-tocart" value="'+(opt.tocart?1:'')+'">'+
+    (n&&!cx&&isAcc()?'<button class="catbtn" data-act="cat-open" data-tocart="'+(opt.tocart?1:'')+'" data-q="'+esc(opt.code||'')+'">'+ico('barang')+'<span><b>Pilih dari Katalog JAGA</b><span class="muted small">Nama, barcode, dan foto terisi otomatis</span></span></button>':'')+
+    '<div class="catnote" id="pf-catnote"'+(cx?'':' hidden')+'>'+(cx?'Dari Katalog JAGA'+(cx.price?' · harga saran '+rp(cx.price):'')+'. Periksa harga jual dan isi stok.':'')+'</div>'+
     '<label class="f">Nama barang<input type="text" id="pf-name" value="'+esc(p.name)+'" placeholder="Contoh: Gula pasir 1 kg" autocomplete="off"'+(p.name?'':' autofocus')+'></label>'+
     '<div class="row" style="flex-wrap:nowrap"><span class="th big" id="pf-img-prev">'+pict(p)+'</span><div class="stack grow" style="gap:6px"><span class="small muted" style="font-weight:600">Foto barang (opsional)</span><div class="row"><label class="btn" for="pf-img-file">Ambil atau pilih foto</label><button class="btn ghost danger" type="button" data-act="pf-img-del" id="pf-img-del"'+(p.img?'':' hidden')+'>Hapus foto</button></div></div>'+
     '<input type="file" id="pf-img-file" accept="image/*" hidden><input type="hidden" id="pf-img" value="'+esc(p.img||'')+'"></div>'+
@@ -749,6 +797,7 @@ function productForm(p,opt){
     '<button class="btn primary block" data-act="pf-save">Simpan barang</button>'+
     (n?'':'<div class="two"><button class="btn" data-act="stock-in" data-id="'+p.id+'">Stok masuk</button><button class="btn" data-act="moves" data-id="'+p.id+'">Riwayat stok</button></div><button class="btn danger block" data-act="p-del" data-id="'+p.id+'">Hapus barang</button>'));
 }
+function productFormAfter(opt){if(opt&&opt.code&&!opt.cat)catFillByCode(opt.code)}
 function saveProduct(){
   const id=$('#pf-id').value,name=$('#pf-name').value.trim(),code=$('#pf-code').value.trim(),sell=num($('#pf-sell').value),buy=num($('#pf-buy').value);
   if(!name) return toast('Isi nama barang dulu.');
@@ -904,6 +953,19 @@ const A={
   'login-local':()=>startSession('local'),
   'to-register':()=>showRegister(), 'to-login':()=>showLogin(), register:()=>doRegister(),
   'to-owner':async()=>{OWN.key=await Store.get('jk_owner_key');if(OWN.key)ownerOpen();else showOwnerLogin()},
+  'owner-tab':e=>{OWN.tab=e.dataset.t;if(OWN.tab==='akun')return ownerRender();if(OWN.tab==='usulan')OWN.sug=null;ownerCatRender();ownerCatLoad()},
+  'oc-new':()=>ownerCatForm(null),
+  'oc-edit':e=>ownerCatForm((OWN.cat.items||[]).find(x=>x.id===e.dataset.id)),
+  'os-take':e=>{const x=OWN.sug[+e.dataset.i];ownerCatForm(Object.assign({},x,{id:''}),true)},
+  'os-skip':async e=>{const x=OWN.sug[+e.dataset.i];try{await rpc('jk_owner_cat_skip',{p_key:OWN.key,p_k:x.key});OWN.sug.splice(+e.dataset.i,1);ownerCatRender(true);toast('Usulan diabaikan.')}catch(err){toast(err.message)}},
+  'oc-photo-del':()=>{OC.photo=null;OC.changed=true;$('#oc-prev').textContent='Foto';const b=$('[data-act=oc-photo-del]');if(b)b.remove()},
+  'oc-scan':()=>openScanner(c=>{beep(true);const i=$('#oc-code');if(i)i.value=c;closeScanner()},false,'Scan barcode barang'),
+  'oc-save':async()=>{const item={id:OC.id,name:$('#oc-name').value.trim(),code:$('#oc-code').value.trim(),cat:$('#oc-cat').value.trim(),unit:$('#oc-unit').value.trim()||'pcs',price:num($('#oc-price').value),source:OC.source};
+    if(item.name.length<2)return toast('Isi nama barang.');if(OC.changed||!OC.id)item.photo=OC.photo||'';
+    const b=$('[data-act=oc-save]');b.disabled=true;
+    try{const r=await rpc('jk_owner_cat_save',{p_key:OWN.key,p_item:item},45000);if(!r.ok){b.disabled=false;return toast(r.error)}
+      closeSheet();if(OC.skey){OWN.sug=(OWN.sug||[]).filter(x=>x.key!==OC.skey)}toast(item.name+' tersimpan di katalog.');ownerCatLoad()}catch(e){b.disabled=false;toast(e.message)}},
+  'oc-del':()=>{const id=OC.id;confirmSheet('Hapus dari katalog?','Barang hilang dari katalog. Barang yang sudah ada di daftar warung tidak ikut terhapus.','Hapus',async()=>{try{await rpc('jk_owner_cat_del',{p_key:OWN.key,p_id:id});toast('Dihapus dari katalog.');ownerCatLoad()}catch(e){toast(e.message)}},true)},
   'owner-login':()=>ownerLogin(), 'owner-refresh':()=>ownerOpen(), 'owner-f':e=>{OWN.f=e.dataset.f;ownerRender()},
   'owner-logout':async()=>{try{await rpc('jk_owner_logout',{p_key:OWN.key})}catch(e){}OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin()},
   'owner-set':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id),s=e.dataset.s,lbl={active:'Aktifkan',rejected:'Tolak',disabled:'Nonaktifkan'}[s];
@@ -943,7 +1005,7 @@ const A={
   'sc-inc':e=>{bump(e.dataset.id,1);scanList()}, 'sc-dec':e=>{bump(e.dataset.id,-1);scanList()},
   'sc-del':e=>{S.cart=S.cart.filter(x=>x.key!==e.dataset.id);cartSave();scanList()},
   'sc-fdel':e=>{SC.fails=SC.fails.filter(x=>x!==e.dataset.code);scanList()},
-  'sc-reg':e=>{const code=e.dataset.code;SC.fails=SC.fails.filter(x=>x!==code);closeScanner();productForm(null,{code,tocart:true})},
+  'sc-reg':e=>{const code=e.dataset.code;SC.fails=SC.fails.filter(x=>x!==code);closeScanner();const o={code,tocart:true};productForm(null,o);productFormAfter(o)},
   'scan-pay':()=>{if(!S.cart.length)return;closeScanner();openPay()},
   'scan-manual':()=>{const i=$('#scan-manual'),v=i.value.trim();if(!v)return;i.value='';SC.cb(v)},
   'scan-demo':()=>{const l=S.products.filter(p=>p.code);if(!l.length)return toast('Belum ada barang ber-barcode.');SC.cb(l[Math.floor(Math.random()*l.length)].code)},
@@ -961,11 +1023,17 @@ const A={
   lunas:()=>{curSale.lunas=Date.now();save();closeSheet();render();toast('Kasbon '+(curSale.cust||'')+' ditandai lunas dan masuk kas hari ini.')},
   void:()=>{const s=curSale;confirmSheet('Batalkan transaksi '+s.no+'?','Stok barang dikembalikan dan struk ini tidak dihitung di laporan.','Batalkan transaksi',()=>{
     s.void=Date.now();s.items.forEach(i=>{const p=i.pid&&prod(i.pid);if(p){p.stock+=i.qty;S.moves.push({ts:Date.now(),pid:p.id,qty:i.qty,type:'batal',ref:s.no})}});save();render();toast('Transaksi dibatalkan, stok dikembalikan.')},true)},
-  'p-new':e=>productForm(null,{code:e.dataset.code||'',name:e.dataset.name||'',tocart:!!e.dataset.tocart}),
+  'p-new':e=>{const o={code:e.dataset.code||'',name:e.dataset.name||'',tocart:!!e.dataset.tocart};productForm(null,o);productFormAfter(o)},
   'p-edit':e=>productForm(prod(e.dataset.id)),
   'pf-save':()=>saveProduct(),
+  'cat-open':e=>{catPicker({tocart:!!e.dataset.tocart});if(e.dataset.q){$('#cp-q').value=e.dataset.q;cpLoad('',e.dataset.q)}},
+  'cp-pick':e=>{const x=CAT.cache[e.dataset.id];if(!x)return;const own=x.code&&S.products.find(p=>p.code===x.code);if(own){closeSheet();productForm(own);return toast('Barang ini sudah ada di daftar Anda.')}
+    productFromCat(x,{tocart:!!($('#cp-tocart')||{}).value})},
+  'cp-manual':()=>{const tc=!!($('#cp-tocart')||{}).value;productForm(null,{tocart:tc})},
+  'cp-scan':()=>openScanner(c=>{beep(true);closeScanner();const q=$('#cp-q');if(q){q.value=c;cpLoad('',c)}},false,'Scan barcode katalog'),
+  'sc-cat':e=>{const x=CAT.cache[e.dataset.id];if(!x)return;SC.fails=SC.fails.filter(c=>c!==x.code);closeScanner();productFromCat(x,{tocart:true})},
   'pf-img-del':()=>{$('#pf-img').value='';$('#pf-img-prev').textContent=($('#pf-name').value.trim().charAt(0)||'?').toUpperCase();$('#pf-img-del').hidden=true},
-  'pf-scan':()=>openScanner(c=>{beep(true);const i=$('#pf-code');if(i)i.value=c;closeScanner();toast('Kode barcode terisi.')},false,'Scan kode barang'),
+  'pf-scan':()=>openScanner(c=>{beep(true);const i=$('#pf-code');if(i)i.value=c;closeScanner();toast('Kode barcode terisi.');catFillByCode(c)},false,'Scan kode barang'),
   'p-del':e=>{const p=prod(e.dataset.id);confirmSheet('Hapus '+p.name+'?','Barang hilang dari daftar. Struk lama tetap tersimpan.','Hapus barang',()=>{S.products=S.products.filter(x=>x.id!==p.id);S.cart=S.cart.filter(c=>c.pid!==p.id);save();render();toast('Barang dihapus.')},true)},
   'stock-in':e=>stockInSheet(e.dataset.id),
   'si-save':()=>{const p=prod($('#si-id').value),n=num($('#si-qty').value),b=num($('#si-buy').value);if(!n)return toast('Isi jumlah stok masuk.');p.stock+=n;if(b)p.buy=b;S.moves.push({ts:Date.now(),pid:p.id,qty:n,type:'masuk'});save();closeSheet();render();toast('Stok '+p.name+' menjadi '+p.stock+'.')},
@@ -984,6 +1052,8 @@ const A={
 document.addEventListener('click',ev=>{const e=ev.target.closest('[data-act]');if(!e)return;const f=A[e.dataset.act];if(f)f(e,ev)});
 document.addEventListener('input',ev=>{
   const t=ev.target;
+  if(t.id==='cp-q'){clearTimeout(cpT);cpT=setTimeout(()=>cpLoad(t.value.trim()),300)}
+  if(t.id==='oc-q'){clearTimeout(ocT);ocT=setTimeout(()=>{OWN.cq=t.value.trim();ownerCatLoad()},350)}
   if(t.matches('[data-rp]')){const n=num(t.value);t.value=n?fmt(n):''}
   if(t.id==='q'){q=t.value;refreshPick()}
   else if(t.id==='bq'){bq=t.value;refreshBarang()}
@@ -993,6 +1063,8 @@ document.addEventListener('input',ev=>{
 });
 document.addEventListener('change',ev=>{
   const t=ev.target;
+  if(t.id==='oc-file'&&t.files[0]){const f=t.files[0];t.value='';shrinkFit(f,520,.78).then(u=>{OC.photo=u;OC.changed=true;$('#oc-prev').innerHTML='<img src="'+u+'" alt="">'}).catch(()=>toast('Foto ini tidak bisa dibaca.'))}
+  if(t.id==='pf-code'&&t.value.trim())catFillByCode(t.value.trim());
   if(t.dataset&&t.dataset.sq){const c=S.cart.find(x=>x.key===t.dataset.sq);if(c){c.qty=Math.max(0,num(t.value));cartSave();scanList()}}
   if(t.id==='st-auto'){S.shop.autoPrint=t.checked;save()}
   if(t.id==='st-qris-file'&&t.files[0]){shrinkFit(t.files[0],720,.9).then(u=>{S.shop.qris=u;save();if(view==='pengaturan')vAtur();toast('Gambar QRIS tersimpan.')}).catch(()=>toast('Gambar ini tidak bisa dibaca. Coba gambar lain.'));t.value=''}
@@ -1116,7 +1188,7 @@ async function doRegister(){
 }
 
 /* ---- portal pemilik JAGA ---- */
-let OWN={key:null,list:[],f:'pending'};
+let OWN={key:null,list:[],f:'pending',tab:'akun',cat:{items:[],total:0},sug:null,cq:''};let ocT=0;
 function showOwnerLogin(){
   $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
     '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Portal pemilik</h1><p>Kelola dan setujui akun warung Jaga Kasir.</p></div>'+
@@ -1134,16 +1206,54 @@ async function ownerLogin(){
   }catch(e){err.textContent=e.message}finally{const bb=$('#ow-btn');if(bb)bb.disabled=false}
 }
 async function ownerOpen(){
+  if(OWN.tab!=='akun'){ownerCatRender();return ownerCatLoad()}
   try{OWN.list=await rpc('jk_owner_list',{p_key:OWN.key,p_app:'kasir'})||[]}
   catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin();$('#lg-err').textContent=e.message;return}toast(e.message);if(!$('.own'))showOwnerLogin();return}
   ownerRender();
 }
+function ownerTabs(){return '<div class="otabs">'+[['akun','Akun warung'],['katalog','Katalog'],['usulan','Usulan warung'+(OWN.sug&&OWN.sug.length?' · '+OWN.sug.length:'')]].map(t=>'<button data-act="owner-tab" data-t="'+t[0]+'"'+(OWN.tab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>').join('')+'</div>'}
+async function ownerCatLoad(){try{if(OWN.tab==='usulan'){OWN.sug=await rpc('jk_owner_cat_suggest',{p_key:OWN.key})||[]}else{OWN.cat=await rpc('jk_owner_cat_list',{p_key:OWN.key,p_q:OWN.cq})||{items:[],total:0}}ownerCatRender(true)}
+  catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');return showOwnerLogin()}toast(e.message)}}
+function ownerCatRender(partial){
+  const head='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Katalog JAGA untuk semua warung</div><button class="chip" data-act="owner-logout">Keluar</button></header><div class="own-body">'+ownerTabs();
+  let body='';
+  if(OWN.tab==='katalog'){const it=OWN.cat.items||[];
+    body='<div class="row"><h2 class="grow">Katalog barang</h2><button class="btn primary" data-act="oc-new">'+ico('plus')+'Tambah barang</button></div>'+
+      '<p class="muted small" style="margin:0">'+(OWN.cat.total||0)+' barang. Warung memilih dari sini saat menambah barang, jadi tidak perlu memotret ulang.</p>'+
+      '<input type="search" id="oc-q" placeholder="Cari nama, jenis, atau barcode" value="'+esc(OWN.cq)+'" autocomplete="off">'+
+      (it.length?'<div class="cgrid">'+it.map(x=>'<button class="citem" data-act="oc-edit" data-id="'+x.id+'"><span class="pic">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':esc(x.name.charAt(0).toUpperCase()))+'</span><b>'+esc(x.name)+'</b><span class="small muted">'+esc(x.cat||'Tanpa jenis')+'</span>'+
+        '<span class="small muted num">'+esc(x.code||'tanpa barcode')+'</span>'+(x.price?'<span class="small num">Saran <b>'+rp(x.price)+'</b></span>':'')+(x.source==='warung'?'<span class="pill info">dari warung</span>':'')+'</button>').join('')+'</div>':
+        '<div class="card empty">'+(OWN.cq?'Tidak ada yang cocok.':'Katalog masih kosong. Tambahkan barang, atau ambil dari tab Usulan warung.')+'</div>');
+  }else{const sg=OWN.sug;
+    body='<div class="row"><h2 class="grow">Usulan dari warung</h2><button class="btn" data-act="owner-tab" data-t="usulan">Muat ulang</button></div>'+
+      '<p class="muted small" style="margin:0">Barang buatan warung yang belum ada di katalog. Periksa, lalu masukkan ke katalog supaya warung lain bisa memakainya.</p>'+
+      (sg==null?'<div class="card empty">Memuat usulan…</div>':sg.length?'<div class="card"><div class="list">'+sg.map((x,i)=>'<div class="crow"><span class="th">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':esc(x.name.charAt(0).toUpperCase()))+'</span><span class="grow"><b>'+esc(x.name)+'</b><span class="muted small">'+esc([x.cat,x.code].filter(Boolean).join(' · ')||'Tanpa barcode')+(x.photo?'':' · tanpa foto')+'</span>'+
+        '<span class="small">Dipakai di '+x.shops+' warung'+(x.price?' · harga tengah <b class="num">'+rp(x.price)+'</b>':'')+'</span><span class="muted small">'+esc(x.shop_list||'')+'</span></span>'+
+        '<span class="stack" style="gap:6px"><button class="btn primary sm" data-act="os-take" data-i="'+i+'">Masukkan</button><button class="btn ghost sm" data-act="os-skip" data-i="'+i+'">Abaikan</button></span></div>').join('')+'</div></div>':
+        '<div class="card empty">Tidak ada usulan baru. Semua barang warung sudah ada di katalog atau sudah diabaikan.</div>');
+  }
+  if(partial&&$('.own .own-body')){const q=$('#oc-q'),pos=q?q.selectionStart:null,foc=q&&document.activeElement===q;$('.own .own-body').innerHTML=ownerTabs()+body;if(foc){const n=$('#oc-q');n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}return}
+  $('#login-root').innerHTML=head+body+'</div></div>';
+}
+let OC=null;
+function ownerCatForm(x,fromSug){const n=!x||!x.id;x=x||{name:'',code:'',cat:'',unit:'pcs',price:0,photo:null};OC={id:x.id||'',photo:x.photo||null,changed:!!fromSug&&!!x.photo,source:fromSug?'warung':(x.source||'pemilik'),skey:fromSug?x.key:''};
+  const cats=[...new Set((OWN.cat.items||[]).map(i=>i.cat).filter(Boolean))];
+  sheet('<div class="hd"><h2>'+(n?(fromSug?'Masukkan ke katalog':'Tambah barang katalog'):'Ubah barang katalog')+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    '<div class="row" style="flex-wrap:nowrap"><span class="th big" id="oc-prev">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':'Foto')+'</span><div class="stack grow" style="gap:6px"><span class="small muted" style="font-weight:600">Foto barang</span><div class="row"><label class="btn" for="oc-file">'+(x.photo?'Ganti foto':'Ambil atau pilih foto')+'</label>'+(x.photo?'<button class="btn ghost danger" data-act="oc-photo-del">Hapus</button>':'')+'</div></div><input type="file" id="oc-file" accept="image/*" hidden></div>'+
+    '<label class="f">Nama barang<input type="text" id="oc-name" value="'+esc(x.name)+'" placeholder="Indomie Goreng 85 g" autocomplete="off"'+(n&&!fromSug?' autofocus':'')+'></label>'+
+    '<label class="f">Barcode (kosongkan jika tidak ada)<span class="row" style="flex-wrap:nowrap"><input class="grow" type="text" inputmode="numeric" id="oc-code" value="'+esc(x.code||'')+'" autocomplete="off" style="width:auto"><button class="btn" type="button" data-act="oc-scan">'+ico('scan')+'Scan</button></span></label>'+
+    '<div class="two"><label class="f">Jenis<input type="text" id="oc-cat" list="oc-cats" value="'+esc(x.cat||'')+'" autocomplete="off"><datalist id="oc-cats">'+cats.map(c=>'<option value="'+esc(c)+'">').join('')+'</datalist></label>'+
+    '<label class="f">Satuan<input type="text" id="oc-unit" value="'+esc(x.unit||'pcs')+'" autocomplete="off"></label></div>'+
+    '<label class="f">Harga jual saran<input type="text" inputmode="numeric" data-rp id="oc-price" value="'+(x.price?fmt(x.price):'')+'" placeholder="0" autocomplete="off"></label>'+
+    '<button class="btn primary block" data-act="oc-save">Simpan ke katalog</button>'+(n?'':'<button class="btn danger block" data-act="oc-del">Hapus dari katalog</button>'));
+}
 const ST={pending:['Menunggu','warn'],active:['Aktif','ok'],rejected:['Ditolak','bad'],disabled:['Nonaktif','bad']};
 function ownerRender(){
+  if(OWN.tab!=='akun')return ownerCatRender();
   const L=OWN.list,cnt=k=>L.filter(a=>a.status===k).length,l=L.filter(a=>OWN.f==='semua'||a.status===OWN.f);
   const wa=a=>'https://wa.me/'+a.wa+'?text='+encodeURIComponent(a.status==='active'?'Halo '+a.owner_name+', akun Jaga Kasir untuk '+a.shop_name+' sudah aktif. Masuk di https://jagapatner.my.id/kasir/ dengan nama pengguna: '+a.username:'Halo '+a.owner_name+', ini JAGA tentang pendaftaran Jaga Kasir untuk '+a.shop_name+'.');
   $('#login-root').innerHTML='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Akun warung Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header>'+
-    '<div class="own-body"><div class="row"><h2 class="grow">Akun warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button><button class="btn" data-act="owner-mypass">Ganti sandi pemilik</button></div>'+
+    '<div class="own-body">'+ownerTabs()+'<div class="row"><h2 class="grow">Akun warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button><button class="btn" data-act="owner-mypass">Ganti sandi pemilik</button></div>'+
     '<div class="tiles"><div class="stat"><small>Menunggu persetujuan</small><b class="num" style="color:'+(cnt('pending')?'var(--warn)':'inherit')+'">'+cnt('pending')+'</b></div><div class="stat"><small>Aktif</small><b class="num">'+cnt('active')+'</b></div><div class="stat"><small>Total warung</small><b class="num">'+L.length+'</b></div></div>'+
     '<div class="seg">'+[['pending','Menunggu'],['active','Aktif'],['disabled','Nonaktif'],['rejected','Ditolak'],['semua','Semua']].map(f=>'<button data-act="owner-f" data-f="'+f[0]+'" aria-pressed="'+(OWN.f===f[0])+'">'+f[1]+(f[0]!=='semua'&&cnt(f[0])?' · '+cnt(f[0]):'')+'</button>').join('')+'</div>'+
     (l.length?l.map(a=>'<div class="card acc"><div class="row"><b class="grow">'+esc(a.shop_name)+'</b><span class="pill '+ST[a.status][1]+'">'+ST[a.status][0]+'</span></div>'+
