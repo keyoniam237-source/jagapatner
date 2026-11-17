@@ -379,28 +379,25 @@ const ico=n=>'<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+I[n]+'</sv
 
 /* ============ penyimpanan (IndexedDB -> localStorage -> memori) ============ */
 const Store={
-  idb:null, mode:'memori', mem:{},
+  idb:null, mode:'memori', mem:{}, late:null,
+  // kunci kecil penting (sesi, akun, kunci perangkat, status sinkron) disimpan ganda: IndexedDB + localStorage
+  keep:k=>/(_session|_account_|_devkey|_owner_key|_rev_|_dirty_|_at_|_fq_|_fd_)/.test(k),
   async init(){
-    try{
-      this.idb=await new Promise((res,rej)=>{
-        const rq=indexedDB.open('jaga-kosan',1);
-        rq.onupgradeneeded=()=>rq.result.createObjectStore('kv');
-        rq.onsuccess=()=>res(rq.result); rq.onerror=()=>rej(rq.error);
-        setTimeout(()=>rej(new Error('timeout')),2500);
-      });
-      this.mode='perangkat';
-    }catch(e){
-      try{localStorage.setItem('jko_t','1');localStorage.removeItem('jko_t');this.mode='perangkat'}catch(e2){this.mode='memori'}
-    }
+    const open=new Promise((res,rej)=>{try{const rq=indexedDB.open('jaga-kosan',1);
+      rq.onupgradeneeded=()=>rq.result.createObjectStore('kv');rq.onsuccess=()=>res(rq.result);rq.onerror=()=>rej(rq.error);rq.onblocked=()=>{}}catch(e){rej(e)}});
+    try{this.idb=await Promise.race([open,new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000))]);this.mode='perangkat'}
+    catch(e){open.then(db=>{this.idb=db;this.mode='perangkat'}).catch(()=>{});
+      try{localStorage.setItem('jks_t','1');localStorage.removeItem('jks_t');this.mode='perangkat'}catch(e2){this.mode='memori'}}
   },
   async get(k){
-    if(this.idb){try{return await new Promise((res,rej)=>{const r=this.idb.transaction('kv').objectStore('kv').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch(e){}}
-    try{const v=localStorage.getItem(k);if(v)return JSON.parse(v)}catch(e){}
+    if(this.idb){try{const v=await new Promise((res,rej)=>{const r=this.idb.transaction('kv').objectStore('kv').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});if(v!==undefined&&v!==null)return v}catch(e){}}
+    try{const v=localStorage.getItem(k);if(v!=null){const x=JSON.parse(v);if(this.idb&&x!=null)this.set(k,x);return x}}catch(e){}
     return this.mem[k];
   },
   async set(k,v){
     this.mem[k]=v;
-    if(this.idb){try{return await new Promise((res,rej)=>{const t=this.idb.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}catch(e){}}
+    if(this.keep(k)||!this.idb){try{if(v===null||v===undefined||v==='')localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+    if(this.idb){try{await new Promise((res,rej)=>{const t=this.idb.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)});return}catch(e){}}
     try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}
   }
 };
@@ -1005,14 +1002,14 @@ const Sync={state:'idle',at:null,err:'',timer:null,busy:false,dirty:false,rev:0,
     return '<span class="sync '+c+'"><i></i>'+esc(t)+'</span>'},
   show(){const e=$('#sync-line');if(e)e.innerHTML=this.html()},
   async load(){this.rev=(await Store.get('jko_rev_'+SESS))||0;this.dirty=!!(await Store.get('jko_dirty_'+SESS));this.at=(await Store.get('jko_at_'+SESS))||null;this.state=this.dirty?'idle':'ok'},
-  touch(){if(!isAcc())return;this.dirty=true;Store.set('jko_dirty_'+SESS,true);this.show();clearTimeout(this.timer);this.timer=setTimeout(()=>this.push(),4000)},
+  touch(){if(!isAcc())return;this.ver=(this.ver||0)+1;this.dirty=true;Store.set('jko_dirty_'+SESS,true);this.show();clearTimeout(this.timer);this.timer=setTimeout(()=>this.push(),4000)},
   async push(force){
     if(!isAcc()||this.busy)return; if(!this.dirty&&!force)return;
-    this.busy=true;this.state='saving';this.show();const sess=SESS;
+    this.busy=true;this.state='saving';this.show();const sess=SESS,ver=this.ver||0;
     try{
       const r=await rpc('jk_backup_put',{p_key:await devKey(),p_data:S,p_base_rev:this.rev,p_force:!!force},45000);
       if(sess!==SESS)return;
-      if(r&&r.ok){this.rev=r.rev;this.dirty=false;this.at=Date.now();this.state='ok';await Store.set('jko_rev_'+SESS,this.rev);await Store.set('jko_dirty_'+SESS,false);await Store.set('jko_at_'+SESS,this.at)}
+      if(r&&r.ok){this.rev=r.rev;this.dirty=(this.ver||0)!==ver;this.at=Date.now();this.state=this.dirty?'idle':'ok';await Store.set('jko_rev_'+SESS,this.rev);await Store.set('jko_dirty_'+SESS,this.dirty);await Store.set('jko_at_'+SESS,this.at);if(this.dirty){clearTimeout(this.timer);this.timer=setTimeout(()=>this.push(),1500)}}
       else if(r&&r.conflict){this.state='err';this.err='data di HP lain lebih baru';conflictSheet(r)}
       else{this.state='err';this.err=(r&&r.error)||'gagal'}
     }catch(e){if(e.expired)return sessionEnded(e.message);this.state=e.offline?'offline':'err';this.err=e.message}
@@ -1151,7 +1148,8 @@ function showLogin(){
 }
 async function boot(){
   S=await Store.get(KEY());
-  if(!S||!Array.isArray(S.rooms)){S=blank();await save()} else S=normalize(S);
+  if((!S||!Array.isArray(S.rooms))&&isAcc()){try{await pullServer()}catch(e){}if(!S||!Array.isArray(S.rooms)){S=blank();if(ACC){S.shop.name=ACC.shop_name;S.shop.address=ACC.address||''}await Store.set(KEY(),S)}}
+  else if(!S||!Array.isArray(S.rooms)){S=blank();await save()} else S=normalize(S);
   view='beranda'; const h=(location.hash||'').slice(1); if(TABS.some(t=>t[0]===h)) view=h;
   pq='';tm='';lm='';window.__jkoDay=dayKey(Date.now());genBills();
   render(); notifyDue(); Files.flush();
@@ -1164,7 +1162,9 @@ async function startSession(kind){SESS=kind;await Store.set('jko_session',kind);
     OWN.key=await Store.get('jko_owner_key'); if(OWN.key) await ownerOpen(); else showOwnerLogin(); return;
   }
   SESS=await Store.get('jko_session');
-  if(isAcc()){ACC=await Store.get('jko_account_'+SESS);if(!ACC){SESS=null;showLogin()}else{await Sync.load();await boot();
+  if(isAcc()){ACC=await Store.get('jko_account_'+SESS);
+    if(!ACC){try{const r=await rpc('jk_me',{p_key:await devKey()});if(r&&r.account){ACC=r.account;await Store.set('jko_account_'+SESS,ACC)}}catch(e){if(e.expired){SESS=null;await Store.set('jko_session','')}}}
+    if(!ACC){SESS=null;showLogin()}else{await Sync.load();await boot();
       rpc('jk_me',{p_key:await devKey()}).then(r=>{if(r&&r.account){ACC=r.account;Store.set('jko_account_'+SESS,ACC);if(r.backup_rev>Sync.rev&&!Sync.dirty){pullServer().then(render).catch(()=>{})}else if(Sync.dirty)Sync.push()}})
         .catch(e=>{if(e.expired)sessionEnded('Akun dinonaktifkan atau sesi berakhir. Hubungi JAGA jika perlu.');else{Sync.state=Sync.dirty?'offline':'ok';Sync.show()}})}}
   else{SESS=null;await Store.set('jko_session','');showLogin()}
