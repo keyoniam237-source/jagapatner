@@ -3058,6 +3058,7 @@ function appOwner(){
         (off ? '<span class="tag amber">Nonaktif</span>' : '<span class="tag green">Aktif</span>')+'</div>'+
         '<div class="om"><div><small>Pesanan</small><b>'+r.n+'</b></div><div><small>Penjualan</small><b>'+rp(r.gmv)+'</b></div><div><small>Bagi hasil</small><b>'+rp(r.share)+'</b></div></div>'+
         '<div class="obill"><span>Saldo toko: <b class="'+(S.ownW && S.ownW.balances && (S.ownW.balances[s.id]||0) < ((S.ownW.cfg||{}).minBalance||0) ? 'neg' : '')+'">'+(S.ownW && S.ownW.balances ? rp(S.ownW.balances[s.id]||0) : '…')+'</b></span>'+'<button class="linkbtn small" data-act="own-msg" data-v="store:'+esc(s.id)+'">Kirim pesan</button>'+'</div>'+
+        accLine("store", s.id, s.name)+
         '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="store:'+esc(s.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-exempt" data-k="s" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("percent")+' Bebas komisi</button>'+exTag("s", s.id)+'<button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("cash")+' Saldo</button>'+
         '<button class="btn ghost sm" data-act="own-store-active" data-id="'+esc(s.id)+'" data-v="'+(off?"1":"0")+'">'+(off?"Aktifkan":"Nonaktifkan")+'</button><button class="btn ghost sm dangerc" data-act="own-store-del" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Hapus</button></div></div>';
     }).join("") : '<div class="card pad muted small">Belum ada toko terdaftar.</div>')+'</div>';
@@ -3090,6 +3091,7 @@ function appOwner(){
       '<div class="dhead"><span class="dstat '+(x.on?'on':'')+'"></span><b>'+esc(d.name)+'</b> '+st+' '+starTxt(((D.ratings||S.ratings).driver||{})[d.id])+exTag("d", d.id)+'</div>'+
       '<small>'+esc([d.vehicle, d.plate].filter(Boolean).join(" · "))+(x.on ? ' · <b style="color:#15803d">Online</b>'+(x.busy?' (mengantar)':'') : ' · Offline'+(d.locAt ? ' '+ago(d.locAt) : ''))+'</small>'+
       '<small>'+x.trips+' trip'+(x.rides?' ('+x.rides+' Jago)':'')+' · hari ini '+x.today+' · saldo <b>'+(x.bal == null ? '…' : rp(x.bal))+'</b></small>'+(d.suspended && d.suspendNote ? '<small class="warnc">Alasan: '+esc(d.suspendNote)+'</small>' : '')+
+      accLine("driver", d.id, d.name, d.plate)+
       '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="drv:'+esc(d.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">'+I("cash")+' Saldo</button>'+
       '<details class="kmenu"><summary class="btn ghost sm">Lainnya ▾</summary><div class="kpop"><button data-act="own-exempt" data-k="d" data-id="'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">Bebas komisi</button><button data-act="own-drv-active" data-id="'+esc(d.id)+'" data-v="'+(d.suspended?"1":"0")+'" data-name="'+esc(d.name)+'">'+(d.suspended?"Aktifkan":"Nonaktifkan")+'</button><button class="dangerc" data-act="own-drv-del" data-id="'+esc(d.id)+'" data-v="'+esc(d.name)+'">Hapus</button></div></details></div></div></div>';
     }).join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/toko/#driver ke calon driver.</div>')+'</div>';
@@ -3105,6 +3107,24 @@ document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
   const a = el.dataset.act, v = el.dataset.v;
   if(a === "ver-tap"){ S._vt = (S._vtT && Date.now() - S._vtT < 1500 ? (S._vt||0) : 0) + 1; S._vtT = Date.now(); if(S._vt >= 5){ S._vt = 0; location.hash = "owner"; } return; }
+  if(a === "own-resetpass"){
+    const kind = el.dataset.k, nm = el.dataset.v || "";
+    confirmModal("Buat password sementara untuk " + (kind === "store" ? "toko" : "driver") + " “" + nm + "”? Password lama tidak berlaku lagi.", "Buat password", async () => {
+      try{
+        const r = await sbStore.rpc("jt_owner_resetpass", {p_kind:kind, p_id:el.dataset.id});
+        const d = {plate:r.plate};
+        const info = kind === "store" ? "Nama login: " + r.login + "\nPassword: " + r.pass : "Nama: " + r.name + "\nPlat: " + (d.plate || "-") + "\nPassword: " + r.pass;
+        const wa = r.wa;
+        const msg = "Halo, ini tim JAGA. Berikut data masuk akun " + (kind === "store" ? "toko" : "driver") + " Anda di jagapatner.my.id/toko:\n\n" + info + "\n\nSegera ganti password setelah masuk. Jangan berikan ke siapa pun.";
+        document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Password sementara</h2>'+
+          '<div class="tmppass">'+(kind === "store" ? '<small>Nama login</small><b>'+esc(r.login)+'</b>' : '<small>Nama + plat</small><b>'+esc(r.name)+' · '+esc(d.plate || "-")+'</b>')+'<small>Password</small><b class="pw">'+esc(r.pass)+'</b></div>'+
+          '<div class="hint">Password ini hanya tampil sekali. Kirim ke pemilik akun lewat WhatsApp, lalu minta ia menggantinya setelah masuk.</div>'+
+          '<div class="actions">'+(wa ? '<a class="btn press" target="_blank" rel="noopener" href="'+esc(waLink(wa, msg))+'">'+I("chat")+' Kirim lewat WA</a>' : '')+'<button class="btn ghost" id="tpCopy">Salin</button><button class="btn ghost" data-act="close-modal">Tutup</button></div></div></div>';
+        document.getElementById("tpCopy").onclick = () => { try{ navigator.clipboard.writeText(msg); toast("Disalin"); }catch(_){ toast("Gagal menyalin"); } };
+        accLoad();
+      }catch(err){ toast(String(err.message || err).replace(/^.*?:\s*/, "")); }
+    }); return;
+  }
   if(a === "own-rec-ok"){
     confirmModal("Hubungkan akun “" + (el.dataset.n || "") + "” ke HP peminta? Pastikan Anda sudah memastikan pemiliknya lewat WhatsApp.", "Ya, konfirmasi", async () => {
       try{ await sbStore.rpc("jt_owner_recover_decide", {p_id:Number(el.dataset.id), p_ok:true, p_target:v, p_note:""}); toast("Akun dipulihkan. Peminta otomatis masuk dan diminta membuat password baru."); S.own.recSig = ""; loadOwnerRec(); }
@@ -4493,6 +4513,17 @@ async function loadOwnerReports(){ try{ S.own.reports = await REP.all(); }catch(
 async function loadOwnerRec(){
   if(!SB) return;
   try{ const r = await sbStore.rpc("jt_owner_recover_list", {}); const sig = JSON.stringify(r); if(sig !== S.own.recSig){ S.own.recSig = sig; S.own.rec = r || []; if(!typing()) render(); } }catch(e){ S.own.rec = S.own.rec || []; }
+}
+/* akun login toko & driver di portal owner (password tersimpan terenkripsi, jadi owner membuat password sementara) */
+function accLoad(){ if(!SB || S.own.accBusy) return; S.own.accBusy = true; sbStore.rpc("jt_owner_accounts", {}).then(r => { S.own.acc = r || {stores:{}, drivers:{}}; render(); }).catch(() => { S.own.acc = {stores:{}, drivers:{}}; }).finally(() => { S.own.accBusy = false; }); }
+function accLine(kind, id, name, plate){
+  if(SB && S.own.acc === undefined){ S.own.acc = null; accLoad(); }
+  const A = S.own.acc; if(!A && SB) return "";
+  const a = A ? (kind === "store" ? A.stores : A.drivers)[id] : null;
+  const who = kind === "store" ? (a ? 'Login: <b>'+esc(a.login)+'</b>' : '<span class="warnc">Belum punya login</span>')
+    : 'Login: <b>'+esc(name || "-")+'</b> + plat <b>'+esc(plate || "-")+'</b>'+(a ? '' : ' · <span class="warnc">belum punya password</span>');
+  return '<div class="oacc">'+I("badge")+'<span class="grow">'+who+(a && a.locked ? ' · <span class="warnc">terkunci (salah password)</span>' : '')+(a ? ' · Password: <b>••••••</b>' : '')+'</span>'+
+    '<button class="linkbtn small" data-act="own-resetpass" data-k="'+kind+'" data-id="'+esc(id)+'" data-v="'+esc(name || "")+'">'+(a ? 'Reset password' : 'Buat login')+'</button></div>';
 }
 function ownerRecTab(){
   if(!SB && !S.own.rec) return '<div class="card pad muted small">Pemulihan akun aktif di website asli (terhubung database).</div>';
