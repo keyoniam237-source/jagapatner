@@ -1693,3 +1693,21 @@ html.navopen,html.navopen body{overflow:hidden}
 .codein{margin-top:10px;padding:12px;border-radius:14px;background:#f3f6ff;border:1px dashed #9db6ff}
 .codein-row{display:flex;gap:8px}
 .codein-row .in{flex:1;font-size:22px;letter-spacing:.3em;text-align:center;font-variant-numeric:tabular-nums}
+
+/* pemulihan akun */
+.recst{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;padding:12px 14px;border-radius:16px;font-size:13px}
+.recst>svg{flex:none;width:22px;height:22px;margin-top:1px}
+.recst b{display:block;font-size:14px;margin-bottom:2px}.recst small{display:block;line-height:1.45}
+.recst .btn{margin-top:8px}
+.recst.wait{background:#eef3ff;border:1px solid #c9d8ff;color:#1f3f8f}
+.recst.no{background:#fff7e6;border:1px solid #ffd99a;color:#7a4f00}
+.recst.ok{background:#e9f9ef;border:1px solid #b8ebc9;color:#0a6a37}
+.orec{display:grid;gap:12px}
+.orec .rq{padding:14px}
+.orec .rq-h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.orec .rq-h b{font-size:15px}
+.orec .rq-meta{font-size:13px;color:#5b6478;margin-top:4px;line-height:1.5}
+.orec .cand{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;margin-top:8px;border:1px solid #e3e8f2;border-radius:14px;background:#fafbff}
+.orec .cand small{display:block;color:#5b6478;font-size:12.5px}
+.orec .mt{display:inline-block;font-size:11px;font-weight:700;padding:1px 6px;border-radius:6px;background:#e9f9ef;color:#0a6a37;margin-right:4px}
+.orec .mt.no{background:#f1f3f8;color:#8a93a6}

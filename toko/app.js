@@ -2739,7 +2739,7 @@ async function ownRefresh(){
 function startOwner(){
   if(ownTimer) return;
   ownRefresh();
-  ownTimer = setInterval(() => { if(!document.hidden && S.role === "owner"){ ownRefresh(); if(["saldo","toko"].includes(S.own.tab) && !typing()) loadOwnerWallet(); } }, 15000);
+  ownTimer = setInterval(() => { if(!document.hidden && S.role === "owner"){ ownRefresh(); if(["saldo","toko"].includes(S.own.tab) && !typing()) loadOwnerWallet(); if(SB) loadOwnerRec(); } }, 15000);
 }
 const dayKey = t => { const d = new Date(t); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
 function rangeStart(r){
@@ -2956,13 +2956,15 @@ function appOwner(){
   const pendDrv = (D.drivers||[]).filter(d => d.verify === "pending").length;
   if(SB && S.own.buyers === undefined){ S.own.buyers = null; loadOwnerBuyers(); }
   const pendBuy = S.own.buyers ? S.own.buyers.list.filter(x => x.status === "pending").length : 0;
+  if(SB && S.own.rec === undefined){ S.own.rec = null; loadOwnerRec(); }
+  const pendRec = (S.own.rec || []).filter(x => x.pending).length;
   if(S.own.threads === undefined){ S.own.threads = []; loadOwnThreads(); }
   const unreadMsg = (S.own.threads || []).reduce((a, t) => a + (t.unread || 0), 0);
   const stuckN = (D.orders || []).filter(ownStuck).length;
-  const tabs = [["ringkasan","Ringkasan","dashboard",0],["pesanan","Pesanan","receipt",stuckN],["pesan","Pesan","chat",unreadMsg],["laporan","Laporan masalah","note",D.reportsOpen||0],["toko","Toko","store",0],["driver","Driver","truck",pendDrv],["pembeli","Pembeli","user",pendBuy],["saldo","Saldo","cash",0],["cabang","Cabang","pin",0],["akun","Akun","settings",0]];
-  const TT = {ringkasan:["Ringkasan","Kondisi bisnis JAGA secara keseluruhan"], pesanan:["Pesanan","Semua pesanan belanja dan perjalanan Jago"], pesan:["Pesan","Tanya jawab dengan toko dan driver"], laporan:["Laporan masalah","Keluhan dari pembeli, toko, dan driver"], toko:["Toko","Kelola toko mitra: pesan, nonaktifkan, atau hapus"], driver:["Driver","Verifikasi dan kelola akun driver"], pembeli:["Pembeli","Setujui pendaftaran akun pembeli"], saldo:["Saldo","Isi saldo, bagi hasil, dan komisi"], cabang:["Cabang","Wilayah layanan JAGA"], akun:["Akun","Link penting dan keamanan"]};
+  const tabs = [["ringkasan","Ringkasan","dashboard",0],["pesanan","Pesanan","receipt",stuckN],["pesan","Pesan","chat",unreadMsg],["laporan","Laporan masalah","note",D.reportsOpen||0],["toko","Toko","store",0],["driver","Driver","truck",pendDrv],["pembeli","Pembeli","user",pendBuy],["pulih","Pemulihan akun","badge",pendRec],["saldo","Saldo","cash",0],["cabang","Cabang","pin",0],["akun","Akun","settings",0]];
+  const TT = {ringkasan:["Ringkasan","Kondisi bisnis JAGA secara keseluruhan"], pesanan:["Pesanan","Semua pesanan belanja dan perjalanan Jago"], pesan:["Pesan","Tanya jawab dengan toko dan driver"], laporan:["Laporan masalah","Keluhan dari pembeli, toko, dan driver"], toko:["Toko","Kelola toko mitra: pesan, nonaktifkan, atau hapus"], driver:["Driver","Verifikasi dan kelola akun driver"], pembeli:["Pembeli","Setujui pendaftaran akun pembeli"], pulih:["Pemulihan akun","Toko & driver yang lupa akun atau password"], saldo:["Saldo","Isi saldo, bagi hasil, dan komisi"], cabang:["Cabang","Wilayah layanan JAGA"], akun:["Akun","Link penting dan keamanan"]};
   const tt = TT[S.own.tab] || TT.ringkasan;
-  const nav = cls => tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+I(t[2])+'<span>'+t[1]+'</span>'+(t[3]?'<em class="'+(t[0]==="pesan"||t[0]==="driver"||t[0]==="laporan"?"red":"amb")+'">'+t[3]+'</em>':'')+'</button>').join("");
+  const nav = cls => tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+I(t[2])+'<span>'+t[1]+'</span>'+(t[3]?'<em class="'+(t[0]==="pesan"||t[0]==="driver"||t[0]==="laporan"||t[0]==="pulih"?"red":"amb")+'">'+t[3]+'</em>':'')+'</button>').join("");
   const side = '<aside class="oside"><div class="obrand">'+JMARK()+'<div><b>JAGA</b><small>Portal Owner</small></div></div><nav>'+nav()+'</nav><div class="ofoot"><a href="'+esc(APP_URL)+'" target="_blank" rel="noopener">'+I("eye")+' Buka aplikasi pembeli</a></div></aside>';
   const ranges = [["hari","Hari ini"],["7hari","7 hari"],["bulan","Bulan ini"],["semua","Semua"]];
   const rangeBar = '<div class="oranges">'+ranges.map(r => '<button class="chip '+(S.own.range===r[0]?"on":"")+'" data-act="own-range" data-v="'+r[0]+'">'+r[1]+'</button>').join("")+'</div>';
@@ -2977,6 +2979,7 @@ function appOwner(){
     const reportsOpen = D.reportsOpen || 0, noLoc = stores.filter(s => s.active !== false && typeof s.lat !== "number").length, offStores = stores.filter(s => s.active === false).length, suspD = drivers.filter(d => d.suspended).length;
     const todo = [
       [pendDrv, "driver menunggu verifikasi", "Setujui atau tolak pendaftaran", "driver", "truck"],
+      [pendRec, "permintaan pemulihan akun", "Toko/driver lupa akun, cocokkan lalu konfirmasi", "pulih", "badge"],
       [unreadMsg, "pesan belum dibaca", "Dari toko dan driver", "pesan", "chat"],
       [reportsOpen, "laporan masalah terbuka", "Tindak lanjuti dengan Garansi JAGA", "laporan", "note"],
       [stuckN, "pesanan perlu dicek", "Belum bergerak terlalu lama", "pesanan", "clock"],
@@ -3034,6 +3037,8 @@ function appOwner(){
     h += '<div class="card pad">'+(list.length ? list.map(ownOrderRow).join("") : '<div class="muted small">Belum ada pesanan.</div>')+'</div>';
     const rl = RD.filter(o => f === "semua" ? true : f === "aktif" ? RIDE_ACTIVE.includes(o.status) : f === "selesai" ? o.status === "selesai" : o.status === "dibatalkan").slice(0, 100);
     h += '<h3 class="sub" style="margin:16px 4px 8px">Perjalanan Jago ('+rl.length+')</h3><div class="card pad">'+(rl.length ? rl.map(ownRideRow).join("") : '<div class="muted small">Belum ada perjalanan.</div>')+'</div>';
+  } else if(S.own.tab === "pulih"){
+    h += ownerRecTab();
   } else if(S.own.tab === "pesan"){
     h += ownerInboxTab(D);
   } else if(S.own.tab === "toko"){
@@ -3100,7 +3105,20 @@ document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
   const a = el.dataset.act, v = el.dataset.v;
   if(a === "ver-tap"){ S._vt = (S._vtT && Date.now() - S._vtT < 1500 ? (S._vt||0) : 0) + 1; S._vtT = Date.now(); if(S._vt >= 5){ S._vt = 0; location.hash = "owner"; } return; }
-  if(a === "own-tab"){ S.own.tab = v; S.own.focus = el.dataset.focus || null; if(v === "laporan") loadOwnerReports(); if(v === "saldo" || v === "toko" || v === "driver") loadOwnerWallet(); if(v === "pesan") loadOwnThreads(); render(); window.scrollTo(0,0);
+  if(a === "own-rec-ok"){
+    confirmModal("Hubungkan akun “" + (el.dataset.n || "") + "” ke HP peminta? Pastikan Anda sudah memastikan pemiliknya lewat WhatsApp.", "Ya, konfirmasi", async () => {
+      try{ await sbStore.rpc("jt_owner_recover_decide", {p_id:Number(el.dataset.id), p_ok:true, p_target:v, p_note:""}); toast("Akun dipulihkan. Peminta otomatis masuk dan diminta membuat password baru."); S.own.recSig = ""; loadOwnerRec(); }
+      catch(err){ toast(String(err.message || err).replace(/^.*?:\s*/, "")); }
+    }); return;
+  }
+  if(a === "own-rec-no"){
+    const note = prompt("Alasan menolak (dikirim ke peminta):", "Data tidak cocok dengan akun mana pun.");
+    if(note === null) return;
+    try{ await sbStore.rpc("jt_owner_recover_decide", {p_id:Number(el.dataset.id), p_ok:false, p_target:null, p_note:note}); toast("Permintaan ditolak"); S.own.recSig = ""; loadOwnerRec(); }
+    catch(err){ toast(String(err.message || err).replace(/^.*?:\s*/, "")); }
+    return;
+  }
+  if(a === "own-tab"){ S.own.tab = v; if(v === "pulih"){ S.own.recSig = ""; loadOwnerRec(); } S.own.focus = el.dataset.focus || null; if(v === "laporan") loadOwnerReports(); if(v === "saldo" || v === "toko" || v === "driver") loadOwnerWallet(); if(v === "pesan") loadOwnThreads(); render(); window.scrollTo(0,0);
     if(S.own.focus) setTimeout(() => { const f = document.querySelector(".focus"); if(f) f.scrollIntoView({block:"center", behavior:"smooth"}); }, 120); return; }
   if(a === "own-thread"){ S.own.thread = v || null; render(); if(v) loadOwnMsgs(v, true); return; }
   if(a === "own-ifilter"){ S.own.ifilter = v; render(); return; }
@@ -4472,6 +4490,34 @@ const OWNX = {
 };
 S.own.reports = null;
 async function loadOwnerReports(){ try{ S.own.reports = await REP.all(); }catch(e){ S.own.reports = []; } if(S.role === "owner" && !typing()) scheduleRender(); }
+async function loadOwnerRec(){
+  if(!SB) return;
+  try{ const r = await sbStore.rpc("jt_owner_recover_list", {}); const sig = JSON.stringify(r); if(sig !== S.own.recSig){ S.own.recSig = sig; S.own.rec = r || []; if(!typing()) render(); } }catch(e){ S.own.rec = S.own.rec || []; }
+}
+function ownerRecTab(){
+  if(!SB && !S.own.rec) return '<div class="card pad muted small">Pemulihan akun aktif di website asli (terhubung database).</div>';
+  const L = S.own.rec || [];
+  if(!L.length) return '<div class="card pad muted small">Belum ada permintaan pemulihan akun. Saat toko atau driver menekan “Lupa akun atau password?”, permintaannya muncul di sini.</div>';
+  const mt = (ok, t) => '<span class="mt'+(ok ? '' : ' no')+'">'+(ok ? '✓ ' : '')+t+'</span>';
+  return '<div class="hint" style="margin:0 0 10px">Cocokkan data dengan akun yang ada. Sebaiknya hubungi nomor WhatsApp-nya dulu untuk memastikan pemiliknya asli, lalu tekan <b>Konfirmasi</b>. Akun akan langsung terhubung ke HP peminta dan ia diminta membuat password baru.</div><div class="orec">'+
+    L.map(r => {
+      const drv = r.role === "driver";
+      let h = '<div class="card rq"><div class="rq-h"><div><b>'+esc(r.name || "-")+'</b> <span class="tag '+(drv?'blue':'amber')+'">'+(drv?'Driver':'Toko')+'</span>'+
+        '<div class="rq-meta">WA '+esc(r.wa)+(r.plate?' · Plat '+esc(r.plate):'')+' · '+fmtDate(r.at)+(r.note?'<br>“'+esc(r.note)+'”':'')+'</div></div>'+
+        (r.pending ? '<span class="tag amber">Menunggu</span>' : r.status === "ok" ? '<span class="tag green">Dikonfirmasi</span>' : '<span class="tag gray">Ditolak</span>')+'</div>';
+      if(r.pending){
+        h += '<div class="actions" style="margin-top:8px"><a class="btn ghost sm" target="_blank" rel="noopener" href="'+esc(waLink(r.wa, "Halo, ini tim JAGA. Kami menerima permintaan pemulihan akun "+(drv?"driver":"toko")+" atas nama "+r.name+". Benar Anda yang mengajukan?"))+'">'+I("chat")+' Hubungi WA</a></div>';
+        const C = r.cands || [];
+        h += C.length ? C.map(c => '<div class="cand"><div><b>'+esc(c.name || "-")+'</b><small>'+
+            (drv ? esc((c.plate || "-") + ' · WA ' + (c.wa || "-") + ' · ' + (c.trips || 0) + ' trip') : esc((c.login ? 'login: ' + c.login : 'belum punya login') + ' · WA ' + (c.wa || "-") + ' · ' + (c.orders || 0) + ' pesanan'))+'</small>'+
+            '<div style="margin-top:4px">'+mt(c.waMatch, "WA")+mt(c.nameMatch, "Nama")+(drv ? mt(c.plateMatch, "Plat") : '')+'</div></div>'+
+            '<button class="btn sm press" data-act="own-rec-ok" data-id="'+esc(r.id)+'" data-v="'+esc(c.id)+'" data-n="'+esc(c.name || "")+'">Konfirmasi</button></div>').join("")
+          : '<div class="muted small" style="margin-top:8px">Tidak ada akun yang cocok dengan WA atau nama ini.</div>';
+        h += '<div class="actions" style="margin-top:10px"><button class="btn danger sm" data-act="own-rec-no" data-id="'+esc(r.id)+'">Tolak</button></div>';
+      } else if(r.ownerNote) h += '<div class="small muted" style="margin-top:6px">Catatan: '+esc(r.ownerNote)+'</div>';
+      return h + '</div>';
+    }).join("")+'</div>';
+}
 async function loadOwnerBuyers(){
   if(!SB) return;
   try{ S.own.buyers = await sbStore.rpc("jt_owner_buyers", {}); }catch(e){ S.own.buyers = {gate:false, list:[], err:true}; }
@@ -5256,17 +5302,63 @@ function storeLoginCard2(){
     '<button class="btn block press" style="margin-top:14px">Masuk</button>'+
     '<div class="hint" style="text-align:center">Nama login & password dibuat di menu <b>Pengaturan → Login toko</b>.</div></form>';
 }
+/* ---------- pemulihan akun (lupa akun / password) ---------- */
+function recLoad(){
+  if(!SB || S.recBusy) return; S.recBusy = true;
+  sbStore.rpc("jt_recover_status", {}).then(r => { const sig = JSON.stringify(r); if(sig !== JSON.stringify(S.rec)){ S.rec = r || null; if(S.view === "masuk" && !typing()) render(); } })
+    .catch(() => {}).finally(() => { S.recBusy = false; });
+}
+function recForm(t){
+  const drv = t === "driver";
+  return '<form class="card pad slogin" id="recForm" autocomplete="on"><div class="sl-head">'+E(drv ? "scooter" : "store")+'<div><h2>Pulihkan akun '+(drv ? 'driver' : 'toko')+'</h2><small>Isi data saat mendaftar. Tim JAGA akan mencocokkan, menghubungi Anda lewat WhatsApp, lalu menghubungkan akun ke HP ini.</small></div></div>'+
+    '<input type="hidden" name="role" value="'+(drv ? 'driver' : 'store')+'">'+
+    '<label class="f">Nomor WhatsApp saat daftar</label><input class="in" name="wa" inputmode="tel" autocomplete="tel" required placeholder="08…">'+
+    '<label class="f">'+(drv ? 'Nama lengkap driver' : 'Nama toko')+'</label><input class="in" name="name" required placeholder="'+(drv ? 'Sesuai saat mendaftar' : 'Contoh: Toko Aksel')+'">'+
+    (drv ? '<label class="f">Plat nomor</label><input class="in" name="plate" autocapitalize="characters" autocomplete="off" placeholder="Contoh: BM 1234 AB">' : '')+
+    '<label class="f">Keterangan (opsional)</label><input class="in" name="note" maxlength="300" placeholder="Contoh: HP hilang, lupa password">'+
+    '<button class="btn block press" style="margin-top:14px">Kirim ke tim JAGA</button>'+
+    '<button type="button" class="btn ghost block" style="margin-top:8px" data-act="rec-close">Kembali ke halaman masuk</button></form>';
+}
+function recStatusCard(){
+  const r = S.rec; if(!r) return "";
+  if(r.status === "pending") return '<div class="recst wait">'+I("clock")+'<div><b>Permintaan pemulihan sedang dicek</b><small>Tim JAGA akan mencocokkan data dan menghubungi Anda lewat WhatsApp. Biarkan halaman ini, akun otomatis terhubung setelah dikonfirmasi.</small></div></div>';
+  if(r.status === "rejected" && !r.seen) return '<div class="recst no">'+I("megaphone")+'<div><b>Permintaan pemulihan belum bisa dikonfirmasi</b><small>'+esc(r.note || "Data tidak cocok dengan akun mana pun.")+' Hubungi JAGA lewat WhatsApp atau kirim ulang dengan data yang benar.</small><button class="btn ghost sm" data-act="rec-dismiss">Tutup</button></div></div>';
+  return "";
+}
+function recDoneCard(){
+  const r = S.rec, drv = r.role === "driver";
+  return '<form class="card pad slogin" id="recPass"><div class="recst ok" style="margin:0 0 12px">'+I("checkc")+'<div><b>Akun dipulihkan ✓</b><small>'+esc((drv ? 'Akun driver ' : 'Akun toko ') + (r.name || ''))+' sudah terhubung ke HP ini. Buat password baru agar bisa masuk lagi kapan saja.</small></div></div>'+
+    (drv ? '' : '<label class="f">Nama login</label><input class="in" name="login" autocapitalize="none" autocomplete="username" required value="'+esc(r.login || "")+'" placeholder="Contoh: tokoaksel">')+
+    '<label class="f">Password baru</label>'+pwField("pass", "new-password")+
+    '<button class="btn block press" style="margin-top:14px">Simpan & buka '+(drv ? 'portal driver' : 'toko')+'</button>'+
+    '<button type="button" class="btn ghost block" style="margin-top:8px" data-act="rec-skip">Nanti saja</button></form>';
+}
+async function recFinish(){
+  const r = S.rec; if(!r) return;
+  try{ await sbStore.rpc("jt_recover_seen", {p_id:r.id}); }catch(_){}
+  r.seen = true; try{ localStorage.removeItem("jt_rec"); }catch(_){}
+  if(r.role === "driver"){ try{ localStorage.setItem("jt_home_role", "driver"); }catch(_){} S.drv.sig = ""; S.drv.loaded = false; location.hash = "driver"; }
+  else { try{ localStorage.setItem("jt_home_role", "seller"); }catch(_){} S.myStoreIds = null; await refreshMyStores(); if(ORD_REFRESH) await ORD_REFRESH(); S.sellerStoreId = r.targetId; location.hash = "mitra"; }
+}
+setInterval(() => { if(!document.hidden && SB && (S.view === "masuk" || (S.rec && S.rec.status === "pending"))) recLoad(); }, 15000);
+setTimeout(() => { try{ if(SB && localStorage.getItem("jt_rec")) sbStore.rpc("jt_recover_status", {}).then(r => { S.rec = r || null; if(r && r.status === "ok" && !r.seen){ toast("Akun Anda sudah dipulihkan tim JAGA ✓"); go("masuk"); } }).catch(() => {}); }catch(_){} }, 2500);
 function appMasuk(){
+  if(S.rec === undefined){ S.rec = null; recLoad(); }
   const t = S.masukTab === "driver" ? "driver" : "toko";
   return '<div class="masuk"><div class="mhead"><button class="ibtn press" data-act="masuk-back" aria-label="Kembali">'+I("back")+'</button><div class="wmk">'+JMARK()+'<b>JAGA</b></div></div>'+
     '<h1>Masuk ke akun Anda</h1><p class="msub">Untuk mitra toko dan driver yang sudah terdaftar.</p>'+
     '<div class="mtabs" role="tablist"><button role="tab" class="'+(t==="toko"?"on":"")+'" data-act="masuk-tab" data-v="toko">'+E("store")+' Mitra toko</button><button role="tab" class="'+(t==="driver"?"on":"")+'" data-act="masuk-tab" data-v="driver">'+E("scooter")+' Driver</button></div>'+
-    (t === "toko" ? storeLoginCard2() : drvLoginCard())+
+    (S.rec && S.rec.status === "ok" && !S.rec.seen ? recDoneCard() : S.masukForgot ? recForm(t) : (t === "toko" ? storeLoginCard2() : drvLoginCard()) + recStatusCard() +
+      '<p class="mfoot"><a data-act="rec-open">Lupa akun atau password?</a></p>')+
     '<p class="mfoot">Belum punya akun? '+(t === "toko" ? '<a data-act="mitra-info">Daftar jadi mitra toko</a>' : '<a data-act="open-driver">Daftar jadi driver</a>')+'</p></div>';
 }
 document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return; const a = el.dataset.act;
   if(a === "masuk-tab"){ S.masukTab = el.dataset.v; render(); }
+  else if(a === "rec-open"){ if(!SB) return toast("Pemulihan akun hanya tersedia di jagapatner.my.id/toko"); S.masukForgot = true; render(); }
+  else if(a === "rec-close"){ S.masukForgot = false; render(); }
+  else if(a === "rec-dismiss"){ if(S.rec){ sbStore.rpc("jt_recover_seen", {p_id:S.rec.id}).catch(() => {}); S.rec.seen = true; } render(); }
+  else if(a === "rec-skip"){ await recFinish(); toast("Akun terhubung. Buat password nanti di menu pengaturan."); }
   else if(a === "masuk-back"){ let onb = false; try{ onb = !!localStorage.getItem("jt_onb"); }catch(_){} go(onb ? "home" : "login"); }
   else if(a === "drv-logout"){
     confirmModal("Keluar dari akun driver di HP ini? Anda bisa masuk lagi dengan nama, plat nomor, dan password.", "Keluar", async () => {
@@ -5280,7 +5372,24 @@ document.addEventListener("click", async e => {
   }
 });
 document.addEventListener("submit", async e => {
-  const f = e.target; if(f.id !== "drvLogin" && f.id !== "storeLogin2") return;
+  const f = e.target;
+  if(f.id === "recForm" || f.id === "recPass"){
+    e.preventDefault(); const fd = new FormData(f), btn = f.querySelector("button.btn"); btn.disabled = true;
+    try{
+      if(f.id === "recForm"){
+        const r = await sbStore.rpc("jt_recover_request", {p_role:fd.get("role"), p_wa:String(fd.get("wa")||""), p_name:String(fd.get("name")||""), p_plate:String(fd.get("plate")||""), p_note:String(fd.get("note")||"")});
+        try{ localStorage.setItem("jt_rec", String(r && r.id || 1)); }catch(_){}
+        S.masukForgot = false; S.rec = undefined; render(); toast("Permintaan terkirim. Tim JAGA akan menghubungi Anda lewat WhatsApp.");
+      } else {
+        const pass = String(fd.get("pass") || "");
+        if(S.rec.role === "driver") await sbStore.rpc("jt_driver_setpass", {p_pass:pass});
+        else await sbStore.rpc("jt_store_setpass", {p_store:S.rec.targetId, p_login:String(fd.get("login")||""), p_pass:pass});
+        await recFinish(); toast("Password baru tersimpan. Selamat datang kembali!");
+      }
+    }catch(err){ btn.disabled = false; toast(String((err && err.message) || "Gagal").replace(/^.*?:\s*/, "")); }
+    return;
+  }
+  if(f.id !== "drvLogin" && f.id !== "storeLogin2") return;
   e.preventDefault();
   if(!SB) return toast("Masuk akun hanya tersedia di jagapatner.my.id/toko. Ini halaman pratinjau.");
   const fd = new FormData(f), btn = f.querySelector("button.btn"); btn.disabled = true; btn.textContent = "Memeriksa…";
