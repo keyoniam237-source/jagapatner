@@ -171,6 +171,33 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 .scan-foot{padding:12px;display:flex;flex-direction:column;gap:8px;background:#0B1120}
 .scan-foot input{background:#141C31;border-color:#26314E;color:#FFFFFF}
 .scan-last{display:flex;justify-content:space-between;gap:10px;font-weight:600;min-height:22px}
+.scan.cart .scan-view{flex:0 0 38%;min-height:190px}
+.scan.cart .reticle{height:110px}
+.scan-panel{flex:1;min-height:0;display:flex;flex-direction:column;background:#0B1120}
+.scan-list{flex:1;min-height:0;overflow:auto;padding:4px 12px}
+.sl-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:10px 0;border-bottom:1px solid #1E2944}
+.sl-row.new{animation:slnew .9s ease-out}
+@keyframes slnew{from{background:rgba(59,227,139,.22)}to{background:transparent}}
+.sl-row .nm{font-weight:700;overflow-wrap:anywhere}
+.sl-row .sub{font-size:12.5px;color:#9AA6C6}
+.sl-row .tot{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.sl-ctl{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.sl-ctl button{width:34px;height:34px;border-radius:9px;border:1px solid #2C3858;background:#141C31;color:#fff;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.sl-ctl button.x{border-color:#5B2630;color:#FF7A6E}
+.sl-ctl input{width:54px;height:34px;min-height:34px;padding:4px;text-align:center;border-radius:9px;background:#141C31;border:1px solid #2C3858;color:#fff;font-weight:800;font-size:15px}
+.sl-row.fail{grid-template-columns:minmax(0,1fr) auto}
+.sl-row.fail .nm{color:#FF7A6E}
+.sl-row.fail .sl-ctl .btn{width:auto;min-height:34px;padding:4px 10px;font-size:12.5px;background:#141C31;border:1px solid #2C3858;color:#fff}
+.scan .btn.pay{background:var(--tag);border-color:var(--tag);color:var(--tag-ink)}
+.scan .btn.pay:disabled{opacity:.4}
+.sl-empty{color:#9AA6C6;text-align:center;padding:22px 8px;font-size:14px}
+.scan-tot{display:flex;align-items:center;gap:12px;padding:10px 12px;border-top:1px solid #1E2944;background:#0E1630}
+.scan-tot .grow small{display:block;color:#9AA6C6;font-size:12px;font-weight:600}
+.scan-tot .grow b{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.scan-tot .btn.pay{min-width:120px}
+.scan-man{display:flex;gap:8px;padding:0 12px 12px;background:#0E1630}
+.scan-man input{background:#141C31;border-color:#26314E;color:#fff;flex:1;min-width:0}
+.scan-man .btn{background:rgba(255,255,255,.12);border-color:transparent;color:#fff}
 
 #print-area{display:none}
 .estruk{display:block;width:min(100%,320px);margin:0 auto;border-radius:10px;border:1px solid var(--line);box-shadow:var(--shadow);background:#fff}
@@ -242,7 +269,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Math.round(Math.abs(n)).toLocaleString('id-ID');
 const rp=n=>(n<0?'-':'')+'Rp'+fmt(n);
-const num=v=>parseInt(String(v??'').replace(/[^\d]/g,''),10)||0;
+const num=v=>parseInt(String(v??'').trim().replace(/,\d{1,2}$/,'').replace(/[^\d]/g,''),10)||0;
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const pad=(n,l=2)=>String(n).padStart(l,'0');
 const dayKey=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
@@ -634,12 +661,14 @@ async function scanLoop(){
   }
 }
 async function openScanner(cb,cont,title){
-  SC.cb=cb;SC.cont=cont;SC.last='';SC.torch=false;
-  $('#scan-root').innerHTML='<div class="scan" role="dialog" aria-modal="true"><div class="scan-top"><b>'+esc(title||'Scan barcode')+'</b><button class="btn" data-act="torch" id="torch" hidden>Lampu</button><button class="btn" data-act="scan-close">Selesai</button></div>'+
+  SC.cb=cb;SC.cont=cont;SC.last='';SC.torch=false;SC.fails=[];SC.newKey='';
+  const manual='<input type="text" inputmode="numeric" id="scan-manual" placeholder="Ketik kode barcode" autocomplete="off"><button class="btn" data-act="scan-manual">Pakai</button>'+(FRAMED?'<button class="btn" data-act="scan-demo">Contoh</button>':'');
+  $('#scan-root').innerHTML='<div class="scan'+(cont?' cart':'')+'" role="dialog" aria-modal="true"><div class="scan-top"><b>'+esc(title||'Scan barcode')+'</b><button class="btn" data-act="torch" id="torch" hidden>Lampu</button><button class="btn" data-act="scan-close">'+(cont?'Tutup':'Selesai')+'</button></div>'+
     '<div class="scan-view"><video playsinline muted autoplay></video><div id="scan-pop"></div><div class="reticle" id="reticle"></div><p class="scan-msg" id="scan-msg">Menyalakan kamera…</p></div>'+
-    '<div class="scan-foot"><div class="scan-last"><span id="scan-last">Arahkan barcode ke dalam kotak</span><span class="num" id="scan-total"></span></div>'+
-    '<div class="row"><input class="grow" type="text" inputmode="numeric" id="scan-manual" placeholder="Atau ketik kode barcode" autocomplete="off" style="width:auto"><button class="btn" data-act="scan-manual">Pakai</button></div>'+
-    (FRAMED?'<button class="btn" data-act="scan-demo">Coba scan barang contoh</button>':'')+'</div></div>';
+    (cont?'<div class="scan-panel"><div class="scan-list" id="scan-list" aria-live="polite"></div>'+
+      '<div class="scan-tot"><div class="grow"><small id="scan-count">0 barang</small><b id="scan-sum">Rp0</b></div><button class="btn pay" data-act="scan-pay" id="scan-pay">Bayar</button></div>'+
+      '<div class="scan-man">'+manual+'</div></div>'
+    :'<div class="scan-foot"><div class="scan-last"><span id="scan-last">Arahkan barcode ke dalam kotak</span><span class="num" id="scan-total"></span></div><div class="row" style="flex-wrap:nowrap">'+manual.replace('id="scan-manual"','id="scan-manual" class="grow" style="width:auto"')+'</div></div>')+'</div>';
   SC.video=$('#scan-root video'); scanInfo();
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) throw new Error('nocam');
@@ -660,12 +689,24 @@ async function openScanner(cb,cont,title){
 }
 function stopStream(){if(SC.stream){SC.stream.getTracks().forEach(t=>t.stop());SC.stream=null}}
 function closeScanner(){SC.on=false;stopStream();$('#scan-root').innerHTML='';if(view==='kasir')refreshCart()}
-function scanInfo(msg){const a=$('#scan-last');if(!a)return;if(msg)a.textContent=msg;$('#scan-total').textContent=SC.cont&&S.cart.length?cartQty()+' barang · '+rp(cartTotal()):''}
+function scanInfo(msg){const a=$('#scan-last');if(a){if(msg)a.textContent=msg;$('#scan-total').textContent=''}scanList()}
+function scanList(){const el=$('#scan-list');if(!el)return;
+  const rows=S.cart.slice().reverse().map(c=>{const i=ci(c);if(!i)return'';
+    return '<div class="sl-row'+(c.key===SC.newKey?' new':'')+'"><div><div class="nm">'+esc(i.name)+'</div><div class="sub num">'+rp(i.price)+' / '+esc(i.unit)+'</div></div><div class="tot num">'+rp(i.price*c.qty)+'</div>'+
+      '<div class="sub">'+(c.qty>i.stock?'<span style="color:#F0A63C">stok tercatat '+i.stock+'</span>':'')+'</div>'+
+      '<div class="sl-ctl"><button data-act="sc-dec" data-id="'+esc(c.key)+'" aria-label="Kurangi '+esc(i.name)+'">−</button><input type="number" min="0" inputmode="numeric" class="num" data-sq="'+esc(c.key)+'" value="'+c.qty+'" aria-label="Jumlah '+esc(i.name)+'"><button data-act="sc-inc" data-id="'+esc(c.key)+'" aria-label="Tambah '+esc(i.name)+'">+</button><button class="x" data-act="sc-del" data-id="'+esc(c.key)+'" aria-label="Hapus '+esc(i.name)+'">✕</button></div></div>'}).join('');
+  const fails=SC.fails.map(code=>'<div class="sl-row fail"><div><div class="nm">✕ Barcode belum terdaftar</div><div class="sub num">'+esc(code)+'</div></div><div class="sl-ctl"><button class="btn" data-act="sc-reg" data-code="'+esc(code)+'">Daftarkan</button><button class="x" data-act="sc-fdel" data-code="'+esc(code)+'" aria-label="Abaikan barcode '+esc(code)+'">✕</button></div></div>').join('');
+  el.innerHTML=fails+rows||'<div class="sl-empty">Belum ada barang. Arahkan barcode ke kotak di atas, barang langsung masuk ke daftar ini.</div>';
+  $('#scan-sum').textContent=rp(cartTotal());$('#scan-count').textContent=cartQty()+' barang · '+S.cart.length+' jenis';$('#scan-pay').disabled=!S.cart.length;
+  if(SC.newKey){el.scrollTop=0;SC.newKey=''}
+}
 function onCartScan(code){
   const p=byCode(code);
-  if(p){addToCart(p.id);const c=S.cart.find(x=>x.pid===p.id),n=c?c.qty:1;beep(true);
+  if(p){addToCart(p.id);const c=S.cart.find(x=>x.pid===p.id),n=c?c.qty:1;beep(true);SC.newKey=c?c.key:'';
     scanFx(true,'<span class="th">'+pict(p)+'</span><div><b>'+esc(p.name)+'</b><span class="small num">'+rp(p.sell)+' · masuk keranjang</span></div><span class="q num">×'+n+'</span>');scanInfo(p.name+' ×'+n);return}
-  beep(false);closeScanner();
+  beep(false);
+  if($('#scan-list')){if(!SC.fails.includes(code))SC.fails.unshift(code);scanFx(false,'<div><b>Barcode belum terdaftar</b><span class="small num">'+esc(code)+'</span></div>');scanList();return}
+  closeScanner();
   sheet('<div class="hd"><h2>Barang belum terdaftar</h2></div><p class="muted" style="margin:0">Kode <b class="num">'+esc(code)+'</b> belum ada di daftar barang. Daftarkan sekarang supaya langsung masuk keranjang.</p>'+
     '<div class="two"><button class="btn" data-act="close">Lewati</button><button class="btn primary" data-act="p-new" data-code="'+esc(code)+'" data-tocart="1">Daftarkan barang</button></div>');
 }
@@ -899,6 +940,11 @@ const A={
   'cart-clear':()=>confirmSheet('Kosongkan keranjang?','Semua barang di keranjang akan dikeluarkan.','Kosongkan',()=>{S.cart=[];save();refreshCart()},true),
   scan:()=>openScanner(onCartScan,true,'Scan barang ke keranjang'),
   'scan-close':()=>closeScanner(),
+  'sc-inc':e=>{bump(e.dataset.id,1);scanList()}, 'sc-dec':e=>{bump(e.dataset.id,-1);scanList()},
+  'sc-del':e=>{S.cart=S.cart.filter(x=>x.key!==e.dataset.id);cartSave();scanList()},
+  'sc-fdel':e=>{SC.fails=SC.fails.filter(x=>x!==e.dataset.code);scanList()},
+  'sc-reg':e=>{const code=e.dataset.code;SC.fails=SC.fails.filter(x=>x!==code);closeScanner();productForm(null,{code,tocart:true})},
+  'scan-pay':()=>{if(!S.cart.length)return;closeScanner();openPay()},
   'scan-manual':()=>{const i=$('#scan-manual'),v=i.value.trim();if(!v)return;i.value='';SC.cb(v)},
   'scan-demo':()=>{const l=S.products.filter(p=>p.code);if(!l.length)return toast('Belum ada barang ber-barcode.');SC.cb(l[Math.floor(Math.random()*l.length)].code)},
   torch:async()=>{try{SC.torch=!SC.torch;await SC.stream.getVideoTracks()[0].applyConstraints({advanced:[{torch:SC.torch}]})}catch(e){toast('Lampu tidak didukung kamera ini.')}},
@@ -947,6 +993,7 @@ document.addEventListener('input',ev=>{
 });
 document.addEventListener('change',ev=>{
   const t=ev.target;
+  if(t.dataset&&t.dataset.sq){const c=S.cart.find(x=>x.key===t.dataset.sq);if(c){c.qty=Math.max(0,num(t.value));cartSave();scanList()}}
   if(t.id==='st-auto'){S.shop.autoPrint=t.checked;save()}
   if(t.id==='st-qris-file'&&t.files[0]){shrinkFit(t.files[0],720,.9).then(u=>{S.shop.qris=u;save();if(view==='pengaturan')vAtur();toast('Gambar QRIS tersimpan.')}).catch(()=>toast('Gambar ini tidak bisa dibaca. Coba gambar lain.'));t.value=''}
   if(t.id==='pf-img-file'&&t.files[0]){shrinkImage(t.files[0]).then(u=>{if(!$('#pf-img'))return;$('#pf-img').value=u;$('#pf-img-prev').innerHTML='<img src="'+u+'" alt="">';$('#pf-img-del').hidden=false}).catch(()=>toast('Foto ini tidak bisa dibaca. Coba foto lain.'));t.value=''}
