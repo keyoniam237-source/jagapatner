@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#E3182D">
-<title>Jaga Kasir</title>
+<title>Jaga Kasir · Aplikasi kasir warung gratis</title>
+<meta name="description" content="Aplikasi kasir warung gratis dari JAGA: scan barcode atau foto barang, stok otomatis, struk WhatsApp, kasbon, dan laporan tutup toko ke WhatsApp pemilik. Tanpa install, data aman tersimpan online.">
+<meta property="og:title" content="Jaga Kasir · Kasir warung siap jualan dalam 10 menit">
+<meta property="og:description" content="Barang langsung lengkap dengan foto, stok otomatis, kasbon tertagih, dan laporan tutup toko ke WhatsApp pemilik.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://jagapatner.my.id/kasir/"><meta property="og:image" content="https://jagapatner.my.id/kasir/icon-512.png">
+<link rel="canonical" href="https://jagapatner.my.id/kasir/">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com/@zxing/library@0.21.3/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.openfoodfacts.org; connect-src 'self' https://flwajaadllviewenerya.supabase.co https://world.openfoodfacts.org https://images.openfoodfacts.org https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -386,6 +393,35 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .scan.cart .reticle{height:150px}
 }
 @media (min-width:600px) and (orientation:portrait){.scan.cart .stage{flex-basis:46%}.scan.cart.m-pilih .stage{flex-basis:58%}}
+/* fitur unggulan */
+.pick-grid>.empty,.cgrid>.empty{grid-column:1/-1}
+details.more{border:1px dashed var(--line);border-radius:12px;padding:8px 12px}
+details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
+.urow{display:grid;grid-template-columns:minmax(0,1.4fr) 70px minmax(0,1fr) 36px;gap:6px;margin-bottom:6px}
+.urow.t2{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 36px}
+.urow input{min-height:40px;padding:8px 10px}
+.urow .x{border:1px solid var(--line);background:var(--surface);border-radius:10px;color:var(--bad);font-weight:800}
+.btn.sm{min-height:34px;padding:5px 11px;font-size:13px}
+.uchips{display:flex;gap:4px;flex-wrap:wrap;grid-column:1/-1}
+.uchips button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:700;min-height:28px}
+.uchips button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.scan .uchips button{background:#141C31;border-color:#2C3858;color:#fff}
+.scan .uchips button[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.who{background:#FFD9DD;color:var(--ink);border:0;font-weight:700}
+.wz{max-height:52vh;overflow:auto;margin:0 -4px;padding:0 4px}
+.wz-row{display:grid;grid-template-columns:minmax(0,1fr) 104px 62px;gap:6px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.wz-row.on{background:color-mix(in srgb,var(--brand) 5%,transparent)}
+.wz-l{display:flex;gap:10px;align-items:center;min-width:0}
+.wz-l input{width:20px;height:20px;flex:none}
+.wz-l>span{display:flex;flex-direction:column;min-width:0}
+.wz-l b{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.wz-row input[type=text]{min-height:38px;padding:7px 8px;font-size:14px}
+.wz-foot{position:sticky;bottom:-16px;background:var(--surface);display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0 4px;border-top:1px solid var(--line)}
+.trial{border-style:solid;background:#FFF3D6;border-color:#F3D9A0}
+.lg-foot{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;font-size:12.5px}
+.lg-foot a{color:var(--muted);text-decoration:none;font-weight:600}
+.funnel{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+@media (max-width:420px){.wz-row{grid-template-columns:minmax(0,1fr) 92px 54px}}
 </style>
 </head>
 <body>
@@ -542,13 +578,16 @@ let confirmFn=null;
 /* ============ navigasi ============ */
 const TABS=[['kasir','Kasir'],['barang','Barang'],['riwayat','Struk'],['laporan','Laporan'],['pengaturan','Atur']];
 let view='kasir';
-function go(v){view=TABS.some(t=>t[0]===v)?v:'kasir';try{if(location.hash!=='#'+view)location.hash=view}catch(e){}render()}
+function go(v){view=staffTabs().some(t=>t[0]===v)?v:'kasir';try{if(location.hash!=='#'+view)location.hash=view}catch(e){}render()}
 function render(){
   const low=S.products.filter(p=>p.stock<=p.min).length;
-  $('#tabs').innerHTML=TABS.map(t=>'<button data-act="go" data-to="'+t[0]+'"'+(t[0]===view?' aria-current="page"':'')+'>'+ico(t[0])+t[1]+(t[0]==='barang'&&low?'<i class="badge num" title="'+low+' barang menipis atau habis">'+low+'</i>':'')+'</button>').join('');
+  $('#tabs').innerHTML=staffTabs().map(t=>'<button data-act="go" data-to="'+t[0]+'"'+(t[0]===view?' aria-current="page"':'')+'>'+ico(t[0])+t[1]+(t[0]==='barang'&&low?'<i class="badge num" title="'+low+' barang menipis atau habis">'+low+'</i>':'')+'</button>').join('');
   const tl=$('#top-logo');if(tl&&!tl.firstChild)tl.innerHTML=MARK('mk')+'<b>JAGA</b><span>Kasir</span>';
   $('#shop-name').textContent=(S.shop.name||(ACC&&ACC.shop_name)||'Nama warung belum diisi');
   $('#printer-chip').className='chip'+(PR.ch?' on':''); const pq=pending().length;$('#printer-label').textContent=(PR.ch?(PR.name||'Printer siap'):'Tanpa printer')+(pq?' · '+pq+' antre':'');
+  if(WHO&&!['kasir','riwayat'].includes(view))view='kasir';
+  const pc=$('#printer-chip');let wc=$('#who-chip');if(!wc){wc=document.createElement('button');wc.id='who-chip';wc.className='chip who';wc.dataset.act='who-menu';pc.parentNode.insertBefore(wc,pc)}
+  wc.hidden=!WHO;if(WHO)wc.textContent='Penjaga: '+WHO.name;
   ({kasir:vKasir,barang:vBarang,riwayat:vRiwayat,laporan:vLaporan,pengaturan:vAtur})[view]();
 }
 
@@ -572,7 +611,10 @@ function pickHtml(){
 const inCart=id=>{const c=S.cart.find(x=>x.key===id);return c?c.qty:0};
 function tileHtml(p,act){const n=inCart(p.id);return '<button class="tile'+(p.stock<=0?' out':'')+'" data-act="'+act+'" data-id="'+p.id+'"><span class="pic">'+pict(p)+(p.cat?'<i class="ptag">'+esc(p.cat)+'</i>':'')+(n?'<i class="pq num">'+n+'</i>':'')+'</span><b>'+esc(p.name)+'</b><span class="num">'+(p.stock<=0?'Stok habis · ':'')+rp(p.sell)+'</span></button>'}
 function pcard(o){return '<button class="pcard" data-act="'+o.act+'" '+(o.attr||'')+'><span class="pic">'+(o.img?'<img src="'+esc(o.img)+'" alt="" loading="lazy">':esc((o.name||'?').charAt(0).toUpperCase()))+(o.tag?'<i class="ptag">'+esc(o.tag)+'</i>':'')+(o.badge?'<i class="pq'+(o.badgeOk?' ok':'')+'">'+o.badge+'</i>':'')+'</span><b>'+esc(o.name)+'</b>'+(o.sub?'<span class="small muted">'+o.sub+'</span>':'')+'<span class="price num">'+(o.price?rp(o.price):'<span class="muted small">'+(o.noprice||'')+'</span>')+'</span></button>'}
-const ci=c=>{if(c.pid){const p=prod(c.pid);return p?{pid:p.id,name:p.name,price:p.sell,buy:p.buy||0,unit:p.unit||'pcs',stock:p.stock}:null}
+const ci=c=>{if(c.pid){const p=prod(c.pid);if(!p)return null;const u=c.u!=null&&p.units&&p.units[c.u];
+    if(u)return {pid:p.id,name:p.name+' ('+u.n+')',price:u.p,buy:(p.buy||0)*u.q,unit:u.n,stock:Math.floor(p.stock/u.q),f:u.q,un:u.n};
+    let price=p.sell;(p.tiers||[]).forEach(t=>{if(c.qty>=t.min&&t.p>0)price=t.p});
+    return {pid:p.id,name:p.name,price,buy:p.buy||0,unit:p.unit||'pcs',stock:p.stock,f:1,grosir:price!==p.sell}}
   return {pid:null,name:c.name,price:c.price,buy:0,unit:'pcs',stock:Infinity}};
 const cartTotal=()=>S.cart.reduce((a,c)=>{const i=ci(c);return a+(i?i.price*c.qty:0)},0);
 const cartQty=()=>S.cart.reduce((a,c)=>a+c.qty,0);
@@ -580,13 +622,15 @@ function cartHtml(){
   if(!S.cart.length) return '<div class="empty">Keranjang kosong.<br>Scan barcode atau pilih barang.</div>';
   return S.cart.map(c=>{const p=ci(c);if(!p)return'';
     return '<div class="line"><div class="nm">'+esc(p.name)+(p.pid?'':' <span class="pill info">manual</span>')+'</div><div class="tot num">'+rp(p.price*c.qty)+'</div>'+
-    '<div class="muted small num">'+rp(p.price)+' / '+esc(p.unit)+(c.qty>p.stock?' · <span style="color:var(--bad)">stok tercatat '+p.stock+'</span>':'')+'</div>'+
-    '<div class="qty"><button data-act="dec" data-id="'+esc(c.key)+'" aria-label="Kurangi">−</button><button class="qn num" data-act="qty-set" data-id="'+esc(c.key)+'" aria-label="Ubah jumlah, sekarang '+c.qty+'">'+c.qty+'</button><button data-act="inc" data-id="'+esc(c.key)+'" aria-label="Tambah">+</button></div></div>'}).join('');
+    '<div class="muted small num">'+rp(p.price)+' / '+esc(p.unit)+(p.grosir?' · <span class="pill ok">harga grosir</span>':'')+(c.qty>p.stock?' · <span style="color:var(--bad)">stok tercatat '+p.stock+'</span>':'')+'</div>'+
+    '<div class="qty"><button data-act="dec" data-id="'+esc(c.key)+'" aria-label="Kurangi">−</button><button class="qn num" data-act="qty-set" data-id="'+esc(c.key)+'" aria-label="Ubah jumlah, sekarang '+c.qty+'">'+c.qty+'</button><button data-act="inc" data-id="'+esc(c.key)+'" aria-label="Tambah">+</button></div>'+unitChips(c)+'</div>'}).join('');
 }
 function vKasir(){
   $('#view').innerHTML='<div class="kasir">'+
   '<section class="stack">'+
-    (!S.demo&&(!S.shop.name||!S.products.length)?'<div class="note"><div class="grow"><b>Siapkan warung Anda.</b> '+(!S.shop.name?'Isi nama warung supaya tampil di struk. ':'')+(!S.products.length?'Daftarkan barang pertama dengan scan barcode.':'')+'</div>'+(!S.shop.name?'<button class="btn" data-act="go" data-to="pengaturan">Isi profil</button>':'<button class="btn" data-act="p-new">Tambah barang</button>')+'</div>':'')+
+    (SESS==='local'?'<div class="note trial"><div class="grow"><b>Mode coba.</b> Data hanya tersimpan di HP ini. Daftar gratis supaya data tercadang online dan bisa memakai Katalog JAGA berfoto.</div><button class="btn" data-act="trial-register">Daftar gratis</button></div>':'')+
+    (!S.demo&&!WHO&&!S.products.length?'<div class="note"><div class="grow"><b>Siapkan warung dalam 3 menit.</b> Centang barang yang Anda jual dari daftar siap pakai, isi harganya, selesai.</div><button class="btn primary" data-act="wizard">Isi barang cepat</button></div>':'')+
+    (!S.demo&&!WHO&&S.products.length&&!S.shop.name?'<div class="note"><div class="grow"><b>Isi nama warung</b> supaya tampil di struk.</div><button class="btn" data-act="go" data-to="pengaturan">Isi profil</button></div>':'')+
     (FRAMED&&!hidePrev?'<div class="note"><div class="grow"><b>Mode pratinjau.</b> Kamera, cetak struk, dan printer Bluetooth baru aktif setelah aplikasi dipasang di situs. Di sini Anda bisa mencoba alurnya dengan tombol Scan.</div><button class="btn" data-act="hide-prev">Tutup</button></div>':'')+
     '<div class="scanbar"><input type="search" id="q" placeholder="Ketik nama atau kode barang" value="'+esc(q)+'" autocomplete="off" enterkeyhint="done"><button class="btn primary" data-act="scan">'+ico('scan')+'Scan</button></div>'+
     '<div class="seg scroll" id="kcats"></div>'+
@@ -624,7 +668,8 @@ function payBody(){
   if(PAY.method==='tunai') return '<label class="f">Uang diterima<input type="text" inputmode="numeric" id="pay-cash" data-rp value="'+(PAY.cash?fmt(PAY.cash):'')+'" placeholder="0" autocomplete="off"></label>'+
     '<div class="seg"><button data-act="cash" data-v="'+t+'">Uang pas</button>'+quickCash(t).map(v=>'<button data-act="cash" data-v="'+v+'" class="num">'+fmt(v)+'</button>').join('')+'</div>'+
     '<div class="change" id="pay-change"></div>';
-  if(PAY.method==='kasbon') return '<label class="f">Nama pelanggan yang berutang<input type="text" id="pay-cust" value="'+esc(PAY.cust)+'" placeholder="Contoh: Bu Sari" autocomplete="off"></label><p class="muted small" style="margin:0">Kasbon tercatat di menu Struk sampai ditandai lunas.</p>';
+  if(PAY.method==='kasbon') return '<label class="f">Nama pelanggan yang berutang<input type="text" id="pay-cust" list="pay-custs" value="'+esc(PAY.cust)+'" placeholder="Contoh: Bu Sari" autocomplete="off"><datalist id="pay-custs">'+Object.keys(custs()).map(c=>'<option value="'+esc(c)+'">').join('')+'</datalist></label>'+
+    '<label class="f">WhatsApp pelanggan (opsional, untuk pengingat)<input type="tel" id="pay-custwa" value="'+esc(PAY.custWa||'')+'" placeholder="0812xxxxxxxx" autocomplete="off"></label><p class="muted small" style="margin:0">Kasbon tercatat di menu Struk sampai ditandai lunas.</p>';
   return (PAY.method==='qris'?(S.shop.qris?'<img class="qris" src="'+esc(S.shop.qris)+'" alt="Kode QRIS warung">':'<p class="note" style="margin:0">Unggah gambar QRIS warung di menu Atur supaya pembeli bisa scan dari layar ini.</p>'):'')+'<p class="muted small" style="margin:0">Pastikan pembayaran '+(PAY.method==='qris'?'QRIS':'transfer')+' sebesar <b class="num">'+rp(t)+'</b> sudah masuk sebelum menyimpan.</p>';
 }
 function payOk(){return PAY.method==='tunai'?PAY.cash>=payTotal():PAY.method==='kasbon'?PAY.cust.trim().length>1:true}
@@ -634,7 +679,7 @@ function payRefresh(){
   $('#pay-save').disabled=!payOk();
 }
 function openPay(){
-  if(!S.cart.length) return; PAY={disc:0,method:'tunai',cash:0,cust:''};
+  if(!S.cart.length) return; PAY={disc:0,method:'tunai',cash:0,cust:'',custWa:''};
   sheet('<div class="hd"><h2>Pembayaran</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
     '<div><div class="muted small">Total bayar · '+cartQty()+' barang</div><div class="total-big num" id="pay-total"></div></div>'+
     '<label class="f">Potongan harga (opsional)<input type="text" inputmode="numeric" id="pay-disc" data-rp placeholder="0" autocomplete="off"></label>'+
@@ -650,15 +695,17 @@ function nextNo(ts){const k=dayKey(ts);if(S.seq.day!==k)S.seq={day:k,n:0};S.seq.
 function commitSale(){
   if(!PAY||!payOk()) return;
   const ts=Date.now();
-  const items=S.cart.map(c=>{const i=ci(c);return i&&{pid:i.pid,name:i.name,qty:c.qty,price:i.price,buy:i.buy}}).filter(Boolean);
+  const items=S.cart.map(c=>{const i=ci(c);return i&&Object.assign({pid:i.pid,name:i.name,qty:c.qty,price:i.price,buy:i.buy},i.f>1?{f:i.f,un:i.un}:{})}).filter(Boolean);
   if(!items.length) return;
   const subtotal=items.reduce((a,i)=>a+i.qty*i.price,0), disc=Math.min(PAY.disc,subtotal), total=subtotal-disc;
   const sale={id:uid(),no:nextNo(ts),ts,items,subtotal,disc,total,method:PAY.method,cash:PAY.method==='tunai'?PAY.cash:0,
-    change:PAY.method==='tunai'?PAY.cash-total:0,cust:PAY.method==='kasbon'?PAY.cust.trim():'',lunas:null,void:null,printed:null};
+    change:PAY.method==='tunai'?PAY.cash-total:0,cust:PAY.method==='kasbon'?PAY.cust.trim():'',lunas:null,void:null,printed:null,by:WHO?WHO.name:''};
+  if(PAY.method==='kasbon'&&waNum(PAY.custWa))sale.custWa=waNum(PAY.custWa);
   const hit=[];
-  items.forEach(i=>{const p=i.pid&&prod(i.pid);if(!p)return;const was=p.stock;p.stock-=i.qty;S.moves.push({ts,pid:p.id,qty:-i.qty,type:'jual',ref:sale.no});if(was>p.min&&p.stock<=p.min)hit.push(p.name)});
+  items.forEach(i=>{const p=i.pid&&prod(i.pid);if(!p)return;const was=p.stock,n=i.qty*(i.f||1);p.stock-=n;S.moves.push({ts,pid:p.id,qty:-n,type:'jual',ref:sale.no});if(was>p.min&&p.stock<=p.min)hit.push(p.name)});
   if(S.moves.length>3000)S.moves=S.moves.slice(-3000);
   S.sales.push(sale); S.cart=[]; PAY=null; save(); q='';
+  const ns=S.sales.filter(x=>!x.demo).length;if(ns>=1)track('transaksi_pertama');if(ns>=10)track('transaksi_10');
   render(); openReceipt(sale.id,true);
   if(hit.length) toast('Stok menipis: '+hit.slice(0,2).join(', ')+(hit.length>2?' dan '+(hit.length-2)+' lainnya':'')+'.');
   if(S.shop.autoPrint&&PR.ch) printBt(sale).then(()=>markPrinted(sale)).catch(()=>toast('Cetak otomatis gagal. Coba tombol Cetak struk.'));
@@ -674,7 +721,7 @@ function receiptLines(s,w){
   if(nm.length<=w/2) add(nm,{a:'c',big:1,b:1}); else wrap(nm,w).forEach(x=>add(x,{a:'c',b:1}));
   if(S.shop.address) wrap(S.shop.address,w).forEach(x=>add(x,{a:'c'}));
   if(S.shop.phone) add('Telp/WA '+S.shop.phone,{a:'c'});
-  add(sep); add(lr('No '+s.no,fmtDate(s.ts)+' '+fmtTime(s.ts),w)); add(sep);
+  add(sep); add(lr('No '+s.no,fmtDate(s.ts)+' '+fmtTime(s.ts),w)); if(s.by) add('Kasir: '+s.by); add(sep);
   s.items.forEach(i=>{wrap(i.name,w).forEach(x=>add(x));add(lr('  '+i.qty+' x '+fmt(i.price),fmt(i.qty*i.price),w))});
   add(sep);
   if(s.disc){add(lr('Subtotal',fmt(s.subtotal),w));add(lr('Potongan','-'+fmt(s.disc),w))}
@@ -810,7 +857,7 @@ async function scanLoop(){
 }
 const SMODES=[['foto','Foto','camera'],['pilih','Pilih','tap'],['barcode','Barcode','scan']];
 async function openScanner(cb,cont,title){
-  SC.cb=cb;SC.cont=cont;SC.last='';SC.torch=false;SC.fails=[];SC.hits={};SC.newKey='';SC.lastAuto=null;SC.lastF=null;SC.learnF=null;SP.q='';SP.c='';
+  SC.onDone=null;SC.cb=cb;SC.cont=cont;SC.last='';SC.torch=false;SC.fails=[];SC.hits={};SC.newKey='';SC.lastAuto=null;SC.lastF=null;SC.learnF=null;SP.q='';SP.c='';
   let m='barcode';if(cont){try{m=localStorage.getItem('jk_smode')||'barcode'}catch(e){}if(!SMODES.some(x=>x[0]===m))m='barcode'}SC.mode=m;
   const manual='<input type="text" inputmode="numeric" id="scan-manual" placeholder="Ketik kode barcode" autocomplete="off"><button class="btn" data-act="scan-manual">Pakai</button>'+(FRAMED?'<button class="btn" data-act="scan-demo">Contoh</button>':'');
   $('#scan-root').innerHTML='<div class="scan'+(cont?' cart':'')+'" id="scan-box" role="dialog" aria-modal="true"><div class="scan-top"><b>'+esc(title||'Scan barcode')+'</b><button class="btn" data-act="torch" id="torch" hidden>Lampu</button><button class="btn" data-act="scan-close">'+(cont?'Tutup':'Selesai')+'</button></div>'+
@@ -838,7 +885,7 @@ async function scanStage(){
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) throw new Error('nocam');
     if(!SC.stream)SC.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
     if(!$('#scan-root .scan')){stopStream();return}
-    if(SC.mode!==m||!SC.video||!SC.video.isConnected)return;
+    if(SC.mode!==m||!SC.video||!SC.video.isConnected){if(SC.mode==='pilih')stopStream();return}
     SC.video.srcObject=SC.stream; await SC.video.play().catch(()=>{});
     if(m==='barcode'){try{await ensureDecoder()}catch(e){throw Object.assign(new Error('decoder'),{name:'DecoderError'})}}
     const sm2=$('#scan-msg');if(sm2)sm2.hidden=true;
@@ -938,7 +985,7 @@ function scanList(){const el=$('#scan-list');if(!el)return;
   const rows=S.cart.slice().reverse().map(c=>{const i=ci(c);if(!i)return'';
     return '<div class="sl-row'+(c.key===SC.newKey?' new':'')+'"><div><div class="nm">'+esc(i.name)+'</div><div class="sub num">'+rp(i.price)+' / '+esc(i.unit)+'</div></div><div class="tot num">'+rp(i.price*c.qty)+'</div>'+
       '<div class="sub">'+(c.qty>i.stock?'<span style="color:#F0A63C">stok tercatat '+i.stock+'</span>':'')+'</div>'+
-      '<div class="sl-ctl"><button data-act="sc-dec" data-id="'+esc(c.key)+'" aria-label="Kurangi '+esc(i.name)+'">−</button><input type="number" min="0" inputmode="numeric" class="num" data-sq="'+esc(c.key)+'" value="'+c.qty+'" aria-label="Jumlah '+esc(i.name)+'"><button data-act="sc-inc" data-id="'+esc(c.key)+'" aria-label="Tambah '+esc(i.name)+'">+</button><button class="x" data-act="sc-del" data-id="'+esc(c.key)+'" aria-label="Hapus '+esc(i.name)+'">✕</button></div></div>'}).join('');
+      unitChips(c)+'<div class="sl-ctl"><button data-act="sc-dec" data-id="'+esc(c.key)+'" aria-label="Kurangi '+esc(i.name)+'">−</button><input type="number" min="0" inputmode="numeric" class="num" data-sq="'+esc(c.key)+'" value="'+c.qty+'" aria-label="Jumlah '+esc(i.name)+'"><button data-act="sc-inc" data-id="'+esc(c.key)+'" aria-label="Tambah '+esc(i.name)+'">+</button><button class="x" data-act="sc-del" data-id="'+esc(c.key)+'" aria-label="Hapus '+esc(i.name)+'">✕</button></div></div>'}).join('');
   const H=SC.hits||{};const fails=SC.fails.map(code=>H[code]?'<div class="sl-row fail hit"><div><div class="nm">Ada di Katalog JAGA</div><div class="sub">'+esc(H[code].name)+(H[code].price?' · saran '+rp(H[code].price):'')+'</div></div><div class="sl-ctl"><button class="btn" data-act="sc-cat" data-id="'+H[code].id+'">Tambahkan</button><button class="x" data-act="sc-fdel" data-code="'+esc(code)+'" aria-label="Abaikan">✕</button></div></div>':'<div class="sl-row fail"><div><div class="nm">✕ Barcode belum terdaftar</div><div class="sub num">'+esc(code)+'</div></div><div class="sl-ctl"><button class="btn" data-act="sc-reg" data-code="'+esc(code)+'">Daftarkan</button><button class="x" data-act="sc-fdel" data-code="'+esc(code)+'" aria-label="Abaikan barcode '+esc(code)+'">✕</button></div></div>').join('');
   el.innerHTML=fails+rows||'<div class="sl-empty">'+(SC.mode==='foto'?'Belum ada barang. Arahkan barang ke kotak lalu tekan tombol merah.':SC.mode==='pilih'?'Belum ada barang. Ketuk barang di atas untuk memasukkannya.':'Belum ada barang. Arahkan barcode ke kotak di atas, barang langsung masuk ke daftar ini.')+'</div>';
   $('#scan-sum').textContent=rp(cartTotal());$('#scan-count').textContent=cartQty()+' barang · '+S.cart.length+' jenis';$('#scan-pay').disabled=!S.cart.length;
@@ -962,6 +1009,7 @@ function vBarang(){
   const low=S.products.filter(p=>p.stock>0&&p.stock<=p.min).length,out=S.products.filter(p=>p.stock<=0).length;
   const val=S.products.reduce((a,p)=>a+Math.max(0,p.stock)*(p.buy||0),0);
   $('#view').innerHTML='<div class="wrap stack"><div class="row"><h2 class="grow">Barang &amp; stok</h2><button class="btn primary" data-act="p-new">'+ico('plus')+'Tambah barang</button></div>'+
+    '<div class="row"><button class="btn" data-act="wizard">Isi barang cepat</button><button class="btn" data-act="sm-start">'+ico('scan')+'Stok masuk cepat</button><button class="btn" data-act="kulak">Daftar belanja'+(low+out?' · '+(low+out):'')+'</button></div>'+
     '<div class="tiles"><div class="stat"><small>Jenis barang</small><b class="num">'+S.products.length+'</b></div><div class="stat"><small>Stok menipis</small><b class="num" style="color:'+(low?'var(--warn)':'inherit')+'">'+low+'</b></div>'+
     '<div class="stat"><small>Stok habis</small><b class="num" style="color:'+(out?'var(--bad)':'inherit')+'">'+out+'</b></div><div class="stat"><small>Nilai stok (harga beli)</small><b class="num">'+rp(val)+'</b></div></div>'+
     '<input type="search" id="bq" placeholder="Cari nama atau kode barang" value="'+esc(bq)+'" autocomplete="off">'+
@@ -1036,6 +1084,7 @@ function productForm(p,opt){
     '<label class="f">Satuan<input type="text" id="pf-unit" value="'+esc(p.unit||'pcs')+'" autocomplete="off"></label></div>'+
     '<div class="two"><label class="f">Harga beli<input type="text" inputmode="numeric" data-rp id="pf-buy" value="'+(p.buy?fmt(p.buy):'')+'" placeholder="0" autocomplete="off"></label>'+
     '<label class="f">Harga jual<input type="text" inputmode="numeric" data-rp id="pf-sell" value="'+(p.sell?fmt(p.sell):'')+'" placeholder="0" autocomplete="off"></label></div>'+
+    moreUnitsHtml(p)+
     '<div class="two"><label class="f">Stok sekarang<input type="text" inputmode="numeric" id="pf-stock" value="'+p.stock+'" autocomplete="off"></label>'+
     '<label class="f">Ingatkan jika stok ≤<input type="text" inputmode="numeric" id="pf-min" value="'+p.min+'" autocomplete="off"></label></div>'+
     '<button class="btn primary block" data-act="pf-save">Simpan barang</button>'+
@@ -1047,11 +1096,11 @@ function saveProduct(){
   if(!name) return toast('Isi nama barang dulu.');
   if(!sell) return toast('Isi harga jual dulu.');
   if(code&&S.products.some(x=>x.code===code&&x.id!==id)) return toast('Kode barcode ini sudah dipakai barang lain.');
-  const stock=parseInt($('#pf-stock').value,10)||0, data={img:$('#pf-img').value,code,name,cat:$('#pf-cat').value.trim(),unit:$('#pf-unit').value.trim()||'pcs',buy,sell,min:num($('#pf-min').value)};
+  const stock=parseInt($('#pf-stock').value,10)||0, data=Object.assign({img:$('#pf-img').value,code,name,cat:$('#pf-cat').value.trim(),unit:$('#pf-unit').value.trim()||'pcs',buy,sell,min:num($('#pf-min').value)},readUnits());
   let p=prod(id);
   if(p){if(stock!==p.stock)S.moves.push({ts:Date.now(),pid:p.id,qty:stock-p.stock,type:'koreksi'});Object.assign(p,data,{stock})}
   else{p=Object.assign({id:uid(),stock},data);S.products.push(p);if(stock)S.moves.push({ts:Date.now(),pid:p.id,qty:stock,type:'masuk'})}
-  const tocart=$('#pf-tocart').value; save(); closeSheet(); if(tocart) addToCart(p.id); render(); toast(tocart?p.name+' terdaftar dan masuk keranjang.':'Barang tersimpan.');
+  const tocart=$('#pf-tocart').value; save(); closeSheet(); if(tocart) addToCart(p.id); track('barang_pertama'); render(); toast(tocart?p.name+' terdaftar dan masuk keranjang.':'Barang tersimpan.');
 }
 function stockInSheet(id){
   const p=prod(id); if(!p) return;
@@ -1087,7 +1136,7 @@ function vRiwayat(){
     '<div class="r"><div class="num" style="font-weight:700">'+rp(s.total)+'</div>'+(s.void?'<span class="pill bad">Batal</span>':s.method==='kasbon'?(s.lunas?'<span class="pill ok">Lunas</span>':'<span class="pill warn">Belum lunas</span>'):'')+(!s.void&&s.printed===null?' <span class="pill info">Belum dicetak</span>':'')+'</div></button>'});
   let top='';
   if(rf==='kasbon'&&debt.length){const g={};debt.forEach(s=>{const k=s.cust||'Tanpa nama';g[k]=g[k]||{n:0,t:0};g[k].n++;g[k].t+=s.total});
-    top='<div class="card"><h3 style="margin-bottom:4px">Utang per pelanggan</h3><div class="list">'+Object.keys(g).sort((a,b)=>g[b].t-g[a].t).map(k=>'<div class="item"><div class="grow"><b>'+esc(k)+'</b><span class="muted small">'+g[k].n+' struk belum lunas</span></div><div class="r num" style="font-weight:700">'+rp(g[k].t)+'</div><button class="btn" data-act="lunas-all" data-cust="'+esc(k)+'">Lunas</button></div>').join('')+'</div></div>'}
+    top='<div class="card"><h3 style="margin-bottom:4px">Utang per pelanggan</h3><div class="list">'+Object.keys(g).sort((a,b)=>g[b].t-g[a].t).map(k=>'<div class="item"><div class="grow"><b>'+esc(k)+'</b><span class="muted small">'+g[k].n+' struk belum lunas</span></div><div class="r num" style="font-weight:700">'+rp(g[k].t)+'</div><button class="btn" data-act="kb-wa" data-cust="'+esc(k)+'">Ingatkan</button><button class="btn" data-act="lunas-all" data-cust="'+esc(k)+'">Lunas</button></div>').join('')+'</div></div>'}
   $('#view').innerHTML='<div class="wrap stack"><h2>Struk &amp; kasbon</h2>'+
     '<div class="seg"><button data-act="rf" data-f="semua" aria-pressed="'+(rf==='semua')+'">Semua struk</button><button data-act="rf" data-f="kasbon" aria-pressed="'+(rf==='kasbon')+'">Kasbon belum lunas'+(debt.length?' · '+rp(dsum):'')+'</button><button data-act="rf" data-f="cetak" aria-pressed="'+(rf==='cetak')+'">Belum dicetak'+(pending().length?' · '+pending().length:'')+'</button></div>'+top+
     '<div class="card"><div class="list">'+(h||'<div class="empty">'+(rf==='kasbon'?'Tidak ada kasbon yang belum lunas.':rf==='cetak'?'Semua struk sudah dicetak.':'Belum ada transaksi.')+'</div>')+'</div></div>'+
@@ -1131,7 +1180,7 @@ function kasToday(){const k=dayKey(Date.now()),isT=ts=>dayKey(ts)===k;
   const ex=S.expenses.filter(e=>isT(e.ts)),keluar=ex.reduce((a,e)=>a+e.amount,0),modal=S.modal[k]||0;
   return {k,tunai,lunas,ex,keluar,modal,laci:modal+tunai+lunas-keluar}}
 function kasCard(){const c=kasToday();
-  return '<div class="card"><div class="row" style="margin-bottom:6px"><h3 class="grow">Kas hari ini</h3><button class="btn" data-act="ex-new">Catat pengeluaran</button></div>'+
+  return '<div class="card"><div class="row" style="margin-bottom:6px"><h3 class="grow">Kas hari ini</h3><button class="btn" data-act="ex-new">Catat pengeluaran</button><button class="btn primary" data-act="close-shop">Tutup toko</button></div>'+
   '<div class="kv"><span>Modal awal di laci</span><button class="btn num" data-act="modal" style="min-height:34px;padding:4px 10px">'+rp(c.modal)+' · ubah</button></div>'+
   '<div class="kv"><span>Penjualan tunai</span><b class="num">'+rp(c.tunai)+'</b></div>'+
   '<div class="kv"><span>Kasbon dilunasi</span><b class="num">'+rp(c.lunas)+'</b></div>'+
@@ -1161,6 +1210,7 @@ function vAtur(){
       '<div class="two"><label class="f">Nomor telepon / WA<input type="tel" id="st-phone" value="'+esc(sh.phone)+'" autocomplete="off"></label>'+
       '<label class="f">Lebar kertas struk<select id="st-paper"><option value="58"'+(sh.paper===58?' selected':'')+'>58 mm (printer mini)</option><option value="80"'+(sh.paper===80?' selected':'')+'>80 mm</option></select></label></div>'+
       '<label class="f">Pesan di bawah struk<input type="text" id="st-footer" value="'+esc(sh.footer)+'" autocomplete="off"></label><button class="btn primary" data-act="st-save">Simpan profil</button></div>'+
+    staffCard()+
     '<div class="card stack"><h3>QRIS warung</h3><p class="muted" style="margin:0">Gambar QRIS ini tampil di layar pembayaran saat pembeli memilih QRIS.</p>'+(sh.qris?'<img class="qris" src="'+esc(sh.qris)+'" alt="Kode QRIS warung">':'')+
       '<div class="row"><label class="btn" for="st-qris-file">'+(sh.qris?'Ganti gambar QRIS':'Unggah gambar QRIS')+'</label>'+(sh.qris?'<button class="btn danger" data-act="qris-del">Hapus</button>':'')+'<input type="file" id="st-qris-file" accept="image/*" hidden></div></div>'+
     '<div class="card stack"><h3>Printer struk</h3>'+
@@ -1175,6 +1225,162 @@ function vAtur(){
     (isAcc()?'':'<div class="card stack"><h3>Mulai dari awal</h3><p class="muted" style="margin:0">Menghapus semua barang, struk, dan pengaturan di perangkat ini.</p><div><button class="btn danger" data-act="reset">Hapus semua data</button></div></div>')+
     '<p class="muted small" style="text-align:center;margin:4px 0 0">Jaga Kasir oleh JAGA · versi 1.0</p></div>';
 }
+
+/* ============ JAGA Kasir: fitur unggulan ============ */
+/* ---- catatan aktivasi (sekali per perangkat per langkah) ---- */
+function track(n){if(!isAcc())return;const k='jk_ev_'+n+'_'+SESS;Store.get(k).then(v=>{if(v)return;Store.set(k,1);devKey().then(dk=>rpc('jk_event',{p_key:dk,p_name:n}).catch(()=>{}))}).catch(()=>{})}
+const waNum=v=>{let w=String(v||'').replace(/\D/g,'');if(w.startsWith('0'))w='62'+w.slice(1);return /^62\d{8,13}$/.test(w)?w:''};
+const waLink=(num,text)=>'https://wa.me/'+(waNum(num)||'')+'?text='+encodeURIComponent(text);
+
+/* ---- multi-satuan & harga grosir ---- */
+function unitRow(u){u=u||{};return '<div class="urow"><input type="text" class="u-n" placeholder="Nama, mis. renteng" value="'+esc(u.n||'')+'" autocomplete="off"><input type="text" inputmode="numeric" class="u-q" placeholder="Isi" value="'+(u.q||'')+'" autocomplete="off"><input type="text" inputmode="numeric" data-rp class="u-p" placeholder="Harga" value="'+(u.p?fmt(u.p):'')+'" autocomplete="off"><button type="button" class="x" data-act="row-del" aria-label="Hapus baris">✕</button></div>'}
+function tierRow(t){t=t||{};return '<div class="urow t2"><input type="text" inputmode="numeric" class="t-m" placeholder="Beli minimal" value="'+(t.min||'')+'" autocomplete="off"><input type="text" inputmode="numeric" data-rp class="t-p" placeholder="Harga per satuan" value="'+(t.p?fmt(t.p):'')+'" autocomplete="off"><button type="button" class="x" data-act="row-del" aria-label="Hapus baris">✕</button></div>'}
+function moreUnitsHtml(p){const has=(p.units&&p.units.length)||(p.tiers&&p.tiers.length);
+  return '<details class="more"'+(has?' open':'')+'><summary>Satuan lain &amp; harga grosir</summary>'+
+    '<p class="muted small" style="margin:6px 0">Contoh: renteng isi 10, dus isi 40. Stok tetap dihitung dalam satuan dasar.</p><div id="pf-units">'+(p.units||[]).map(unitRow).join('')+'</div>'+
+    '<button class="btn sm" type="button" data-act="pu-add">+ Satuan lain</button>'+
+    '<p class="muted small" style="margin:10px 0 6px">Harga grosir: kalau beli sebanyak ini atau lebih, harga per satuan dasar jadi lebih murah.</p><div id="pf-tiers">'+(p.tiers||[]).map(tierRow).join('')+'</div>'+
+    '<button class="btn sm" type="button" data-act="pt-add">+ Harga grosir</button></details>'}
+function readUnits(){const u=[...document.querySelectorAll('#pf-units .urow')].map(r=>({n:r.querySelector('.u-n').value.trim(),q:num(r.querySelector('.u-q').value),p:num(r.querySelector('.u-p').value)})).filter(x=>x.n&&x.q>1&&x.p>0);
+  const t=[...document.querySelectorAll('#pf-tiers .urow')].map(r=>({min:num(r.querySelector('.t-m').value),p:num(r.querySelector('.t-p').value)})).filter(x=>x.min>1&&x.p>0).sort((a,b)=>a.min-b.min);return {units:u,tiers:t}}
+function setCartUnit(key,u){const c=S.cart.find(x=>x.key===key);if(!c||!c.pid)return;const nu=u===''||u==null?null:+u,nk=c.pid+(nu!=null?'|'+nu:'');if(nk===c.key)return;
+  const o=S.cart.find(x=>x.key===nk);if(o){o.qty+=c.qty;S.cart=S.cart.filter(x=>x!==c)}else{c.u=nu;c.key=nk;if(nu==null)delete c.u}cartSave();scanList()}
+function unitChips(c){const p=c.pid&&prod(c.pid);if(!p||!p.units||!p.units.length)return '';
+  return '<div class="uchips">'+[['',p.unit||'pcs']].concat(p.units.map((u,i)=>[String(i),u.n])).map(x=>'<button data-act="cu" data-id="'+esc(c.key)+'" data-u="'+x[0]+'" aria-pressed="'+(String(c.u??'')===x[0])+'">'+esc(x[1])+'</button>').join('')+'</div>'}
+
+/* ---- penjaga (PIN) ---- */
+let WHO=null;
+async function pinHash(salt,pin){const d=new TextEncoder().encode('jaga-kasir:'+salt+':'+pin);try{const b=await crypto.subtle.digest('SHA-256',d);return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=0;for(const x of d)h=(h*31+x)|0;return 'h'+h}}
+const whoKey=()=>'jk_who_'+(SESS||'x');
+async function loadWho(){WHO=null;try{const id=await Store.get(whoKey());if(id&&S&&S.staff)WHO=S.staff.find(s=>s.id===id)||null}catch(e){}}
+async function setWho(st){WHO=st||null;await Store.set(whoKey(),st?st.id:'');if(WHO&&!['kasir','riwayat'].includes(view))view='kasir';render()}
+const staffTabs=()=>WHO?TABS.filter(t=>t[0]==='kasir'||t[0]==='riwayat'):TABS;
+function pinSheet(title,text,fn){sheet('<div class="hd"><h2>'+esc(title)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><p class="muted" style="margin:0">'+esc(text)+'</p>'+
+  '<label class="f">PIN<input type="password" inputmode="numeric" id="pin-in" maxlength="6" autocomplete="off" autofocus></label><div class="lg-err" id="pin-err"></div><button class="btn primary block" data-act="pin-ok">Lanjut</button>');PINFN=fn}
+let PINFN=null;
+async function ownerPinOk(pin){return !!S.shop.ownerPin&&await pinHash('owner',pin)===S.shop.ownerPin}
+function needOwner(fn){if(!WHO)return fn();pinSheet('PIN pemilik','Langkah ini butuh izin pemilik warung.',async pin=>{if(await ownerPinOk(pin)){closeSheet();fn();return true}return false})}
+function staffMenu(){if(!WHO)return;sheet('<div class="hd"><h2>Penjaga: '+esc(WHO.name)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+  '<button class="btn primary block" data-act="close-shop">Tutup toko / ganti shift</button><button class="btn block" data-act="who-switch">Ganti penjaga</button><button class="btn block" data-act="who-owner">Masuk sebagai pemilik</button>')}
+function staffPick(){const l=S.staff||[];if(!l.length)return toast('Tambahkan penjaga dulu di menu Atur.');
+  sheet('<div class="hd"><h2>Siapa yang jaga?</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><div class="list">'+l.map(s=>'<button class="item" data-act="who-pick" data-id="'+s.id+'"><span class="th">'+esc(s.name.charAt(0).toUpperCase())+'</span><div class="grow"><b>'+esc(s.name)+'</b><span class="muted small">Masuk dengan PIN</span></div></button>').join('')+'</div>')}
+function staffCard(){const l=S.staff||[];
+  return '<div class="card stack" id="staff-card"><h3>Penjaga &amp; tutup toko</h3><p class="muted" style="margin:0">Penjaga hanya bisa berjualan, melihat struk, dan tutup toko. Laporan laba, harga, dan pengaturan terkunci PIN pemilik. Ringkasan tutup toko dikirim ke WhatsApp pemilik.</p>'+
+    '<div class="two"><label class="f">WhatsApp pemilik (untuk laporan)<input type="tel" id="st-ownerwa" value="'+esc(S.shop.ownerWa||'')+'" placeholder="0812xxxxxxxx" autocomplete="off"></label>'+
+    '<label class="f">PIN pemilik (4–6 angka)<input type="password" inputmode="numeric" maxlength="6" id="st-ownerpin" placeholder="'+(S.shop.ownerPin?'Sudah diatur · isi untuk ganti':'Buat PIN')+'" autocomplete="off"></label></div>'+
+    '<button class="btn" data-act="ownerpin-set">Simpan</button>'+
+    '<div class="list">'+(l.length?l.map(s=>'<div class="item"><span class="th">'+esc(s.name.charAt(0).toUpperCase())+'</span><div class="grow"><b>'+esc(s.name)+'</b><span class="muted small">PIN tersimpan</span></div><button class="btn ghost danger" data-act="staff-del" data-id="'+s.id+'">Hapus</button></div>').join(''):'<div class="muted small">Belum ada penjaga.</div>')+'</div>'+
+    '<div class="row" style="flex-wrap:nowrap"><input type="text" id="sf-name" class="grow" placeholder="Nama penjaga" autocomplete="off" style="width:auto"><input type="password" inputmode="numeric" maxlength="6" id="sf-pin" placeholder="PIN" autocomplete="off" style="width:96px"><button class="btn" data-act="staff-add">Tambah</button></div>'+
+    (l.length?'<button class="btn primary block" data-act="staff-mode">Mulai mode penjaga di HP ini</button>':'')+
+    '<button class="btn block" data-act="close-shop">Tutup toko sekarang</button>'+
+    ((S.closings||[]).length?'<div class="list">'+S.closings.slice(-5).reverse().map(c=>'<div class="item"><div class="grow"><b>'+fmtDate(c.ts)+' '+fmtTime(c.ts)+' · '+esc(c.by)+'</b><span class="muted small num">Omzet '+rp(c.omzet)+' · laci '+rp(c.counted)+'</span></div><span class="pill '+(c.diff===0?'ok':c.diff<0?'bad':'warn')+' num">'+(c.diff===0?'Pas':(c.diff<0?'Kurang ':'Lebih ')+rp(Math.abs(c.diff)))+'</span></div>').join('')+'</div>':'')+'</div>'}
+
+/* ---- tutup toko ---- */
+function shiftNow(){const k=dayKey(Date.now()),cl=(S.closings||[]).filter(c=>dayKey(c.ts)===k),last=cl[cl.length-1];
+  const since=last?last.ts:new Date(new Date().setHours(0,0,0,0)).getTime(),start=last?last.counted:(S.modal[k]||0);
+  const ss=S.sales.filter(s=>s.ts>since),live=ss.filter(s=>!s.void),sum=f=>live.filter(f).reduce((a,s)=>a+s.total,0);
+  const tunai=sum(s=>s.method==='tunai'),qris=sum(s=>s.method==='qris'),transfer=sum(s=>s.method==='transfer'),kasbon=sum(s=>s.method==='kasbon');
+  const lunas=liveSales().filter(s=>s.method==='kasbon'&&s.lunas&&s.lunas>since).reduce((a,s)=>a+s.total,0);
+  const keluar=S.expenses.filter(e=>e.ts>since).reduce((a,e)=>a+e.amount,0);
+  return {since,start,n:live.length,omzet:tunai+qris+transfer+kasbon,tunai,qris,transfer,kasbon,lunas,keluar,voids:ss.filter(s=>s.void).length,expected:start+tunai+lunas-keluar}}
+function closeShopSheet(){const r=shiftNow();
+  sheet('<div class="hd"><h2>Tutup toko</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    '<p class="muted small" style="margin:0">Sejak '+fmtTime(r.since)+(dayKey(r.since)!==dayKey(Date.now())?' '+fmtDate(r.since):'')+' · '+r.n+' transaksi · dijaga '+esc(WHO?WHO.name:'pemilik')+'</p>'+
+    '<div><div class="kv"><span>Omzet</span><b class="num">'+rp(r.omzet)+'</b></div><div class="kv"><span>Tunai</span><b class="num">'+rp(r.tunai)+'</b></div><div class="kv"><span>QRIS</span><b class="num">'+rp(r.qris)+'</b></div><div class="kv"><span>Transfer</span><b class="num">'+rp(r.transfer)+'</b></div><div class="kv"><span>Kasbon baru</span><b class="num">'+rp(r.kasbon)+'</b></div>'+
+    '<div class="kv"><span>Modal / uang awal laci</span><b class="num">'+rp(r.start)+'</b></div><div class="kv"><span>Kasbon dibayar</span><b class="num">'+rp(r.lunas)+'</b></div><div class="kv"><span>Pengeluaran</span><b class="num">'+rp(-r.keluar)+'</b></div>'+
+    '<div class="kv sum"><span>Uang di laci seharusnya</span><span class="num" id="cs-exp" data-v="'+r.expected+'">'+rp(r.expected)+'</span></div></div>'+
+    '<label class="f">Uang di laci sekarang (hitung)<input type="text" inputmode="numeric" data-rp id="cs-count" placeholder="0" autocomplete="off" autofocus></label><div class="change" id="cs-diff" hidden></div>'+
+    '<label class="f">Catatan (opsional)<input type="text" id="cs-note" placeholder="Contoh: uang kembalian kurang" autocomplete="off"></label>'+
+    '<button class="btn pay block" data-act="close-save">Simpan tutup toko</button>')}
+function closeDiff(){const e=$('#cs-diff');if(!e)return;const exp=+$('#cs-exp').dataset.v,v=$('#cs-count').value.trim();if(!v){e.hidden=true;return}const d=num(v)-exp;e.hidden=false;
+  e.className='change'+(d<0?' short':'');e.innerHTML='<span>'+(d===0?'Pas':d<0?'Kurang':'Lebih')+'</span><b class="num">'+rp(Math.abs(d))+'</b>'}
+function closeMsg(c){const low=S.products.filter(p=>p.stock<=p.min).sort((a,b)=>a.stock-b.stock).slice(0,6).map(p=>p.name+' ('+p.stock+')');
+  return '*Tutup toko · '+(S.shop.name||'Warung')+'*\n'+fmtDate(c.ts)+' '+fmtTime(c.ts)+' · dijaga '+c.by+'\n\n'+
+    'Omzet: '+rp(c.omzet)+' ('+c.n+' transaksi)\nTunai: '+rp(c.tunai)+'\nQRIS: '+rp(c.qris)+'\nTransfer: '+rp(c.transfer)+'\nKasbon baru: '+rp(c.kasbon)+'\nKasbon dibayar: '+rp(c.lunas)+'\nPengeluaran: '+rp(c.keluar)+'\n\n'+
+    'Laci seharusnya: '+rp(c.expected)+'\nLaci dihitung: '+rp(c.counted)+'\n*Selisih: '+(c.diff===0?'pas':(c.diff<0?'kurang ':'lebih ')+rp(Math.abs(c.diff)))+'*'+
+    (c.voids?'\nTransaksi dibatalkan: '+c.voids:'')+(low.length?'\n\nStok menipis: '+low.join(', '):'')+(c.note?'\n\nCatatan: '+c.note:'')+'\n\n_Jaga Kasir_'}
+
+/* ---- kasbon: pengingat WhatsApp ---- */
+const custs=()=>{const m={};S.sales.forEach(s=>{if(s.method==='kasbon'&&s.cust){const k=s.cust.trim();m[k]=m[k]||'';if(s.custWa)m[k]=s.custWa}});return m};
+function kbMsg(cust){const l=openDebt().filter(s=>(s.cust||'Tanpa nama')===cust).sort((a,b)=>a.ts-b.ts),t=l.reduce((a,s)=>a+s.total,0);
+  return 'Halo '+cust+', salam dari '+(S.shop.name||'warung kami')+'.\n\nKami ingin mengingatkan catatan belanja yang belum dibayar:\n'+l.map(s=>'• '+fmtDate(s.ts)+' (No '+s.no+') '+rp(s.total)).join('\n')+'\n\n*Total: '+rp(t)+'*\n\nBisa dibayar saat mampir ke warung'+(S.shop.qris?' atau lewat QRIS':'')+'. Terima kasih banyak 🙏'}
+function kbSheet(cust){const wa=custs()[cust]||'';
+  sheet('<div class="hd"><h2>Ingatkan '+esc(cust)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    '<input type="hidden" id="kb-cust" value="'+esc(cust)+'"><label class="f">Nomor WhatsApp pelanggan<input type="tel" id="kb-wa" value="'+esc(wa?'0'+wa.replace(/^62/,''):'')+'" placeholder="0812xxxxxxxx" autocomplete="off"></label>'+
+    '<pre class="struk" style="white-space:pre-wrap;width:auto;font-family:var(--body);font-size:13.5px">'+esc(kbMsg(cust))+'</pre>'+
+    '<a class="btn pay block" id="kb-send" target="_blank" rel="noopener" data-act="kb-sent" href="'+waLink(wa,kbMsg(cust))+'">Kirim lewat WhatsApp</a>'+
+    '<p class="muted small" style="margin:0">Nomor disimpan untuk pengingat berikutnya.</p>')}
+
+/* ---- stok masuk cepat ---- */
+let SM=null;
+function smStart(keep){SM=keep||{items:{},unknown:[]};openScanner(code=>{const p=byCode(code);
+    if(p){SM.items[p.id]=(SM.items[p.id]||0)+1;beep(true);scanFx(true,'<span class="th">'+pict(p)+'</span><div><b>'+esc(p.name)+'</b><span class="small">stok masuk</span></div><span class="q num">+'+SM.items[p.id]+'</span>');scanInfo(p.name+' +'+SM.items[p.id]+' · '+Object.keys(SM.items).length+' jenis')}
+    else{beep(false);if(!SM.unknown.includes(code))SM.unknown.push(code);scanFx(false,'<div><b>Belum terdaftar</b><span class="small num">'+esc(code)+'</span></div>');scanInfo('Belum terdaftar: '+code)}},false,'Scan stok masuk');SC.onDone=smReview}
+function smReview(){if(!SM)return;const ids=Object.keys(SM.items).filter(id=>prod(id));
+  if(!ids.length&&!SM.unknown.length){SM=null;return}
+  sheet('<div class="hd"><h2>Stok masuk</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    '<div class="list">'+ids.map(id=>{const p=prod(id);return '<div class="item"><span class="th">'+pict(p)+'</span><div class="grow"><b>'+esc(p.name)+'</b><span class="muted small num">stok sekarang '+p.stock+' '+esc(p.unit||'pcs')+'</span></div>'+
+      '<input type="text" inputmode="numeric" class="num" data-smq="'+id+'" value="'+SM.items[id]+'" style="width:64px;text-align:center" aria-label="Jumlah masuk '+esc(p.name)+'"></div>'}).join('')+'</div>'+
+    (SM.unknown.length?'<div class="note"><div class="grow"><b>'+SM.unknown.length+' barcode belum terdaftar.</b> '+SM.unknown.map(c=>'<button class="btn sm" data-act="p-new" data-code="'+esc(c)+'">Daftarkan '+esc(c)+'</button>').join(' ')+'</div></div>':'')+
+    '<div class="two"><button class="btn" data-act="sm-more">Scan lagi</button><button class="btn primary" data-act="sm-save"'+(ids.length?'':' disabled')+'>Simpan stok masuk</button></div>')}
+
+/* ---- daftar belanja ke grosir ---- */
+function kulakItems(){return S.products.filter(p=>p.stock<=p.min).sort((a,b)=>a.stock-b.stock)}
+function kulakSheet(){const l=kulakItems();
+  sheet('<div class="hd"><h2>Daftar belanja</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    (l.length?'<p class="muted small" style="margin:0">Barang yang stoknya menipis atau habis. Ubah jumlahnya, lalu kirim ke grosir lewat WhatsApp.</p><div class="list">'+l.map(p=>'<label class="item"><input type="checkbox" class="kl-on" data-id="'+p.id+'" checked style="width:20px;height:20px;flex:none"><div class="grow"><b>'+esc(p.name)+'</b><span class="muted small num">stok '+p.stock+' · batas '+p.min+(p.buy?' · beli '+rp(p.buy):'')+'</span></div>'+
+      '<input type="text" inputmode="numeric" class="num kl-q" data-id="'+p.id+'" value="'+Math.max(1,p.min*2-Math.max(0,p.stock))+'" style="width:64px;text-align:center" aria-label="Jumlah pesan '+esc(p.name)+'"></label>').join('')+'</div>'+
+      '<div class="kv sum"><span>Perkiraan belanja</span><span class="num" id="kl-tot"></span></div>'+
+      '<label class="f">WhatsApp grosir / sales<input type="tel" id="kl-wa" value="'+esc(S.shop.supplierWa||'')+'" placeholder="0812xxxxxxxx" autocomplete="off"></label>'+
+      '<a class="btn pay block" id="kl-send" target="_blank" rel="noopener" data-act="kl-sent" href="#">Kirim pesanan lewat WhatsApp</a><button class="btn block" data-act="kl-copy">Salin daftar</button>':
+      '<div class="empty">Semua stok masih aman. Barang muncul di sini saat stoknya sampai batas pengingat.</div>'));
+  kulakRefresh()}
+function kulakText(){const on=[...document.querySelectorAll('.kl-on')].filter(x=>x.checked).map(x=>x.dataset.id);
+  const rows=on.map(id=>{const p=prod(id),q=num((document.querySelector('.kl-q[data-id="'+id+'"]')||{}).value);return p&&q?{p,q}:null}).filter(Boolean);
+  return {rows,text:'Halo, saya '+(S.shop.name||'pemilik warung')+' mau pesan:\n'+rows.map((r,i)=>(i+1)+'. '+r.p.name+' — '+r.q+' '+(r.p.unit||'pcs')).join('\n')+'\n\nMohon info total dan kapan bisa diantar. Terima kasih.'}}
+function kulakRefresh(){const a=$('#kl-send');if(!a)return;const k=kulakText();$('#kl-tot').textContent=rp(k.rows.reduce((s,r)=>s+(r.p.buy||0)*r.q,0));a.href=waLink($('#kl-wa').value,k.text)}
+
+/* ---- isi barang cepat (wizard) ---- */
+const STARTER={'Sembako':[['Beras 5 kg','karung'],['Beras 1 liter','liter'],['Gula pasir 1 kg','kg'],['Gula pasir 1/4 kg','bungkus'],['Minyak goreng 1 L','pouch'],['Minyak goreng 2 L','pouch'],['Telur ayam','butir'],['Telur ayam 1 kg','kg'],['Tepung terigu 1 kg','kg'],['Garam dapur','bungkus'],['Kecap manis sachet','sachet'],['Kecap manis botol','botol'],['Saos sambal sachet','sachet'],['Saos sambal botol','botol'],['Susu kental manis kaleng','kaleng'],['Susu kental manis sachet','sachet'],['Mentega sachet','sachet']],
+  'Mi Instan':[['Indomie Goreng','bungkus'],['Indomie Soto','bungkus'],['Indomie Kari Ayam','bungkus'],['Indomie Ayam Bawang','bungkus'],['Mie Sedaap Goreng','bungkus'],['Mie Sedaap Soto','bungkus'],['Sarimi','bungkus'],['Pop Mie','cup'],['Supermi','bungkus']],
+  'Minuman':[['Air mineral 600 ml','botol'],['Air mineral 1,5 L','botol'],['Air mineral gelas','gelas'],['Teh botol 350 ml','botol'],['Teh gelas','gelas'],['Teh kotak','kotak'],['Minuman isotonik','botol'],['Minuman bersoda kaleng','kaleng'],['Susu UHT kotak 200 ml','kotak'],['Minuman jeruk gelas','gelas'],['Minuman energi sachet','sachet'],['Es batu','plastik']],
+  'Kopi & Teh':[['Kopi sachet','sachet'],['Kopi susu sachet','sachet'],['Kopi bubuk','bungkus'],['Teh celup','kotak'],['Teh tubruk','bungkus'],['Minuman cokelat sachet','sachet'],['Krimer sachet','sachet']],
+  'Makanan Ringan':[['Keripik kentang','bungkus'],['Kacang garing','bungkus'],['Biskuit','bungkus'],['Wafer','bungkus'],['Roti','bungkus'],['Permen','pcs'],['Cokelat batang','pcs'],['Kerupuk','bungkus'],['Makanan ringan anak','bungkus'],['Agar-agar / jeli','pcs']],
+  'Rokok':[['Rokok kretek bungkus','bungkus'],['Rokok filter bungkus','bungkus'],['Rokok batangan','batang'],['Korek api gas','pcs'],['Korek api kayu','kotak']],
+  'Bumbu Dapur':[['Bumbu instan nasi goreng','sachet'],['Penyedap rasa sachet','sachet'],['Kaldu bubuk','sachet'],['Merica bubuk','sachet'],['Santan instan','kotak'],['Bawang merah','ons'],['Bawang putih','ons'],['Cabai','ons'],['Terasi','pcs']],
+  'Kebersihan':[['Sabun mandi batang','pcs'],['Sabun cuci piring sachet','sachet'],['Sabun cuci piring pouch','pouch'],['Deterjen sachet','sachet'],['Deterjen 800 g','bungkus'],['Pewangi pakaian sachet','sachet'],['Sampo sachet','sachet'],['Pasta gigi','pcs'],['Sikat gigi','pcs'],['Pembalut','bungkus'],['Popok bayi','pcs'],['Tisu','bungkus'],['Obat nyamuk bakar','kotak']],
+  'Lainnya':[['Gas LPG 3 kg','tabung'],['Pulsa / token listrik','transaksi'],['Kantong plastik','pcs'],['Baterai AA','pcs'],['Lilin','pcs']]};
+let WZ=null;
+async function wizard(){WZ={rows:[],q:'',c:'',sel:{}};const have=new Set(S.products.map(p=>p.name.toLowerCase()));
+  sheet('<div class="hd"><h2>Isi barang cepat</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><div class="empty">Menyiapkan daftar barang…</div>');
+  let cat=[];if(isAcc()){try{cat=await rpc('jk_cat_starter',{p_key:await devKey()})||[]}catch(e){}}
+  const seen=new Set();cat.forEach(x=>{const k=x.name.toLowerCase();if(have.has(k)||seen.has(k))return;seen.add(k);WZ.rows.push({id:'c:'+x.id,cid:x.id,name:x.name,cat:x.cat||'Lainnya',unit:x.unit||'pcs',code:x.code||'',price:x.price||0,photo:x.has_photo})});
+  Object.keys(STARTER).forEach(c=>STARTER[c].forEach((x,i)=>{const k=x[0].toLowerCase();if(have.has(k)||seen.has(k))return;seen.add(k);WZ.rows.push({id:'s:'+c+i,name:x[0],cat:c,unit:x[1],code:'',price:0})}));
+  if(!$('#sheet-root .sheet'))return;
+  sheet('<div class="hd"><h2>Isi barang cepat</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    '<p class="muted small" style="margin:0">Centang barang yang Anda jual, isi harga jualnya, lalu simpan. '+(cat.length?'Barang bertanda foto diambil dari Katalog JAGA lengkap dengan gambarnya.':'')+' Stok bisa diisi sekarang atau nanti lewat Stok masuk cepat.</p>'+
+    '<input type="search" id="wz-q" placeholder="Cari barang" autocomplete="off"><div class="seg scroll" id="wz-cats"></div><div class="list wz" id="wz-list"></div>'+
+    '<div class="wz-foot"><span class="muted small" id="wz-n">0 dipilih</span><button class="btn pay" data-act="wz-save" id="wz-save" disabled>Simpan barang</button></div>');
+  wzRender()}
+function wzRender(){const cs=[...new Set(WZ.rows.map(r=>r.cat))];
+  $('#wz-cats').innerHTML='<button data-act="wz-c" data-c="" aria-pressed="'+(!WZ.c)+'">Semua</button>'+cs.map(c=>'<button data-act="wz-c" data-c="'+esc(c)+'" aria-pressed="'+(WZ.c===c)+'">'+esc(c)+'</button>').join('');
+  const k=WZ.q.toLowerCase(),l=WZ.rows.filter(r=>(!WZ.c||r.cat===WZ.c)&&(!k||r.name.toLowerCase().includes(k)));let cur='';
+  $('#wz-list').innerHTML=l.length?l.map(r=>{const s=WZ.sel[r.id];const h=(r.cat!==cur&&!WZ.c?'<div class="cat-h"><span>'+esc(cur=r.cat)+'</span></div>':'');
+    return h+'<div class="wz-row'+(s?' on':'')+'"><label class="wz-l"><input type="checkbox" data-wz="'+esc(r.id)+'"'+(s?' checked':'')+'><span><b>'+esc(r.name)+'</b><span class="muted small">'+esc(r.unit)+(r.photo?' · <span class="pill info">foto</span>':'')+(r.code?' · '+esc(r.code):'')+'</span></span></label>'+
+      '<input type="text" inputmode="numeric" data-rp class="wz-p" data-id="'+esc(r.id)+'" placeholder="Harga jual" value="'+(s&&s.price?fmt(s.price):r.price?fmt(r.price):'')+'" autocomplete="off">'+
+      '<input type="text" inputmode="numeric" class="wz-s" data-id="'+esc(r.id)+'" placeholder="Stok" value="'+(s&&s.stock?s.stock:'')+'" autocomplete="off"></div>'}).join(''):'<div class="empty">Tidak ada yang cocok.</div>';
+  wzCount()}
+function wzCount(){const n=Object.keys(WZ.sel).length,e=$('#wz-n');if(e)e.textContent=n+' dipilih';const b=$('#wz-save');if(b){b.disabled=!n;b.textContent=n?'Simpan '+n+' barang':'Simpan barang'}}
+function wzSync(id){const r=WZ.rows.find(x=>x.id===id);if(!r)return;const cb=document.querySelector('[data-wz="'+CSS.escape(id)+'"]'),pi=document.querySelector('.wz-p[data-id="'+CSS.escape(id)+'"]'),si=document.querySelector('.wz-s[data-id="'+CSS.escape(id)+'"]');
+  if(cb&&cb.checked)WZ.sel[id]={price:num(pi&&pi.value),stock:num(si&&si.value)};else delete WZ.sel[id];if(cb)cb.closest('.wz-row').classList.toggle('on',!!(cb&&cb.checked));wzCount()}
+async function wzSave(){const ids=Object.keys(WZ.sel),miss=ids.filter(id=>!WZ.sel[id].price);
+  if(miss.length){toast('Isi harga jual untuk '+miss.length+' barang yang dicentang.');const f=document.querySelector('.wz-p[data-id="'+CSS.escape(miss[0])+'"]');if(f){f.focus();f.scrollIntoView({block:'center'})}return}
+  const b=$('#wz-save');b.disabled=true;b.textContent='Menyimpan…';const rows=ids.map(id=>WZ.rows.find(r=>r.id===id)).filter(Boolean);
+  const photos={};const cids=rows.filter(r=>r.cid&&r.photo).map(r=>r.cid);
+  for(let i=0;i<cids.length;i+=60){try{Object.assign(photos,await rpc('jk_cat_photos',{p_key:await devKey(),p_ids:cids.slice(i,i+60)},30000)||{})}catch(e){}}
+  const ts=Date.now();rows.forEach(r=>{if(r.code&&byCode(r.code))return;const s=WZ.sel[r.id],p={id:uid(),code:r.code,name:r.name,cat:r.cat==='Lainnya'?'':r.cat,unit:r.unit,buy:0,sell:s.price,stock:s.stock||0,min:3,img:photos[r.cid]||''};
+    S.products.push(p);if(p.stock)S.moves.push({ts,pid:p.id,qty:p.stock,type:'masuk'})});
+  S.onb=1;save();closeSheet();WZ=null;track('wizard');if(S.products.length)track('barang_pertama');render();toast(rows.length+' barang siap dijual.')}
 
 /* ============ aksi ============ */
 const A={
@@ -1195,6 +1401,45 @@ const A={
     return loginAccount(u,p);
   },
   'login-local':()=>startSession('local'),
+  'trial-register':()=>showRegister(),
+  wizard:()=>wizard(),
+  'wz-c':e=>{WZ.c=e.dataset.c;wzRender()},
+  'wz-save':()=>wzSave(),
+  'pu-add':()=>$('#pf-units').insertAdjacentHTML('beforeend',unitRow()),
+  'pt-add':()=>$('#pf-tiers').insertAdjacentHTML('beforeend',tierRow()),
+  'row-del':e=>e.closest('.urow').remove(),
+  cu:e=>setCartUnit(e.dataset.id,e.dataset.u),
+  'who-menu':()=>staffMenu(),
+  'who-switch':()=>staffPick(),
+  'who-owner':()=>pinSheet('Masuk sebagai pemilik','Masukkan PIN pemilik untuk membuka semua menu.',async pin=>{if(await ownerPinOk(pin)){closeSheet();await setWho(null);toast('Mode pemilik.');return true}return false}),
+  'who-pick':e=>{const st=(S.staff||[]).find(x=>x.id===e.dataset.id);if(!st)return;pinSheet('Halo, '+st.name,'Masukkan PIN Anda.',async pin=>{if(await pinHash(st.id,pin)===st.h){closeSheet();await setWho(st);track('penjaga');toast('Selamat bertugas, '+st.name+'.');return true}return false})},
+  'pin-ok':async()=>{const v=$('#pin-in').value.trim(),f=PINFN;if(!f)return;if(!(await f(v))){$('#pin-err').textContent='PIN salah.';$('#pin-in').value='';$('#pin-in').focus()}},
+  'ownerpin-set':async()=>{const w=$('#st-ownerwa').value.trim(),pin=$('#st-ownerpin').value.trim();if(w&&!waNum(w))return toast('Nomor WhatsApp pemilik tidak valid.');
+    if(pin&&!/^\d{4,6}$/.test(pin))return toast('PIN pemilik 4 sampai 6 angka.');S.shop.ownerWa=w;if(pin)S.shop.ownerPin=await pinHash('owner',pin);save();vAtur();toast('Tersimpan.')},
+  'staff-add':async()=>{const n=$('#sf-name').value.trim(),pin=$('#sf-pin').value.trim();if(n.length<2)return toast('Isi nama penjaga.');if(!/^\d{4,6}$/.test(pin))return toast('PIN penjaga 4 sampai 6 angka.');
+    if(!S.shop.ownerPin)return toast('Buat PIN pemilik dulu supaya penjaga tidak bisa membuka menu pemilik.');
+    const id=uid();S.staff=S.staff||[];S.staff.push({id,name:n,h:await pinHash(id,pin)});save();vAtur();toast('Penjaga '+n+' ditambahkan.')},
+  'staff-del':e=>{S.staff=(S.staff||[]).filter(x=>x.id!==e.dataset.id);save();vAtur()},
+  'staff-mode':()=>staffPick(),
+  'close-shop':()=>closeShopSheet(),
+  'close-save':()=>{const v=$('#cs-count').value.trim();if(!v)return toast('Hitung dan isi uang yang ada di laci.');const r=shiftNow(),counted=num(v);
+    const c=Object.assign(r,{ts:Date.now(),by:WHO?WHO.name:'Pemilik',counted,diff:counted-r.expected,note:$('#cs-note').value.trim()});
+    S.closings=(S.closings||[]).concat(c).slice(-120);save();track('tutup_toko');const msg=closeMsg(c);
+    sheet('<div class="hd"><h2>Toko ditutup</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+      '<div class="change'+(c.diff<0?' short':'')+'"><span>'+(c.diff===0?'Uang laci pas':c.diff<0?'Uang laci kurang':'Uang laci lebih')+'</span><b class="num">'+rp(Math.abs(c.diff))+'</b></div>'+
+      '<pre class="struk" style="white-space:pre-wrap;width:auto;font-family:var(--body);font-size:13px">'+esc(msg)+'</pre>'+
+      '<a class="btn pay block" id="cs-send" target="_blank" rel="noopener" href="'+waLink(S.shop.ownerWa,msg)+'">Kirim ke WhatsApp pemilik</a>'+
+      (S.shop.ownerWa?'':'<p class="muted small" style="margin:0">Isi nomor WhatsApp pemilik di menu Atur supaya laporan langsung terkirim ke pemilik.</p>')+
+      '<button class="btn block" data-act="close">Selesai</button>');render()},
+  'kb-wa':e=>kbSheet(e.dataset.cust),
+  'kb-sent':()=>{const c=$('#kb-cust').value,w=waNum($('#kb-wa').value);if(w)S.sales.forEach(s=>{if(s.method==='kasbon'&&(s.cust||'')===c)s.custWa=w});save();track('kasbon_wa')},
+  'sm-start':()=>{track('stok_cepat');smStart()},
+  'sm-more':()=>{const keep=SM;closeSheet();smStart(keep)},
+  'sm-save':()=>{const ts=Date.now();let n=0;document.querySelectorAll('[data-smq]').forEach(i=>{const p=prod(i.dataset.smq),q=num(i.value);if(p&&q){p.stock+=q;S.moves.push({ts,pid:p.id,qty:q,type:'masuk'});n++}});
+    SM=null;save();closeSheet();render();toast('Stok masuk tersimpan untuk '+n+' barang.')},
+  kulak:()=>{track('kulakan');kulakSheet()},
+  'kl-sent':()=>{const w=$('#kl-wa').value.trim();if(waNum(w)){S.shop.supplierWa=w;save()}},
+  'kl-copy':()=>copyText(kulakText().text,'Daftar belanja disalin.'),
   'to-register':()=>showRegister(), 'to-login':()=>showLogin(), register:()=>doRegister(),
   'to-owner':async()=>{OWN.key=await Store.get('jk_owner_key');if(OWN.key)ownerOpen();else showOwnerLogin()},
   'owner-tab':e=>{OWN.tab=e.dataset.t;if(OWN.tab==='akun')return ownerRender();if(OWN.tab==='usulan')OWN.sug=null;ownerCatRender();ownerCatLoad()},
@@ -1233,6 +1478,11 @@ const A={
         '</div>'+(r.items.length>1?'<button class="btn danger block" data-act="od-del" data-d="*">Keluarkan semua perangkat</button>':''):'<p class="muted small">Belum ada perangkat yang masuk.</p></div>'))},
   'od-save':async()=>{const id=$('#od-id').value,v=$('#od-max').value;try{const r=await rpc('jk_owner_set_maxdev',{p_key:OWN.key,p_id:id,p_n:v?+v:null});if(!r.ok)return toast(r.error);closeSheet();await ownerOpen();toast('Batas perangkat disimpan.')}catch(e){toast(e.message)}},
   'od-del':async e=>{const id=$('#od-id').value;try{await rpc('jk_owner_device_del',{p_key:OWN.key,p_id:id,p_dev:e.dataset.d});await ownerOpen();A['owner-dev']({dataset:{id}});toast('Perangkat dikeluarkan.')}catch(err){toast(err.message)}},
+  'owner-hist':async e=>{const a=OWN.list.find(x=>x.id===e.dataset.id);if(!a)return;let l;try{l=await rpc('jk_owner_hist',{p_key:OWN.key,p_id:a.id})}catch(err){return toast(err.message)}
+    sheet('<div class="hd"><h2>Riwayat cadangan '+esc(a.shop_name)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><input type="hidden" id="oh-id" value="'+a.id+'">'+
+      '<p class="muted small" style="margin:0">Salinan otomatis paling sering tiap 6 jam, 8 terakhir disimpan. Pulihkan jika data warung terhapus atau tertimpa. Warung perlu membuka aplikasi dan memilih "Pakai data online".</p>'+
+      '<div class="list">'+(l.length?l.map(h=>'<div class="item"><div class="grow"><b>'+fmtDate(Date.parse(h.saved_at))+' '+fmtTime(Date.parse(h.saved_at))+'</b><span class="muted small num">'+h.products+' barang · '+h.sales+' struk · '+Math.round(h.size/1024)+' KB</span></div><button class="btn sm" data-act="oh-restore" data-h="'+h.id+'">Pulihkan</button></div>').join(''):'<div class="empty">Belum ada salinan. Salinan dibuat saat data warung berubah.</div>')+'</div>')},
+  'oh-restore':e=>{const id=$('#oh-id').value,h=e.dataset.h;confirmSheet('Pulihkan salinan ini?','Data online warung diganti dengan salinan ini. Data saat ini tetap tersimpan sebagai salinan baru.','Pulihkan',async()=>{try{const r=await rpc('jk_owner_hist_restore',{p_key:OWN.key,p_id:id,p_hist:+h});toast(r.ok?'Data dipulihkan.':r.error)}catch(err){toast(err.message)}},true)},
   'owner-otp':async()=>{let r;try{r=await rpc('jk_owner_otp_get',{p_key:OWN.key})}catch(e){return toast(e.message)}
     sheet('<div class="hd"><h2>Verifikasi WhatsApp</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
       '<p style="margin:0"><span class="pill '+(r.on&&r.has_token?'ok':'warn')+'">'+(r.on&&r.has_token?'Aktif':'Belum aktif')+'</span> <span class="small muted">'+r.sent_24h+' kode dikirim 24 jam terakhir</span></p>'+
@@ -1268,9 +1518,9 @@ const A={
   'pass-change':()=>sheet('<div class="hd"><h2>Ganti kata sandi</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><label class="f">Kata sandi sekarang<input type="password" id="pc-old" autocomplete="current-password"></label><label class="f">Kata sandi baru (min. 6)<input type="password" id="pc-new" autocomplete="new-password"></label><label class="f">Ulangi kata sandi baru<input type="password" id="pc-new2" autocomplete="new-password"></label><button class="btn primary block" data-act="pass-save">Simpan kata sandi</button>'),
   'pass-save':async()=>{const n=$('#pc-new').value;if(n.length<6)return toast('Kata sandi baru minimal 6 karakter.');if(n!==$('#pc-new2').value)return toast('Kedua kata sandi baru tidak sama.');
     try{const r=await rpc('jk_change_pass',{p_key:await devKey(),p_old:$('#pc-old').value,p_new:n});if(!r.ok)return toast(r.error);closeSheet();toast('Kata sandi diganti. Perangkat lain perlu masuk lagi.')}catch(e){if(e.expired)return sessionEnded(e.message);toast(e.message)}},
-  logout:()=>confirmSheet('Keluar dari akun?',isAcc()?(Sync.dirty?'Ada perubahan yang belum tersimpan online. Sambungkan internet dulu supaya tidak hilang. ':'Semua data sudah tersimpan online. ')+'Masuk lagi dengan nama pengguna dan kata sandi yang sama.':'Data warung tetap tersimpan di perangkat ini.','Keluar',async()=>{
+  logout:()=>SESS==='local'?confirmSheet('Keluar dari mode coba?','Data coba tetap ada di HP ini dan ikut pindah ke akun saat Anda mendaftar.','Keluar',async()=>{WHO=null;SESS=null;S=null;await Store.set('jk_session','');showLogin()}):confirmSheet('Keluar dari akun?',isAcc()?(Sync.dirty?'Ada perubahan yang belum tersimpan online. Sambungkan internet dulu supaya tidak hilang. ':'Semua data sudah tersimpan online. ')+'Masuk lagi dengan nama pengguna dan kata sandi yang sama.':'Data warung tetap tersimpan di perangkat ini.','Keluar',async()=>{
     if(isAcc()){if(Sync.dirty){try{await Sync.push()}catch(e){}}if(!Sync.dirty){try{await rpc('jk_logout',{p_key:await devKey()})}catch(e){}}ACC=null}
-    SESS=null;S=null;await Store.set('jk_session','');showLogin()}),
+    WHO=null;SESS=null;S=null;await Store.set('jk_session','');showLogin()}),
   more:()=>{rlimit+=200;vRiwayat()},
   'lunas-all':e=>{const k=e.dataset.cust,l=openDebt().filter(s=>(s.cust||'Tanpa nama')===k),t=l.reduce((a,s)=>a+s.total,0);
     confirmSheet('Lunasi kasbon '+k+'?',l.length+' struk senilai '+rp(t)+' ditandai lunas dan masuk kas hari ini.','Tandai lunas',()=>{const now=Date.now();l.forEach(s=>s.lunas=now);save();render();toast('Kasbon '+k+' lunas.')})},
@@ -1283,10 +1533,10 @@ const A={
   'modal-save':()=>{S.modal[dayKey(Date.now())]=num($('#md-amount').value);const ks=Object.keys(S.modal).sort();while(ks.length>60)delete S.modal[ks.shift()];save();closeSheet();render()},
   'cart-clear':()=>confirmSheet('Kosongkan keranjang?','Semua barang di keranjang akan dikeluarkan.','Kosongkan',()=>{S.cart=[];save();refreshCart()},true),
   scan:()=>openScanner(onCartScan,true,'Scan barang ke keranjang'),
-  'scan-close':()=>closeScanner(),
+  'scan-close':()=>{const f=SC.onDone;SC.onDone=null;closeScanner();if(f)f()},
   'to-cart':()=>{if(window.innerWidth>=860)return;const c=$('.kasir .cart .card')||$('#cart');if(c)c.scrollIntoView({behavior:'smooth',block:'start'})},
   smode:e=>setScanMode(e.dataset.m),
-  snap:()=>snapFoto(),
+  snap:()=>{track('foto_scan');snapFoto()},
   'sp-c':e=>{SP.c=e.dataset.c;SP.q='';const i=$('#sp-q');if(i)i.value='';spRefresh()},
   'sp-add':e=>{const p=prod(e.dataset.id);if(!p)return;addToCart(p.id);const c=S.cart.find(x=>x.pid===p.id);SC.newKey=c?c.key:'';beep(true);
     if(SC.learnF){visLearn(SC.learnF,p.id);SC.learnF=null;toast('Foto diingat untuk '+p.name+'.');scanList();return setScanMode('foto')}
@@ -1315,10 +1565,10 @@ const A={
   'copy-struk':()=>copyText(receiptText(curSale,width()),'Struk disalin.'),
   struk:e=>openReceipt(e.dataset.id),
   lunas:()=>{curSale.lunas=Date.now();save();closeSheet();render();toast('Kasbon '+(curSale.cust||'')+' ditandai lunas dan masuk kas hari ini.')},
-  void:()=>{const s=curSale;confirmSheet('Batalkan transaksi '+s.no+'?','Stok barang dikembalikan dan struk ini tidak dihitung di laporan.','Batalkan transaksi',()=>{
-    s.void=Date.now();s.items.forEach(i=>{const p=i.pid&&prod(i.pid);if(p){p.stock+=i.qty;S.moves.push({ts:Date.now(),pid:p.id,qty:i.qty,type:'batal',ref:s.no})}});save();render();toast('Transaksi dibatalkan, stok dikembalikan.')},true)},
+  void:()=>needOwner(()=>{const s=curSale;confirmSheet('Batalkan transaksi '+s.no+'?','Stok barang dikembalikan dan struk ini tidak dihitung di laporan.','Batalkan transaksi',()=>{
+    s.void=Date.now();s.items.forEach(i=>{const p=i.pid&&prod(i.pid),n=i.qty*(i.f||1);if(p){p.stock+=n;S.moves.push({ts:Date.now(),pid:p.id,qty:n,type:'batal',ref:s.no})}});save();render();toast('Transaksi dibatalkan, stok dikembalikan.')},true)}),
   'p-new':e=>{const o={code:e.dataset.code||'',name:e.dataset.name||'',tocart:!!e.dataset.tocart};productForm(null,o);productFormAfter(o)},
-  'p-edit':e=>productForm(prod(e.dataset.id)),
+  'p-edit':e=>needOwner(()=>productForm(prod(e.dataset.id))),
   'pf-save':()=>saveProduct(),
   'cat-open':e=>{catPicker({tocart:!!e.dataset.tocart});if(e.dataset.q){$('#cp-q').value=e.dataset.q;cpLoad('',e.dataset.q)}},
   'cp-pick':e=>{const x=CAT.cache[e.dataset.id];if(!x)return;const own=x.code&&S.products.find(p=>p.code===x.code);if(own){closeSheet();productForm(own);return toast('Barang ini sudah ada di daftar Anda.')}
@@ -1354,12 +1604,20 @@ document.addEventListener('input',ev=>{
   else if(t.id==='bq'){bq=t.value;refreshBarang()}
   else if(t.id==='pay-cash'){PAY.cash=num(t.value);payRefresh()}
   else if(t.id==='pay-disc'){PAY.disc=num(t.value);if(PAY.method==='tunai'){const keep=PAY.cash;$('#pay-body').innerHTML=payBody();PAY.cash=keep}payRefresh()}
-  else if(t.id==='pay-cust'){PAY.cust=t.value;payRefresh()}
+  else if(t.id==='pay-cust'){PAY.cust=t.value;const w=custs()[t.value.trim()];if(w&&!PAY.custWa){PAY.custWa='0'+w.replace(/^62/,'');const f=$('#pay-custwa');if(f)f.value=PAY.custWa}payRefresh()}
+  else if(t.id==='pay-custwa'){PAY.custWa=t.value}
+  else if(t.id==='cs-count'){closeDiff()}
+  else if(t.id==='kb-wa'){const a=$('#kb-send');if(a)a.href=waLink(t.value,kbMsg($('#kb-cust').value))}
+  else if(t.classList&&t.classList.contains('kl-q')||t.id==='kl-wa'){kulakRefresh()}
+  else if(t.id==='wz-q'){WZ.q=t.value;wzRender()}
+  else if(t.classList&&(t.classList.contains('wz-p')||t.classList.contains('wz-s'))){const id=t.dataset.id,cb=document.querySelector('[data-wz="'+CSS.escape(id)+'"]');if(cb&&!cb.checked&&t.value.trim()){cb.checked=true}wzSync(id)}
 });
 document.addEventListener('change',ev=>{
   const t=ev.target;
   if(t.id==='oc-file'&&t.files[0]){const f=t.files[0];t.value='';shrinkFit(f,520,.78).then(u=>{OC.photo=u;OC.changed=true;$('#oc-prev').innerHTML='<img src="'+u+'" alt="">'}).catch(()=>toast('Foto ini tidak bisa dibaca.'))}
   if(t.id==='pf-code'&&t.value.trim())catFillByCode(t.value.trim());
+  if(t.dataset&&t.dataset.wz)wzSync(t.dataset.wz);
+  if(t.classList&&t.classList.contains('kl-on'))kulakRefresh();
   if(t.id==='foto-file'&&t.files[0]){const f=t.files[0];t.value='';const u=URL.createObjectURL(f);loadImg(u).then(im=>snapFoto(im)).catch(()=>toast('Foto ini tidak bisa dibaca.')).finally(()=>setTimeout(()=>URL.revokeObjectURL(u),2000))}
   if(t.dataset&&t.dataset.sq){const c=S.cart.find(x=>x.key===t.dataset.sq);if(c){c.qty=Math.max(0,num(t.value));cartSave();scanList()}}
   if(t.id==='st-auto'){S.shop.autoPrint=t.checked;save()}
@@ -1384,6 +1642,7 @@ document.addEventListener('keydown',ev=>{
   else if(t.id==='ow-user'||t.id==='ow-pass') ownerLogin();
   else if(/^rg-/.test(t.id)) doRegister();
   else if(t.id==='pay-cash'||t.id==='pay-cust'){if(payOk())commitSale()}
+  else if(t.id==='pin-in') A['pin-ok']();
 });
 const KB={s:'',t:0};
 window.addEventListener('hashchange',()=>{if(location.hash==='#pemilik'){location.reload();return}const h=location.hash.slice(1);if(h&&h!==view&&TABS.some(t=>t[0]===h)){view=h;render()}});
@@ -1454,7 +1713,7 @@ async function loginAccount(u,p){
 }
 function showRegister(){
   $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
-    '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Daftar akun warung</h1><p>Akun aktif setelah disetujui JAGA. Kami kabari lewat WhatsApp.</p></div>'+
+    '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Daftar akun warung</h1><p>Gratis. Verifikasi nomor WhatsApp, akun langsung aktif.</p></div>'+
     '<label class="f">Nama warung<input type="text" id="rg-shop" autocomplete="organization"></label>'+
     '<label class="f">Nama pemilik<input type="text" id="rg-name" autocomplete="name"></label>'+
     '<label class="f">Nomor WhatsApp<input type="tel" id="rg-wa" inputmode="tel" placeholder="0812xxxxxxxx" autocomplete="tel"></label>'+
@@ -1481,6 +1740,7 @@ async function doRegister(){
   const b=$('#rg-btn');b.disabled=true;
   try{const r=await rpc('jk_register',d);
     if(!r||!r.ok){err.textContent=(r&&r.error)||'Pendaftaran gagal.';if(r&&r.otp){const bx=$('#rg-otp-box');if(bx){bx.hidden=false;$('#rg-otp').focus()}}return}
+    if(r.status==='active'){toast('Akun aktif. Selamat datang!');return loginAccount(d.p_username,d.p_pass)}
     showLogin(); $('#lg-user').value=d.p_username;
     const ok=$('#lg-ok');ok.hidden=false;ok.textContent='Pendaftaran '+d.p_shop+' terkirim. Akun aktif setelah disetujui JAGA, lalu masuk dengan nama pengguna dan kata sandi tadi.';
   }catch(e){err.textContent=e.message}finally{const bb=$('#rg-btn');if(bb)bb.disabled=false}
@@ -1513,7 +1773,7 @@ async function ownerLogin(){
 }
 async function ownerOpen(){
   if(OWN.tab!=='akun'){ownerCatRender();return ownerCatLoad()}
-  try{OWN.list=await rpc('jk_owner_list',{p_key:OWN.key,p_app:'kasir'})||[]}
+  try{OWN.list=await rpc('jk_owner_list',{p_key:OWN.key,p_app:'kasir'})||[];try{OWN.fun=await rpc('jk_owner_funnel',{p_key:OWN.key})}catch(e){OWN.fun=null}}
   catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin();$('#lg-err').textContent=e.message;return}toast(e.message);if(!$('.own'))showOwnerLogin();return}
   ownerRender();
 }
@@ -1561,6 +1821,7 @@ function ownerRender(){
   $('#login-root').innerHTML='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Akun warung Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header>'+
     '<div class="own-body">'+ownerTabs()+'<div class="row"><h2 class="grow">Akun warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button><button class="btn" data-act="owner-otp">Verifikasi WhatsApp</button><button class="btn" data-act="owner-mypass">Ganti sandi pemilik</button></div>'+
     '<div class="tiles"><div class="stat"><small>Menunggu persetujuan</small><b class="num" style="color:'+(cnt('pending')?'var(--warn)':'inherit')+'">'+cnt('pending')+'</b></div><div class="stat"><small>Aktif</small><b class="num">'+cnt('active')+'</b></div><div class="stat"><small>Total warung</small><b class="num">'+L.length+'</b></div></div>'+
+    (OWN.fun?'<div class="card"><h3 style="margin-bottom:8px">Aktivasi warung</h3><div class="funnel">'+[['Akun aktif',OWN.fun.aktif],['Masuk 7 hari',OWN.fun.masuk_7h],['Isi barang cepat',(OWN.fun.events||{}).wizard||0],['Barang pertama',(OWN.fun.events||{}).barang_pertama||0],['Transaksi pertama',(OWN.fun.events||{}).transaksi_pertama||0],['10 transaksi',(OWN.fun.events||{}).transaksi_10||0],['Tutup toko',(OWN.fun.events||{}).tutup_toko||0],['Pakai penjaga',(OWN.fun.events||{}).penjaga||0],['Ingatkan kasbon',(OWN.fun.events||{}).kasbon_wa||0]].map(x=>'<div class="stat"><small>'+x[0]+'</small><b class="num">'+(x[1]||0)+'</b></div>').join('')+'</div></div>':'')+
     '<div class="seg">'+[['pending','Menunggu'],['active','Aktif'],['disabled','Nonaktif'],['rejected','Ditolak'],['semua','Semua']].map(f=>'<button data-act="owner-f" data-f="'+f[0]+'" aria-pressed="'+(OWN.f===f[0])+'">'+f[1]+(f[0]!=='semua'&&cnt(f[0])?' · '+cnt(f[0]):'')+'</button>').join('')+'</div>'+
     (l.length?l.map(a=>'<div class="card acc"><div class="row"><b class="grow">'+esc(a.shop_name)+'</b><span class="pill '+ST[a.status][1]+'">'+ST[a.status][0]+'</span></div>'+
       '<div class="small muted">'+esc(a.owner_name)+' · <span class="num">+'+esc(a.wa)+'</span> · pengguna <b>'+esc(a.username)+'</b></div>'+
@@ -1571,7 +1832,7 @@ function ownerRender(){
       '<div class="row">'+(a.status!=='active'?'<button class="btn primary" data-act="owner-set" data-id="'+a.id+'" data-s="active">'+(a.status==='pending'?'Setujui':'Aktifkan')+'</button>':'')+
         (a.status==='pending'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="rejected">Tolak</button>':'')+
         (a.status==='active'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="disabled">Nonaktifkan</button>':'')+
-        '<button class="btn" data-act="owner-dev" data-id="'+a.id+'">Perangkat</button><button class="btn" data-act="owner-pass" data-id="'+a.id+'">Atur ulang sandi</button><a class="btn" target="_blank" rel="noopener" href="'+wa(a)+'">WhatsApp</a></div></div>').join(''):
+        '<button class="btn" data-act="owner-dev" data-id="'+a.id+'">Perangkat</button><button class="btn" data-act="owner-hist" data-id="'+a.id+'">Riwayat cadangan</button><button class="btn" data-act="owner-pass" data-id="'+a.id+'">Atur ulang sandi</button><a class="btn" target="_blank" rel="noopener" href="'+wa(a)+'">WhatsApp</a></div></div>').join(''):
       '<div class="card empty">'+(OWN.f==='pending'?'Tidak ada pendaftaran yang menunggu.':'Tidak ada akun di daftar ini.')+'</div>')+
     '</div></div>';
 }
@@ -1587,6 +1848,8 @@ function showLogin(){
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
     '<button class="btn pay block" data-act="login" id="lg-btn">Masuk</button>'+
     '<button class="btn block" data-act="to-register">Daftar akun warung baru</button>'+
+    '<button class="btn ghost block" data-act="login-local">Coba dulu tanpa daftar</button>'+
+    '<div class="lg-foot"><a href="tentang/">Tentang Jaga Kasir</a><a href="privasi/">Privasi</a><a href="syarat/">Syarat</a></div>'+
     (FRAMED?'<p class="muted small" style="margin:0;text-align:center">Mode pratinjau: daftar dan masuk akun warung aktif setelah aplikasi dipasang di situs.</p>':'')+
     '</div></div>';
   setTimeout(()=>{const u=$('#lg-user');if(u&&(!document.activeElement||document.activeElement===document.body))u.focus()},50);
@@ -1597,7 +1860,9 @@ async function boot(){
   else if(!S||!Array.isArray(S.products)){S=blank();await save()} else S=normalize(S);
   view='kasir'; const h=(location.hash||'').slice(1); if(TABS.some(t=>t[0]===h)) view=h;
   q='';kc='';hidePrev=false;rf='semua';
+  await loadWho();
   render();
+  if(!S.demo&&!S.products.length&&!S.onb&&!WHO&&(isAcc()||SESS==='local')){S.onb=1;save();setTimeout(()=>{if(!$('#sheet-root').firstChild&&!$('#login-root').firstChild)wizard()},400)}
 }
 async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$('#login-root').innerHTML='';await boot()}
 (async function(){
@@ -1607,11 +1872,13 @@ async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$
     OWN.key=await Store.get('jk_owner_key'); if(OWN.key) await ownerOpen(); else showOwnerLogin(); return;
   }
   SESS=await Store.get('jk_session');
+  if(/[?&]coba=1/.test(location.search)){try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}if(!isAcc()&&SESS!=='local'){SESS='local';await Store.set('jk_session','local')}}
   if(isAcc()){ACC=await Store.get('jk_account_'+SESS);
     if(!ACC){try{const r=await rpc('jk_me',{p_key:await devKey()});if(r&&r.account){ACC=r.account;await Store.set('jk_account_'+SESS,ACC)}}catch(e){if(e.expired){SESS=null;await Store.set('jk_session','')}}}
     if(!ACC){SESS=null;showLogin()}else{await Sync.load();await boot();
       rpc('jk_me',{p_key:await devKey()}).then(r=>{if(r&&r.account){ACC=r.account;Store.set('jk_account_'+SESS,ACC);if(r.backup_rev>Sync.rev&&!Sync.dirty){pullServer().then(render).catch(()=>{})}else if(Sync.dirty)Sync.push()}})
         .catch(e=>{if(e.expired)sessionEnded('Akun dinonaktifkan atau sesi berakhir. Hubungi JAGA jika perlu.');else{Sync.state=Sync.dirty?'offline':'ok';Sync.show()}})}}
+  else if(SESS==='local'){await boot()}
   else{SESS=null;await Store.set('jk_session','');showLogin()}
   try{if(!FRAMED&&navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
   if(!FRAMED&&'serviceWorker' in navigator&&location.protocol==='https:'){
