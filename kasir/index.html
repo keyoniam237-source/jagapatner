@@ -259,6 +259,59 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 .catbtn b{display:block}
 .catnote{font-size:12.5px;font-weight:600;color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent);border-radius:10px;padding:8px 10px}
 .sl-row.fail.hit .nm{color:#4CC98A}
+/* kartu barang ala katalog: foto, nama, harga */
+.pick-grid{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.tile,.pcard{position:relative;display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--surface);border:0;border-radius:14px;padding:8px 9px 10px;min-height:0;box-shadow:0 1px 2px rgba(120,20,30,.06),0 4px 14px rgba(120,20,30,.08)}
+.tile .pic,.pcard .pic{aspect-ratio:1/1;border-radius:10px;position:relative;margin:0 0 2px}
+.tile .pic img,.pcard .pic img,.cand .pic img{object-fit:contain;background:#fff}
+.ptag{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);background:var(--brand);color:#fff;font:700 10.5px/1.25 var(--body);padding:3px 8px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:normal}
+.pq{position:absolute;top:6px;right:6px;min-width:26px;height:26px;padding:0 7px;border-radius:999px;background:var(--brand);color:#fff;font:800 13px/26px var(--body);text-align:center;font-style:normal;box-shadow:0 2px 8px rgba(0,0,0,.22)}
+.pq.ok{background:var(--ok)}
+.tile b,.pcard b{font-size:13.5px;line-height:1.3;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em}
+.tile>span:last-child,.pcard .price{font-size:16px;color:var(--brand);font-weight:800;margin-top:auto;font-variant-numeric:tabular-nums}
+.tile.out>span:last-child{color:var(--bad);font-size:13px}
+.pcard .small{font-size:12px}
+.cgrid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.offnote{font-size:11.5px;color:var(--muted);margin:0}
+/* 3 cara memasukkan barang */
+.smodes{display:flex;gap:4px;margin:0 12px 8px;background:rgba(255,255,255,.08);border-radius:12px;padding:4px}
+.smodes button{flex:1;border:0;background:none;color:#C9D2EA;border-radius:9px;padding:9px 4px;font-weight:700;font-size:13.5px;display:flex;gap:6px;align-items:center;justify-content:center;min-width:0}
+.smodes button .i{width:18px;height:18px;flex:none}
+.smodes button[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.stage{display:flex;flex-direction:column;min-height:0}
+.scan.cart .stage{flex:0 0 40%;min-height:200px}
+.scan.cart.m-foto .stage{flex:0 0 50%}
+.scan.cart.m-pilih .stage{flex:0 0 56%}
+.stage .scan-view{flex:1;min-height:0}
+.scan.cart .stage .scan-view{flex:1}
+.fguide{position:absolute;width:min(62%,62vh);aspect-ratio:1;border:2px dashed rgba(255,255,255,.8);border-radius:18px;pointer-events:none}
+.shot{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);width:68px;height:68px;border-radius:50%;border:4px solid #fff;background:var(--brand);box-shadow:0 4px 16px rgba(0,0,0,.45);z-index:3;padding:0}
+.shot:disabled{opacity:.5}
+.shot:active{transform:translateX(-50%) scale(.94)}
+.galbtn{position:absolute;right:12px;bottom:26px;z-index:3;min-height:40px}
+.scan-view.flash::after{content:"";position:absolute;inset:0;background:#fff;animation:flash .35s ease-out forwards;pointer-events:none}
+@keyframes flash{from{opacity:.8}to{opacity:0}}
+.cands{position:absolute;left:8px;right:8px;bottom:94px;background:#fff;color:var(--ink);border-radius:14px;padding:9px;z-index:4;box-shadow:0 10px 30px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:7px}
+.cands .hd2{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
+.cands .hd2 .grow{min-width:0}
+.cands .hd2 button{border:1px solid var(--line);background:#fff;border-radius:9px;min-height:32px;padding:3px 10px;font-weight:700;font-size:12.5px}
+.cands .hd2 button.okb{background:var(--ok);border-color:var(--ok);color:#fff}
+.cands .cl{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.cand{flex:0 0 92px;display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:5px;text-align:left;font-size:12px;color:var(--ink)}
+.cand .pic{aspect-ratio:1/1;border-radius:7px;font-size:20px}
+.cand b{font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cand .num{color:var(--brand);font-weight:800}
+.cand.find{justify-content:center;align-items:center;text-align:center;font-weight:700;color:var(--brand)}
+.scan-pick{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px 12px 8px;background:var(--bg);color:var(--ink)}
+.scan-pick input{background:#fff;color:var(--ink)}
+.scan-pick .seg{flex:none}
+.scan-pick .pick-grid{flex:1;min-height:0;overflow:auto;align-content:start;padding:2px 2px 8px;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px}
+.scan-pick .tile b{font-size:12.5px}
+.scan-pick .tile>span:last-child{font-size:14.5px}
+.learn-note{background:#FFF3D6;color:#6B4A00;border-radius:10px;padding:7px 10px;font-size:13px;font-weight:600}
+.otp-box{display:flex;flex-direction:column;gap:6px}
+.dev-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.dev-row:first-child{border-top:0}
 </style>
 </head>
 <body>
@@ -303,7 +356,7 @@ const I={
   pengaturan:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
   scan:'<path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M11 9v6M14 9v6M17 9v6"/>',
   plus:'<path d="M12 5v14M5 12h14"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
-  print:'<path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7z"/>', trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'
+  print:'<path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7z"/>', camera:'<path d="M4 8h4l2-3h4l2 3h4v11H4z"/><circle cx="12" cy="13" r="3.5"/>', tap:'<path d="M9 11V5a2 2 0 0 1 4 0v5l4 1a2 2 0 0 1 1.5 2.3L17.5 20H10l-4-5 1.2-1.2a1.5 1.5 0 0 1 1.8-.2z"/>', trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'
 };
 const MARK=(cls)=>'<svg class="'+cls+'" viewBox="30 24 136 178" aria-hidden="true"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" class="mk-a" mask="url(#jkm)"/><path d="M74 132 V84 L96 72 V132 Z" class="mk-a" mask="url(#jkm)"/><path d="M104 132 V64 L120 55 V132 Z" class="mk-b" mask="url(#jkm)"/><path d="M40 176 L152 114.4 V126.4 L40 188 Z" class="mk-b"/></svg>';
 const ico=n=>'<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+I[n]+'</svg>';
@@ -440,8 +493,11 @@ function pickHtml(){
   const l=pickList();
   if(!S.products.length) return '<div class="empty">Belum ada barang di daftar.<br><button class="btn primary" data-act="p-new" style="margin-top:10px">Tambah barang pertama</button></div>';
   if(!l.length) return '<div class="empty">Tidak ada barang bernama "'+esc(q)+'". <button class="btn" data-act="p-new" data-name="'+esc(q)+'">Tambah barang ini</button></div>';
-  return l.map(p=>'<button class="tile'+(p.stock<=0?' out':'')+'" data-act="add" data-id="'+p.id+'"><span class="pic">'+pict(p)+'</span><b>'+esc(p.name)+'</b><span class="num">'+(p.stock<=0?'Stok habis · ':'')+rp(p.sell)+'</span></button>').join('');
+  return l.map(p=>tileHtml(p,'add')).join('');
 }
+const inCart=id=>{const c=S.cart.find(x=>x.key===id);return c?c.qty:0};
+function tileHtml(p,act){const n=inCart(p.id);return '<button class="tile'+(p.stock<=0?' out':'')+'" data-act="'+act+'" data-id="'+p.id+'"><span class="pic">'+pict(p)+(p.cat?'<i class="ptag">'+esc(p.cat)+'</i>':'')+(n?'<i class="pq num">'+n+'</i>':'')+'</span><b>'+esc(p.name)+'</b><span class="num">'+(p.stock<=0?'Stok habis · ':'')+rp(p.sell)+'</span></button>'}
+function pcard(o){return '<button class="pcard" data-act="'+o.act+'" '+(o.attr||'')+'><span class="pic">'+(o.img?'<img src="'+esc(o.img)+'" alt="" loading="lazy">':esc((o.name||'?').charAt(0).toUpperCase()))+(o.tag?'<i class="ptag">'+esc(o.tag)+'</i>':'')+(o.badge?'<i class="pq'+(o.badgeOk?' ok':'')+'">'+o.badge+'</i>':'')+'</span><b>'+esc(o.name)+'</b>'+(o.sub?'<span class="small muted">'+o.sub+'</span>':'')+'<span class="price num">'+(o.price?rp(o.price):'<span class="muted small">'+(o.noprice||'')+'</span>')+'</span></button>'}
 const ci=c=>{if(c.pid){const p=prod(c.pid);return p?{pid:p.id,name:p.name,price:p.sell,buy:p.buy||0,unit:p.unit||'pcs',stock:p.stock}:null}
   return {pid:null,name:c.name,price:c.price,buy:0,unit:'pcs',stock:Infinity}};
 const cartTotal=()=>S.cart.reduce((a,c)=>{const i=ci(c);return a+(i?i.price*c.qty:0)},0);
@@ -472,7 +528,7 @@ function refreshPick(){const e=$('#pick');if(!e)return;if(kc&&!cats().includes(k
   $('#kcats').innerHTML='<button data-act="kc" data-c="" aria-pressed="'+(!kc)+'">Sering dijual</button>'+cats().map(c=>'<button data-act="kc" data-c="'+esc(c)+'" aria-pressed="'+(kc===c)+'">'+esc(c)+'</button>').join('')}
 function refreshCart(){
   const e=$('#cart'); if(!e) return;
-  e.innerHTML=cartHtml(); $('#cart-total').textContent=rp(cartTotal());
+  e.innerHTML=cartHtml(); $('#cart-total').textContent=rp(cartTotal()); const pk=$('#pick'); if(pk) pk.innerHTML=pickHtml();
   $('#cart-n').textContent=S.cart.length?cartQty()+' barang':''; $('#pay-btn').disabled=!S.cart.length; $('#cart-clear').hidden=!S.cart.length;
 }
 function cartSave(){S.cart=S.cart.filter(x=>x.qty>0&&(!x.pid||prod(x.pid)));save();refreshCart()}
@@ -670,41 +726,138 @@ function scanFx(ok,html){const r=$('#reticle');if(r){r.classList.remove('hit','m
 async function scanLoop(){
   while(SC.on){
     let codes=[];
-    try{codes=SC.det?(await SC.det.detect(SC.video)).map(c=>c.rawValue):zxDecode()}catch(e){}
+    if(!SC.cont||SC.mode==='barcode')try{codes=SC.det?(await SC.det.detect(SC.video)).map(c=>c.rawValue):zxDecode()}catch(e){}
+    if(SC.cont&&SC.mode!=='barcode'){await sleep(250);continue}
     const c=codes[0], now=Date.now();
     if(c){const same=c===SC.last&&now-SC.lastT<900;SC.last=c;SC.lastT=now;if(!same)SC.cb(c)}
     await sleep(SC.det?110:170);
   }
 }
+const SMODES=[['foto','Foto','camera'],['pilih','Pilih','tap'],['barcode','Barcode','scan']];
 async function openScanner(cb,cont,title){
-  SC.cb=cb;SC.cont=cont;SC.last='';SC.torch=false;SC.fails=[];SC.hits={};SC.newKey='';
+  SC.cb=cb;SC.cont=cont;SC.last='';SC.torch=false;SC.fails=[];SC.hits={};SC.newKey='';SC.lastAuto=null;SC.lastF=null;SC.learnF=null;SP.q='';SP.c='';
+  let m='barcode';if(cont){try{m=localStorage.getItem('jk_smode')||'barcode'}catch(e){}if(!SMODES.some(x=>x[0]===m))m='barcode'}SC.mode=m;
   const manual='<input type="text" inputmode="numeric" id="scan-manual" placeholder="Ketik kode barcode" autocomplete="off"><button class="btn" data-act="scan-manual">Pakai</button>'+(FRAMED?'<button class="btn" data-act="scan-demo">Contoh</button>':'');
-  $('#scan-root').innerHTML='<div class="scan'+(cont?' cart':'')+'" role="dialog" aria-modal="true"><div class="scan-top"><b>'+esc(title||'Scan barcode')+'</b><button class="btn" data-act="torch" id="torch" hidden>Lampu</button><button class="btn" data-act="scan-close">'+(cont?'Tutup':'Selesai')+'</button></div>'+
-    '<div class="scan-view"><video playsinline muted autoplay></video><div id="scan-pop"></div><div class="reticle" id="reticle"></div><p class="scan-msg" id="scan-msg">Menyalakan kamera…</p></div>'+
+  $('#scan-root').innerHTML='<div class="scan'+(cont?' cart':'')+'" id="scan-box" role="dialog" aria-modal="true"><div class="scan-top"><b>'+esc(title||'Scan barcode')+'</b><button class="btn" data-act="torch" id="torch" hidden>Lampu</button><button class="btn" data-act="scan-close">'+(cont?'Tutup':'Selesai')+'</button></div>'+
+    (cont?'<div class="smodes" role="group" aria-label="Cara memasukkan barang">'+SMODES.map(x=>'<button data-act="smode" data-m="'+x[0]+'" aria-pressed="false">'+ico(x[2])+x[1]+'</button>').join('')+'</div>':'')+
+    '<div class="stage" id="scan-stage"></div>'+
     (cont?'<div class="scan-panel"><div class="scan-list" id="scan-list" aria-live="polite"></div>'+
       '<div class="scan-tot"><div class="grow"><small id="scan-count">0 barang</small><b id="scan-sum">Rp0</b></div><button class="btn pay" data-act="scan-pay" id="scan-pay">Bayar</button></div>'+
       '<div class="scan-man">'+manual+'</div></div>'
     :'<div class="scan-foot"><div class="scan-last"><span id="scan-last">Arahkan barcode ke dalam kotak</span><span class="num" id="scan-total"></span></div><div class="row" style="flex-wrap:nowrap">'+manual.replace('id="scan-manual"','id="scan-manual" class="grow" style="width:auto"')+'</div></div>')+'</div>';
-  SC.video=$('#scan-root video'); scanInfo();
+  await scanStage();
+}
+function setScanMode(m){if(!$('#scan-box')||SC.mode===m)return;SC.mode=m;try{localStorage.setItem('jk_smode',m)}catch(e){}scanStage()}
+async function scanStage(){
+  const m=SC.mode,box=$('#scan-box'),st=$('#scan-stage');if(!box||!st)return;
+  box.className='scan'+(SC.cont?' cart m-'+m:'');
+  document.querySelectorAll('.smodes button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.m===m)));
+  const sm=$('.scan-man');if(sm)sm.hidden=m==='pilih';
+  if(m==='pilih'){SC.on=false;stopStream();$('#torch').hidden=true;st.innerHTML=spHtml();spRefresh();scanInfo();return}
+  st.innerHTML='<div class="scan-view"><video playsinline muted autoplay></video><div id="scan-pop"></div>'+
+    (m==='foto'?'<div class="fguide" aria-hidden="true"></div><div class="cands" id="cands" hidden></div><button class="shot" data-act="snap" id="shot" aria-label="Foto barang"></button><label class="btn galbtn" for="foto-file">Galeri</label><input type="file" id="foto-file" accept="image/*" hidden>':'<div class="reticle" id="reticle"></div>')+
+    '<p class="scan-msg" id="scan-msg">Menyalakan kamera…</p></div>';
+  SC.video=$('#scan-stage video'); scanInfo();
+  if(m==='foto')visPrepare().then(n=>{if(SC.mode==='foto'&&!n&&!visHasLearnt())scanFx(false,'<div><b>Belum ada barang berfoto</b><span class="small">Tambahkan foto di menu Barang, atau tekan foto lalu pilih barangnya sekali supaya diingat.</span></div>')}).catch(()=>{});
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) throw new Error('nocam');
-    SC.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+    if(!SC.stream)SC.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
     if(!$('#scan-root .scan')){stopStream();return}
+    if(SC.mode!==m||!SC.video||!SC.video.isConnected)return;
     SC.video.srcObject=SC.stream; await SC.video.play().catch(()=>{});
-    try{await ensureDecoder()}catch(e){throw Object.assign(new Error('decoder'),{name:'DecoderError'})}
-    $('#scan-msg').hidden=true;
+    if(m==='barcode'){try{await ensureDecoder()}catch(e){throw Object.assign(new Error('decoder'),{name:'DecoderError'})}}
+    const sm2=$('#scan-msg');if(sm2)sm2.hidden=true;
     const tr=SC.stream.getVideoTracks()[0]; try{if(tr.getCapabilities&&tr.getCapabilities().torch)$('#torch').hidden=false}catch(e){}
-    SC.on=true; scanLoop();
+    if(!SC.on){SC.on=true; scanLoop()}
   }catch(e){
-    const m=$('#scan-msg'); if(!m) return; if(FRAMED){m.style.cssText='top:auto;bottom:14px;transform:none'}else $('#reticle').hidden=true;
-    m.textContent=FRAMED?'Kamera tidak tersedia di mode pratinjau. Ketik kode di bawah atau coba scan barang contoh.':
+    const mm=$('#scan-msg'); if(!mm) return; if(FRAMED||m==='foto'){mm.style.cssText='top:auto;bottom:'+(m==='foto'?'96px':'14px')+';transform:none'}else{const r=$('#reticle');if(r)r.hidden=true}
+    if(m==='foto'){const sh=$('#shot');if(sh)sh.hidden=true;mm.textContent=e&&e.name==='NotAllowedError'?'Izin kamera ditolak. Tekan Galeri untuk memotret barang dengan aplikasi kamera.':'Kamera langsung tidak tersedia. Tekan Galeri untuk memotret barang.';return}
+    mm.textContent=FRAMED?'Kamera tidak tersedia di mode pratinjau. Ketik kode di bawah atau coba scan barang contoh.':
       e&&e.name==='NotAllowedError'?'Izin kamera ditolak. Izinkan kamera untuk situs ini di pengaturan browser, atau ketik kode di bawah.':
       e&&e.name==='DecoderError'?'Pembaca barcode belum termuat. Sambungkan internet sekali, lalu buka Scan lagi. Sementara itu ketik kode di bawah.':
       'Kamera tidak bisa dipakai di perangkat ini. Ketik kode barcode di bawah.';
   }
 }
+/* ---- mode Pilih: ketuk barang ---- */
+const SP={q:'',c:''};
+function spList(){const k=SP.q.trim().toLowerCase();
+  if(k)return S.products.filter(p=>p.name.toLowerCase().includes(k)||(p.code||'').includes(k)).slice(0,120);
+  if(SP.c)return S.products.filter(p=>catOf(p)===SP.c).sort((a,b)=>a.name.localeCompare(b.name));
+  const c=soldCount();return [...S.products].sort((a,b)=>(c[b.id]||0)-(c[a.id]||0)||a.name.localeCompare(b.name)).slice(0,120)}
+function spHtml(){return '<div class="scan-pick">'+(SC.learnF?'<div class="learn-note">Ketuk barang yang tadi difoto. Foto itu akan diingat supaya lain kali langsung dikenali.</div>':'')+
+  '<input type="search" id="sp-q" placeholder="Cari nama atau kode barang" value="'+esc(SP.q)+'" autocomplete="off">'+
+  '<div class="seg scroll" id="sp-cats"></div><div class="pick-grid" id="sp-grid"></div></div>'}
+function spRefresh(){const g=$('#sp-grid');if(!g)return;const l=spList();
+  g.innerHTML=!S.products.length?'<div class="empty">Belum ada barang di daftar. Tambahkan barang di menu Barang.</div>':l.length?l.map(p=>tileHtml(p,'sp-add')).join(''):'<div class="empty">Tidak ada barang bernama "'+esc(SP.q)+'".</div>';
+  const cs=$('#sp-cats');if(cs)cs.innerHTML='<button data-act="sp-c" data-c="" aria-pressed="'+(!SP.c)+'">Semua</button>'+cats().map(c=>'<button data-act="sp-c" data-c="'+esc(c)+'" aria-pressed="'+(SP.c===c)+'">'+esc(c)+'</button>').join('')}
+/* ---- mode Foto: kenali barang dari foto ---- */
+/* VIS: pengenal barang dari foto (tanpa server). Sidik foto = histogram warna berbobot tengah + tata letak warna + arah tepi. */
+const VIS={N:64,c:null,
+  draw(src,cam){const N=VIS.N,c=VIS.c||(VIS.c=document.createElement('canvas'));c.width=N;c.height=N;const x=c.getContext('2d',{willReadFrequently:true});
+    const w=src.videoWidth||src.naturalWidth||src.width,h=src.videoHeight||src.naturalHeight||src.height;x.fillStyle='#fff';x.fillRect(0,0,N,N);
+    if(cam){const s=Math.min(w,h)*.78;x.drawImage(src,(w-s)/2,(h-s)/2,s,s,0,0,N,N)}
+    else{const k=N/Math.max(w,h);x.drawImage(src,0,0,w,h,(N-w*k)/2,(N-h*k)/2,w*k,h*k)}
+    return x.getImageData(0,0,N,N).data},
+  feat(src,cam){const N=VIS.N,d=VIS.draw(src,cam),HB=12;
+    const A=new Float32Array(HB*2+4),L=new Float32Array(27),E=new Float32Array(32),lw=new Float32Array(9),gray=new Float32Array(N*N);
+    // normalisasi terang: bagi dengan rata-rata kecerahan bagian tengah supaya lampu redup/terang tidak terlalu berpengaruh
+    let mean=0,mc=0;for(let y=N/4;y<N*3/4;y++)for(let x=N/4;x<N*3/4;x++){const i=(y*N+x)*4;mean+=(d[i]+d[i+1]+d[i+2])/3;mc++}mean=mean/mc||128;const gain=Math.min(1.6,Math.max(.7,140/mean));
+    const sg=2*(N*.36)*(N*.36),bq=(r,g,b)=>((r*7.99|0)*64+(g*7.99|0)*8+(b*7.99|0)),BF=new Float32Array(512);
+    if(cam){let bn=0;for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(x>3&&x<N-4&&y>3&&y<N-4)continue;const i=(y*N+x)*4;BF[bq(d[i]/255,d[i+1]/255,d[i+2]/255)]++;bn++}for(let i=0;i<512;i++)BF[i]/=bn}
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=(y*N+x)*4;let r=Math.min(255,d[i]*(cam?gain:1))/255,g=Math.min(255,d[i+1]*(cam?gain:1))/255,b=Math.min(255,d[i+2]*(cam?gain:1))/255;
+      const mx=Math.max(r,g,b),mn=Math.min(r,g,b),v=mx,s=mx?(mx-mn)/mx:0;gray[y*N+x]=(r+g+b)/3;
+      const dx=x-N/2+.5,dy=y-N/2+.5;let w=Math.exp(-(dx*dx+dy*dy)/sg);if(cam)w*=1-Math.min(.9,BF[bq(d[i]/255,d[i+1]/255,d[i+2]/255)]*14);if(v>.9&&s<.1)w*=.12;
+      if(s>=.22&&v>=.18){let hh=0;const dd=mx-mn;if(mx===r)hh=((g-b)/dd+6)%6;else if(mx===g)hh=(b-r)/dd+2;else hh=(r-g)/dd+4;hh=hh/6*HB;
+        const h0=Math.floor(hh)%HB,h1=(h0+1)%HB,f=hh-Math.floor(hh),so=s>.55?HB:0;A[h0+so]+=w*(1-f);A[h1+so]+=w*f}
+      else A[HB*2+Math.min(3,Math.floor(v*4))]+=w;
+      const cx=Math.min(2,Math.floor(x*3/N)),cy=Math.min(2,Math.floor(y*3/N)),k=cy*3+cx;L[k*3]+=r+g+b;L[k*3+1]+=r-g;L[k*3+2]+=(r+g)/2-b;lw[k]++}
+    for(let k=0;k<9;k++){L[k*3]/=lw[k]*3;L[k*3+1]/=lw[k];L[k*3+2]/=lw[k]}
+    let lm=0;for(let k=0;k<9;k++)lm+=L[k*3];lm/=9;for(let k=0;k<9;k++)L[k*3]-=lm;
+    for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++){const gx=gray[y*N+x+1]-gray[y*N+x-1],gy=gray[(y+1)*N+x]-gray[(y-1)*N+x],m=Math.hypot(gx,gy);if(m<.04)continue;
+      let a=Math.atan2(gy,gx);if(a<0)a+=Math.PI;const o=Math.min(7,Math.floor(a/Math.PI*8)),q=(y<N/2?0:2)+(x<N/2?0:1);E[q*8+o]+=m}
+    const nz=(a,wt)=>{let s=0;for(const v of a)s+=v*v;s=Math.sqrt(s)||1;for(let i=0;i<a.length;i++)a[i]=a[i]/s*wt;return a};
+    // histogram: akar kuadrat (Hellinger) supaya warna dominan tidak menelan warna kecil
+    for(let i=0;i<A.length;i++)A[i]=Math.sqrt(A[i]);
+    nz(A,1);nz(L,.55);nz(E,.6);const out=new Float32Array(A.length+L.length+E.length);out.set(A,0);out.set(L,A.length);out.set(E,A.length+L.length);return nz(out,1)},
+  sim(a,b){let s=0;for(let i=0;i<a.length;i++)s+=a[i]*b[i];return s}
+};
+
+VIS.ref={};VIS.learnt=null;
+async function visLoadLearnt(){if(!VIS.learnt){try{VIS.learnt=(await Store.get('jk_vis_'+(SESS||'x')))||{}}catch(e){VIS.learnt={}}}return VIS.learnt}
+const visHasLearnt=()=>!!VIS.learnt&&Object.keys(VIS.learnt).some(k=>VIS.learnt[k].length&&prod(k));
+const visSig=p=>p.img?p.img.length+':'+p.img.slice(-24):'';
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();if(!/^data:/.test(src))i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=rej;i.src=src})}
+async function visPrepare(){await visLoadLearnt();const l=S.products.filter(p=>p.img);let n=0;
+  for(const p of l){const sg=visSig(p),r=VIS.ref[p.id];if(!r||r.sig!==sg){try{VIS.ref[p.id]={sig:sg,f:VIS.feat(await loadImg(p.img),false)}}catch(e){VIS.ref[p.id]={sig:sg,f:null}}if(++n%6===0)await sleep(0)}}
+  return l.length}
+function visRank(f){const out=[];for(const p of S.products){let s=-1;const r=VIS.ref[p.id];if(r&&r.f&&p.img)s=VIS.sim(f,r.f);const L=(VIS.learnt||{})[p.id];if(L)for(const a of L)s=Math.max(s,VIS.sim(f,a)-.02);if(s>0)out.push({p,s})}return out.sort((a,b)=>b.s-a.s)}
+async function visLearn(f,pid){if(!f||!pid)return;await visLoadLearnt();const L=VIS.learnt[pid]=VIS.learnt[pid]||[];L.push(Array.from(f,v=>Math.round(v*1e4)/1e4));while(L.length>6)L.shift();try{await Store.set('jk_vis_'+(SESS||'x'),VIS.learnt)}catch(e){}}
+function zxCanvas(c){const Z=window.ZXing;if(!SC.zx||!Z)return null;try{return SC.zx.decodeWithState(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(c)))).getText()}catch(e){return null}}
+async function snapFoto(src){
+  src=src||SC.video;const w=src&&(src.videoWidth||src.naturalWidth||src.width);if(!w)return toast('Kamera belum siap. Tunggu sebentar atau pakai Galeri.');
+  const sh=$('#shot');if(sh)sh.disabled=true;const v=$('.scan-view');if(v){v.classList.remove('flash');void v.offsetWidth;v.classList.add('flash')}
+  try{
+    const h=src.videoHeight||src.naturalHeight||src.height,k=Math.min(1,1280/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(src,0,0,c.width,c.height);
+    let code=null;try{await ensureDecoder();code=SC.det?(((await SC.det.detect(c))[0])||{}).rawValue:zxCanvas(c)}catch(e){}
+    if(code&&byCode(code)){candHide();onCartScan(code);return}
+    await visPrepare();const f=VIS.feat(c,true),R=visRank(f);SC.lastF=f;SC.lastAuto=null;
+    if(!R.length){beep(false);candShow(null,[]);return}
+    const top=R[0];
+    if(top.s>=.75&&(R.length<2||top.s-R[1].s>=.06)){
+      addToCart(top.p.id);const cc=S.cart.find(x=>x.pid===top.p.id);SC.newKey=cc?cc.key:'';SC.lastAuto=top.p.id;beep(true);
+      scanFx(true,'<span class="th">'+pict(top.p)+'</span><div><b>'+esc(top.p.name)+'</b><span class="small num">'+rp(top.p.sell)+' · dikenali dari foto</span></div><span class="q num">×'+(cc?cc.qty:1)+'</span>');scanInfo(top.p.name);
+      candShow(top.p,R.slice(1,5).map(x=>x.p))}
+    else{beep(false);candShow(null,R.slice(0,5).map(x=>x.p))}
+  }finally{const s2=$('#shot');if(s2)s2.disabled=false}
+}
+function candShow(auto,list){const el=$('#cands');if(!el)return;el.hidden=false;
+  el.innerHTML='<div class="hd2"><span class="grow">'+(auto?'Masuk keranjang: <b>'+esc(auto.name)+'</b>. Bukan ini? Ketuk yang benar.':list.length?'Barang ini yang mana? Ketuk yang benar.':'Barang belum dikenali. Cari lalu ketuk barangnya sekali, foto ini akan diingat.')+'</span>'+
+    (auto?'<button class="okb" data-act="cand-ok">Benar</button>':'')+'<button data-act="cand-x" aria-label="Tutup">✕</button></div>'+
+    '<div class="cl">'+list.map(p=>'<button class="cand" data-act="cand" data-id="'+p.id+'"><span class="pic">'+pict(p)+'</span><b>'+esc(p.name)+'</b><span class="num">'+rp(p.sell)+'</span></button>').join('')+
+    '<button class="cand find" data-act="cand-find">'+ico('tap')+'Cari barang lain</button></div>'}
+function candHide(){const el=$('#cands');if(el){el.hidden=true;el.innerHTML=''}}
 function stopStream(){if(SC.stream){SC.stream.getTracks().forEach(t=>t.stop());SC.stream=null}}
-function closeScanner(){SC.on=false;stopStream();$('#scan-root').innerHTML='';if(view==='kasir')refreshCart()}
+function closeScanner(){SC.on=false;stopStream();$('#scan-root').innerHTML='';SC.learnF=null;if(view==='kasir')refreshCart()}
 function scanInfo(msg){const a=$('#scan-last');if(a){if(msg)a.textContent=msg;$('#scan-total').textContent=''}scanList()}
 function scanList(){const el=$('#scan-list');if(!el)return;
   const rows=S.cart.slice().reverse().map(c=>{const i=ci(c);if(!i)return'';
@@ -712,9 +865,10 @@ function scanList(){const el=$('#scan-list');if(!el)return;
       '<div class="sub">'+(c.qty>i.stock?'<span style="color:#F0A63C">stok tercatat '+i.stock+'</span>':'')+'</div>'+
       '<div class="sl-ctl"><button data-act="sc-dec" data-id="'+esc(c.key)+'" aria-label="Kurangi '+esc(i.name)+'">−</button><input type="number" min="0" inputmode="numeric" class="num" data-sq="'+esc(c.key)+'" value="'+c.qty+'" aria-label="Jumlah '+esc(i.name)+'"><button data-act="sc-inc" data-id="'+esc(c.key)+'" aria-label="Tambah '+esc(i.name)+'">+</button><button class="x" data-act="sc-del" data-id="'+esc(c.key)+'" aria-label="Hapus '+esc(i.name)+'">✕</button></div></div>'}).join('');
   const H=SC.hits||{};const fails=SC.fails.map(code=>H[code]?'<div class="sl-row fail hit"><div><div class="nm">Ada di Katalog JAGA</div><div class="sub">'+esc(H[code].name)+(H[code].price?' · saran '+rp(H[code].price):'')+'</div></div><div class="sl-ctl"><button class="btn" data-act="sc-cat" data-id="'+H[code].id+'">Tambahkan</button><button class="x" data-act="sc-fdel" data-code="'+esc(code)+'" aria-label="Abaikan">✕</button></div></div>':'<div class="sl-row fail"><div><div class="nm">✕ Barcode belum terdaftar</div><div class="sub num">'+esc(code)+'</div></div><div class="sl-ctl"><button class="btn" data-act="sc-reg" data-code="'+esc(code)+'">Daftarkan</button><button class="x" data-act="sc-fdel" data-code="'+esc(code)+'" aria-label="Abaikan barcode '+esc(code)+'">✕</button></div></div>').join('');
-  el.innerHTML=fails+rows||'<div class="sl-empty">Belum ada barang. Arahkan barcode ke kotak di atas, barang langsung masuk ke daftar ini.</div>';
+  el.innerHTML=fails+rows||'<div class="sl-empty">'+(SC.mode==='foto'?'Belum ada barang. Arahkan barang ke kotak lalu tekan tombol merah.':SC.mode==='pilih'?'Belum ada barang. Ketuk barang di atas untuk memasukkannya.':'Belum ada barang. Arahkan barcode ke kotak di atas, barang langsung masuk ke daftar ini.')+'</div>';
   $('#scan-sum').textContent=rp(cartTotal());$('#scan-count').textContent=cartQty()+' barang · '+S.cart.length+' jenis';$('#scan-pay').disabled=!S.cart.length;
   if(SC.newKey){el.scrollTop=0;SC.newKey=''}
+  if(SC.mode==='pilih'){const g=$('#sp-grid');if(g){const t=g.scrollTop;spRefresh();g.scrollTop=t}}
 }
 function onCartScan(code){
   const p=byCode(code);
@@ -764,14 +918,29 @@ let cpT=0,cpSeq=0;
 async function cpLoad(q,code){const el=$('#cp-list');if(!el)return;const my=++cpSeq;
   try{const r=await catSearch(q,code);if(my!==cpSeq||!$('#cp-list'))return;
     const own=new Set(S.products.map(x=>x.code).filter(Boolean));
-    el.innerHTML=r.length?r.map(x=>'<button class="crow" data-act="cp-pick" data-id="'+x.id+'"><span class="th">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':esc(x.name.charAt(0)))+'</span><span class="grow"><b>'+esc(x.name)+'</b><span class="muted small">'+esc([x.cat,x.code].filter(Boolean).join(' · ')||'Tanpa barcode')+'</span>'+
-      (x.price?'<span class="small">Harga saran <b class="num">'+rp(x.price)+'</b></span>':'')+'</span>'+(x.code&&own.has(x.code)?'<span class="pill ok">Sudah ada</span>':'')+'</button>').join(''):
+    el.className=r.length?'cgrid':'list';
+    el.innerHTML=r.length?r.map(x=>pcard({act:'cp-pick',attr:'data-id="'+x.id+'"',img:x.photo,name:x.name,tag:x.cat,price:x.price,noprice:'Harga diisi sendiri',badge:x.code&&own.has(x.code)?'✓':'',badgeOk:true,sub:x.code&&own.has(x.code)?'Sudah ada di daftar Anda':''})).join(''):
       '<div class="empty">'+(q||code?'Tidak ada di katalog. Coba kata lain, atau isi sendiri.':'Katalog masih kosong.')+'</div>';
   }catch(e){if($('#cp-list'))el.innerHTML='<div class="empty">'+esc(e.message)+'</div>'}}
+/* ---- Open Food Facts: basis data produk terbuka (foto & data berlisensi CC BY-SA) ---- */
+const OFF={base:'https://world.openfoodfacts.org',f:'code,product_name,brands,quantity,categories_tags,image_front_url,image_front_small_url'};
+const OFFCAT=[['instant-noodles','Mi Instan'],['noodles','Mi Instan'],['coffees','Kopi'],['teas','Minuman'],['milks','Susu'],['dairies','Susu'],['waters','Minuman'],['beverages','Minuman'],['biscuits','Makanan Ringan'],['crisps','Makanan Ringan'],['chips','Makanan Ringan'],['snacks','Makanan Ringan'],['confectioneries','Makanan Ringan'],['sauces','Bumbu Dapur'],['condiments','Bumbu Dapur'],['oils','Minyak Goreng'],['breads','Roti'],['cigarettes','Rokok']];
+function offMap(x){let n=(x.product_name||'').trim();const b=(x.brands||'').split(',')[0].trim();const sq=t=>t.toLowerCase().replace(/[^a-z0-9]/g,'');if(b&&!sq(n).includes(sq(b))&&!sq(b).includes(sq(n.split(' ')[0])))n=b.replace(/\b\w/g,c=>c.toUpperCase())+' '+n;n=n.charAt(0).toUpperCase()+n.slice(1);if(x.quantity&&!n.toLowerCase().includes(String(x.quantity).toLowerCase()))n+=' '+x.quantity;
+  let code=String(x.code||'');while(code.length>12&&code[0]==='0')code=code.slice(1);const t=x.categories_tags||[];let cat='';for(const [k,v] of OFFCAT)if(t.some(y=>y.endsWith(':'+k))){cat=v;break}
+  return {code,name:n.replace(/\s+/g,' ').trim(),cat,photoUrl:x.image_front_url||x.image_front_small_url||'',thumb:x.image_front_small_url||x.image_front_url||''}}
+async function offFetch(path){const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),10000);try{const r=await fetch(OFF.base+path,{signal:ctl.signal});if(!r.ok)throw 0;return await r.json()}catch(e){throw new Error('Open Food Facts tidak bisa dihubungi. Periksa internet.')}finally{clearTimeout(t)}}
+async function offGet(code){if(!/^\d{8,14}$/.test(code||''))return null;try{const d=await offFetch('/api/v2/product/'+code+'.json?fields='+OFF.f);if(d.status!==1||!d.product||!d.product.product_name)return null;const o=offMap(d.product);o.code=code;return o}catch(e){return null}}
+async function offSearch(q){const d=await offFetch('/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&tagtype_0=countries&tag_contains_0=contains&tag_0=indonesia&json=1&page_size=24&fields='+OFF.f);return (d.products||[]).filter(x=>x.product_name).map(offMap)}
+async function urlToData(url,max){if(!url)return null;try{const r=await fetch(url);if(!r.ok)throw 0;return await shrinkFit(await r.blob(),max||520,.8)}catch(e){return null}}
 function productFromCat(x,opt){productForm(null,Object.assign({},opt||{},{cat:x}))}
 async function catFillByCode(code){
   if(!code||$('#pf-id').value||S.products.some(x=>x.code===code))return;
-  const x=await catByCode(code);if(!x||!$('#pf-name')||$('#pf-id').value)return;
+  const x=await catByCode(code);if(!$('#pf-name')||$('#pf-id').value)return;
+  if(!x){const o=await offGet(code);if(!o||!$('#pf-name')||$('#pf-id').value||$('#pf-code').value.trim()!==code)return;
+    if(!$('#pf-name').value.trim())$('#pf-name').value=o.name;if(!$('#pf-cat').value.trim()&&o.cat)$('#pf-cat').value=o.cat;
+    const n0=$('#pf-catnote');if(n0){n0.hidden=false;n0.textContent='Ditemukan di Open Food Facts: '+o.name+'. Isi harga jual dan stok.'}
+    if(!$('#pf-img').value&&o.photoUrl){const u=await urlToData(o.photoUrl,420);if(u&&$('#pf-img')&&!$('#pf-img').value){$('#pf-img').value=u;$('#pf-img-prev').innerHTML='<img src="'+u+'" alt="">';$('#pf-img-del').hidden=false}}
+    return}
   if(!$('#pf-name').value.trim())$('#pf-name').value=x.name;if(!$('#pf-cat').value.trim())$('#pf-cat').value=x.cat;$('#pf-unit').value=x.unit||$('#pf-unit').value;
   if(!$('#pf-sell').value&&x.price)$('#pf-sell').value=fmt(x.price);
   if(x.photo&&!$('#pf-img').value){$('#pf-img').value=x.photo;$('#pf-img-prev').innerHTML='<img src="'+x.photo+'" alt="">';$('#pf-img-del').hidden=false}
@@ -959,13 +1128,51 @@ const A={
   'os-take':e=>{const x=OWN.sug[+e.dataset.i];ownerCatForm(Object.assign({},x,{id:''}),true)},
   'os-skip':async e=>{const x=OWN.sug[+e.dataset.i];try{await rpc('jk_owner_cat_skip',{p_key:OWN.key,p_k:x.key});OWN.sug.splice(+e.dataset.i,1);ownerCatRender(true);toast('Usulan diabaikan.')}catch(err){toast(err.message)}},
   'oc-photo-del':()=>{OC.photo=null;OC.changed=true;$('#oc-prev').textContent='Foto';const b=$('[data-act=oc-photo-del]');if(b)b.remove()},
-  'oc-scan':()=>openScanner(c=>{beep(true);const i=$('#oc-code');if(i)i.value=c;closeScanner()},false,'Scan barcode barang'),
+  'oc-scan':()=>openScanner(c=>{beep(true);const i=$('#oc-code');if(i)i.value=c;closeScanner();if(!$('#oc-name').value.trim()||!OC.photo)A['oc-off']()},false,'Scan barcode barang'),
+  'oc-off':async()=>{const code=($('#oc-code').value||'').trim();if(!/^\d{8,14}$/.test(code))return toast('Isi atau scan barcode dulu.');toast('Mencari di Open Food Facts…');
+    const o=await offGet(code);if(!$('#oc-name'))return;if(!o)return toast('Barcode ini tidak ada di Open Food Facts. Isi sendiri.');
+    if(!$('#oc-name').value.trim())$('#oc-name').value=o.name;if(!$('#oc-cat').value.trim()&&o.cat)$('#oc-cat').value=o.cat;$('#oc-offnote').hidden=false;
+    if(!OC.photo&&o.photoUrl){const u=await urlToData(o.photoUrl,520);if(u&&$('#oc-prev')){OC.photo=u;OC.changed=true;$('#oc-prev').innerHTML='<img src="'+u+'" alt="">'}}toast('Terisi dari Open Food Facts.')},
+  'off-open':()=>{sheet('<div class="hd"><h2>Cari di Open Food Facts</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+      '<p class="muted small" style="margin:0">Basis data produk terbuka yang diisi relawan. Foto dan datanya boleh dipakai ulang (CC BY-SA). Harga tidak tersedia, isi sendiri.</p>'+
+      '<div class="row" style="flex-wrap:nowrap"><input type="search" class="grow" id="off-q" placeholder="Nama barang atau barcode, misal: teh botol" autocomplete="off" autofocus style="width:auto"><button class="btn primary" data-act="off-go">Cari</button></div><div id="off-list" class="list"></div>')},
+  'off-go':async()=>{const q=($('#off-q').value||'').trim(),el=$('#off-list');if(q.length<2)return toast('Ketik nama barang atau barcode.');el.className='list';el.innerHTML='<div class="empty">Mencari…</div>';
+    try{let r;if(/^\d{8,14}$/.test(q)){const o=await offGet(q);r=o?[o]:[]}else r=await offSearch(q);if(!$('#off-list'))return;OFF.res=r;
+      const have=new Set((OWN.cat.items||[]).map(x=>x.code).filter(Boolean));
+      el.className=r.length?'cgrid':'list';el.innerHTML=r.length?r.map((x,i)=>pcard({act:'off-pick',attr:'data-i="'+i+'"',img:x.thumb,name:x.name,tag:x.cat,noprice:'Ketuk untuk menambah',sub:esc(x.code),badge:have.has(x.code)?'✓':'',badgeOk:true})).join(''):'<div class="empty">Tidak ditemukan. Coba kata lain atau barcode.</div>'}
+    catch(e){if($('#off-list'))el.innerHTML='<div class="empty">'+esc(e.message)+'</div>'}},
+  'off-pick':async e=>{const x=(OFF.res||[])[+e.dataset.i];if(!x)return;const dup=(OWN.cat.items||[]).find(c=>c.code&&c.code===x.code);if(dup){closeSheet();return ownerCatForm(dup)}
+    toast('Mengambil foto…');const u=await urlToData(x.photoUrl,520);closeSheet();ownerCatForm({id:'',name:x.name,code:x.code,cat:x.cat,unit:'pcs',price:0,photo:u,off:true})},
   'oc-save':async()=>{const item={id:OC.id,name:$('#oc-name').value.trim(),code:$('#oc-code').value.trim(),cat:$('#oc-cat').value.trim(),unit:$('#oc-unit').value.trim()||'pcs',price:num($('#oc-price').value),source:OC.source};
     if(item.name.length<2)return toast('Isi nama barang.');if(OC.changed||!OC.id)item.photo=OC.photo||'';
     const b=$('[data-act=oc-save]');b.disabled=true;
     try{const r=await rpc('jk_owner_cat_save',{p_key:OWN.key,p_item:item},45000);if(!r.ok){b.disabled=false;return toast(r.error)}
       closeSheet();if(OC.skey){OWN.sug=(OWN.sug||[]).filter(x=>x.key!==OC.skey)}toast(item.name+' tersimpan di katalog.');ownerCatLoad()}catch(e){b.disabled=false;toast(e.message)}},
   'oc-del':()=>{const id=OC.id;confirmSheet('Hapus dari katalog?','Barang hilang dari katalog. Barang yang sudah ada di daftar warung tidak ikut terhapus.','Hapus',async()=>{try{await rpc('jk_owner_cat_del',{p_key:OWN.key,p_id:id});toast('Dihapus dari katalog.');ownerCatLoad()}catch(e){toast(e.message)}},true)},
+  'owner-dev':async e=>{const a=OWN.list.find(x=>x.id===e.dataset.id);if(!a)return;let r;try{r=await rpc('jk_owner_devices',{p_key:OWN.key,p_id:a.id})}catch(err){return toast(err.message)}
+    const opts=[1,2,3,4,5,6,8,10].map(n=>'<option value="'+n+'"'+(r.max_devices===n?' selected':'')+'>'+n+' perangkat</option>').join('')+'<option value=""'+(r.max_devices==null?' selected':'')+'>Tanpa batas</option>';
+    sheet('<div class="hd"><h2>Perangkat '+esc(a.shop_name)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><input type="hidden" id="od-id" value="'+a.id+'">'+
+      '<label class="f">Batas perangkat yang boleh masuk<select id="od-max">'+opts+'</select></label><p class="muted small" style="margin:0">Jika batas penuh, perangkat baru tidak bisa masuk sampai salah satu keluar atau Anda keluarkan di sini. Perangkat yang 60 hari tidak dipakai lepas sendiri.</p>'+
+      '<button class="btn primary block" data-act="od-save">Simpan batas</button><h3 style="margin-top:6px">Sedang masuk ('+r.items.length+')</h3>'+
+      '<div>'+(r.items.length?r.items.map(d=>'<div class="dev-row"><div class="grow"><b>'+esc(d.label||'Perangkat')+'</b><div class="small muted">Masuk '+fmtDate(Date.parse(d.created_at))+' · terakhir dipakai '+fmtDate(Date.parse(d.last_seen))+' '+fmtTime(Date.parse(d.last_seen))+'</div></div><button class="btn danger sm" data-act="od-del" data-d="'+esc(d.id)+'">Keluarkan</button></div>').join('')+
+        '</div>'+(r.items.length>1?'<button class="btn danger block" data-act="od-del" data-d="*">Keluarkan semua perangkat</button>':''):'<p class="muted small">Belum ada perangkat yang masuk.</p></div>'))},
+  'od-save':async()=>{const id=$('#od-id').value,v=$('#od-max').value;try{const r=await rpc('jk_owner_set_maxdev',{p_key:OWN.key,p_id:id,p_n:v?+v:null});if(!r.ok)return toast(r.error);closeSheet();await ownerOpen();toast('Batas perangkat disimpan.')}catch(e){toast(e.message)}},
+  'od-del':async e=>{const id=$('#od-id').value;try{await rpc('jk_owner_device_del',{p_key:OWN.key,p_id:id,p_dev:e.dataset.d});await ownerOpen();A['owner-dev']({dataset:{id}});toast('Perangkat dikeluarkan.')}catch(err){toast(err.message)}},
+  'owner-otp':async()=>{let r;try{r=await rpc('jk_owner_otp_get',{p_key:OWN.key})}catch(e){return toast(e.message)}
+    sheet('<div class="hd"><h2>Verifikasi WhatsApp</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+      '<p style="margin:0"><span class="pill '+(r.on&&r.has_token?'ok':'warn')+'">'+(r.on&&r.has_token?'Aktif':'Belum aktif')+'</span> <span class="small muted">'+r.sent_24h+' kode dikirim 24 jam terakhir</span></p>'+
+      '<p class="muted small" style="margin:0">Pendaftar Jaga Kasir dan Jaga Kosan menerima kode 6 angka di WhatsApp dan wajib memasukkannya. Pengiriman memakai layanan Fonnte: daftar di fonnte.com, sambungkan nomor WhatsApp JAGA dengan memindai QR, lalu salin token dari menu Device.</p>'+
+      '<label class="f">Token Fonnte<input type="password" id="ot-token" autocomplete="off" placeholder="'+(r.has_token?'Token tersimpan. Isi hanya untuk mengganti':'Tempel token di sini')+'"></label>'+
+      '<label class="row" style="gap:8px;font-weight:600"><input type="checkbox" id="ot-on"'+(r.on?' checked':'')+' style="width:auto;min-height:0"> Wajibkan kode OTP saat pendaftaran</label>'+
+      '<button class="btn primary block" data-act="ot-save">Simpan</button><h3 style="margin-top:6px">Kirim pesan tes</h3>'+
+      '<div class="row" style="flex-wrap:nowrap"><input type="tel" class="grow" id="ot-wa" placeholder="0812xxxxxxxx" autocomplete="off" style="width:auto"><button class="btn" data-act="ot-test">Kirim tes</button></div>')},
+  'ot-save':async()=>{const t=$('#ot-token').value.trim();try{const r=await rpc('jk_owner_otp_set',{p_key:OWN.key,p_on:$('#ot-on').checked,p_token:t||null});if(!r.ok)return toast(r.error);closeSheet();toast('Pengaturan verifikasi WhatsApp disimpan.')}catch(e){toast(e.message)}},
+  'ot-test':async()=>{const w=$('#ot-wa').value.trim();if(w.length<9)return toast('Isi nomor WhatsApp tujuan.');try{const r=await otpCall({action:'test',owner_key:OWN.key,wa:w});toast(r.ok?'Pesan tes terkirim. Cek WhatsApp nomor itu.':r.error)}catch(e){toast(e.message)}},
+  'otp-send':async()=>{const err=$('#lg-err'),w=($('#rg-wa').value||'').trim();err.textContent='';if(!/^[0-9+\-\s]{9,}$/.test(w)){err.textContent='Isi nomor WhatsApp yang benar dulu.';return $('#rg-wa').focus()}
+    const b=$('#otp-btn');b.disabled=true;$('#otp-msg').textContent='Mengirim kode…';
+    try{const r=await otpCall({wa:w,app:'kasir'});if(!r.ok){$('#otp-msg').textContent='';err.textContent=r.error||'Kode gagal dikirim.';if(r.wait)otpWait(r.wait);else b.disabled=false;return}
+      $('#otp-msg').textContent='Kode terkirim ke WhatsApp '+w+'. Berlaku 10 menit.';otpWait(60);$('#rg-otp').focus()}
+    catch(e){b.disabled=false;$('#otp-msg').textContent='';err.textContent=e.message}},
   'owner-login':()=>ownerLogin(), 'owner-refresh':()=>ownerOpen(), 'owner-f':e=>{OWN.f=e.dataset.f;ownerRender()},
   'owner-logout':async()=>{try{await rpc('jk_owner_logout',{p_key:OWN.key})}catch(e){}OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin()},
   'owner-set':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id),s=e.dataset.s,lbl={active:'Aktifkan',rejected:'Tolak',disabled:'Nonaktifkan'}[s];
@@ -1002,6 +1209,17 @@ const A={
   'cart-clear':()=>confirmSheet('Kosongkan keranjang?','Semua barang di keranjang akan dikeluarkan.','Kosongkan',()=>{S.cart=[];save();refreshCart()},true),
   scan:()=>openScanner(onCartScan,true,'Scan barang ke keranjang'),
   'scan-close':()=>closeScanner(),
+  smode:e=>setScanMode(e.dataset.m),
+  snap:()=>snapFoto(),
+  'sp-c':e=>{SP.c=e.dataset.c;SP.q='';const i=$('#sp-q');if(i)i.value='';spRefresh()},
+  'sp-add':e=>{const p=prod(e.dataset.id);if(!p)return;addToCart(p.id);const c=S.cart.find(x=>x.pid===p.id);SC.newKey=c?c.key:'';beep(true);
+    if(SC.learnF){visLearn(SC.learnF,p.id);SC.learnF=null;toast('Foto diingat untuk '+p.name+'.');scanList();return setScanMode('foto')}
+    scanList();scanFx(true,'')},
+  cand:e=>{const id=e.dataset.id,p=prod(id);if(!p)return;if(SC.lastAuto&&SC.lastAuto!==id)bump(SC.lastAuto,-1);addToCart(id);const c=S.cart.find(x=>x.pid===id);SC.newKey=c?c.key:'';
+    visLearn(SC.lastF,id);SC.lastAuto=null;SC.lastF=null;candHide();beep(true);scanFx(true,'<span class="th">'+pict(p)+'</span><div><b>'+esc(p.name)+'</b><span class="small">masuk keranjang · foto diingat</span></div><span class="q num">×'+(c?c.qty:1)+'</span>');scanList()},
+  'cand-ok':()=>{if(SC.lastAuto)visLearn(SC.lastF,SC.lastAuto);SC.lastAuto=null;SC.lastF=null;candHide()},
+  'cand-x':()=>{SC.lastAuto=null;SC.lastF=null;candHide()},
+  'cand-find':()=>{if(SC.lastAuto){bump(SC.lastAuto,-1);SC.lastAuto=null}SC.learnF=SC.lastF;SC.lastF=null;SP.q='';SP.c='';setScanMode('pilih');scanList()},
   'sc-inc':e=>{bump(e.dataset.id,1);scanList()}, 'sc-dec':e=>{bump(e.dataset.id,-1);scanList()},
   'sc-del':e=>{S.cart=S.cart.filter(x=>x.key!==e.dataset.id);cartSave();scanList()},
   'sc-fdel':e=>{SC.fails=SC.fails.filter(x=>x!==e.dataset.code);scanList()},
@@ -1052,6 +1270,7 @@ const A={
 document.addEventListener('click',ev=>{const e=ev.target.closest('[data-act]');if(!e)return;const f=A[e.dataset.act];if(f)f(e,ev)});
 document.addEventListener('input',ev=>{
   const t=ev.target;
+  if(t.id==='sp-q'){SP.q=t.value;SP.c='';spRefresh()}
   if(t.id==='cp-q'){clearTimeout(cpT);cpT=setTimeout(()=>cpLoad(t.value.trim()),300)}
   if(t.id==='oc-q'){clearTimeout(ocT);ocT=setTimeout(()=>{OWN.cq=t.value.trim();ownerCatLoad()},350)}
   if(t.matches('[data-rp]')){const n=num(t.value);t.value=n?fmt(n):''}
@@ -1065,6 +1284,7 @@ document.addEventListener('change',ev=>{
   const t=ev.target;
   if(t.id==='oc-file'&&t.files[0]){const f=t.files[0];t.value='';shrinkFit(f,520,.78).then(u=>{OC.photo=u;OC.changed=true;$('#oc-prev').innerHTML='<img src="'+u+'" alt="">'}).catch(()=>toast('Foto ini tidak bisa dibaca.'))}
   if(t.id==='pf-code'&&t.value.trim())catFillByCode(t.value.trim());
+  if(t.id==='foto-file'&&t.files[0]){const f=t.files[0];t.value='';const u=URL.createObjectURL(f);loadImg(u).then(im=>snapFoto(im)).catch(()=>toast('Foto ini tidak bisa dibaca.')).finally(()=>setTimeout(()=>URL.revokeObjectURL(u),2000))}
   if(t.dataset&&t.dataset.sq){const c=S.cart.find(x=>x.key===t.dataset.sq);if(c){c.qty=Math.max(0,num(t.value));cartSave();scanList()}}
   if(t.id==='st-auto'){S.shop.autoPrint=t.checked;save()}
   if(t.id==='st-qris-file'&&t.files[0]){shrinkFit(t.files[0],720,.9).then(u=>{S.shop.qris=u;save();if(view==='pengaturan')vAtur();toast('Gambar QRIS tersimpan.')}).catch(()=>toast('Gambar ini tidak bisa dibaca. Coba gambar lain.'));t.value=''}
@@ -1135,7 +1355,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 async function loginAccount(u,p){
   const btn=$('#lg-btn'),err=$('#lg-err'); if(btn)btn.disabled=true; if(err)err.textContent='';
   try{
-    const r=await rpc('jk_login',{p_username:u,p_pass:p,p_key:await devKey()});
+    const r=await rpc('jk_login',{p_username:u,p_pass:p,p_key:await devKey(),p_dev:devLabel()});
     if(!r||!r.ok){if(err)err.textContent=(r&&r.error)||'Gagal masuk.';return}
     ACC=r.account; SESS='acc:'+ACC.id; await Store.set('jk_account_'+SESS,ACC); await Store.set('jk_session',SESS);
     await Sync.load(); S=null;
@@ -1162,6 +1382,7 @@ function showRegister(){
     '<label class="f">Nama warung<input type="text" id="rg-shop" autocomplete="organization"></label>'+
     '<label class="f">Nama pemilik<input type="text" id="rg-name" autocomplete="name"></label>'+
     '<label class="f">Nomor WhatsApp<input type="tel" id="rg-wa" inputmode="tel" placeholder="0812xxxxxxxx" autocomplete="tel"></label>'+
+    '<div class="otp-box" id="rg-otp-box" hidden><label class="f">Kode verifikasi WhatsApp<span class="row" style="flex-wrap:nowrap"><input class="grow" type="text" inputmode="numeric" maxlength="6" id="rg-otp" autocomplete="one-time-code" placeholder="6 angka" style="width:auto"><button class="btn" type="button" data-act="otp-send" id="otp-btn">Kirim kode</button></span></label><p class="small muted" id="otp-msg" style="margin:0">Tekan Kirim kode, lalu masukkan kode dari WhatsApp.</p></div>'+
     '<label class="f">Alamat warung<input type="text" id="rg-addr" autocomplete="street-address"></label>'+
     '<label class="f">Nama pengguna (untuk masuk)<input type="text" id="rg-user" autocapitalize="none" spellcheck="false" placeholder="contoh: warungsari" autocomplete="username"></label>'+
     '<div class="two"><label class="f">Kata sandi<input type="password" id="rg-pass" autocomplete="new-password"></label><label class="f">Ulangi kata sandi<input type="password" id="rg-pass2" autocomplete="new-password"></label></div>'+
@@ -1169,6 +1390,7 @@ function showRegister(){
     '<button class="btn pay block" data-act="register" id="rg-btn">Kirim pendaftaran</button>'+
     '<button class="btn ghost block" data-act="to-login">Sudah punya akun? Masuk</button></div></div>';
   setTimeout(()=>{const u=$('#rg-shop');if(u&&(!document.activeElement||document.activeElement===document.body))u.focus()},50);
+  rpc('jk_otp_status',{}).then(r=>{const bx=$('#rg-otp-box');if(bx&&r&&r.on)bx.hidden=false}).catch(()=>{});
 }
 async function doRegister(){
   const v=id=>($('#'+id).value||'').trim(),err=$('#lg-err');err.textContent='';
@@ -1179,14 +1401,22 @@ async function doRegister(){
   if(!/^[a-z0-9_.]{3,24}$/.test(d.p_username))return err.textContent='Nama pengguna 3-24 huruf kecil, angka, titik, atau garis bawah, tanpa spasi.';
   if(d.p_pass.length<6)return err.textContent='Kata sandi minimal 6 karakter.';
   if(d.p_pass!==$('#rg-pass2').value)return err.textContent='Kedua kata sandi tidak sama.';
+  const ob=$('#rg-otp-box');if(ob&&!ob.hidden){d.p_otp=($('#rg-otp').value||'').trim();if(!/^\d{6}$/.test(d.p_otp)){err.textContent='Masukkan 6 angka kode verifikasi dari WhatsApp. Tekan Kirim kode jika belum menerimanya.';return $('#rg-otp').focus()}}
   const b=$('#rg-btn');b.disabled=true;
   try{const r=await rpc('jk_register',d);
-    if(!r||!r.ok){err.textContent=(r&&r.error)||'Pendaftaran gagal.';return}
+    if(!r||!r.ok){err.textContent=(r&&r.error)||'Pendaftaran gagal.';if(r&&r.otp){const bx=$('#rg-otp-box');if(bx){bx.hidden=false;$('#rg-otp').focus()}}return}
     showLogin(); $('#lg-user').value=d.p_username;
     const ok=$('#lg-ok');ok.hidden=false;ok.textContent='Pendaftaran '+d.p_shop+' terkirim. Akun aktif setelah disetujui JAGA, lalu masuk dengan nama pengguna dan kata sandi tadi.';
   }catch(e){err.textContent=e.message}finally{const bb=$('#rg-btn');if(bb)bb.disabled=false}
 }
 
+async function otpCall(body){let r;try{r=await fetch(SB.url+'/functions/v1/jk-otp',{method:'POST',headers:{'apikey':SB.key,'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){throw new Error('Tidak ada sambungan internet. Coba lagi.')}
+  let d=null;try{d=await r.json()}catch(e){}return d||{ok:false,error:'Layanan kode sedang bermasalah. Coba lagi.'}}
+let otpT=0;function otpWait(n){clearInterval(otpT);const b=$('#otp-btn');if(!b)return;b.disabled=true;let k=n;b.textContent='Kirim ulang '+k+'s';
+  otpT=setInterval(()=>{const bb=$('#otp-btn');if(!bb){clearInterval(otpT);return}k--;if(k<=0){clearInterval(otpT);bb.disabled=false;bb.textContent='Kirim ulang kode'}else bb.textContent='Kirim ulang '+k+'s'},1000)}
+function devLabel(){const u=navigator.userAgent||'';const os=/iPad/.test(u)?'iPad':/iPhone/.test(u)?'iPhone':/Android/.test(u)?'Android':/Windows/.test(u)?'Windows':/Mac OS/.test(u)?'Mac':/Linux/.test(u)?'Linux':'Perangkat';
+  const br=/SamsungBrowser/.test(u)?'Samsung Internet':/EdgA?\//.test(u)?'Edge':/OPR\//.test(u)?'Opera':/CriOS|Chrome\//.test(u)?'Chrome':/FxiOS|Firefox/.test(u)?'Firefox':/Safari/.test(u)?'Safari':'Browser';
+  const a=u.match(/Android [\d.]+; ([^;)]+)\)/);const md=a&&a[1].trim()!=='K'?' '+a[1].trim():'';return (os+md+' · '+br).slice(0,60)}
 /* ---- portal pemilik JAGA ---- */
 let OWN={key:null,list:[],f:'pending',tab:'akun',cat:{items:[],total:0},sug:null,cq:''};let ocT=0;
 function showOwnerLogin(){
@@ -1218,11 +1448,10 @@ function ownerCatRender(partial){
   const head='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Katalog JAGA untuk semua warung</div><button class="chip" data-act="owner-logout">Keluar</button></header><div class="own-body">'+ownerTabs();
   let body='';
   if(OWN.tab==='katalog'){const it=OWN.cat.items||[];
-    body='<div class="row"><h2 class="grow">Katalog barang</h2><button class="btn primary" data-act="oc-new">'+ico('plus')+'Tambah barang</button></div>'+
+    body='<div class="row"><h2 class="grow">Katalog barang</h2><button class="btn" data-act="off-open">Cari di Open Food Facts</button><button class="btn primary" data-act="oc-new">'+ico('plus')+'Tambah barang</button></div>'+
       '<p class="muted small" style="margin:0">'+(OWN.cat.total||0)+' barang. Warung memilih dari sini saat menambah barang, jadi tidak perlu memotret ulang.</p>'+
       '<input type="search" id="oc-q" placeholder="Cari nama, jenis, atau barcode" value="'+esc(OWN.cq)+'" autocomplete="off">'+
-      (it.length?'<div class="cgrid">'+it.map(x=>'<button class="citem" data-act="oc-edit" data-id="'+x.id+'"><span class="pic">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':esc(x.name.charAt(0).toUpperCase()))+'</span><b>'+esc(x.name)+'</b><span class="small muted">'+esc(x.cat||'Tanpa jenis')+'</span>'+
-        '<span class="small muted num">'+esc(x.code||'tanpa barcode')+'</span>'+(x.price?'<span class="small num">Saran <b>'+rp(x.price)+'</b></span>':'')+(x.source==='warung'?'<span class="pill info">dari warung</span>':'')+'</button>').join('')+'</div>':
+      (it.length?'<div class="cgrid">'+it.map(x=>pcard({act:'oc-edit',attr:'data-id="'+x.id+'"',img:x.photo,name:x.name,tag:x.cat,price:x.price,noprice:'Tanpa harga saran',sub:esc(x.code||'tanpa barcode')+(x.source==='warung'?' · dari warung':'')})).join('')+'</div>':
         '<div class="card empty">'+(OWN.cq?'Tidak ada yang cocok.':'Katalog masih kosong. Tambahkan barang, atau ambil dari tab Usulan warung.')+'</div>');
   }else{const sg=OWN.sug;
     body='<div class="row"><h2 class="grow">Usulan dari warung</h2><button class="btn" data-act="owner-tab" data-t="usulan">Muat ulang</button></div>'+
@@ -1236,15 +1465,16 @@ function ownerCatRender(partial){
   $('#login-root').innerHTML=head+body+'</div></div>';
 }
 let OC=null;
-function ownerCatForm(x,fromSug){const n=!x||!x.id;x=x||{name:'',code:'',cat:'',unit:'pcs',price:0,photo:null};OC={id:x.id||'',photo:x.photo||null,changed:!!fromSug&&!!x.photo,source:fromSug?'warung':(x.source||'pemilik'),skey:fromSug?x.key:''};
+function ownerCatForm(x,fromSug){const n=!x||!x.id;x=x||{name:'',code:'',cat:'',unit:'pcs',price:0,photo:null};OC={id:x.id||'',photo:x.photo||null,changed:(!!fromSug||!!x.off)&&!!x.photo,source:fromSug?'warung':(x.source||'pemilik'),skey:fromSug?x.key:''};
   const cats=[...new Set((OWN.cat.items||[]).map(i=>i.cat).filter(Boolean))];
   sheet('<div class="hd"><h2>'+(n?(fromSug?'Masukkan ke katalog':'Tambah barang katalog'):'Ubah barang katalog')+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
     '<div class="row" style="flex-wrap:nowrap"><span class="th big" id="oc-prev">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':'Foto')+'</span><div class="stack grow" style="gap:6px"><span class="small muted" style="font-weight:600">Foto barang</span><div class="row"><label class="btn" for="oc-file">'+(x.photo?'Ganti foto':'Ambil atau pilih foto')+'</label>'+(x.photo?'<button class="btn ghost danger" data-act="oc-photo-del">Hapus</button>':'')+'</div></div><input type="file" id="oc-file" accept="image/*" hidden></div>'+
     '<label class="f">Nama barang<input type="text" id="oc-name" value="'+esc(x.name)+'" placeholder="Indomie Goreng 85 g" autocomplete="off"'+(n&&!fromSug?' autofocus':'')+'></label>'+
-    '<label class="f">Barcode (kosongkan jika tidak ada)<span class="row" style="flex-wrap:nowrap"><input class="grow" type="text" inputmode="numeric" id="oc-code" value="'+esc(x.code||'')+'" autocomplete="off" style="width:auto"><button class="btn" type="button" data-act="oc-scan">'+ico('scan')+'Scan</button></span></label>'+
+    '<label class="f">Barcode (kosongkan jika tidak ada)<span class="row" style="flex-wrap:nowrap"><input class="grow" type="text" inputmode="numeric" id="oc-code" value="'+esc(x.code||'')+'" autocomplete="off" style="width:auto"><button class="btn" type="button" data-act="oc-scan">'+ico('scan')+'Scan</button><button class="btn" type="button" data-act="oc-off" title="Isi nama dan foto dari Open Food Facts">Isi otomatis</button></span></label>'+
     '<div class="two"><label class="f">Jenis<input type="text" id="oc-cat" list="oc-cats" value="'+esc(x.cat||'')+'" autocomplete="off"><datalist id="oc-cats">'+cats.map(c=>'<option value="'+esc(c)+'">').join('')+'</datalist></label>'+
     '<label class="f">Satuan<input type="text" id="oc-unit" value="'+esc(x.unit||'pcs')+'" autocomplete="off"></label></div>'+
     '<label class="f">Harga jual saran<input type="text" inputmode="numeric" data-rp id="oc-price" value="'+(x.price?fmt(x.price):'')+'" placeholder="0" autocomplete="off"></label>'+
+    '<p class="offnote" id="oc-offnote"'+(x.off?'':' hidden')+'>Nama dan foto dari Open Food Facts (lisensi terbuka CC BY-SA). Periksa sebelum menyimpan.</p>'+
     '<button class="btn primary block" data-act="oc-save">Simpan ke katalog</button>'+(n?'':'<button class="btn danger block" data-act="oc-del">Hapus dari katalog</button>'));
 }
 const ST={pending:['Menunggu','warn'],active:['Aktif','ok'],rejected:['Ditolak','bad'],disabled:['Nonaktif','bad']};
@@ -1253,18 +1483,19 @@ function ownerRender(){
   const L=OWN.list,cnt=k=>L.filter(a=>a.status===k).length,l=L.filter(a=>OWN.f==='semua'||a.status===OWN.f);
   const wa=a=>'https://wa.me/'+a.wa+'?text='+encodeURIComponent(a.status==='active'?'Halo '+a.owner_name+', akun Jaga Kasir untuk '+a.shop_name+' sudah aktif. Masuk di https://jagapatner.my.id/kasir/ dengan nama pengguna: '+a.username:'Halo '+a.owner_name+', ini JAGA tentang pendaftaran Jaga Kasir untuk '+a.shop_name+'.');
   $('#login-root').innerHTML='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Akun warung Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header>'+
-    '<div class="own-body">'+ownerTabs()+'<div class="row"><h2 class="grow">Akun warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button><button class="btn" data-act="owner-mypass">Ganti sandi pemilik</button></div>'+
+    '<div class="own-body">'+ownerTabs()+'<div class="row"><h2 class="grow">Akun warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button><button class="btn" data-act="owner-otp">Verifikasi WhatsApp</button><button class="btn" data-act="owner-mypass">Ganti sandi pemilik</button></div>'+
     '<div class="tiles"><div class="stat"><small>Menunggu persetujuan</small><b class="num" style="color:'+(cnt('pending')?'var(--warn)':'inherit')+'">'+cnt('pending')+'</b></div><div class="stat"><small>Aktif</small><b class="num">'+cnt('active')+'</b></div><div class="stat"><small>Total warung</small><b class="num">'+L.length+'</b></div></div>'+
     '<div class="seg">'+[['pending','Menunggu'],['active','Aktif'],['disabled','Nonaktif'],['rejected','Ditolak'],['semua','Semua']].map(f=>'<button data-act="owner-f" data-f="'+f[0]+'" aria-pressed="'+(OWN.f===f[0])+'">'+f[1]+(f[0]!=='semua'&&cnt(f[0])?' · '+cnt(f[0]):'')+'</button>').join('')+'</div>'+
     (l.length?l.map(a=>'<div class="card acc"><div class="row"><b class="grow">'+esc(a.shop_name)+'</b><span class="pill '+ST[a.status][1]+'">'+ST[a.status][0]+'</span></div>'+
       '<div class="small muted">'+esc(a.owner_name)+' · <span class="num">+'+esc(a.wa)+'</span> · pengguna <b>'+esc(a.username)+'</b></div>'+
       (a.address?'<div class="small muted">'+esc(a.address)+'</div>':'')+
+      '<div class="small">Perangkat: <b class="num">'+(a.devices||0)+(a.max_devices?' dari '+a.max_devices:'')+'</b>'+(a.max_devices?'':' · tanpa batas')+'</div>'+
       '<div class="small muted">Daftar '+fmtDate(Date.parse(a.created_at))+(a.last_login?' · terakhir masuk '+fmtDate(Date.parse(a.last_login)):'')+(a.backup_at?' · cadangan '+fmtDate(Date.parse(a.backup_at))+' '+fmtTime(Date.parse(a.backup_at)):'')+'</div>'+
       (a.note?'<div class="small">Catatan: '+esc(a.note)+'</div>':'')+
       '<div class="row">'+(a.status!=='active'?'<button class="btn primary" data-act="owner-set" data-id="'+a.id+'" data-s="active">'+(a.status==='pending'?'Setujui':'Aktifkan')+'</button>':'')+
         (a.status==='pending'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="rejected">Tolak</button>':'')+
         (a.status==='active'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="disabled">Nonaktifkan</button>':'')+
-        '<button class="btn" data-act="owner-pass" data-id="'+a.id+'">Atur ulang sandi</button><a class="btn" target="_blank" rel="noopener" href="'+wa(a)+'">WhatsApp</a></div></div>').join(''):
+        '<button class="btn" data-act="owner-dev" data-id="'+a.id+'">Perangkat</button><button class="btn" data-act="owner-pass" data-id="'+a.id+'">Atur ulang sandi</button><a class="btn" target="_blank" rel="noopener" href="'+wa(a)+'">WhatsApp</a></div></div>').join(''):
       '<div class="card empty">'+(OWN.f==='pending'?'Tidak ada pendaftaran yang menunggu.':'Tidak ada akun di daftar ini.')+'</div>')+
     '</div></div>';
 }

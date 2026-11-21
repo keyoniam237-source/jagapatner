@@ -949,7 +949,7 @@ const A={
     if(!u||!p){$('#lg-err').textContent='Isi nama pengguna dan kata sandi.';return}
     return loginAccount(u,p);
   },
-  'to-register':()=>showRegister(), 'to-login':()=>showLogin(), register:()=>doRegister(),
+  'to-register':()=>showRegister(), 'to-login':()=>showLogin(), register:()=>doRegister(), 'otp-send':()=>otpSend(),
   'to-owner':async()=>{OWN.key=await Store.get('jko_owner_key');if(OWN.key)ownerOpen();else showOwnerLogin()},
   'owner-login':()=>ownerLogin(), 'owner-refresh':()=>ownerOpen(), 'owner-f':e=>{OWN.f=e.dataset.f;ownerRender()},
   'owner-logout':async()=>{try{await rpc('jk_owner_logout',{p_key:OWN.key})}catch(e){}OWN.key=null;await Store.set('jko_owner_key','');showOwnerLogin()},
@@ -1110,7 +1110,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 async function loginAccount(u,p){
   const btn=$('#lg-btn'),err=$('#lg-err'); if(btn)btn.disabled=true; if(err)err.textContent='';
   try{
-    const r=await rpc('jk_login',{p_username:u,p_pass:p,p_key:await devKey(),p_app:'kosan'});
+    const r=await rpc('jk_login',{p_username:u,p_pass:p,p_key:await devKey(),p_app:'kosan',p_dev:devLabel()});
     if(!r||!r.ok){if(err)err.textContent=(r&&r.error)||'Gagal masuk.';return}
     ACC=r.account; SESS='acc:'+ACC.id; await Store.set('jko_account_'+SESS,ACC); await Store.set('jko_session',SESS);
     await Sync.load(); S=null;
@@ -1136,6 +1136,7 @@ function showRegister(){
     '<label class="f">Nama kos<input type="text" id="rg-shop" autocomplete="organization"></label>'+
     '<label class="f">Nama pemilik<input type="text" id="rg-name" autocomplete="name"></label>'+
     '<label class="f">Nomor WhatsApp<input type="tel" id="rg-wa" inputmode="tel" placeholder="0812xxxxxxxx" autocomplete="tel"></label>'+
+    '<div id="rg-otp-box" hidden style="display:flex;flex-direction:column;gap:6px"><label class="f">Kode verifikasi WhatsApp<span class="row" style="flex-wrap:nowrap;display:flex;gap:8px"><input class="grow" type="text" inputmode="numeric" maxlength="6" id="rg-otp" autocomplete="one-time-code" placeholder="6 angka" style="width:auto;flex:1"><button class="btn" type="button" data-act="otp-send" id="otp-btn">Kirim kode</button></span></label><p class="small muted" id="otp-msg" style="margin:0">Tekan Kirim kode, lalu masukkan kode dari WhatsApp.</p></div>'+
     '<label class="f">Alamat kos<input type="text" id="rg-addr" autocomplete="street-address"></label>'+
     '<div class="sec">Data kos</div>'+
     '<div class="two"><label class="f">Jumlah kamar<input type="text" inputmode="numeric" id="rg-rooms" placeholder="contoh: 12" autocomplete="off"></label>'+
@@ -1149,7 +1150,20 @@ function showRegister(){
     '<button class="btn pay block" data-act="register" id="rg-btn">Kirim pendaftaran</button>'+
     '<button class="btn ghost block" data-act="to-login">Sudah punya akun? Masuk</button></div></div>';
   setTimeout(()=>{const u=$('#rg-shop');if(u&&(!document.activeElement||document.activeElement===document.body))u.focus()},50);
+  rpc('jk_otp_status',{}).then(r=>{const bx=$('#rg-otp-box');if(bx&&r&&r.on)bx.hidden=false}).catch(()=>{});
 }
+async function otpCall(body){let r;try{r=await fetch(SB.url+'/functions/v1/jk-otp',{method:'POST',headers:{'apikey':SB.key,'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){throw new Error('Tidak ada sambungan internet. Coba lagi.')}
+  let d=null;try{d=await r.json()}catch(e){}return d||{ok:false,error:'Layanan kode sedang bermasalah. Coba lagi.'}}
+let otpT=0;function otpWait(n){clearInterval(otpT);const b=$('#otp-btn');if(!b)return;b.disabled=true;let k=n;b.textContent='Kirim ulang '+k+'s';
+  otpT=setInterval(()=>{const bb=$('#otp-btn');if(!bb){clearInterval(otpT);return}k--;if(k<=0){clearInterval(otpT);bb.disabled=false;bb.textContent='Kirim ulang kode'}else bb.textContent='Kirim ulang '+k+'s'},1000)}
+async function otpSend(){const err=$('#lg-err'),w=($('#rg-wa').value||'').trim();err.textContent='';if(!/^[0-9+\-\s]{9,}$/.test(w)){err.textContent='Isi nomor WhatsApp yang benar dulu.';return $('#rg-wa').focus()}
+  const b=$('#otp-btn');b.disabled=true;$('#otp-msg').textContent='Mengirim kode…';
+  try{const r=await otpCall({wa:w,app:'kosan'});if(!r.ok){$('#otp-msg').textContent='';err.textContent=r.error||'Kode gagal dikirim.';if(r.wait)otpWait(r.wait);else b.disabled=false;return}
+    $('#otp-msg').textContent='Kode terkirim ke WhatsApp '+w+'. Berlaku 10 menit.';otpWait(60);$('#rg-otp').focus()}
+  catch(e){b.disabled=false;$('#otp-msg').textContent='';err.textContent=e.message}}
+function devLabel(){const u=navigator.userAgent||'';const os=/iPad/.test(u)?'iPad':/iPhone/.test(u)?'iPhone':/Android/.test(u)?'Android':/Windows/.test(u)?'Windows':/Mac OS/.test(u)?'Mac':/Linux/.test(u)?'Linux':'Perangkat';
+  const br=/SamsungBrowser/.test(u)?'Samsung Internet':/EdgA?\//.test(u)?'Edge':/OPR\//.test(u)?'Opera':/CriOS|Chrome\//.test(u)?'Chrome':/FxiOS|Firefox/.test(u)?'Firefox':/Safari/.test(u)?'Safari':'Browser';
+  const a=u.match(/Android [\d.]+; ([^;)]+)\)/);const md=a&&a[1].trim()!=='K'?' '+a[1].trim():'';return (os+md+' · '+br).slice(0,60)}
 async function doRegister(){
   const v=id=>($('#'+id).value||'').trim(),err=$('#lg-err');err.textContent='';
   const d={p_username:v('rg-user').toLowerCase(),p_pass:$('#rg-pass').value,p_shop:v('rg-shop'),p_name:v('rg-name'),p_wa:v('rg-wa'),p_address:v('rg-addr'),p_app:'kosan',p_setup:{rooms:num(v('rg-rooms')),price:num(v('rg-price')),facs:facRead('rg-fac'),other:v('rg-other')}};
@@ -1160,9 +1174,10 @@ async function doRegister(){
   if(!/^[a-z0-9_.]{3,24}$/.test(d.p_username))return err.textContent='Nama pengguna 3-24 huruf kecil, angka, titik, atau garis bawah, tanpa spasi.';
   if(d.p_pass.length<6)return err.textContent='Kata sandi minimal 6 karakter.';
   if(d.p_pass!==$('#rg-pass2').value)return err.textContent='Kedua kata sandi tidak sama.';
+  const ob=$('#rg-otp-box');if(ob&&!ob.hidden){d.p_otp=($('#rg-otp').value||'').trim();if(!/^\d{6}$/.test(d.p_otp)){err.textContent='Masukkan 6 angka kode verifikasi dari WhatsApp. Tekan Kirim kode jika belum menerimanya.';return $('#rg-otp').focus()}}
   const b=$('#rg-btn');b.disabled=true;
   try{const r=await rpc('jk_register',d);
-    if(!r||!r.ok){err.textContent=(r&&r.error)||'Pendaftaran gagal.';return}
+    if(!r||!r.ok){err.textContent=(r&&r.error)||'Pendaftaran gagal.';if(r&&r.otp){const bx=$('#rg-otp-box');if(bx){bx.hidden=false;$('#rg-otp').focus()}}return}
     showLogin(); $('#lg-user').value=d.p_username;
     const ok=$('#lg-ok');ok.hidden=false;ok.textContent='Pendaftaran '+d.p_shop+' terkirim. Akun aktif setelah disetujui JAGA, lalu masuk dengan nama pengguna dan kata sandi tadi.';
   }catch(e){err.textContent=e.message}finally{const bb=$('#rg-btn');if(bb)bb.disabled=false}
