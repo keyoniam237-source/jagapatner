@@ -312,6 +312,80 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 .otp-box{display:flex;flex-direction:column;gap:6px}
 .dev-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
 .dev-row:first-child{border-top:0}
+/* ===== tata letak HP / tablet / iPad ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.tile .pic,.pcard .pic{flex:none}
+.pick-grid,.cgrid{grid-auto-rows:max-content}
+.paybar .t small b{font:inherit;font-weight:700;color:var(--ink)}
+@media (pointer:coarse){input[type=text],input[type=tel],input[type=search],input[type=password],input[type=number],select,textarea{font-size:16px!important}}
+@media (max-width:859px){
+  /* keranjang: bilah bayar selalu terlihat di bawah saat memilih barang */
+  .kasir .cart{display:contents}
+  .kasir .paybar{position:sticky;bottom:0;z-index:5;margin:0 -4px;border-radius:16px;box-shadow:0 -2px 0 var(--bg),0 8px 28px rgba(120,20,30,.22)}
+  .kasir .paybar.empty{display:none}
+  .kasir .paybar .t{cursor:pointer}
+  main{padding:14px 14px 10px}
+  .top{padding:9px 14px}
+}
+@media (max-width:599px){
+  .pick-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .tile{padding:6px 6px 8px;border-radius:12px}
+  .tile .pic{border-radius:8px}
+  .tile b{font-size:12.5px;min-height:2.6em}
+  .tile>span:last-child{font-size:14px}
+  .tile.out>span:last-child{font-size:11.5px}
+  .ptag{left:4px;bottom:4px;font-size:9.5px;padding:2px 6px}
+  .pq{top:4px;right:4px;min-width:22px;height:22px;line-height:22px;font-size:12px;padding:0 6px}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .stat{padding:10px 12px}.stat b{font-size:19px}
+  .logo span{display:none}
+  .top .chip{padding:5px 9px}
+  .cgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .two{gap:8px}
+  .scan-pick .pick-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:599px){
+  .own-body .row>h2.grow{flex:1 1 100%}
+  .own-body>.row .btn{min-height:38px;padding:7px 12px;font-size:13.5px}
+  .otabs button{font-size:13.5px;padding:9px 4px;line-height:1.2}
+  .own .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .own .stat small{font-size:11px}
+  .acc .row .btn{min-height:40px;padding:8px 12px;font-size:14px}
+}
+@media (max-width:339px){.pick-grid,.scan-pick .pick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:600px){
+  .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tiles:has(>:nth-child(4):last-child){grid-template-columns:repeat(4,minmax(0,1fr))}
+  .veil{align-items:center;padding:24px}
+  .sheet{border-radius:20px;max-width:560px;box-shadow:0 20px 60px rgba(42,17,20,.35)}
+  .pick-grid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
+  .scan-pick .pick-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+}
+@media (min-width:600px) and (max-width:859px){
+  main{padding:18px 22px 12px}
+  .wrap{max-width:760px;margin:0 auto}
+  .tabs button{flex-direction:row;justify-content:center;gap:8px;font-size:13.5px;padding:10px 4px}
+  .tabs .badge{position:static;margin-left:-2px}
+}
+@media (min-width:860px){
+  .wrap{max-width:980px}
+  .kasir{grid-template-columns:minmax(0,1.4fr) minmax(330px,.8fr);gap:18px}
+  .kasir .cart{max-height:calc(100vh - 110px);display:flex;flex-direction:column;gap:12px}
+  .kasir .cart>.card{overflow:auto;min-height:0}
+  .kasir .cart .paybar{margin-top:0}
+}
+@media (min-width:1200px){.pick-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}}
+/* pemindai di tablet/iPad mendatar: kamera/daftar pilih di kiri, keranjang di kanan */
+@media (min-width:900px) and (orientation:landscape){
+  .scan.cart{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(340px,1fr);grid-template-rows:auto auto minmax(0,1fr)}
+  .scan.cart .scan-top{grid-column:1/-1}
+  .scan.cart .smodes{grid-column:1;grid-row:2}
+  .scan.cart .stage{grid-column:1;grid-row:3;min-height:0;flex:none}
+  .scan.cart .scan-panel{grid-column:2;grid-row:2/4;border-left:1px solid #1E2944;min-height:0}
+  .scan.cart .scan-pick{padding-bottom:12px}
+  .scan.cart .reticle{height:150px}
+}
+@media (min-width:600px) and (orientation:portrait){.scan.cart .stage{flex-basis:46%}.scan.cart.m-pilih .stage{flex-basis:58%}}
 </style>
 </head>
 <body>
@@ -487,7 +561,7 @@ function pickList(){
   const k=q.trim().toLowerCase();
   if(k) return S.products.filter(p=>p.name.toLowerCase().includes(k)||(p.code||'').includes(k)).slice(0,24);
   if(kc) return S.products.filter(p=>catOf(p)===kc).sort((a,b)=>a.name.localeCompare(b.name));
-  const c=soldCount(); return [...S.products].sort((a,b)=>(c[b.id]||0)-(c[a.id]||0)).slice(0,window.innerWidth<860?6:12);
+  const c=soldCount(),w=window.innerWidth; return [...S.products].sort((a,b)=>(c[b.id]||0)-(c[a.id]||0)).slice(0,w<600?9:w<860?12:w<1200?12:15);
 }
 function pickHtml(){
   const l=pickList();
@@ -519,7 +593,7 @@ function vKasir(){
     '<div><h3 class="muted" id="pick-title" style="margin-bottom:8px"></h3><div class="pick-grid" id="pick">'+pickHtml()+'</div></div>'+
   '</section>'+
   '<section class="cart"><div class="card"><div class="head"><h2>Keranjang</h2><span class="muted small" id="cart-n"></span></div><div id="cart"></div><button class="btn block" data-act="manual" style="margin-top:8px">'+ico('plus')+'Barang tanpa daftar</button></div>'+
-    '<div class="paybar"><div class="t"><small>Total bayar</small><b class="num" id="cart-total"></b></div><button class="btn ghost danger" data-act="cart-clear" id="cart-clear" aria-label="Kosongkan keranjang">'+ico('trash')+'</button><button class="btn pay" data-act="pay" id="pay-btn">Bayar</button></div>'+
+    '<div class="paybar"><div class="t" data-act="to-cart"><small>Total bayar</small><b class="num" id="cart-total"></b></div><button class="btn ghost danger" data-act="cart-clear" id="cart-clear" aria-label="Kosongkan keranjang">'+ico('trash')+'</button><button class="btn pay" data-act="pay" id="pay-btn">Bayar</button></div>'+
   '</section></div>';
   refreshPick(); refreshCart();
 }
@@ -529,6 +603,7 @@ function refreshPick(){const e=$('#pick');if(!e)return;if(kc&&!cats().includes(k
 function refreshCart(){
   const e=$('#cart'); if(!e) return;
   e.innerHTML=cartHtml(); $('#cart-total').textContent=rp(cartTotal()); const pk=$('#pick'); if(pk) pk.innerHTML=pickHtml();
+  const pb=$('.kasir .paybar'); if(pb){pb.classList.toggle('empty',!S.cart.length);const sm=pb.querySelector('.t small');if(sm)sm.innerHTML='Total bayar'+(S.cart.length?' · <b>'+cartQty()+' barang</b>':'')}
   $('#cart-n').textContent=S.cart.length?cartQty()+' barang':''; $('#pay-btn').disabled=!S.cart.length; $('#cart-clear').hidden=!S.cart.length;
 }
 function cartSave(){S.cart=S.cart.filter(x=>x.qty>0&&(!x.pid||prod(x.pid)));save();refreshCart()}
@@ -1209,6 +1284,7 @@ const A={
   'cart-clear':()=>confirmSheet('Kosongkan keranjang?','Semua barang di keranjang akan dikeluarkan.','Kosongkan',()=>{S.cart=[];save();refreshCart()},true),
   scan:()=>openScanner(onCartScan,true,'Scan barang ke keranjang'),
   'scan-close':()=>closeScanner(),
+  'to-cart':()=>{if(window.innerWidth>=860)return;const c=$('.kasir .cart .card')||$('#cart');if(c)c.scrollIntoView({behavior:'smooth',block:'start'})},
   smode:e=>setScanMode(e.dataset.m),
   snap:()=>snapFoto(),
   'sp-c':e=>{SP.c=e.dataset.c;SP.q='';const i=$('#sp-q');if(i)i.value='';spRefresh()},
