@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0F1B2D">
-<title>Jaga Kasir · Aplikasi kasir warung gratis</title>
-<meta name="description" content="Aplikasi kasir warung gratis dari JAGA: scan barcode atau foto barang, stok otomatis, struk WhatsApp, kasbon, dan laporan tutup toko ke WhatsApp pemilik. Tanpa install, data aman tersimpan online.">
+<title>Jaga Kasir · Aplikasi kasir warung, bayar sekali</title>
+<meta name="description" content="Aplikasi kasir warung dari JAGA, coba gratis 7 hari lalu bayar sekali: scan barcode atau foto barang, stok otomatis, struk WhatsApp, kasbon, dan laporan tutup toko ke WhatsApp pemilik. Tanpa install, data aman tersimpan online.">
 <meta property="og:title" content="Jaga Kasir · Kasir warung siap jualan dalam 10 menit">
 <meta property="og:description" content="Barang langsung lengkap dengan foto, stok otomatis, kasbon tertagih, dan laporan tutup toko ke WhatsApp pemilik.">
 <meta property="og:type" content="website"><meta property="og:url" content="https://jagapatner.my.id/kasir/"><meta property="og:image" content="https://jagapatner.my.id/kasir/icon-512.png">
@@ -448,6 +448,11 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 details.more summary{color:var(--brand)}
 .wz-row.on{background:color-mix(in srgb,var(--gold) 9%,transparent)}
 .trial{background:#F3EAD8;border-color:#E0CDA6}
+.pk{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.pk.hl{border:2px solid var(--gold)}
+.pk-p{font-size:24px;font-weight:800}.pk-p small{font-size:13px;color:var(--muted);font-weight:600}
+.pk ul{margin:0;padding-left:18px;font-size:14px}.pk li{margin:3px 0}
+.plan-note{border-style:solid}
 </style>
 </head>
 <body>
@@ -654,7 +659,9 @@ function cartHtml(){
 function vKasir(){
   $('#view').innerHTML='<div class="kasir">'+
   '<section class="stack">'+
-    (SESS==='local'?'<div class="note trial"><div class="grow"><b>Mode coba.</b> Data hanya tersimpan di HP ini. Daftar gratis supaya data tercadang online dan bisa memakai Katalog JAGA berfoto.</div><button class="btn" data-act="trial-register">Daftar gratis</button></div>':'')+
+    (!WHO&&plan()==='expired'?'<div class="note plan-note" style="border-color:var(--bad)"><div class="grow"><b>Masa coba sudah habis.</b> Data tetap aman. Pilih paket sekali bayar untuk lanjut berjualan.</div><button class="btn pay" data-act="upgrade">Pilih paket</button></div>':'')+
+    (!WHO&&plan()==='trial'&&trialLeft()<=3?'<div class="note plan-note"><div class="grow"><b>Masa coba tersisa '+trialLeft()+' hari.</b> Pilih Lifetime Basic atau Plus, bayar sekali.</div><button class="btn" data-act="upgrade">Lihat paket</button></div>':'')+
+    (SESS==='local'?'<div class="note trial"><div class="grow"><b>Mode coba · sisa '+trialLeft()+' hari.</b> Data hanya tersimpan di HP ini. Daftar supaya data tercadang online dan bisa memakai Katalog JAGA berfoto.</div><button class="btn" data-act="trial-register">Daftar</button></div>':'')+
     (!S.demo&&!WHO&&!S.products.length?'<div class="note"><div class="grow"><b>Siapkan warung dalam 3 menit.</b> Centang barang yang Anda jual dari daftar siap pakai, isi harganya, selesai.</div><button class="btn primary" data-act="wizard">Isi barang cepat</button></div>':'')+
     (!S.demo&&!WHO&&S.products.length&&!S.shop.name?'<div class="note"><div class="grow"><b>Isi nama warung</b> supaya tampil di struk.</div><button class="btn" data-act="go" data-to="pengaturan">Isi profil</button></div>':'')+
     (FRAMED&&!hidePrev?'<div class="note"><div class="grow"><b>Mode pratinjau.</b> Kamera, cetak struk, dan printer Bluetooth baru aktif setelah aplikasi dipasang di situs. Di sini Anda bisa mencoba alurnya dengan tombol Scan.</div><button class="btn" data-act="hide-prev">Tutup</button></div>':'')+
@@ -705,7 +712,7 @@ function payRefresh(){
   $('#pay-save').disabled=!payOk();
 }
 function openPay(){
-  if(!S.cart.length) return; PAY={disc:0,method:'tunai',cash:0,cust:'',custWa:''};
+  if(!S.cart.length) return; if(!canSell()) return upgradeSheet(SESS==='local'?'Mode coba 7 hari sudah selesai. Daftar akun dan pilih paket untuk lanjut berjualan.':'Masa coba 7 hari sudah selesai. Pilih paket untuk lanjut mencatat transaksi.'); PAY={disc:0,method:'tunai',cash:0,cust:'',custWa:''};
   sheet('<div class="hd"><h2>Pembayaran</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
     '<div><div class="muted small">Total bayar · '+cartQty()+' barang</div><div class="total-big num" id="pay-total"></div></div>'+
     '<label class="f">Potongan harga (opsional)<input type="text" inputmode="numeric" id="pay-disc" data-rp placeholder="0" autocomplete="off"></label>'+
@@ -719,7 +726,7 @@ function payMethods(){
 }
 function nextNo(ts){const k=dayKey(ts);if(S.seq.day!==k)S.seq={day:k,n:0};S.seq.n++;return k.slice(2).replace(/-/g,'')+'-'+pad(S.seq.n,3)}
 function commitSale(){
-  if(!PAY||!payOk()) return;
+  if(!PAY||!payOk()) return; if(!canSell()){closeSheet();return upgradeSheet()}
   const ts=Date.now();
   const items=S.cart.map(c=>{const i=ci(c);return i&&Object.assign({pid:i.pid,name:i.name,qty:c.qty,price:i.price,buy:i.buy},i.f>1?{f:i.f,un:i.un}:{})}).filter(Boolean);
   if(!items.length) return;
@@ -1236,7 +1243,7 @@ function vAtur(){
       '<div class="two"><label class="f">Nomor telepon / WA<input type="tel" id="st-phone" value="'+esc(sh.phone)+'" autocomplete="off"></label>'+
       '<label class="f">Lebar kertas struk<select id="st-paper"><option value="58"'+(sh.paper===58?' selected':'')+'>58 mm (printer mini)</option><option value="80"'+(sh.paper===80?' selected':'')+'>80 mm</option></select></label></div>'+
       '<label class="f">Pesan di bawah struk<input type="text" id="st-footer" value="'+esc(sh.footer)+'" autocomplete="off"></label><button class="btn primary" data-act="st-save">Simpan profil</button></div>'+
-    staffCard()+
+    planCard()+staffCard()+
     '<div class="card stack"><h3>QRIS warung</h3><p class="muted" style="margin:0">Gambar QRIS ini tampil di layar pembayaran saat pembeli memilih QRIS.</p>'+(sh.qris?'<img class="qris" src="'+esc(sh.qris)+'" alt="Kode QRIS warung">':'')+
       '<div class="row"><label class="btn" for="st-qris-file">'+(sh.qris?'Ganti gambar QRIS':'Unggah gambar QRIS')+'</label>'+(sh.qris?'<button class="btn danger" data-act="qris-del">Hapus</button>':'')+'<input type="file" id="st-qris-file" accept="image/*" hidden></div></div>'+
     '<div class="card stack"><h3>Printer struk</h3>'+
@@ -1258,6 +1265,30 @@ function track(n){if(!isAcc())return;const k='jk_ev_'+n+'_'+SESS;Store.get(k).th
 const waNum=v=>{let w=String(v||'').replace(/\D/g,'');if(w.startsWith('0'))w='62'+w.slice(1);return /^62\d{8,13}$/.test(w)?w:''};
 const waLink=(num,text)=>'https://wa.me/'+(waNum(num)||'')+'?text='+encodeURIComponent(text);
 
+/* ---- paket: masa coba 7 hari, Lifetime Basic, Lifetime Plus ---- */
+const JAGA_WA='62882008275023';
+const PAKET={basic:{name:'Lifetime Basic',price:129000,feat:['Kasir: scan barcode, foto, dan ketuk barang','Stok, satuan lain, dan harga grosir','Kasbon dan pengingat WhatsApp','Struk printer Bluetooth dan WhatsApp','Laporan, kas harian, ekspor CSV','Isi barang cepat, stok masuk cepat, daftar belanja','Cadangan online, 2 perangkat']},
+  plus:{name:'Lifetime Plus + Pendampingan',price:349000,feat:['Semua fitur Lifetime Basic','Penjaga dengan PIN, menu pemilik terkunci','Tutup toko: hitung laci & laporan ke WhatsApp pemilik','3 perangkat','1–2 kali kunjungan atau video call: audit stok & pelatihan sampai mandiri']}};
+const TRIAL_DAYS=7;
+function plan(){if(SESS==='local'){const st=S&&S.trialStart||Date.now();return Date.now()-st>TRIAL_DAYS*864e5?'expired':'trial'}
+  if(!isAcc()||!ACC)return 'trial';const p=ACC.plan||'trial';if(p==='trial'){const u=Date.parse(ACC.trial_until||'');return u&&Date.now()>u?'expired':'trial'}return p}
+function trialLeft(){const end=SESS==='local'?((S&&S.trialStart)||Date.now())+TRIAL_DAYS*864e5:Date.parse((ACC&&ACC.trial_until)||'');if(!end)return TRIAL_DAYS;return Math.max(0,Math.ceil((end-Date.now())/864e5))}
+const hasPlus=()=>['plus','trial'].includes(plan());
+const canSell=()=>plan()!=='expired';
+function planLabel(){const p=plan();return p==='plus'?'Lifetime Plus':p==='basic'?'Lifetime Basic':p==='expired'?'Masa coba habis':'Masa coba · sisa '+trialLeft()+' hari'}
+function upgradeSheet(reason){const p=plan();const user=isAcc()&&ACC?ACC.username:'';
+  const card=k=>{const x=PAKET[k],cur=p===k;return '<div class="pk'+(k==='plus'?' hl':'')+'"><div class="row"><b class="grow">'+x.name+'</b>'+(cur?'<span class="pill ok">Paket Anda</span>':'')+'</div><div class="pk-p num">'+rp(x.price)+' <small>sekali bayar</small></div><ul>'+x.feat.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+
+    (cur||(p==='plus'&&k==='basic')?'':'<a class="btn '+(k==='plus'?'pay':'primary')+' block" target="_blank" rel="noopener" data-act="pk-wa" data-k="'+k+'" href="'+waLink(JAGA_WA,'Halo JAGA, saya mau aktifkan '+x.name+' ('+rp(x.price)+') untuk Jaga Kasir.\n\nNama warung: '+((S&&S.shop.name)||(ACC&&ACC.shop_name)||'-')+(user?'\nNama pengguna: '+user:'\n(Saya masih di mode coba, belum daftar)')+'\n\nMohon info cara pembayarannya. Terima kasih.')+'">'+(p==='basic'&&k==='plus'?'Naik ke paket ini':'Pilih paket ini')+'</a>')+'</div>'};
+  sheet('<div class="hd"><h2>'+(p==='expired'?'Masa coba sudah habis':'Paket Jaga Kasir')+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    (reason?'<p class="note" style="margin:0">'+esc(reason)+'</p>':'')+
+    '<p class="muted small" style="margin:0">Bayar sekali, dipakai seterusnya untuk 1 warung. Data Anda tetap aman dan bisa dilihat kapan saja. '+(SESS==='local'?'Daftar akun dulu supaya paket bisa diaktifkan dan data tercadang online.':'Setelah pembayaran dikonfirmasi lewat WhatsApp, paket aktif di akun Anda.')+'</p>'+
+    (SESS==='local'?'<button class="btn primary block" data-act="trial-register">Daftar akun dulu</button>':'')+
+    card('basic')+card('plus')+'<p class="muted small" style="margin:0">Kunjungan langsung di kota layanan JAGA; di kota lain pendampingan lewat video call.</p>')}
+function planCard(){const p=plan();
+  return '<div class="card stack"><div class="row"><h3 class="grow">Paket</h3><span class="pill '+(p==='expired'?'bad':p==='trial'?'warn':'ok')+'">'+esc(planLabel())+'</span></div>'+
+    '<p class="muted" style="margin:0">'+(p==='trial'?'Semua fitur bisa dicoba selama masa coba. Setelah itu pilih Lifetime Basic atau Lifetime Plus, bayar sekali.':p==='expired'?'Transaksi baru terkunci. Data tetap bisa dilihat dan diunduh. Pilih paket untuk lanjut berjualan.':p==='basic'?'Semua fitur jualan aktif. Naik ke Lifetime Plus untuk penjaga, tutup toko, dan pendampingan.':'Semua fitur aktif, termasuk penjaga, tutup toko, dan pendampingan.')+'</p>'+
+    (p==='plus'?'':'<button class="btn '+(p==='expired'?'pay':'primary')+'" data-act="upgrade">'+(p==='basic'?'Naik ke Lifetime Plus':'Lihat paket')+'</button>')+'</div>'}
+function needPlus(fn){if(hasPlus())return fn();upgradeSheet('Fitur penjaga dan tutup toko ada di Lifetime Plus + Pendampingan.')}
 /* ---- multi-satuan & harga grosir ---- */
 function unitRow(u){u=u||{};return '<div class="urow"><input type="text" class="u-n" placeholder="Nama, mis. renteng" value="'+esc(u.n||'')+'" autocomplete="off"><input type="text" inputmode="numeric" class="u-q" placeholder="Isi" value="'+(u.q||'')+'" autocomplete="off"><input type="text" inputmode="numeric" data-rp class="u-p" placeholder="Harga" value="'+(u.p?fmt(u.p):'')+'" autocomplete="off"><button type="button" class="x" data-act="row-del" aria-label="Hapus baris">✕</button></div>'}
 function tierRow(t){t=t||{};return '<div class="urow t2"><input type="text" inputmode="numeric" class="t-m" placeholder="Beli minimal" value="'+(t.min||'')+'" autocomplete="off"><input type="text" inputmode="numeric" data-rp class="t-p" placeholder="Harga per satuan" value="'+(t.p?fmt(t.p):'')+'" autocomplete="off"><button type="button" class="x" data-act="row-del" aria-label="Hapus baris">✕</button></div>'}
@@ -1442,12 +1473,13 @@ const A={
   'pin-ok':async()=>{const v=$('#pin-in').value.trim(),f=PINFN;if(!f)return;if(!(await f(v))){$('#pin-err').textContent='PIN salah.';$('#pin-in').value='';$('#pin-in').focus()}},
   'ownerpin-set':async()=>{const w=$('#st-ownerwa').value.trim(),pin=$('#st-ownerpin').value.trim();if(w&&!waNum(w))return toast('Nomor WhatsApp pemilik tidak valid.');
     if(pin&&!/^\d{4,6}$/.test(pin))return toast('PIN pemilik 4 sampai 6 angka.');S.shop.ownerWa=w;if(pin)S.shop.ownerPin=await pinHash('owner',pin);save();vAtur();toast('Tersimpan.')},
-  'staff-add':async()=>{const n=$('#sf-name').value.trim(),pin=$('#sf-pin').value.trim();if(n.length<2)return toast('Isi nama penjaga.');if(!/^\d{4,6}$/.test(pin))return toast('PIN penjaga 4 sampai 6 angka.');
+  'staff-add':async()=>{if(!hasPlus())return upgradeSheet('Fitur penjaga ada di Lifetime Plus + Pendampingan.');const n=$('#sf-name').value.trim(),pin=$('#sf-pin').value.trim();if(n.length<2)return toast('Isi nama penjaga.');if(!/^\d{4,6}$/.test(pin))return toast('PIN penjaga 4 sampai 6 angka.');
     if(!S.shop.ownerPin)return toast('Buat PIN pemilik dulu supaya penjaga tidak bisa membuka menu pemilik.');
     const id=uid();S.staff=S.staff||[];S.staff.push({id,name:n,h:await pinHash(id,pin)});save();vAtur();toast('Penjaga '+n+' ditambahkan.')},
   'staff-del':e=>{S.staff=(S.staff||[]).filter(x=>x.id!==e.dataset.id);save();vAtur()},
-  'staff-mode':()=>staffPick(),
-  'close-shop':()=>closeShopSheet(),
+  'staff-mode':()=>needPlus(()=>staffPick()),
+  'close-shop':()=>needPlus(()=>closeShopSheet()),
+  upgrade:()=>upgradeSheet(),
   'close-save':()=>{const v=$('#cs-count').value.trim();if(!v)return toast('Hitung dan isi uang yang ada di laci.');const r=shiftNow(),counted=num(v);
     const c=Object.assign(r,{ts:Date.now(),by:WHO?WHO.name:'Pemilik',counted,diff:counted-r.expected,note:$('#cs-note').value.trim()});
     S.closings=(S.closings||[]).concat(c).slice(-120);save();track('tutup_toko');const msg=closeMsg(c);
@@ -1504,6 +1536,13 @@ const A={
         '</div>'+(r.items.length>1?'<button class="btn danger block" data-act="od-del" data-d="*">Keluarkan semua perangkat</button>':''):'<p class="muted small">Belum ada perangkat yang masuk.</p></div>'))},
   'od-save':async()=>{const id=$('#od-id').value,v=$('#od-max').value;try{const r=await rpc('jk_owner_set_maxdev',{p_key:OWN.key,p_id:id,p_n:v?+v:null});if(!r.ok)return toast(r.error);closeSheet();await ownerOpen();toast('Batas perangkat disimpan.')}catch(e){toast(e.message)}},
   'od-del':async e=>{const id=$('#od-id').value;try{await rpc('jk_owner_device_del',{p_key:OWN.key,p_id:id,p_dev:e.dataset.d});await ownerOpen();A['owner-dev']({dataset:{id}});toast('Perangkat dikeluarkan.')}catch(err){toast(err.message)}},
+  'owner-plan':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id);if(!a)return;
+    sheet('<div class="hd"><h2>Paket '+esc(a.shop_name)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><input type="hidden" id="op-id" value="'+a.id+'">'+
+      '<p class="muted" style="margin:0">Aktifkan setelah pembayaran diterima. Paket langsung berlaku saat warung membuka aplikasi.</p>'+
+      '<button class="btn primary block" data-act="op-set" data-p="basic">Aktifkan Lifetime Basic · Rp129.000</button><button class="btn pay block" data-act="op-set" data-p="plus">Aktifkan Lifetime Plus + Pendampingan · Rp349.000</button>'+
+      '<button class="btn block" data-act="op-set" data-p="trial">Perpanjang masa coba 7 hari</button>'+
+      '<a class="btn block" target="_blank" rel="noopener" href="https://wa.me/'+a.wa+'?text='+encodeURIComponent('Halo '+a.owner_name+', ini JAGA. Terima kasih sudah memakai Jaga Kasir untuk '+a.shop_name+'.')+'">WhatsApp warung</a>')},
+  'op-set':async e=>{const id=$('#op-id').value,p=e.dataset.p;try{const r=await rpc('jk_owner_set_plan',{p_key:OWN.key,p_id:id,p_plan:p,p_days:7});if(!r.ok)return toast(r.error);closeSheet();await ownerOpen();toast(p==='trial'?'Masa coba diperpanjang 7 hari.':'Paket aktif. Minta warung membuka ulang aplikasi.')}catch(err){toast(err.message)}},
   'owner-hist':async e=>{const a=OWN.list.find(x=>x.id===e.dataset.id);if(!a)return;let l;try{l=await rpc('jk_owner_hist',{p_key:OWN.key,p_id:a.id})}catch(err){return toast(err.message)}
     sheet('<div class="hd"><h2>Riwayat cadangan '+esc(a.shop_name)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><input type="hidden" id="oh-id" value="'+a.id+'">'+
       '<p class="muted small" style="margin:0">Salinan otomatis paling sering tiap 6 jam, 8 terakhir disimpan. Pulihkan jika data warung terhapus atau tertimpa. Warung perlu membuka aplikasi dan memilih "Pakai data online".</p>'+
@@ -1739,7 +1778,7 @@ async function loginAccount(u,p){
 }
 function showRegister(){
   $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
-    '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Daftar akun warung</h1><p>Gratis. Verifikasi nomor WhatsApp, akun langsung aktif.</p></div>'+
+    '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Daftar akun warung</h1><p>Coba gratis 7 hari. Verifikasi nomor WhatsApp, akun langsung aktif.</p></div>'+
     '<label class="f">Nama warung<input type="text" id="rg-shop" autocomplete="organization"></label>'+
     '<label class="f">Nama pemilik<input type="text" id="rg-name" autocomplete="name"></label>'+
     '<label class="f">Nomor WhatsApp<input type="tel" id="rg-wa" inputmode="tel" placeholder="0812xxxxxxxx" autocomplete="tel"></label>'+
@@ -1852,13 +1891,14 @@ function ownerRender(){
     (l.length?l.map(a=>'<div class="card acc"><div class="row"><b class="grow">'+esc(a.shop_name)+'</b><span class="pill '+ST[a.status][1]+'">'+ST[a.status][0]+'</span></div>'+
       '<div class="small muted">'+esc(a.owner_name)+' · <span class="num">+'+esc(a.wa)+'</span> · pengguna <b>'+esc(a.username)+'</b></div>'+
       (a.address?'<div class="small muted">'+esc(a.address)+'</div>':'')+
+      (a.app==='kasir'?'<div class="small">Paket: <b>'+(a.plan==='plus'?'Lifetime Plus':a.plan==='basic'?'Lifetime Basic':(a.trial_until&&Date.parse(a.trial_until)<Date.now()?'Masa coba habis':'Masa coba sampai '+fmtDate(Date.parse(a.trial_until||Date.now()))))+'</b></div>':'')+
       '<div class="small">Perangkat: <b class="num">'+(a.devices||0)+(a.max_devices?' dari '+a.max_devices:'')+'</b>'+(a.max_devices?'':' · tanpa batas')+'</div>'+
       '<div class="small muted">Daftar '+fmtDate(Date.parse(a.created_at))+(a.last_login?' · terakhir masuk '+fmtDate(Date.parse(a.last_login)):'')+(a.backup_at?' · cadangan '+fmtDate(Date.parse(a.backup_at))+' '+fmtTime(Date.parse(a.backup_at)):'')+'</div>'+
       (a.note?'<div class="small">Catatan: '+esc(a.note)+'</div>':'')+
       '<div class="row">'+(a.status!=='active'?'<button class="btn primary" data-act="owner-set" data-id="'+a.id+'" data-s="active">'+(a.status==='pending'?'Setujui':'Aktifkan')+'</button>':'')+
         (a.status==='pending'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="rejected">Tolak</button>':'')+
         (a.status==='active'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="disabled">Nonaktifkan</button>':'')+
-        '<button class="btn" data-act="owner-dev" data-id="'+a.id+'">Perangkat</button><button class="btn" data-act="owner-hist" data-id="'+a.id+'">Riwayat cadangan</button><button class="btn" data-act="owner-pass" data-id="'+a.id+'">Atur ulang sandi</button><a class="btn" target="_blank" rel="noopener" href="'+wa(a)+'">WhatsApp</a></div></div>').join(''):
+        '<button class="btn" data-act="owner-plan" data-id="'+a.id+'">Paket</button><button class="btn" data-act="owner-dev" data-id="'+a.id+'">Perangkat</button><button class="btn" data-act="owner-hist" data-id="'+a.id+'">Riwayat cadangan</button><button class="btn" data-act="owner-pass" data-id="'+a.id+'">Atur ulang sandi</button><a class="btn" target="_blank" rel="noopener" href="'+wa(a)+'">WhatsApp</a></div></div>').join(''):
       '<div class="card empty">'+(OWN.f==='pending'?'Tidak ada pendaftaran yang menunggu.':'Tidak ada akun di daftar ini.')+'</div>')+
     '</div></div>';
 }
@@ -1890,7 +1930,7 @@ async function boot(){
   render();
   if(!S.demo&&!S.products.length&&!S.onb&&!WHO&&(isAcc()||SESS==='local')){S.onb=1;save();setTimeout(()=>{if(!$('#sheet-root').firstChild&&!$('#login-root').firstChild)wizard()},400)}
 }
-async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$('#login-root').innerHTML='';await boot()}
+async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$('#login-root').innerHTML='';await boot();if(kind==='local'&&S&&!S.trialStart){S.trialStart=Date.now();save();render()}}
 (async function(){
   await Store.init();
   if(location.hash==='#pemilik'){
@@ -1902,9 +1942,9 @@ async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$
   if(isAcc()){ACC=await Store.get('jk_account_'+SESS);
     if(!ACC){try{const r=await rpc('jk_me',{p_key:await devKey()});if(r&&r.account){ACC=r.account;await Store.set('jk_account_'+SESS,ACC)}}catch(e){if(e.expired){SESS=null;await Store.set('jk_session','')}}}
     if(!ACC){SESS=null;showLogin()}else{await Sync.load();await boot();
-      rpc('jk_me',{p_key:await devKey()}).then(r=>{if(r&&r.account){ACC=r.account;Store.set('jk_account_'+SESS,ACC);if(r.backup_rev>Sync.rev&&!Sync.dirty){pullServer().then(render).catch(()=>{})}else if(Sync.dirty)Sync.push()}})
+      rpc('jk_me',{p_key:await devKey()}).then(r=>{if(r&&r.account){ACC=r.account;Store.set('jk_account_'+SESS,ACC);if(!$('#sheet-root').firstChild)render();if(r.backup_rev>Sync.rev&&!Sync.dirty){pullServer().then(render).catch(()=>{})}else if(Sync.dirty)Sync.push()}})
         .catch(e=>{if(e.expired)sessionEnded('Akun dinonaktifkan atau sesi berakhir. Hubungi JAGA jika perlu.');else{Sync.state=Sync.dirty?'offline':'ok';Sync.show()}})}}
-  else if(SESS==='local'){await boot()}
+  else if(SESS==='local'){await boot();if(S&&!S.trialStart){S.trialStart=Date.now();save()}}
   else{SESS=null;await Store.set('jk_session','');showLogin()}
   try{if(!FRAMED&&navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
   if(!FRAMED&&'serviceWorker' in navigator&&location.protocol==='https:'){
