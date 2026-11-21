@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#E3182D">
+<meta name="theme-color" content="#0F1B2D">
 <title>Jaga Kasir · Aplikasi kasir warung gratis</title>
 <meta name="description" content="Aplikasi kasir warung gratis dari JAGA: scan barcode atau foto barang, stok otomatis, struk WhatsApp, kasbon, dan laporan tutup toko ke WhatsApp pemilik. Tanpa install, data aman tersimpan online.">
 <meta property="og:title" content="Jaga Kasir · Kasir warung siap jualan dalam 10 menit">
@@ -13,17 +13,18 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com/@zxing/library@0.21.3/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.openfoodfacts.org; connect-src 'self' https://flwajaadllviewenerya.supabase.co https://world.openfoodfacts.org https://images.openfoodfacts.org https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="same-origin">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Layout: satu layar kerja. HP = konten + tab bawah; tablet = rel kiri + dua kolom (pilih barang | keranjang). */
 :root{
-  --bg:#FFF6F5; --surface:#FFFFFF; --ink:#2A1114; --muted:#7A5E61; --line:#F3D6D6;
-  --brand:#E3182D; --brand-ink:#FFFFFF; --tag:#E3182D; --tag-ink:#FFFFFF;
-  --ok:#12804A; --warn:#B26A00; --bad:#8E0F22;
-  --display:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,sans-serif;
+  --bg:#F6F2EA; --surface:#FFFFFF; --ink:#0F1B2D; --muted:#6B6F78; --line:#E4DCCB;
+  --brand:#0F1B2D; --brand-ink:#FFFFFF; --tag:#0F1B2D; --tag-ink:#FFFFFF; --gold:#B08D4F; --gold2:#C9A96A;
+  --ok:#3F6B52; --warn:#9A6639; --bad:#A8483F;
+  --display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --brandfont:"Cormorant Garamond",Georgia,"Times New Roman",serif;
   --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
-  --r:14px; --shadow:0 1px 2px rgba(120,20,30,.07),0 6px 20px rgba(120,20,30,.08);
+  --r:14px; --shadow:0 1px 2px rgba(15,27,45,.06),0 8px 22px rgba(15,27,45,.07);
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -45,8 +46,8 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .logo .mk{width:22px;height:29px;flex:none}
 .logo b{font-weight:800;letter-spacing:.06em}
 .logo span{font-weight:600;opacity:.9}
-.top .mk .mk-a{fill:#FFFFFF}.top .mk .mk-b{fill:#FFD9DD}
-.mk .mk-a{fill:var(--brand)}.mk .mk-b{fill:#b08d4f}
+.top .mk .mk-a{fill:#FFFFFF}.top .mk .mk-b{fill:var(--gold2)}
+.mk .mk-a{fill:var(--brand)}.mk .mk-b{fill:var(--gold)}
 .top .shop{flex:1;min-width:0;color:var(--brand-ink);opacity:.9;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:5px 11px;font-size:12.5px;font-weight:600;white-space:nowrap}
 .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
@@ -58,7 +59,7 @@ main{overflow:auto;min-height:0;padding:16px;-webkit-overflow-scrolling:touch}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 14px;font-weight:700;min-height:44px;text-decoration:none;color:var(--ink)}
 .btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
-.btn.pay{background:var(--tag);border-color:var(--tag);color:var(--tag-ink);font-size:17px;padding:12px 22px;box-shadow:0 6px 16px rgba(227,24,45,.28)}
+.btn.pay{background:var(--tag);border-color:var(--tag);color:var(--tag-ink);font-size:17px;padding:12px 22px;box-shadow:0 6px 16px rgba(15,27,45,.28)}
 .btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
 .btn.ghost{border-color:transparent;background:none}
 .btn:disabled{opacity:.45;cursor:not-allowed}
@@ -143,7 +144,7 @@ label.f input,label.f select{color:var(--ink);font-weight:500;font-size:15px}
 .bar i{display:block;height:100%;background:var(--brand)}
 
 /* sheet */
-.veil{position:fixed;inset:0;background:rgba(42,17,20,.5);display:flex;align-items:flex-end;justify-content:center;z-index:90}
+.veil{position:fixed;inset:0;background:rgba(15,27,45,.5);display:flex;align-items:flex-end;justify-content:center;z-index:90}
 .sheet{background:var(--surface);width:100%;max-width:520px;max-height:92%;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
 .sheet .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .total-big{font-family:var(--display);font-size:34px;font-weight:800;line-height:1.1}
@@ -268,7 +269,7 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 .sl-row.fail.hit .nm{color:#4CC98A}
 /* kartu barang ala katalog: foto, nama, harga */
 .pick-grid{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
-.tile,.pcard{position:relative;display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--surface);border:0;border-radius:14px;padding:8px 9px 10px;min-height:0;box-shadow:0 1px 2px rgba(120,20,30,.06),0 4px 14px rgba(120,20,30,.08)}
+.tile,.pcard{position:relative;display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--surface);border:0;border-radius:14px;padding:8px 9px 10px;min-height:0;box-shadow:0 1px 2px rgba(15,27,45,.06),0 4px 14px rgba(15,27,45,.08)}
 .tile .pic,.pcard .pic{aspect-ratio:1/1;border-radius:10px;position:relative;margin:0 0 2px}
 .tile .pic img,.pcard .pic img,.cand .pic img{object-fit:contain;background:#fff}
 .ptag{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);background:var(--brand);color:#fff;font:700 10.5px/1.25 var(--body);padding:3px 8px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:normal}
@@ -328,7 +329,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @media (max-width:859px){
   /* keranjang: bilah bayar selalu terlihat di bawah saat memilih barang */
   .kasir .cart{display:contents}
-  .kasir .paybar{position:sticky;bottom:0;z-index:5;margin:0 -4px;border-radius:16px;box-shadow:0 -2px 0 var(--bg),0 8px 28px rgba(120,20,30,.22)}
+  .kasir .paybar{position:sticky;bottom:0;z-index:5;margin:0 -4px;border-radius:16px;box-shadow:0 -2px 0 var(--bg),0 8px 28px rgba(15,27,45,.22)}
   .kasir .paybar.empty{display:none}
   .kasir .paybar .t{cursor:pointer}
   main{padding:14px 14px 10px}
@@ -364,7 +365,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
   .tiles:has(>:nth-child(4):last-child){grid-template-columns:repeat(4,minmax(0,1fr))}
   .veil{align-items:center;padding:24px}
-  .sheet{border-radius:20px;max-width:560px;box-shadow:0 20px 60px rgba(42,17,20,.35)}
+  .sheet{border-radius:20px;max-width:560px;box-shadow:0 20px 60px rgba(15,27,45,.35)}
   .pick-grid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
   .scan-pick .pick-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
 }
@@ -407,7 +408,7 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 .uchips button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
 .scan .uchips button{background:#141C31;border-color:#2C3858;color:#fff}
 .scan .uchips button[aria-pressed="true"]{background:#fff;color:var(--ink)}
-.who{background:#FFD9DD;color:var(--ink);border:0;font-weight:700}
+.who{background:var(--gold2);color:var(--ink);border:0;font-weight:700}
 .wz{max-height:52vh;overflow:auto;margin:0 -4px;padding:0 4px}
 .wz-row{display:grid;grid-template-columns:minmax(0,1fr) 104px 62px;gap:6px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
 .wz-row.on{background:color-mix(in srgb,var(--brand) 5%,transparent)}
@@ -422,6 +423,31 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 .lg-foot a{color:var(--muted);text-decoration:none;font-weight:600}
 .funnel{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 @media (max-width:420px){.wz-row{grid-template-columns:minmax(0,1fr) 92px 54px}}
+/* warna platform JAGA (navy & emas) */
+.top{border-bottom:2px solid var(--gold)}
+.logo{font-family:var(--brandfont);font-size:22px;gap:9px}
+.logo b{font-weight:700;letter-spacing:.1em}
+.top .logo span{color:var(--gold2);font-weight:600;letter-spacing:.02em;opacity:1}
+.login-head .word{font-family:var(--brandfont);font-size:32px;letter-spacing:.04em}
+.login-head .word b{color:var(--ink);letter-spacing:.1em}
+.login-head .word{color:var(--gold)}
+.tabs button[aria-current="page"]{color:var(--brand);background:color-mix(in srgb,var(--gold) 16%,transparent);box-shadow:inset 0 -2px 0 var(--gold)}
+@media (min-width:860px){.tabs button[aria-current="page"]{box-shadow:inset 3px 0 0 var(--gold)}}
+.ptag{background:var(--brand);color:#fff}
+.pq{background:var(--gold);color:#fff}
+.tile>span:last-child,.pcard .price{color:var(--brand)}
+.badge{background:var(--gold)}
+.chart div.now{background:var(--gold)}
+.bar i{background:var(--gold)}
+.otabs button[aria-current="page"]{background:var(--brand);color:#fff}
+.scan .btn.pay{background:var(--gold2);border-color:var(--gold2);color:var(--ink)}
+.smodes button[aria-pressed="true"]{background:var(--gold2);color:var(--ink)}
+.shot{background:var(--gold2)}
+.uchips button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand)}
+.scan .uchips button[aria-pressed="true"]{background:var(--gold2);color:var(--ink)}
+details.more summary{color:var(--brand)}
+.wz-row.on{background:color-mix(in srgb,var(--gold) 9%,transparent)}
+.trial{background:#F3EAD8;border-color:#E0CDA6}
 </style>
 </head>
 <body>
@@ -754,13 +780,13 @@ function eReceipt(s){
   const pad=18,w=Math.ceil(x.measureText('0').width*W+pad*2),nm=wrap(S.shop.name||'Warung',18);
   const sub=[S.shop.address,S.shop.phone?'Telp/WA '+S.shop.phone:''].filter(Boolean).flatMap(t=>wrap(t,36));
   const bandH=22+nm.length*26+sub.length*16+12,h=bandH+14+body.length*19+34;
-  c.width=w*k;c.height=h*k;x.scale(k,k);x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);x.fillStyle='#E3182D';x.fillRect(0,0,w,bandH);
+  c.width=w*k;c.height=h*k;x.scale(k,k);x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);x.fillStyle='#0F1B2D';x.fillRect(0,0,w,bandH);x.fillStyle='#C9A96A';x.fillRect(0,bandH-3,w,3);
   x.textAlign='center';x.textBaseline='top';x.fillStyle='#FFFFFF';let y=18;
   x.font='800 22px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';nm.forEach(t=>{x.fillText(t,w/2,y);y+=26});
   x.font='500 12px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';sub.forEach(t=>{x.fillText(t,w/2,y+2);y+=16});
   y=bandH+14;
   body.forEach(l=>{x.font=(l.b?'700 ':'400 ')+mono;x.fillStyle=/DIBATALKAN/.test(l.t)?'#C0352B':'#111111';x.textAlign=l.a==='c'?'center':'left';x.fillText(l.t,l.a==='c'?w/2:pad,y);y+=19});
-  x.textAlign='center';x.fillStyle='#8A7275';x.font='500 11px system-ui,sans-serif';x.fillText('Struk elektronik',w/2,y+8);
+  x.textAlign='center';x.fillStyle='#6B6F78';x.font='500 11px system-ui,sans-serif';x.fillText('Struk elektronik',w/2,y+8);
   return c.toDataURL('image/png');
 }
 const dataBlob=u=>{const i=u.indexOf(','),bin=atob(u.slice(i+1)),a=new Uint8Array(bin.length);for(let j=0;j<bin.length;j++)a[j]=bin.charCodeAt(j);return new Blob([a],{type:u.slice(5,u.indexOf(';'))})};
@@ -1180,7 +1206,7 @@ function kasToday(){const k=dayKey(Date.now()),isT=ts=>dayKey(ts)===k;
   const ex=S.expenses.filter(e=>isT(e.ts)),keluar=ex.reduce((a,e)=>a+e.amount,0),modal=S.modal[k]||0;
   return {k,tunai,lunas,ex,keluar,modal,laci:modal+tunai+lunas-keluar}}
 function kasCard(){const c=kasToday();
-  return '<div class="card"><div class="row" style="margin-bottom:6px"><h3 class="grow">Kas hari ini</h3><button class="btn" data-act="ex-new">Catat pengeluaran</button><button class="btn primary" data-act="close-shop">Tutup toko</button></div>'+
+  return '<div class="card"><div class="row" style="margin-bottom:6px"><h3 class="grow" style="flex:1 0 auto;white-space:nowrap">Kas hari ini</h3><button class="btn" data-act="ex-new">Catat pengeluaran</button><button class="btn primary" data-act="close-shop">Tutup toko</button></div>'+
   '<div class="kv"><span>Modal awal di laci</span><button class="btn num" data-act="modal" style="min-height:34px;padding:4px 10px">'+rp(c.modal)+' · ubah</button></div>'+
   '<div class="kv"><span>Penjualan tunai</span><b class="num">'+rp(c.tunai)+'</b></div>'+
   '<div class="kv"><span>Kasbon dilunasi</span><b class="num">'+rp(c.lunas)+'</b></div>'+
