@@ -453,6 +453,13 @@ details.more summary{color:var(--brand)}
 .pk-p{font-size:24px;font-weight:800}.pk-p small{font-size:13px;color:var(--muted);font-weight:600}
 .pk ul{margin:0;padding-left:18px;font-size:14px}.pk li{margin:3px 0}
 .plan-note{border-style:solid}
+.steps-l{margin:0;padding-left:20px;font-size:14px}.steps-l li{margin:4px 0}
+.rg-plans{display:flex;flex-direction:column;gap:6px}
+.rg-plan{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.rg-plan input{width:18px;height:18px;flex:none}
+.rg-plan b{display:block;font-size:14.5px}.rg-plan span{font-size:12.5px;color:var(--muted)}
+.rg-plan:has(input:checked){border-color:var(--gold);background:color-mix(in srgb,var(--gold) 8%,transparent)}
+.stat small.num,.stat small+small{display:block}
 </style>
 </head>
 <body>
@@ -1256,7 +1263,8 @@ function vAtur(){
       '<div class="row"><button class="btn" data-act="backup">Unduh cadangan</button><label class="btn" for="restore-file">Pulihkan dari cadangan</label><input type="file" id="restore-file" accept="application/json,.json" hidden></div>'+
       (isAcc()?'<p class="muted small" style="margin:0">Cadangan online berjalan otomatis setiap ada perubahan. Masuk dengan akun yang sama di HP lain untuk membuka data ini.</p>':'')+'</div>'+
     (isAcc()?'':'<div class="card stack"><h3>Mulai dari awal</h3><p class="muted" style="margin:0">Menghapus semua barang, struk, dan pengaturan di perangkat ini.</p><div><button class="btn danger" data-act="reset">Hapus semua data</button></div></div>')+
-    '<p class="muted small" style="text-align:center;margin:4px 0 0">Jaga Kasir oleh JAGA · versi 1.0</p></div>';
+    '<p class="muted small" style="text-align:center;margin:4px 0 0">Jaga Kasir oleh JAGA · versi 1.0 · <a href="tentang/" target="_blank" rel="noopener">Tentang</a> · <a href="pembayaran/" target="_blank" rel="noopener">Ketentuan pembayaran</a></p></div>';
+  payHistLoad();
 }
 
 /* ============ JAGA Kasir: fitur unggulan ============ */
@@ -1278,17 +1286,58 @@ const canSell=()=>plan()!=='expired';
 function planLabel(){const p=plan();return p==='plus'?'Lifetime Plus':p==='basic'?'Lifetime Basic':p==='expired'?'Masa coba habis':'Masa coba · sisa '+trialLeft()+' hari'}
 function upgradeSheet(reason){const p=plan();const user=isAcc()&&ACC?ACC.username:'';
   const card=k=>{const x=PAKET[k],cur=p===k;return '<div class="pk'+(k==='plus'?' hl':'')+'"><div class="row"><b class="grow">'+x.name+'</b>'+(cur?'<span class="pill ok">Paket Anda</span>':'')+'</div><div class="pk-p num">'+rp(x.price)+' <small>sekali bayar</small></div><ul>'+x.feat.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>'+
-    (cur||(p==='plus'&&k==='basic')?'':'<a class="btn '+(k==='plus'?'pay':'primary')+' block" target="_blank" rel="noopener" data-act="pk-wa" data-k="'+k+'" href="'+waLink(JAGA_WA,'Halo JAGA, saya mau aktifkan '+x.name+' ('+rp(x.price)+') untuk Jaga Kasir.\n\nNama warung: '+((S&&S.shop.name)||(ACC&&ACC.shop_name)||'-')+(user?'\nNama pengguna: '+user:'\n(Saya masih di mode coba, belum daftar)')+'\n\nMohon info cara pembayarannya. Terima kasih.')+'">'+(p==='basic'&&k==='plus'?'Naik ke paket ini':'Pilih paket ini')+'</a>')+'</div>'};
+    (cur||(p==='plus'&&k==='basic')?'':'<button class="btn '+(k==='plus'?'pay':'primary')+' block" data-act="pk-req" data-k="'+k+'">'+(p==='basic'&&k==='plus'?'Naik ke paket ini · '+rp(220000):'Pilih paket ini')+'</button>')+'</div>'};
   sheet('<div class="hd"><h2>'+(p==='expired'?'Masa coba sudah habis':'Paket Jaga Kasir')+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
     (reason?'<p class="note" style="margin:0">'+esc(reason)+'</p>':'')+
     '<p class="muted small" style="margin:0">Bayar sekali, dipakai seterusnya untuk 1 warung. Data Anda tetap aman dan bisa dilihat kapan saja. '+(SESS==='local'?'Daftar akun dulu supaya paket bisa diaktifkan dan data tercadang online.':'Setelah pembayaran dikonfirmasi lewat WhatsApp, paket aktif di akun Anda.')+'</p>'+
     (SESS==='local'?'<button class="btn primary block" data-act="trial-register">Daftar akun dulu</button>':'')+
-    card('basic')+card('plus')+'<p class="muted small" style="margin:0">Kunjungan langsung di kota layanan JAGA; di kota lain pendampingan lewat video call.</p>')}
+    card('basic')+card('plus')+'<p class="muted small" style="margin:0">Kunjungan langsung di kota layanan JAGA; di kota lain pendampingan lewat video call. Naik dari Basic ke Plus cukup bayar selisihnya. <a href="pembayaran/" target="_blank" rel="noopener">Ketentuan pembayaran</a></p>')}
 function planCard(){const p=plan();
   return '<div class="card stack"><div class="row"><h3 class="grow">Paket</h3><span class="pill '+(p==='expired'?'bad':p==='trial'?'warn':'ok')+'">'+esc(planLabel())+'</span></div>'+
     '<p class="muted" style="margin:0">'+(p==='trial'?'Semua fitur bisa dicoba selama masa coba. Setelah itu pilih Lifetime Basic atau Lifetime Plus, bayar sekali.':p==='expired'?'Transaksi baru terkunci. Data tetap bisa dilihat dan diunduh. Pilih paket untuk lanjut berjualan.':p==='basic'?'Semua fitur jualan aktif. Naik ke Lifetime Plus untuk penjaga, tutup toko, dan pendampingan.':'Semua fitur aktif, termasuk penjaga, tutup toko, dan pendampingan.')+'</p>'+
-    (p==='plus'?'':'<button class="btn '+(p==='expired'?'pay':'primary')+'" data-act="upgrade">'+(p==='basic'?'Naik ke Lifetime Plus':'Lihat paket')+'</button>')+'</div>'}
+    (p==='plus'?'':'<button class="btn '+(p==='expired'?'pay':'primary')+'" data-act="upgrade">'+(p==='basic'?'Naik ke Lifetime Plus':'Lihat paket')+'</button>')+
+    (isAcc()?'<h3 style="margin-top:4px">Riwayat pembayaran</h3><div id="pay-hist"><p class="muted small" style="margin:0">Memuat…</p></div>':'')+'</div>'}
 function needPlus(fn){if(hasPlus())return fn();upgradeSheet('Fitur penjaga dan tutup toko ada di Lifetime Plus + Pendampingan.')}
+/* ---- tagihan paket ---- */
+const PLAN_NAME={basic:'Lifetime Basic',plus:'Lifetime Plus + Pendampingan'};
+const PAY_ST={pending:['Menunggu pembayaran','warn'],paid:['Lunas','ok'],cancelled:['Dibatalkan','bad'],expired:['Kedaluwarsa','bad']};
+async function payRequest(k){if(SESS==='local'){closeSheet();return showRegister()}
+  try{const r=await rpc('jk_pay_request',{p_key:await devKey(),p_plan:k});if(!r.ok)return toast(r.error);invoiceSheet(r)}catch(e){if(e.expired)return sessionEnded(e.message);toast(e.message)}}
+function invoiceMsg(r){return 'Halo JAGA, saya mau membayar tagihan Jaga Kasir.\n\nNo. tagihan: '+r.inv+'\nPaket: '+PLAN_NAME[r.plan]+(r.kind==='naik'?' (naik dari Basic)':'')+'\nNominal: '+rp(r.amount)+'\nNama warung: '+((S&&S.shop.name)||(ACC&&ACC.shop_name)||'-')+'\nNama pengguna: '+((ACC&&ACC.username)||'-')+'\n\nMohon kirim rekening/QRIS resminya. Terima kasih.'}
+function invoiceSheet(r){
+  sheet('<div class="hd"><h2>Tagihan '+esc(r.inv)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    '<div class="pk hl"><div class="row"><b class="grow">'+esc(PLAN_NAME[r.plan])+(r.kind==='naik'?' · naik dari Basic':'')+'</b><span class="pill warn">Menunggu pembayaran</span></div><div class="pk-p num">'+rp(r.amount)+' <small>sekali bayar</small></div></div>'+
+    '<ol class="steps-l"><li>Tekan <b>Kirim ke WhatsApp JAGA</b>. Nomor tagihan ikut terkirim.</li><li>Admin JAGA membalas dengan rekening atau QRIS resmi.</li><li>Bayar, lalu kirim foto bukti pembayaran di chat yang sama.</li><li>Paket aktif paling lambat 1×24 jam. Buka ulang aplikasi untuk melihatnya.</li></ol>'+
+    '<p class="note" style="margin:0">Bayar hanya ke rekening atau QRIS yang dikirim dari WhatsApp resmi JAGA <b>0882-0082-75023</b>. JAGA tidak pernah meminta kata sandi atau kode OTP Anda.</p>'+
+    '<p class="muted small" style="margin:0">Selama menunggu konfirmasi, masa coba tetap berjalan. Tagihan berlaku 7 hari. <a href="pembayaran/" target="_blank" rel="noopener">Ketentuan pembayaran</a></p>'+
+    '<a class="btn pay block" target="_blank" rel="noopener" href="'+waLink(JAGA_WA,invoiceMsg(r))+'">Kirim ke WhatsApp JAGA</a>')}
+async function payHistLoad(){const el=$('#pay-hist');if(!el||!isAcc())return;
+  try{const l=await rpc('jk_pay_mine',{p_key:await devKey()})||[];if(!$('#pay-hist'))return;PAYS=l;
+    el.innerHTML=l.length?'<div class="list">'+l.map((x,i)=>'<div class="item"><div class="grow"><b class="num">'+esc(x.inv)+'</b><span class="muted small">'+esc(PLAN_NAME[x.plan]||x.plan)+' · '+fmtDate(Date.parse(x.paid_at||x.created_at))+(x.method?' · '+esc(x.method):'')+'</span></div>'+
+      '<div class="r"><div class="num" style="font-weight:700">'+rp(x.amount)+'</div><span class="pill '+PAY_ST[x.status][1]+'">'+PAY_ST[x.status][0]+'</span></div>'+(x.status==='pending'?'<button class="btn sm" data-act="inv-open" data-i="'+i+'">Bayar</button>':'')+'</div>').join('')+'</div>':'<p class="muted small" style="margin:0">Belum ada pembayaran.</p>'}catch(e){el.innerHTML='<p class="muted small" style="margin:0">Riwayat pembayaran belum bisa dimuat.</p>'}}
+let PAYS=[];
+/* ---- portal pemilik: pemasukan ---- */
+const OPM={data:null,f:'pending'};
+async function ownerPayLoad(){ownerPayRender();try{OPM.data=await rpc('jk_owner_payments',{p_key:OWN.key})}catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');return showOwnerLogin()}return toast(e.message)}ownerPayRender(true)}
+function ownerPayRender(partial){const d=OPM.data,head='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Pemasukan Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header><div class="own-body">';
+  let body=ownerTabs()+'<div class="row"><h2 class="grow">Pemasukan</h2><button class="btn" data-act="opm-reload">Muat ulang</button>'+(d&&d.items.some(x=>x.status==='paid')?'<button class="btn" data-act="opm-csv">Unduh CSV</button>':'')+'</div>';
+  if(!d){body+='<div class="card empty">Memuat pemasukan…</div>'}
+  else{const L=d.items,cnt=k=>L.filter(x=>x.status===k).length,l=L.filter(x=>OPM.f==='semua'||x.status===OPM.f);
+    body+='<div class="tiles"><div class="stat"><small>Total pemasukan</small><b class="num">'+rp(d.total)+'</b></div><div class="stat"><small>Bulan ini</small><b class="num">'+rp(d.month)+'</b><small class="num">'+d.month_n+' pembayaran</small></div>'+
+      '<div class="stat"><small>Warung berbayar</small><b class="num">'+d.paid_shops+'</b><small>Basic '+d.basic+' · Plus '+d.plus+'</small></div><div class="stat"><small>Menunggu pembayaran</small><b class="num" style="color:'+(d.pending_n?'var(--warn)':'inherit')+'">'+d.pending_n+'</b><small class="num">'+rp(d.pending_amount)+'</small></div></div>'+
+      '<div class="seg">'+[['pending','Menunggu'],['paid','Lunas'],['cancelled','Dibatalkan'],['expired','Kedaluwarsa'],['semua','Semua']].map(f=>'<button data-act="opm-f" data-f="'+f[0]+'" aria-pressed="'+(OPM.f===f[0])+'">'+f[1]+(f[0]!=='semua'&&cnt(f[0])?' · '+cnt(f[0]):'')+'</button>').join('')+'</div>'+
+      (l.length?l.map(x=>'<div class="card acc"><div class="row"><b class="grow">'+esc(x.shop_name)+'</b><span class="pill '+PAY_ST[x.status][1]+'">'+PAY_ST[x.status][0]+'</span></div>'+
+        '<div class="row"><span class="grow small"><b class="num">'+esc(x.inv)+'</b> · '+esc(PLAN_NAME[x.plan]||x.plan)+(x.kind==='naik'?' (naik dari Basic)':'')+'</span><b class="num" style="font-size:18px">'+rp(x.amount)+'</b></div>'+
+        '<div class="small muted">Pengguna <b>'+esc(x.username)+'</b>'+(x.owner_name?' · '+esc(x.owner_name):'')+' · dibuat '+fmtDate(Date.parse(x.created_at))+' '+fmtTime(Date.parse(x.created_at))+(x.paid_at?' · lunas '+fmtDate(Date.parse(x.paid_at))+' '+fmtTime(Date.parse(x.paid_at)):'')+(x.method?' · '+esc(x.method):'')+(x.source==='pemilik'?' · dicatat pemilik':'')+'</div>'+
+        (x.note?'<div class="small">Catatan: '+esc(x.note)+'</div>':'')+
+        (x.status==='pending'||x.status==='expired'?'<div class="row"><button class="btn primary" data-act="opm-ok" data-id="'+x.id+'">Konfirmasi lunas</button><button class="btn danger" data-act="opm-cancel" data-id="'+x.id+'">Batalkan</button>'+(x.wa?'<a class="btn" target="_blank" rel="noopener" href="https://wa.me/'+x.wa+'?text='+encodeURIComponent('Halo '+(x.owner_name||'')+', ini JAGA tentang tagihan '+x.inv+' ('+(PLAN_NAME[x.plan]||'')+', '+rp(x.amount)+') untuk '+x.shop_name+'.')+'">WhatsApp</a>':'')+'</div>':'')+'</div>').join(''):
+        '<div class="card empty">'+(OPM.f==='pending'?'Tidak ada tagihan yang menunggu.':'Tidak ada data di daftar ini.')+'</div>')}
+  if(partial&&$('.own .own-body')){$('.own .own-body').innerHTML=body;return}
+  $('#login-root').innerHTML=head+body+'</div></div>'}
+function opmCsv(){const rows=[['No tagihan','Tanggal lunas','Warung','Pengguna','Paket','Jenis','Nominal','Metode','Catatan','Dicatat oleh']];
+  OPM.data.items.filter(x=>x.status==='paid').forEach(x=>rows.push([x.inv,x.paid_at?dayKey(Date.parse(x.paid_at))+' '+fmtTime(Date.parse(x.paid_at)):'',x.shop_name,x.username,PLAN_NAME[x.plan]||x.plan,x.kind==='naik'?'naik paket':'baru',x.amount,x.method,x.note,x.source]));
+  return rows.map(r=>r.map(c=>'"'+String(c??'').replace(/"/g,'""')+'"').join(',')).join('\r\n')}
+const PAY_METHODS=['Transfer bank','QRIS','Tunai','E-wallet','Lainnya'];
 /* ---- multi-satuan & harga grosir ---- */
 function unitRow(u){u=u||{};return '<div class="urow"><input type="text" class="u-n" placeholder="Nama, mis. renteng" value="'+esc(u.n||'')+'" autocomplete="off"><input type="text" inputmode="numeric" class="u-q" placeholder="Isi" value="'+(u.q||'')+'" autocomplete="off"><input type="text" inputmode="numeric" data-rp class="u-p" placeholder="Harga" value="'+(u.p?fmt(u.p):'')+'" autocomplete="off"><button type="button" class="x" data-act="row-del" aria-label="Hapus baris">✕</button></div>'}
 function tierRow(t){t=t||{};return '<div class="urow t2"><input type="text" inputmode="numeric" class="t-m" placeholder="Beli minimal" value="'+(t.min||'')+'" autocomplete="off"><input type="text" inputmode="numeric" data-rp class="t-p" placeholder="Harga per satuan" value="'+(t.p?fmt(t.p):'')+'" autocomplete="off"><button type="button" class="x" data-act="row-del" aria-label="Hapus baris">✕</button></div>'}
@@ -1480,6 +1529,19 @@ const A={
   'staff-mode':()=>needPlus(()=>staffPick()),
   'close-shop':()=>needPlus(()=>closeShopSheet()),
   upgrade:()=>upgradeSheet(),
+  'pk-req':e=>payRequest(e.dataset.k),
+  'inv-open':e=>{const x=PAYS[+e.dataset.i];if(x)invoiceSheet(x)},
+  'opm-reload':()=>ownerPayLoad(),
+  'opm-f':e=>{OPM.f=e.dataset.f;ownerPayRender(true)},
+  'opm-csv':()=>download('pemasukan-jaga-kasir-'+dayKey(Date.now())+'.csv',opmCsv(),'text/csv'),
+  'opm-ok':e=>{const x=OPM.data.items.find(y=>y.id===e.dataset.id);if(!x)return;
+    sheet('<div class="hd"><h2>Konfirmasi '+esc(x.inv)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><input type="hidden" id="opm-id" value="'+x.id+'">'+
+      '<p class="muted" style="margin:0">'+esc(x.shop_name)+' · '+esc(PLAN_NAME[x.plan])+'. Pastikan dana sudah masuk ke rekening JAGA. Paket langsung aktif setelah disimpan.</p>'+
+      '<div class="two"><label class="f">Nominal diterima<input type="text" inputmode="numeric" data-rp id="opm-amt" value="'+fmt(x.amount)+'" autocomplete="off"></label><label class="f">Metode<select id="opm-method">'+PAY_METHODS.map(m=>'<option>'+m+'</option>').join('')+'</select></label></div>'+
+      '<label class="f">Catatan (opsional)<input type="text" id="opm-note" placeholder="Contoh: transfer BCA a.n. Budi" autocomplete="off"></label><button class="btn pay block" data-act="opm-ok-save">Tandai lunas &amp; aktifkan paket</button>')},
+  'opm-ok-save':async()=>{const b=$('[data-act=opm-ok-save]');b.disabled=true;try{const r=await rpc('jk_owner_pay_confirm',{p_key:OWN.key,p_id:$('#opm-id').value,p_method:$('#opm-method').value,p_note:$('#opm-note').value.trim(),p_amount:num($('#opm-amt').value)});
+    if(!r.ok){b.disabled=false;return toast(r.error)}closeSheet();OPM.f='paid';await ownerPayLoad();toast('Lunas. Paket aktif, kabari warung lewat WhatsApp.')}catch(err){b.disabled=false;toast(err.message)}},
+  'opm-cancel':e=>{const id=e.dataset.id;confirmSheet('Batalkan tagihan ini?','Tagihan tidak bisa dibayar lagi. Warung bisa membuat tagihan baru dari aplikasi.','Batalkan tagihan',async()=>{try{await rpc('jk_owner_pay_cancel',{p_key:OWN.key,p_id:id});await ownerPayLoad()}catch(err){toast(err.message)}},true)},
   'close-save':()=>{const v=$('#cs-count').value.trim();if(!v)return toast('Hitung dan isi uang yang ada di laci.');const r=shiftNow(),counted=num(v);
     const c=Object.assign(r,{ts:Date.now(),by:WHO?WHO.name:'Pemilik',counted,diff:counted-r.expected,note:$('#cs-note').value.trim()});
     S.closings=(S.closings||[]).concat(c).slice(-120);save();track('tutup_toko');const msg=closeMsg(c);
@@ -1500,7 +1562,7 @@ const A={
   'kl-copy':()=>copyText(kulakText().text,'Daftar belanja disalin.'),
   'to-register':()=>showRegister(), 'to-login':()=>showLogin(), register:()=>doRegister(),
   'to-owner':async()=>{OWN.key=await Store.get('jk_owner_key');if(OWN.key)ownerOpen();else showOwnerLogin()},
-  'owner-tab':e=>{OWN.tab=e.dataset.t;if(OWN.tab==='akun')return ownerRender();if(OWN.tab==='usulan')OWN.sug=null;ownerCatRender();ownerCatLoad()},
+  'owner-tab':e=>{OWN.tab=e.dataset.t;if(OWN.tab==='akun')return ownerRender();if(OWN.tab==='pemasukan')return ownerPayLoad();if(OWN.tab==='usulan')OWN.sug=null;ownerCatRender();ownerCatLoad()},
   'oc-new':()=>ownerCatForm(null),
   'oc-edit':e=>ownerCatForm((OWN.cat.items||[]).find(x=>x.id===e.dataset.id)),
   'os-take':e=>{const x=OWN.sug[+e.dataset.i];ownerCatForm(Object.assign({},x,{id:''}),true)},
@@ -1538,10 +1600,15 @@ const A={
   'od-del':async e=>{const id=$('#od-id').value;try{await rpc('jk_owner_device_del',{p_key:OWN.key,p_id:id,p_dev:e.dataset.d});await ownerOpen();A['owner-dev']({dataset:{id}});toast('Perangkat dikeluarkan.')}catch(err){toast(err.message)}},
   'owner-plan':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id);if(!a)return;
     sheet('<div class="hd"><h2>Paket '+esc(a.shop_name)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><input type="hidden" id="op-id" value="'+a.id+'">'+
-      '<p class="muted" style="margin:0">Aktifkan setelah pembayaran diterima. Paket langsung berlaku saat warung membuka aplikasi.</p>'+
-      '<button class="btn primary block" data-act="op-set" data-p="basic">Aktifkan Lifetime Basic · Rp129.000</button><button class="btn pay block" data-act="op-set" data-p="plus">Aktifkan Lifetime Plus + Pendampingan · Rp349.000</button>'+
+      '<p class="muted" style="margin:0">Paket sekarang: <b>'+(a.plan==='plus'?'Lifetime Plus':a.plan==='basic'?'Lifetime Basic':'Masa coba')+'</b>. Catat pembayaran yang diterima langsung (tanpa tagihan dari aplikasi); paket aktif dan masuk ke Pemasukan. Tagihan dari aplikasi dikonfirmasi di tab Pemasukan.</p>'+
+      '<div class="two"><label class="f">Paket<select id="op-plan" data-cur="'+esc(a.plan||'trial')+'">'+(a.plan==='plus'?'':'<option value="'+(a.plan==='basic'?'plus':'basic')+'">'+(a.plan==='basic'?'Naik ke Lifetime Plus':'Lifetime Basic')+'</option>')+(a.plan==='basic'||a.plan==='plus'?'':'<option value="plus">Lifetime Plus + Pendampingan</option>')+'</select></label>'+
+      '<label class="f">Nominal diterima<input type="text" inputmode="numeric" data-rp id="op-amt" value="'+fmt(a.plan==='basic'?220000:a.plan==='plus'?0:129000)+'" autocomplete="off"></label></div>'+
+      '<div class="two"><label class="f">Metode<select id="op-method">'+PAY_METHODS.concat(['Gratis / promo']).map(m=>'<option>'+m+'</option>').join('')+'</select></label><label class="f">Catatan<input type="text" id="op-note" autocomplete="off"></label></div>'+
+      (a.plan==='plus'?'':'<button class="btn pay block" data-act="op-pay">Catat pembayaran &amp; aktifkan</button>')+
       '<button class="btn block" data-act="op-set" data-p="trial">Perpanjang masa coba 7 hari</button>'+
       '<a class="btn block" target="_blank" rel="noopener" href="https://wa.me/'+a.wa+'?text='+encodeURIComponent('Halo '+a.owner_name+', ini JAGA. Terima kasih sudah memakai Jaga Kasir untuk '+a.shop_name+'.')+'">WhatsApp warung</a>')},
+  'op-pay':async()=>{const id=$('#op-id').value,pl=$('#op-plan').value,amt=num($('#op-amt').value),m=$('#op-method').value;
+    try{const r=await rpc('jk_owner_pay_manual',{p_key:OWN.key,p_account:id,p_plan:pl,p_amount:m==='Gratis / promo'?0:amt,p_method:m,p_note:$('#op-note').value.trim()});if(!r.ok)return toast(r.error);closeSheet();await ownerOpen();toast('Pembayaran tercatat dan paket aktif.')}catch(err){toast(err.message)}},
   'op-set':async e=>{const id=$('#op-id').value,p=e.dataset.p;try{const r=await rpc('jk_owner_set_plan',{p_key:OWN.key,p_id:id,p_plan:p,p_days:7});if(!r.ok)return toast(r.error);closeSheet();await ownerOpen();toast(p==='trial'?'Masa coba diperpanjang 7 hari.':'Paket aktif. Minta warung membuka ulang aplikasi.')}catch(err){toast(err.message)}},
   'owner-hist':async e=>{const a=OWN.list.find(x=>x.id===e.dataset.id);if(!a)return;let l;try{l=await rpc('jk_owner_hist',{p_key:OWN.key,p_id:a.id})}catch(err){return toast(err.message)}
     sheet('<div class="hd"><h2>Riwayat cadangan '+esc(a.shop_name)+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><input type="hidden" id="oh-id" value="'+a.id+'">'+
@@ -1682,6 +1749,7 @@ document.addEventListener('change',ev=>{
   if(t.id==='oc-file'&&t.files[0]){const f=t.files[0];t.value='';shrinkFit(f,520,.78).then(u=>{OC.photo=u;OC.changed=true;$('#oc-prev').innerHTML='<img src="'+u+'" alt="">'}).catch(()=>toast('Foto ini tidak bisa dibaca.'))}
   if(t.id==='pf-code'&&t.value.trim())catFillByCode(t.value.trim());
   if(t.dataset&&t.dataset.wz)wzSync(t.dataset.wz);
+  if(t.id==='op-plan'){$('#op-amt').value=fmt(t.value==='basic'?129000:t.dataset.cur==='basic'?220000:349000)}
   if(t.classList&&t.classList.contains('kl-on'))kulakRefresh();
   if(t.id==='foto-file'&&t.files[0]){const f=t.files[0];t.value='';const u=URL.createObjectURL(f);loadImg(u).then(im=>snapFoto(im)).catch(()=>toast('Foto ini tidak bisa dibaca.')).finally(()=>setTimeout(()=>URL.revokeObjectURL(u),2000))}
   if(t.dataset&&t.dataset.sq){const c=S.cart.find(x=>x.key===t.dataset.sq);if(c){c.qty=Math.max(0,num(t.value));cartSave();scanList()}}
@@ -1786,12 +1854,16 @@ function showRegister(){
     '<label class="f">Alamat warung<input type="text" id="rg-addr" autocomplete="street-address"></label>'+
     '<label class="f">Nama pengguna (untuk masuk)<input type="text" id="rg-user" autocapitalize="none" spellcheck="false" placeholder="contoh: warungsari" autocomplete="username"></label>'+
     '<div class="two"><label class="f">Kata sandi<input type="password" id="rg-pass" autocomplete="new-password"></label><label class="f">Ulangi kata sandi<input type="password" id="rg-pass2" autocomplete="new-password"></label></div>'+
+    '<div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted)">Pilih paket<div class="rg-plans">'+
+      [['trial','Coba gratis 7 hari','Semua fitur, bayar nanti kalau cocok'],['basic','Lifetime Basic · Rp129.000','Sekali bayar, semua fitur jualan'],['plus','Lifetime Plus + Pendampingan · Rp349.000','Penjaga, tutup toko, 3 perangkat, kunjungan & pelatihan']].map((x,i)=>'<label class="rg-plan"><input type="radio" name="rg-plan" value="'+x[0]+'"'+(i?'':' checked')+'><span><b>'+x[1]+'</b><span>'+x[2]+'</span></span></label>').join('')+
+    '</div><span class="small" style="font-weight:500">Paket berbayar: akun langsung aktif dan bisa dipakai, lalu tagihan dibayar lewat WhatsApp resmi JAGA. <a href="pembayaran/" target="_blank" rel="noopener">Ketentuan pembayaran</a></span></div>'+
     '<div class="lg-err" id="lg-err" role="alert"></div>'+
-    '<button class="btn pay block" data-act="register" id="rg-btn">Kirim pendaftaran</button>'+
+    '<button class="btn pay block" data-act="register" id="rg-btn">Daftar</button>'+
     '<button class="btn ghost block" data-act="to-login">Sudah punya akun? Masuk</button></div></div>';
   setTimeout(()=>{const u=$('#rg-shop');if(u&&(!document.activeElement||document.activeElement===document.body))u.focus()},50);
   rpc('jk_otp_status',{}).then(r=>{const bx=$('#rg-otp-box');if(bx&&r&&r.on)bx.hidden=false}).catch(()=>{});
 }
+let REG_PLAN='';
 async function doRegister(){
   const v=id=>($('#'+id).value||'').trim(),err=$('#lg-err');err.textContent='';
   const d={p_username:v('rg-user').toLowerCase(),p_pass:$('#rg-pass').value,p_shop:v('rg-shop'),p_name:v('rg-name'),p_wa:v('rg-wa'),p_address:v('rg-addr')};
@@ -1805,7 +1877,7 @@ async function doRegister(){
   const b=$('#rg-btn');b.disabled=true;
   try{const r=await rpc('jk_register',d);
     if(!r||!r.ok){err.textContent=(r&&r.error)||'Pendaftaran gagal.';if(r&&r.otp){const bx=$('#rg-otp-box');if(bx){bx.hidden=false;$('#rg-otp').focus()}}return}
-    if(r.status==='active'){toast('Akun aktif. Selamat datang!');return loginAccount(d.p_username,d.p_pass)}
+    if(r.status==='active'){const pl=(document.querySelector('[name=rg-plan]:checked')||{}).value;REG_PLAN=pl==='basic'||pl==='plus'?pl:'';toast('Akun aktif. Selamat datang!');return loginAccount(d.p_username,d.p_pass)}
     showLogin(); $('#lg-user').value=d.p_username;
     const ok=$('#lg-ok');ok.hidden=false;ok.textContent='Pendaftaran '+d.p_shop+' terkirim. Akun aktif setelah disetujui JAGA, lalu masuk dengan nama pengguna dan kata sandi tadi.';
   }catch(e){err.textContent=e.message}finally{const bb=$('#rg-btn');if(bb)bb.disabled=false}
@@ -1837,12 +1909,13 @@ async function ownerLogin(){
   }catch(e){err.textContent=e.message}finally{const bb=$('#ow-btn');if(bb)bb.disabled=false}
 }
 async function ownerOpen(){
+  if(OWN.tab==='pemasukan')return ownerPayLoad();
   if(OWN.tab!=='akun'){ownerCatRender();return ownerCatLoad()}
   try{OWN.list=await rpc('jk_owner_list',{p_key:OWN.key,p_app:'kasir'})||[];try{OWN.fun=await rpc('jk_owner_funnel',{p_key:OWN.key})}catch(e){OWN.fun=null}}
   catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin();$('#lg-err').textContent=e.message;return}toast(e.message);if(!$('.own'))showOwnerLogin();return}
   ownerRender();
 }
-function ownerTabs(){return '<div class="otabs">'+[['akun','Akun warung'],['katalog','Katalog'],['usulan','Usulan warung'+(OWN.sug&&OWN.sug.length?' · '+OWN.sug.length:'')]].map(t=>'<button data-act="owner-tab" data-t="'+t[0]+'"'+(OWN.tab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>').join('')+'</div>'}
+function ownerTabs(){return '<div class="otabs">'+[['akun','Akun warung'],['pemasukan','Pemasukan'],['katalog','Katalog'],['usulan','Usulan warung'+(OWN.sug&&OWN.sug.length?' · '+OWN.sug.length:'')]].map(t=>'<button data-act="owner-tab" data-t="'+t[0]+'"'+(OWN.tab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>').join('')+'</div>'}
 async function ownerCatLoad(){try{if(OWN.tab==='usulan'){OWN.sug=await rpc('jk_owner_cat_suggest',{p_key:OWN.key})||[]}else{OWN.cat=await rpc('jk_owner_cat_list',{p_key:OWN.key,p_q:OWN.cq})||{items:[],total:0}}ownerCatRender(true)}
   catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');return showOwnerLogin()}toast(e.message)}}
 function ownerCatRender(partial){
@@ -1928,6 +2001,7 @@ async function boot(){
   q='';kc='';hidePrev=false;rf='semua';
   await loadWho();
   render();
+  if(REG_PLAN&&isAcc()){const pl=REG_PLAN;REG_PLAN='';setTimeout(async()=>{try{const r=await rpc('jk_pay_request',{p_key:await devKey(),p_plan:pl});if(r.ok){invoiceSheet(r);sheetClose=()=>{if(!S.products.length&&!S.onb){S.onb=1;save();setTimeout(wizard,200)}}}}catch(e){}},300);return}
   if(!S.demo&&!S.products.length&&!S.onb&&!WHO&&(isAcc()||SESS==='local')){S.onb=1;save();setTimeout(()=>{if(!$('#sheet-root').firstChild&&!$('#login-root').firstChild)wizard()},400)}
 }
 async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$('#login-root').innerHTML='';await boot();if(kind==='local'&&S&&!S.trialStart){S.trialStart=Date.now();save();render()}}
