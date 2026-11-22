@@ -468,6 +468,73 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 .shot{background:var(--gold2)}
 .uchips button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand)}
 .scan .uchips button[aria-pressed="true"]{background:var(--gold2);color:var(--ink)}
+/* ---- portal pemilik ---- */
+.own{display:grid;grid-template-columns:256px minmax(0,1fr);padding:0;align-items:start}
+.oside{position:sticky;top:0;height:100vh;background:var(--brand);color:#fff;display:flex;flex-direction:column;padding:22px 14px 18px;gap:20px}
+.obrand{display:flex;align-items:center;gap:10px;padding:0 8px}
+.obrand .mk{width:34px;height:34px;flex:none}.oside .mk .mk-a{fill:#fff}.oside .mk .mk-b{fill:var(--gold2)}
+.obrand b{display:block;font-family:var(--brandfont);letter-spacing:.12em;font-size:20px;line-height:1.1}
+.obrand small{color:var(--gold2);font-weight:600;font-size:12px;letter-spacing:.04em}
+.oout-m{display:none}
+.onav{display:flex;flex-direction:column;gap:4px}
+.onav button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:rgba(255,255,255,.72);font-weight:600;font-size:14.5px;padding:11px 12px;border-radius:10px;text-align:left;min-height:44px}
+.onav button:hover{background:rgba(255,255,255,.07);color:#fff}
+.onav button[aria-current="page"]{background:rgba(201,169,106,.16);color:#fff;box-shadow:inset 3px 0 0 var(--gold2)}
+.onav .onb{margin-left:auto;background:var(--gold2);color:var(--brand);font-style:normal;font-size:11.5px;font-weight:800;border-radius:99px;padding:1px 8px}
+.ofoot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding:0 8px;font-size:12px;color:rgba(255,255,255,.45)}
+.oout{display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.18);background:none;color:#fff;border-radius:10px;padding:9px 12px;font-weight:600;min-height:42px}
+.own .own-body{max-width:1240px;width:100%;margin:0;padding:30px 36px 56px;gap:18px}
+.ohd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.ohd h2{font-size:28px;letter-spacing:-.015em;margin:0;line-height:1.15}
+.ohd p{margin:5px 0 0;font-size:14px;max-width:60ch}
+.ohd .row{gap:8px}
+.own .otiles{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.own .stat{border-radius:16px;padding:16px 18px 16px 20px;box-shadow:0 1px 2px rgba(15,27,45,.04);position:relative;overflow:hidden}
+.own .stat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold2)}
+.own .stat small{font-size:12.5px;font-weight:600;color:var(--muted)}
+.own .stat b{font-size:28px;display:block;margin-top:4px;letter-spacing:-.01em;line-height:1.15}
+.own .card{border-radius:16px;box-shadow:0 1px 2px rgba(15,27,45,.04)}
+.own .seg button{min-height:38px}
+.accs{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px}
+.acc2{display:flex;flex-direction:column;gap:12px;padding:18px}
+.acc-h{display:flex;align-items:center;gap:12px}
+.acc-h .av{width:44px;height:44px;border-radius:12px;background:var(--brand);color:var(--gold2);display:grid;place-items:center;font-weight:800;font-size:18px;flex:none}
+.acc-h b{display:block;font-size:16px}
+.acc-m{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px 16px;margin:0;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.acc-m dt{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.acc-m dd{margin:3px 0 0;font-size:14px;font-weight:600}
+.acc-a{display:flex;flex-wrap:wrap;gap:8px}
+.own .funnel .stat{padding:12px 14px;box-shadow:none;background:var(--bg)}.own .funnel .stat::before{display:none}.own .funnel .stat b{font-size:22px}
+.ocat{display:flex;flex-direction:column;gap:14px;padding:16px}
+.osearch{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:0 14px;background:var(--bg)}
+.osearch .i{color:var(--muted)}
+.osearch input{border:0!important;background:none!important;box-shadow:none!important;outline:none;flex:1;min-height:46px;padding:0}
+.ogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
+.ocard{position:relative;display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;transition:box-shadow .15s,transform .15s}
+.ocard:hover{box-shadow:0 8px 24px rgba(15,27,45,.12);transform:translateY(-1px)}
+.ocard .pic{aspect-ratio:1/1;border-radius:10px;background:#fff;display:grid;place-items:center;font-size:28px;font-weight:800;color:var(--muted);overflow:hidden}
+.ocard .pic img{width:100%;height:100%;object-fit:contain}
+.ocard .nm{font-weight:700;font-size:13.5px;line-height:1.3}
+.ocard .mt{display:flex;flex-direction:column;align-items:flex-start;gap:4px;font-size:12px}
+.ocard .osrc{position:absolute;top:14px;left:14px;font-style:normal;font-size:10.5px;font-weight:700;background:var(--brand);color:#fff;border-radius:99px;padding:2px 8px}
+@media (max-width:900px){
+  .own{display:block}
+  .oside{position:sticky;top:0;z-index:5;height:auto;padding:10px 12px 8px;gap:8px;border-bottom:2px solid var(--gold)}
+  .obrand{padding:0}.obrand .mk{width:28px;height:28px}.obrand b{font-size:17px}
+  .oout-m{display:grid;margin-left:auto;place-items:center;width:40px;height:40px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:none;color:#fff}
+  .onav{flex-direction:row;overflow-x:auto;scrollbar-width:none;gap:4px;margin:0 -12px;padding:0 12px}
+  .onav button{width:auto;flex:none;padding:8px 12px;font-size:13.5px;min-height:40px}
+  .onav button .i{width:17px;height:17px}
+  .onav button[aria-current="page"]{box-shadow:inset 0 -2px 0 var(--gold2)}
+  .ofoot{display:none}
+  .own .own-body{padding:18px 14px 40px;gap:14px}
+  .ohd h2{font-size:22px}.ohd p{font-size:13px}
+  .accs{grid-template-columns:1fr}
+  .ogrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .own .otiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .own .stat b{font-size:22px}
+}
+
 details.more summary{color:var(--brand)}
 .wz-row.on{background:color-mix(in srgb,var(--gold) 9%,transparent)}
 .trial{background:#F3EAD8;border-color:#E0CDA6}
@@ -536,7 +603,7 @@ const I={
   laporan:'<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',
   pengaturan:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
   scan:'<path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M11 9v6M14 9v6M17 9v6"/>',
-  plus:'<path d="M12 5v14M5 12h14"/>', check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>', users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2c2.1.7 3.5 2.6 3.5 5.8"/>', peta:'<path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>', uang:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>', masuk:'<path d="M3 13l2.5-8h13L21 13v6H3z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/>', keluar:'<path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/>', cari:'<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>', check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
   print:'<path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7z"/>', camera:'<path d="M4 8h4l2-3h4l2 3h4v11H4z"/><circle cx="12" cy="13" r="3.5"/>', tap:'<path d="M9 11V5a2 2 0 0 1 4 0v5l4 1a2 2 0 0 1 1.5 2.3L17.5 20H10l-4-5 1.2-1.2a1.5 1.5 0 0 1 1.8-.2z"/>', trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'
 };
 const MARK=(cls)=>'<svg class="'+cls+'" viewBox="30 24 136 178" aria-hidden="true"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" class="mk-a" mask="url(#jkm)"/><path d="M74 132 V84 L96 72 V132 Z" class="mk-a" mask="url(#jkm)"/><path d="M104 132 V64 L120 55 V132 Z" class="mk-b" mask="url(#jkm)"/><path d="M40 176 L152 114.4 V126.4 L40 188 Z" class="mk-b"/></svg>';
@@ -570,7 +637,7 @@ const Store={
 /* ============ data ============ */
 let S=null,SESS=null,ACC=null;
 const SB={url:'https://flwajaadllviewenerya.supabase.co',key:'sb_publishable_1zd0fWLLIKEIABemgeyj6g_3rZssbCq'};
-const APP_VER='jaga-kasir-v25';
+const APP_VER='jaga-kasir-v26';
 const isAcc=()=>typeof SESS==='string'&&SESS.startsWith('acc:');
 const KEY=()=>SESS==='demo'?'jk_state_demo':isAcc()?'jk_state_'+SESS.replace(':','_'):'jk_state';
 const randKey=()=>{const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('')};
@@ -1423,11 +1490,11 @@ let PAYS=[];
 /* ---- portal pemilik: pemasukan ---- */
 const OPM={data:null,f:'pending'};
 async function ownerPayLoad(){ownerPayRender();try{OPM.data=await rpc('jk_owner_payments',{p_key:OWN.key})}catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');return showOwnerLogin()}return toast(e.message)}ownerPayRender(true)}
-function ownerPayRender(partial){const d=OPM.data,head='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Pemasukan Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header><div class="own-body">';
-  let body=ownerTabs()+'<div class="row"><h2 class="grow">Pemasukan</h2><button class="btn" data-act="opm-reload">Muat ulang</button>'+(d&&d.items.some(x=>x.status==='paid')?'<button class="btn" data-act="opm-csv">Unduh CSV</button>':'')+'</div>';
+function ownerPayRender(partial){const d=OPM.data,head=ownerHead()+'<div class="own-body">';
+  let body=ownerTabs()+'<div class="ohd"><div><h2>Pemasukan</h2><p class="muted">Tagihan paket Jaga Kasir dan pembayaran yang sudah lunas.</p></div><div class="row"><button class="btn" data-act="opm-reload">Muat ulang</button>'+(d&&d.items.some(x=>x.status==='paid')?'<button class="btn" data-act="opm-csv">Unduh CSV</button>':'')+'</div></div>';
   if(!d){body+='<div class="card empty">Memuat pemasukan…</div>'}
   else{const L=d.items,cnt=k=>L.filter(x=>x.status===k).length,l=L.filter(x=>OPM.f==='semua'||x.status===OPM.f);
-    body+='<div class="tiles"><div class="stat"><small>Total pemasukan</small><b class="num">'+rp(d.total)+'</b></div><div class="stat"><small>Bulan ini</small><b class="num">'+rp(d.month)+'</b><small class="num">'+d.month_n+' pembayaran</small></div>'+
+    body+='<div class="tiles otiles"><div class="stat"><small>Total pemasukan</small><b class="num">'+rp(d.total)+'</b></div><div class="stat"><small>Bulan ini</small><b class="num">'+rp(d.month)+'</b><small class="num">'+d.month_n+' pembayaran</small></div>'+
       '<div class="stat"><small>Warung berbayar</small><b class="num">'+d.paid_shops+'</b><small>Basic '+d.basic+' · Plus '+d.plus+'</small></div><div class="stat"><small>Menunggu pembayaran</small><b class="num" style="color:'+(d.pending_n?'var(--warn)':'inherit')+'">'+d.pending_n+'</b><small class="num">'+rp(d.pending_amount)+'</small></div></div>'+
       '<div class="seg">'+[['pending','Menunggu'],['paid','Lunas'],['cancelled','Dibatalkan'],['expired','Kedaluwarsa'],['semua','Semua']].map(f=>'<button data-act="opm-f" data-f="'+f[0]+'" aria-pressed="'+(OPM.f===f[0])+'">'+f[1]+(f[0]!=='semua'&&cnt(f[0])?' · '+cnt(f[0]):'')+'</button>').join('')+'</div>'+
       (l.length?l.map(x=>'<div class="card acc"><div class="row"><b class="grow">'+esc(x.shop_name)+'</b><span class="pill '+PAY_ST[x.status][1]+'">'+PAY_ST[x.status][0]+'</span></div>'+
@@ -1606,9 +1673,9 @@ let OMAP=null;
 async function ownerMapRender(){
   const L0=OWN.list||[],f=OWN.mf||'semua',on=L0.filter(a=>a.status==='active'||a.status==='pending'),
     l=on.filter(a=>f==='semua'||planOf(a)===f||(f==='bayar'&&(a.plan==='basic'||a.plan==='plus'))),pin=l.filter(a=>a.lat!=null&&a.lng!=null),nopin=l.filter(a=>a.lat==null||a.lng==null);
-  $('#login-root').innerHTML='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Peta warung Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header>'+
-    '<div class="own-body">'+ownerTabs()+'<div class="row"><h2 class="grow">Peta warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button></div>'+
-    '<div class="tiles"><div class="stat"><small>Warung di peta</small><b class="num">'+pin.length+'</b></div><div class="stat"><small>Belum bertitik</small><b class="num" style="color:'+(nopin.length?'var(--warn)':'inherit')+'">'+nopin.length+'</b></div><div class="stat"><small>Berbayar</small><b class="num">'+on.filter(a=>a.plan==='basic'||a.plan==='plus').length+'</b></div></div>'+
+  $('#login-root').innerHTML=ownerHead()+
+    '<div class="own-body">'+ownerTabs()+'<div class="ohd"><div><h2>Peta warung</h2><p class="muted">Sebaran warung yang memakai Jaga Kasir.</p></div><div class="row"><button class="btn" data-act="owner-refresh">Muat ulang</button></div></div>'+
+    '<div class="tiles otiles"><div class="stat"><small>Warung di peta</small><b class="num">'+pin.length+'</b></div><div class="stat"><small>Belum bertitik</small><b class="num" style="color:'+(nopin.length?'var(--warn)':'inherit')+'">'+nopin.length+'</b></div><div class="stat"><small>Berbayar</small><b class="num">'+on.filter(a=>a.plan==='basic'||a.plan==='plus').length+'</b></div></div>'+
     '<div class="seg">'+[['semua','Semua'],['bayar','Berbayar'],['coba','Masa coba'],['habis','Coba habis']].map(x=>'<button data-act="omap-f" data-f="'+x[0]+'" aria-pressed="'+(f===x[0])+'">'+x[1]+'</button>').join('')+'</div>'+
     '<div class="omap-wrap"><div id="omap" role="region" aria-label="Peta lokasi warung"></div><div class="omap-leg">'+Object.values(PLAN_C).map(c=>'<span><i style="background:'+c[1]+'"></i>'+c[0]+'</span>').join('')+'</div></div>'+
     (nopin.length?'<div class="card"><h3 style="margin-bottom:6px">Belum menandai lokasi · '+nopin.length+'</h3><p class="muted small" style="margin:0 0 8px">Warung menandai titiknya dari menu Atur → Lokasi warung. Kirim pengingat lewat WhatsApp.</p><div class="list">'+
@@ -1763,7 +1830,9 @@ const A={
   'to-owner':async()=>{OWN.key=await Store.get('jk_owner_key');if(OWN.key)ownerOpen();else showOwnerLogin()},
   'owner-tab':e=>{OWN.tab=e.dataset.t;if(OWN.tab==='akun')return ownerRender();if(OWN.tab==='peta')return OWN.list?ownerMapRender():ownerOpen();if(OWN.tab==='pemasukan')return ownerPayLoad();if(OWN.tab==='usulan')OWN.sug=null;ownerCatRender();ownerCatLoad()},
   'oc-new':()=>ownerCatForm(null),
-  'oc-edit':e=>ownerCatForm((OWN.cat.items||[]).find(x=>x.id===e.dataset.id)),
+  'oc-edit':async e=>{const x=(OWN.cat.items||[]).find(y=>y.id===e.dataset.id);if(!x)return;if(x.has_photo&&!WZPH[x.id])await wzPhotos([x.id]);ownerCatForm(Object.assign({},x,{photo:WZPH[x.id]||null}))},
+  'oc-cat':e=>{OWN.cc=e.dataset.c;OWN.clim=60;ownerCatRender(true)},
+  'oc-more':()=>{OWN.clim=(OWN.clim||60)+60;ownerCatRender(true)},
   'os-take':e=>{const x=OWN.sug[+e.dataset.i];ownerCatForm(Object.assign({},x,{id:''}),true)},
   'os-skip':async e=>{const x=OWN.sug[+e.dataset.i];try{await rpc('jk_owner_cat_skip',{p_key:OWN.key,p_k:x.key});OWN.sug.splice(+e.dataset.i,1);ownerCatRender(true);toast('Usulan diabaikan.')}catch(err){toast(err.message)}},
   'oc-photo-del':()=>{OC.photo=null;OC.changed=true;$('#oc-prev').textContent='Foto';const b=$('[data-act=oc-photo-del]');if(b)b.remove()},
@@ -1786,7 +1855,7 @@ const A={
     if(item.name.length<2)return toast('Isi nama barang.');if(OC.changed||!OC.id)item.photo=OC.photo||'';
     const b=$('[data-act=oc-save]');b.disabled=true;
     try{const r=await rpc('jk_owner_cat_save',{p_key:OWN.key,p_item:item},45000);if(!r.ok){b.disabled=false;return toast(r.error)}
-      closeSheet();if(OC.skey){OWN.sug=(OWN.sug||[]).filter(x=>x.key!==OC.skey)}toast(item.name+' tersimpan di katalog.');ownerCatLoad()}catch(e){b.disabled=false;toast(e.message)}},
+      closeSheet();if(OC.skey){OWN.sug=(OWN.sug||[]).filter(x=>x.key!==OC.skey)}toast(item.name+' tersimpan di katalog.');if(item.id)delete WZPH[item.id];ownerCatLoad()}catch(e){b.disabled=false;toast(e.message)}},
   'oc-del':()=>{const id=OC.id;confirmSheet('Hapus dari katalog?','Barang hilang dari katalog. Barang yang sudah ada di daftar warung tidak ikut terhapus.','Hapus',async()=>{try{await rpc('jk_owner_cat_del',{p_key:OWN.key,p_id:id});toast('Dihapus dari katalog.');ownerCatLoad()}catch(e){toast(e.message)}},true)},
   'owner-dev':async e=>{const a=OWN.list.find(x=>x.id===e.dataset.id);if(!a)return;let r;try{r=await rpc('jk_owner_devices',{p_key:OWN.key,p_id:a.id})}catch(err){return toast(err.message)}
     const opts=[1,2,3,4,5,6,8,10].map(n=>'<option value="'+n+'"'+(r.max_devices===n?' selected':'')+'>'+n+' perangkat</option>').join('')+'<option value=""'+(r.max_devices==null?' selected':'')+'>Tanpa batas</option>';
@@ -1934,7 +2003,7 @@ document.addEventListener('input',ev=>{
   if(t.id==='sp-q'){SP.q=t.value;SP.c='';spRefresh()}
   if(t.id==='sup-q'){supQ=t.value;const pos=t.selectionStart;supSheet();const n=$('#sup-q');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}}
   if(t.id==='cp-q'){clearTimeout(cpT);cpT=setTimeout(()=>cpLoad(t.value.trim()),300)}
-  if(t.id==='oc-q'){clearTimeout(ocT);ocT=setTimeout(()=>{OWN.cq=t.value.trim();ownerCatLoad()},350)}
+  if(t.id==='oc-q'){clearTimeout(ocT);ocT=setTimeout(()=>{OWN.cq=t.value.trim();OWN.clim=60;ownerCatRender(true)},200)}
   if(t.matches('[data-rp]')){const n=num(t.value);t.value=n?fmt(n):''}
   if(t.id==='q'){q=t.value;refreshPick()}
   else if(t.id==='bq'){bq=t.value;refreshBarang()}
@@ -2100,7 +2169,7 @@ function devLabel(){const u=navigator.userAgent||'';const os=/iPad/.test(u)?'iPa
   const br=/SamsungBrowser/.test(u)?'Samsung Internet':/EdgA?\//.test(u)?'Edge':/OPR\//.test(u)?'Opera':/CriOS|Chrome\//.test(u)?'Chrome':/FxiOS|Firefox/.test(u)?'Firefox':/Safari/.test(u)?'Safari':'Browser';
   const a=u.match(/Android [\d.]+; ([^;)]+)\)/);const md=a&&a[1].trim()!=='K'?' '+a[1].trim():'';return (os+md+' · '+br).slice(0,60)}
 /* ---- portal pemilik JAGA ---- */
-let OWN={key:null,list:[],f:'pending',tab:'akun',cat:{items:[],total:0},sug:null,cq:''};let ocT=0;
+let OWN={key:null,list:[],f:'pending',tab:'akun',cat:{items:null,total:0},cc:'',clim:60,sug:null,cq:''};let ocT=0;
 function showOwnerLogin(){
   $('#login-root').innerHTML='<div class="login"><div class="login-card">'+
     '<div class="login-head">'+MARK('mk')+'<div class="word"><b>JAGA</b> Kasir</div><h1>Portal pemilik</h1><p>Kelola dan setujui akun warung Jaga Kasir.</p></div>'+
@@ -2125,21 +2194,29 @@ async function ownerOpen(){
   if(OWN.tab==='peta')return ownerMapRender();
   ownerRender();
 }
-function ownerTabs(){return '<div class="otabs">'+[['akun','Akun warung'],['peta','Peta'],['pemasukan','Pemasukan'],['katalog','Katalog'],['usulan','Usulan warung'+(OWN.sug&&OWN.sug.length?' · '+OWN.sug.length:'')]].map(t=>'<button data-act="owner-tab" data-t="'+t[0]+'"'+(OWN.tab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>').join('')+'</div>'}
-async function ownerCatLoad(){try{if(OWN.tab==='usulan'){OWN.sug=await rpc('jk_owner_cat_suggest',{p_key:OWN.key})||[]}else{OWN.cat=await rpc('jk_owner_cat_list',{p_key:OWN.key,p_q:OWN.cq})||{items:[],total:0}}ownerCatRender(true)}
+function ownerNav(){const pend=(OWN.list||[]).filter(a=>a.status==='pending').length,sg=OWN.sug&&OWN.sug.length;
+  return [['akun','Akun warung','users',pend],['peta','Peta warung','peta',0],['pemasukan','Pemasukan','uang',0],['katalog','Katalog JAGA','barang',0],['usulan','Usulan warung','masuk',sg]].map(t=>'<button data-act="owner-tab" data-t="'+t[0]+'"'+(OWN.tab===t[0]?' aria-current="page"':'')+'>'+ico(t[2])+'<span>'+t[1]+'</span>'+(t[3]?'<i class="onb">'+t[3]+'</i>':'')+'</button>').join('')}
+function navFocus(){setTimeout(()=>{const a=document.querySelector('.onav [aria-current]');if(a&&innerWidth<900)try{a.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}},0)}
+function ownerHead(){navFocus();return '<div class="own"><aside class="oside"><div class="obrand">'+MARK('mk')+'<span><b>JAGA</b><small>Portal Pemilik</small></span><button class="oout-m" data-act="owner-logout" aria-label="Keluar">'+ico('keluar')+'</button></div><nav class="onav" id="onav">'+ownerNav()+'</nav><div class="ofoot"><span>Jaga Kasir · jagapatner.my.id</span><button class="oout" data-act="owner-logout">'+ico('keluar')+'Keluar</button></div></aside>'}
+function ownerTabs(){const n=$('#onav');if(n){n.innerHTML=ownerNav();navFocus()}return ''}
+async function ownerCatLoad(){try{if(OWN.tab==='usulan'){OWN.sug=await rpc('jk_owner_cat_suggest',{p_key:OWN.key})||[]}else{OWN.cat=await rpc('jk_owner_cat_list',{p_key:OWN.key,p_q:''},45000)||{items:[],total:0}}ownerCatRender(true)}
   catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');return showOwnerLogin()}toast(e.message)}}
 function ownerCatRender(partial){
-  const head='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Katalog JAGA untuk semua warung</div><button class="chip" data-act="owner-logout">Keluar</button></header><div class="own-body">'+ownerTabs();
+  const head=ownerHead()+'<div class="own-body">'+ownerTabs();
   let body='';
-  if(OWN.tab==='katalog'){const it=OWN.cat.items||[];
-    body='<div class="row"><h2 class="grow">Katalog barang</h2><button class="btn" data-act="off-open">Cari di Open Food Facts</button><button class="btn primary" data-act="oc-new">'+ico('plus')+'Tambah barang</button></div>'+
-      '<p class="muted small" style="margin:0">'+(OWN.cat.total||0)+' barang. Warung memilih dari sini saat menambah barang, jadi tidak perlu memotret ulang.</p>'+
-      '<input type="search" id="oc-q" placeholder="Cari nama, jenis, atau barcode" value="'+esc(OWN.cq)+'" autocomplete="off">'+
-      (it.length?'<div class="cgrid">'+it.map(x=>pcard({act:'oc-edit',attr:'data-id="'+x.id+'"',img:x.photo,name:x.name,tag:x.cat,price:x.price,noprice:'Tanpa harga saran',sub:esc(x.code||'tanpa barcode')+(x.source==='warung'?' · dari warung':'')})).join('')+'</div>':
-        '<div class="card empty">'+(OWN.cq?'Tidak ada yang cocok.':'Katalog masih kosong. Tambahkan barang, atau ambil dari tab Usulan warung.')+'</div>');
+  if(OWN.tab==='katalog'){const all=OWN.cat.items||[],cnt={};all.forEach(x=>{const c=x.cat||'Lainnya';cnt[c]=(cnt[c]||0)+1});
+    const ks=normN(OWN.cq).split(' ').filter(Boolean),it=all.filter(x=>(!OWN.cc||(x.cat||'Lainnya')===OWN.cc)&&ks.every(k=>(x.name+' '+x.cat+' '+(x.code||'')).toLowerCase().includes(k)));
+    const noPrice=all.filter(x=>!x.price).length,noPh=all.filter(x=>!x.has_photo).length,lim=OWN.clim||60,show=it.slice(0,lim);
+    body='<div class="ohd"><div><h2>Katalog JAGA</h2><p class="muted">Barang berfoto yang bisa dipilih semua warung saat menambah barang.</p></div><div class="row"><button class="btn" data-act="off-open">Cari di Open Food Facts</button><button class="btn primary" data-act="oc-new">'+ico('plus')+'Tambah barang</button></div></div>'+
+      '<div class="tiles otiles"><div class="stat"><small>Total barang</small><b class="num">'+fmt(OWN.cat.total||all.length)+'</b></div><div class="stat"><small>Jenis barang</small><b class="num">'+Object.keys(cnt).length+'</b></div><div class="stat"><small>Belum ada harga saran</small><b class="num" style="color:'+(noPrice?'var(--warn)':'inherit')+'">'+fmt(noPrice)+'</b></div><div class="stat"><small>Tanpa foto</small><b class="num">'+fmt(noPh)+'</b></div></div>'+
+      '<div class="card ocat"><div class="osearch">'+ico('cari')+'<input type="search" id="oc-q" placeholder="Cari nama, jenis, atau barcode" value="'+esc(OWN.cq)+'" autocomplete="off"></div>'+
+      '<div class="seg scroll">'+['',...Object.keys(cnt)].map(c=>'<button data-act="oc-cat" data-c="'+esc(c)+'" aria-pressed="'+((OWN.cc||'')===c)+'">'+(c?esc(c)+' <span class="muted">'+cnt[c]+'</span>':'Semua <span class="muted">'+all.length+'</span>')+'</button>').join('')+'</div>'+
+      (show.length?'<div class="ogrid">'+show.map(x=>'<button class="ocard" data-act="oc-edit" data-id="'+x.id+'"><span class="pic" data-wzimg="'+x.id+'">'+(WZPH[x.id]?'<img src="'+WZPH[x.id]+'" alt="" loading="lazy">':esc(x.name.charAt(0)))+'</span><span class="nm">'+esc(x.name)+'</span><span class="mt"><span class="muted">'+esc(x.cat||'Lainnya')+' · '+esc(x.unit||'pcs')+'</span>'+(x.price?'<b class="num">'+rp(x.price)+'</b>':'<span class="pill warn">Harga belum diisi</span>')+'</span>'+(x.source==='warung'?'<i class="osrc">dari warung</i>':'')+'</button>').join('')+'</div>'+
+        (it.length>lim?'<button class="btn block" data-act="oc-more">Tampilkan lagi ('+(it.length-lim)+')</button>':''):
+        '<div class="empty">'+(OWN.cq||OWN.cc?'Tidak ada yang cocok.':OWN.cat.items?'Katalog masih kosong. Tambahkan barang, atau ambil dari tab Usulan warung.':'Memuat katalog…')+'</div>')+'</div>';
+    setTimeout(()=>wzPhotos(show.filter(x=>x.has_photo).map(x=>x.id)),0);
   }else{const sg=OWN.sug;
-    body='<div class="row"><h2 class="grow">Usulan dari warung</h2><button class="btn" data-act="owner-tab" data-t="usulan">Muat ulang</button></div>'+
-      '<p class="muted small" style="margin:0">Barang buatan warung yang belum ada di katalog. Periksa, lalu masukkan ke katalog supaya warung lain bisa memakainya.</p>'+
+    body='<div class="ohd"><div><h2>Usulan dari warung</h2><p class="muted">Barang buatan warung yang belum ada di katalog. Periksa, lalu masukkan supaya warung lain bisa memakainya.</p></div><div class="row"><button class="btn" data-act="owner-tab" data-t="usulan">Muat ulang</button></div></div>'+
       (sg==null?'<div class="card empty">Memuat usulan…</div>':sg.length?'<div class="card"><div class="list">'+sg.map((x,i)=>'<div class="crow"><span class="th">'+(x.photo?'<img src="'+esc(x.photo)+'" alt="">':esc(x.name.charAt(0).toUpperCase()))+'</span><span class="grow"><b>'+esc(x.name)+'</b><span class="muted small">'+esc([x.cat,x.code].filter(Boolean).join(' · ')||'Tanpa barcode')+(x.photo?'':' · tanpa foto')+'</span>'+
         '<span class="small">Dipakai di '+x.shops+' warung'+(x.price?' · harga tengah <b class="num">'+rp(x.price)+'</b>':'')+'</span><span class="muted small">'+esc(x.shop_list||'')+'</span></span>'+
         '<span class="stack" style="gap:6px"><button class="btn primary sm" data-act="os-take" data-i="'+i+'">Masukkan</button><button class="btn ghost sm" data-act="os-skip" data-i="'+i+'">Abaikan</button></span></div>').join('')+'</div></div>':
@@ -2167,23 +2244,22 @@ function ownerRender(){
   if(OWN.tab!=='akun')return ownerCatRender();
   const L=OWN.list,cnt=k=>L.filter(a=>a.status===k).length,l=L.filter(a=>OWN.f==='semua'||a.status===OWN.f);
   const wa=a=>'https://wa.me/'+a.wa+'?text='+encodeURIComponent(a.status==='active'?'Halo '+a.owner_name+', akun Jaga Kasir untuk '+a.shop_name+' sudah aktif. Masuk di https://jagapatner.my.id/kasir/ dengan nama pengguna: '+a.username:'Halo '+a.owner_name+', ini JAGA tentang pendaftaran Jaga Kasir untuk '+a.shop_name+'.');
-  $('#login-root').innerHTML='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Akun warung Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header>'+
-    '<div class="own-body">'+ownerTabs()+'<div class="row"><h2 class="grow">Akun warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button><button class="btn" data-act="owner-otp">Verifikasi WhatsApp</button><button class="btn" data-act="owner-mypass">Ganti sandi pemilik</button></div>'+
-    '<div class="tiles"><div class="stat"><small>Menunggu persetujuan</small><b class="num" style="color:'+(cnt('pending')?'var(--warn)':'inherit')+'">'+cnt('pending')+'</b></div><div class="stat"><small>Aktif</small><b class="num">'+cnt('active')+'</b></div><div class="stat"><small>Total warung</small><b class="num">'+L.length+'</b></div></div>'+
+  $('#login-root').innerHTML=ownerHead()+
+    '<div class="own-body">'+ownerTabs()+'<div class="ohd"><div><h2>Akun warung</h2><p class="muted">Pendaftaran, paket, perangkat, dan dukungan warung Jaga Kasir.</p></div><div class="row"><button class="btn" data-act="owner-refresh">Muat ulang</button><button class="btn" data-act="owner-otp">Verifikasi WhatsApp</button><button class="btn" data-act="owner-mypass">Ganti sandi pemilik</button></div></div>'+
+    '<div class="tiles otiles"><div class="stat"><small>Menunggu persetujuan</small><b class="num" style="color:'+(cnt('pending')?'var(--warn)':'inherit')+'">'+cnt('pending')+'</b></div><div class="stat"><small>Aktif</small><b class="num">'+cnt('active')+'</b></div><div class="stat"><small>Berbayar</small><b class="num">'+L.filter(a=>a.plan==='basic'||a.plan==='plus').length+'</b></div><div class="stat"><small>Total warung</small><b class="num">'+L.length+'</b></div></div>'+
     (OWN.fun?'<div class="card"><h3 style="margin-bottom:8px">Aktivasi warung</h3><div class="funnel">'+[['Akun aktif',OWN.fun.aktif],['Masuk 7 hari',OWN.fun.masuk_7h],['Pilih dari katalog',(OWN.fun.events||{}).wizard||0],['Barang pertama',(OWN.fun.events||{}).barang_pertama||0],['Transaksi pertama',(OWN.fun.events||{}).transaksi_pertama||0],['10 transaksi',(OWN.fun.events||{}).transaksi_10||0],['Tutup toko',(OWN.fun.events||{}).tutup_toko||0],['Pakai penjaga',(OWN.fun.events||{}).penjaga||0],['Ingatkan kasbon',(OWN.fun.events||{}).kasbon_wa||0]].map(x=>'<div class="stat"><small>'+x[0]+'</small><b class="num">'+(x[1]||0)+'</b></div>').join('')+'</div></div>':'')+
     '<div class="seg">'+[['pending','Menunggu'],['active','Aktif'],['disabled','Nonaktif'],['rejected','Ditolak'],['semua','Semua']].map(f=>'<button data-act="owner-f" data-f="'+f[0]+'" aria-pressed="'+(OWN.f===f[0])+'">'+f[1]+(f[0]!=='semua'&&cnt(f[0])?' · '+cnt(f[0]):'')+'</button>').join('')+'</div>'+
-    (l.length?l.map(a=>'<div class="card acc"><div class="row"><b class="grow">'+esc(a.shop_name)+'</b><span class="pill '+ST[a.status][1]+'">'+ST[a.status][0]+'</span></div>'+
-      '<div class="small muted">'+esc(a.owner_name)+' · <span class="num">+'+esc(a.wa)+'</span> · pengguna <b>'+esc(a.username)+'</b></div>'+
-      (a.address?'<div class="small muted">'+esc(a.address)+'</div>':'')+
-      (a.app==='kasir'?'<div class="small">Paket: <b>'+(a.plan==='plus'?'Lifetime Plus':a.plan==='basic'?'Lifetime Basic':(a.trial_until&&Date.parse(a.trial_until)<Date.now()?'Masa coba habis':'Masa coba sampai '+fmtDate(Date.parse(a.trial_until||Date.now()))))+'</b></div>':'')+
-      '<div class="small">Lokasi: '+(a.lat!=null?'<a href="'+mapsUrl(a.lat,a.lng)+'" target="_blank" rel="noopener">titik tersimpan</a>':'<span class="muted">belum ditandai</span>')+'</div>'+
-      '<div class="small">Perangkat: <b class="num">'+(a.devices||0)+(a.max_devices?' dari '+a.max_devices:'')+'</b>'+(a.max_devices?'':' · tanpa batas')+'</div>'+
-      '<div class="small muted">Daftar '+fmtDate(Date.parse(a.created_at))+(a.last_login?' · terakhir masuk '+fmtDate(Date.parse(a.last_login)):'')+(a.backup_at?' · cadangan '+fmtDate(Date.parse(a.backup_at))+' '+fmtTime(Date.parse(a.backup_at)):'')+'</div>'+
-      (a.note?'<div class="small">Catatan: '+esc(a.note)+'</div>':'')+
-      '<div class="row">'+(a.status!=='active'?'<button class="btn primary" data-act="owner-set" data-id="'+a.id+'" data-s="active">'+(a.status==='pending'?'Setujui':'Aktifkan')+'</button>':'')+
-        (a.status==='pending'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="rejected">Tolak</button>':'')+
-        (a.status==='active'?'<button class="btn danger" data-act="owner-set" data-id="'+a.id+'" data-s="disabled">Nonaktifkan</button>':'')+
-        '<button class="btn" data-act="owner-plan" data-id="'+a.id+'">Paket</button><button class="btn" data-act="owner-dev" data-id="'+a.id+'">Perangkat</button><button class="btn" data-act="owner-hist" data-id="'+a.id+'">Riwayat cadangan</button><button class="btn" data-act="owner-pass" data-id="'+a.id+'">Atur ulang sandi</button><a class="btn" target="_blank" rel="noopener" href="'+wa(a)+'">WhatsApp</a></div></div>').join(''):
+    (l.length?'<div class="accs">'+l.map(a=>{const plan=a.plan==='plus'?'Lifetime Plus':a.plan==='basic'?'Lifetime Basic':(a.trial_until&&Date.parse(a.trial_until)<Date.now()?'Masa coba habis':'Masa coba s/d '+fmtDate(Date.parse(a.trial_until||Date.now())));
+      return '<div class="card acc2"><div class="acc-h"><span class="av">'+esc((a.shop_name||'?').trim().charAt(0).toUpperCase())+'</span><div class="grow"><b>'+esc(a.shop_name)+'</b><span class="muted small">'+esc(a.owner_name)+' · @'+esc(a.username)+'</span></div><span class="pill '+ST[a.status][1]+'">'+ST[a.status][0]+'</span></div>'+
+      '<dl class="acc-m"><div><dt>Paket</dt><dd>'+esc(plan)+'</dd></div><div><dt>WhatsApp</dt><dd class="num">+'+esc(a.wa)+'</dd></div><div><dt>Perangkat</dt><dd class="num">'+(a.devices||0)+(a.max_devices?' / '+a.max_devices:' · bebas')+'</dd></div>'+
+        '<div><dt>Lokasi</dt><dd>'+(a.lat!=null?'<a href="'+mapsUrl(a.lat,a.lng)+'" target="_blank" rel="noopener">Lihat peta</a>':'<span class="muted">Belum ditandai</span>')+'</dd></div>'+
+        '<div><dt>Terdaftar</dt><dd>'+fmtDate(Date.parse(a.created_at))+'</dd></div><div><dt>Terakhir masuk</dt><dd>'+(a.last_login?fmtDate(Date.parse(a.last_login)):'<span class="muted">-</span>')+'</dd></div>'+
+        '<div><dt>Cadangan</dt><dd>'+(a.backup_at?fmtDate(Date.parse(a.backup_at))+' '+fmtTime(Date.parse(a.backup_at)):'<span class="muted">Belum ada</span>')+'</dd></div></dl>'+
+      (a.address?'<div class="small muted acc-x">'+esc(a.address)+'</div>':'')+(a.note?'<div class="small acc-x">Catatan: '+esc(a.note)+'</div>':'')+
+      '<div class="acc-a">'+(a.status!=='active'?'<button class="btn primary sm" data-act="owner-set" data-id="'+a.id+'" data-s="active">'+(a.status==='pending'?'Setujui':'Aktifkan')+'</button>':'')+
+        (a.status==='pending'?'<button class="btn danger sm" data-act="owner-set" data-id="'+a.id+'" data-s="rejected">Tolak</button>':'')+
+        '<button class="btn sm" data-act="owner-plan" data-id="'+a.id+'">Paket</button><button class="btn sm" data-act="owner-dev" data-id="'+a.id+'">Perangkat</button><button class="btn sm" data-act="owner-hist" data-id="'+a.id+'">Cadangan</button><button class="btn sm" data-act="owner-pass" data-id="'+a.id+'">Atur sandi</button><a class="btn sm" target="_blank" rel="noopener" href="'+wa(a)+'">WhatsApp</a>'+
+        (a.status==='active'?'<button class="btn ghost danger sm" data-act="owner-set" data-id="'+a.id+'" data-s="disabled">Nonaktifkan</button>':'')+'</div></div>'}).join('')+'</div>':
       '<div class="card empty">'+(OWN.f==='pending'?'Tidak ada pendaftaran yang menunggu.':'Tidak ada akun di daftar ini.')+'</div>')+
     '</div></div>';
 }
