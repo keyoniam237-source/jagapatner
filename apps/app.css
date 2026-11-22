@@ -1729,3 +1729,15 @@ html.navopen,html.navopen body{overflow:hidden}
 .nline{display:flex;align-items:center;gap:8px;margin:12px 0 4px;padding:9px 12px;border-radius:12px;background:#fff7e6;border:1px solid #ffd99a;color:#7a4f00;font-size:12.5px;line-height:1.4}
 .nline>.e3d{flex:none;width:20px;height:20px}
 .nline .linkbtn{white-space:nowrap}
+
+/* pilih wilayah */
+.regpick{margin:0 16px 14px;padding:14px;border-radius:18px;background:#fff;box-shadow:0 6px 20px rgba(20,40,90,.08);display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.regpick>.e3d{width:34px;height:34px}
+.regpick b{display:block;font-size:15px}.regpick small{display:block;color:#5b6478;font-size:12.5px;line-height:1.4}
+.regbtns{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.regbtns.col{display:grid;gap:8px}
+.regbtns .chip{display:inline-flex;align-items:center;gap:5px;padding:9px 14px;border-radius:999px;border:1px solid #cfdaf5;background:#f3f6ff;font-weight:700;font-size:13.5px;color:#1f3f8f}
+.regbtns .chip svg{width:15px;height:15px}
+.regline{display:flex;align-items:center;gap:6px;margin:0 16px 12px;font-size:13px;color:rgba(255,255,255,.85)}
+.regline b{color:#fff}.regline .linkbtn{color:#cfe0ff;text-decoration:underline}
+.regline svg{width:15px;height:15px;color:#cfe0ff}

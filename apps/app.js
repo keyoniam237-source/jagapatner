@@ -1,7 +1,7 @@
 /* ============ Konfigurasi ============ */
 const CATS = ["Makanan","Minuman","Sembako"]; // tahap awal: kategori lain (Sayur & Buah, Rumah Tangga, Fashion, Handphone, Laptop, Game) disembunyikan dulu
 const CAT_ALIAS = {"Elektronik":"Handphone"};
-const visibleStore = s => s.active !== false && CATS.includes(s.category);
+const visibleStore = s => s.active !== false && CATS.includes(s.category) && regionOk(s);
 const ICONS = {"utensils": "<path d=\"M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2\"/><path d=\"M7 2v20\"/><path d=\"M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7\"/>", "cup": "<path d=\"m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8\"/><path d=\"M5 8h14\"/><path d=\"M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0\"/><path d=\"m12 8 1-6h2\"/>", "basket": "<path d=\"m15 11-1 9\"/><path d=\"m19 11-4-7\"/><path d=\"M2 11h20\"/><path d=\"m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4\"/><path d=\"M4.5 15.5h15\"/><path d=\"m5 11 4-7\"/><path d=\"m9 11 1 9\"/>", "leaf": "<path d=\"M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z\"/><path d=\"M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12\"/>", "shirt": "<path d=\"M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z\"/>", "phone": "<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\"/><path d=\"M12 18h.01\"/>", "health": "<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"/><path d=\"M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27\"/>", "sofa": "<path d=\"M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3\"/><path d=\"M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z\"/><path d=\"M4 18v2M20 18v2M12 4v9\"/>", "hammer": "<path d=\"m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9\"/><path d=\"m18 15 4-4\"/><path d=\"m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-2.26a6 6 0 0 0-4.202-1.756L9 2.96l.92.82A6.18 6.18 0 0 1 12 8.4V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5\"/>", "wrench": "<path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z\"/>", "package": "<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\"/><path d=\"M12 22V12\"/><path d=\"m3.3 7 8.7 5 8.7-5\"/><path d=\"m7.5 4.27 9 5.15\"/>", "grid": "<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1.5\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1.5\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1.5\"/><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1.5\"/>", "home": "<path d=\"M3 10.5 12 3l9 7.5\"/><path d=\"M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5\"/>", "cart": "<path d=\"M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6.2\"/><circle cx=\"9.5\" cy=\"20\" r=\"1.4\"/><circle cx=\"17\" cy=\"20\" r=\"1.4\"/>", "receipt": "<path d=\"M6 3h12v18l-3-2-3 2-3-2-3 2z\"/><path d=\"M9 8h6M9 12h6\"/>", "store": "<path d=\"M3 9.5 4.6 4h14.8L21 9.5\"/><path d=\"M3 9.5a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0\"/><path d=\"M5 12.5V20h14v-7.5\"/><path d=\"M10 20v-4h4v4\"/>", "bag": "<path d=\"M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z\"/><path d=\"M3 6h18\"/><path d=\"M16 10a4 4 0 0 1-8 0\"/>", "dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1.5\"/><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1.5\"/><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1.5\"/><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1.5\"/>", "chart": "<path d=\"m22 7-8.5 8.5-5-5L2 17\"/><path d=\"M16 7h6v6\"/>", "settings": "<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>", "truck": "<path d=\"M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2\"/><path d=\"M15 18H9\"/><path d=\"M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/>", "pin": "<path d=\"M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>", "card": "<rect width=\"20\" height=\"14\" x=\"2\" y=\"5\" rx=\"2\"/><path d=\"M2 10h20\"/><path d=\"M6 15h4\"/>", "search": "<circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/>", "loader": "<path d=\"M21 12a9 9 0 1 1-6.22-8.56\"/>", "chat": "<path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\"/>", "eye": "<path d=\"M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>", "clock": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/>", "cash": "<rect width=\"20\" height=\"12\" x=\"2\" y=\"6\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M6 12h.01M18 12h.01\"/>", "checkc": "<path d=\"M21.8 10A10 10 0 1 1 17 3.34\"/><path d=\"m9 11 3 3L22 4\"/>", "badge": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\"/><path d=\"m9 12 2 2 4-4\"/>", "percent": "<path d=\"M19 5 5 19\"/><circle cx=\"6.5\" cy=\"6.5\" r=\"2.5\"/><circle cx=\"17.5\" cy=\"17.5\" r=\"2.5\"/>", "plus": "<path d=\"M5 12h14M12 5v14\"/>", "megaphone": "<path d=\"m3 11 18-5v12L3 14v-3z\"/><path d=\"M11.6 16.8a3 3 0 1 1-5.8-1.6\"/>", "coffee": "<path d=\"M10 2v2M14 2v2M6 2v2\"/><path d=\"M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1\"/>", "inbox": "<path d=\"M22 12h-6l-2 3h-4l-2-3H2\"/><path d=\"M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z\"/>", "note": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 13H8M16 17H8\"/>", "sparkles": "<path d=\"M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z\"/>", "camera": "<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>", "image": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21\"/>", "qr": "<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/><path d=\"M21 16h-3a2 2 0 0 0-2 2v3M21 21v.01M12 7v3a2 2 0 0 1-2 2H7M3 12h.01M12 3h.01M12 16v.01M16 12h1M21 12v.01M12 21v-1\"/>"};
 ICONS.laptop = '<path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/>';
 ICONS.gamepad = '<path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258A4 4 0 0 0 17.32 5z"/>';
@@ -1053,6 +1053,8 @@ function storeForm(s){
     '<label class="f">Nama toko *</label><input class="in" name="name" required value="'+esc(s.name||"")+'">'+
     '<div class="cols2"><div><label class="f">Jenis toko *</label><select class="in" name="category">'+CATS.map(c=>'<option '+(s.category===c?"selected":"")+'>'+c+'</option>').join("")+'</select></div>'+
     '<div><label class="f">Kota / daerah *</label><input class="in" name="area" required placeholder="Contoh: Denpasar" value="'+esc(s.area||"")+'"></div></div>'+
+    '<label class="f">Wilayah layanan *</label><select class="in" name="region" required>'+(storeRegion(s) ? '' : '<option value="">Pilih wilayah…</option>')+AREAS.map(a => '<option value="'+esc(a.id)+'"'+(storeRegion(s) === a.id ? ' selected' : '')+'>'+esc(a.name)+(a.prov ? ', '+esc(a.prov) : '')+'</option>').join("")+'</select>'+
+    '<div class="hint">Toko hanya tampil untuk pembeli di wilayah ini. Bila lokasi toko diatur di peta, wilayah mengikuti lokasi.</div>'+
     '<label class="f">Deskripsi singkat</label><textarea class="in" name="desc" placeholder="Apa yang Anda jual?">'+esc(s.desc||"")+'</textarea>'+
     '<label class="f">Alamat toko *</label><input class="in" name="address" required value="'+esc(s.address||"")+'">'+
     '<div class="cols2"><div><label class="f">No. WhatsApp toko *</label><input class="in" name="wa" required inputmode="tel" placeholder="08xxxxxxxxxx" value="'+esc(s.wa||"")+'"></div>'+
@@ -1299,6 +1301,8 @@ async function saveStore(form){
   };
   const slat = parseFloat(fd.get("slat")), slng = parseFloat(fd.get("slng"));
   if(isFinite(slat) && isFinite(slng)){ data.lat = slat; data.lng = slng; }
+  data.region = areaOf(data) || String(fd.get("region") || "") || null;
+  if(!data.region && AREAS.length > 1) return toast("Pilih wilayah layanan toko");
   if(!payMethodsOf(data).length) return toast("Isi minimal satu metode pembayaran (rekening, e-wallet, QRIS, atau COD).");
   if(!waOk(data.wa)) return toast(WA_BAD);
   if(data.name.length < 3) return toast("Nama toko minimal 3 huruf.");
@@ -1540,7 +1544,7 @@ const JMARK = () => (document.querySelector(".jmark") || {outerHTML:""}).outerHT
 
 /* profil & favorit (tersimpan di perangkat) */
 function getProf(){ try{ return JSON.parse(localStorage.getItem("st_buyer") || "{}") || {}; }catch(e){ return {}; } }
-function setProf(p){ try{ localStorage.setItem("st_buyer", JSON.stringify(p)); }catch(e){} }
+function setProf(p){ try{ localStorage.setItem("st_buyer", JSON.stringify(p)); }catch(e){} try{ const r = areaOf(p); if(r) localStorage.setItem("jt_region", r); }catch(e){} }
 let FAV = new Set(); try{ FAV = new Set(JSON.parse(localStorage.getItem("jt_fav") || "[]")); }catch(e){}
 function saveFav(){ try{ localStorage.setItem("jt_fav", JSON.stringify([...FAV])); }catch(e){} }
 S.hist = []; S.pq = 1;
@@ -1629,6 +1633,7 @@ function appHomeBody(){
   if(!filtering){
     const ar = S.rides.find(r => RIDE_ACTIVE.includes(r.status));
     if(locOk(getProf()) && !inArea(getProf())) h += '<div style="margin:0 16px 12px">'+areaBanner()+'</div>';
+    h += regionPicker();
     const oc = myActiveOrders();
     h += '<div class="hub'+ra(2)+'"><div class="hgrid">'+
       '<button class="ht press" data-act="scroll-prod"><span class="ib t1">'+E("cart")+'</span><b>Belanja</b></button>'+
@@ -3418,6 +3423,60 @@ const AREA_API = {
 })();
 async function loadComm(){ try{ if(SB){ const { data } = await SB.rpc("jt_comm_cfg", {}); if(data){ applyComm(data); scheduleRender(); } } else applyComm(wCfgLocal()); }catch(e){} }
 async function loadAreas(){ try{ const l = await AREA_API.list(); if(l && l.length){ setAreas(l); scheduleRender(); } }catch(e){} }
+/* ---------- wilayah: pembeli hanya melihat toko di wilayahnya ---------- */
+const areaOf = c => { if(!locOk(c)) return null; const a = AREAS.find(a => c.lat >= a.s && c.lat <= a.n && c.lng >= a.w && c.lng <= a.e); return a ? a.id : null; };
+const storeRegion = st => (st.region && AREAS.some(a => a.id === st.region)) ? st.region : areaOf(st);
+function buyerRegion(){
+  if(AREAS.length < 2) return AREAS[0] ? AREAS[0].id : null;
+  const r = lsGet("jt_region"); if(r && AREAS.some(a => a.id === r)) return r;
+  return areaOf(getProf());
+}
+function regionOk(st){
+  if(AREAS.length < 2) return true;
+  const br = buyerRegion(); if(!br) return false;
+  return storeRegion(st) === br;
+}
+const regionName = id => { const a = AREAS.find(x => x.id === id); return a ? (a.short || a.name) : "-"; };
+/* deteksi lokasi otomatis saat aplikasi dibuka: wilayah dipilih sendiri tanpa bertanya */
+const GEO = {state:"idle", at:0, out:false};
+async function autoLocate(force){
+  if(GEO.state === "busy" || S.role !== "buyer") return;
+  if(!force && GEO.at && Date.now() - GEO.at < 10 * 60e3) return;
+  if(!navigator.geolocation){ GEO.state = "fail"; return; }
+  GEO.state = "busy"; GEO.at = Date.now(); if(!buyerRegion()) scheduleRender();
+  try{
+    const c = await getPos();
+    try{ localStorage.setItem("jt_here", JSON.stringify({lat:c.lat, lng:c.lng, at:Date.now()})); }catch(_){}
+    const r = areaOf(c), old = lsGet("jt_region");
+    GEO.out = !r; GEO.state = "done";
+    if(r && r !== old){
+      lsSet("jt_region", r);
+      if(S.cart && S.cart.storeId){ const cs = storeById(S.cart.storeId); if(cs && storeRegion(cs) !== r){ S.cart = {storeId:null, items:{}}; saveCart(); } }
+      if(old) toast("Lokasi terdeteksi di " + regionName(r) + ". Menampilkan toko di sekitar Anda.");
+    }
+  }catch(_){ GEO.state = "fail"; }
+  scheduleRender();
+}
+document.addEventListener("visibilitychange", () => { if(!document.hidden) autoLocate(); });
+function regionPicker(){
+  if(AREAS.length < 2) return "";
+  const br = buyerRegion();
+  if(!br && (GEO.state === "busy" || GEO.state === "idle")) return '<div class="regpick'+ra(1)+'">'+E("pin")+'<div class="grow"><b>Mendeteksi lokasi Anda…</b><small>Izinkan akses lokasi agar kami tampilkan toko-toko di sekitar Anda.</small></div></div>';
+  if(br) return '<div class="regline">'+I("pin")+'<span>Wilayah: <b>'+esc(regionName(br))+'</b></span><button class="linkbtn small" data-act="region-pick">Ganti</button></div>';
+  return '<div class="regpick'+ra(1)+'">'+E("pin")+'<div class="grow"><b>'+(GEO.out ? 'Lokasi Anda di luar wilayah layanan' : 'Pilih wilayah Anda')+'</b><small>'+(GEO.out ? 'JAGA saat ini melayani '+esc(AREAS.map(a => a.short || a.name).join(" dan "))+'. Pilih wilayah tujuan pesanan:' : 'Lokasi tidak terbaca. Izinkan akses lokasi, atau pilih wilayah secara manual:')+'</small></div>'+
+    '<div class="regbtns">'+AREAS.map(a => '<button class="chip press" data-act="region-set" data-v="'+esc(a.id)+'">'+esc(a.short || a.name)+'</button>').join("")+
+    '<button class="chip press" data-act="region-gps">'+I("pin")+' Pakai lokasi saya</button></div></div>';
+}
+function regionModal(){
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Pilih wilayah</h2><p class="small muted" style="margin-top:0">Toko yang tampil hanya dari wilayah yang dipilih.</p><div class="regbtns col">'+
+    AREAS.map(a => '<button class="btn '+(a.id === buyerRegion() ? '' : 'ghost ')+'block" data-act="region-set" data-v="'+esc(a.id)+'">'+esc(a.name)+(a.prov ? ', ' + esc(a.prov) : '')+'</button>').join("")+
+    '<button class="btn ghost block" data-act="region-gps">'+I("pin")+' Pakai lokasi saya</button></div></div></div>';
+}
+function setRegion(id){
+  lsSet("jt_region", id);
+  if(S.cart && S.cart.storeId){ const cs = storeById(S.cart.storeId); if(cs && storeRegion(cs) !== id){ S.cart = {storeId:null, items:{}}; saveCart(); } }
+  closeModal(); render(); toast("Menampilkan toko di " + regionName(id));
+}
 function areaBanner(){
   return '<div class="areabox">'+E("pin")+'<div class="grow"><b>Di luar wilayah layanan</b><small>'+esc(AREA_MSG)+'</small></div></div>';
 }
@@ -4665,6 +4724,13 @@ document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
   const a = el.dataset.act, id = el.dataset.id, v = el.dataset.v;
   if(a === "push-on"){ pushEnable(v); return; }
+  if(a === "region-set"){ setRegion(v); return; }
+  if(a === "region-pick"){ regionModal(); return; }
+  if(a === "region-gps"){
+    try{ const c = await getPos(); const r = areaOf(c); if(!r){ closeModal(); return toast("Lokasi Anda di luar wilayah layanan JAGA. Pilih wilayah secara manual."); } setProf(Object.assign(getProf(), {lat:c.lat, lng:c.lng})); setRegion(r); }
+    catch(_){ toast("Lokasi tidak bisa dibaca. Pilih wilayah secara manual."); }
+    return;
+  }
   if(a === "nask-on"){ closeModal(); pushEnable("buyer"); return; }
   if(a === "nask-help"){ lsSet("jt_notif_ask", "0"); buyerNotifAsk("order"); return; }
   if(a === "report"){ openReport(el.dataset.k, id); return; }
@@ -5219,7 +5285,7 @@ function startListening(){
   });
   if(!SB) store.listen("wallettx", rows => { if(rows){ S.walletTx = rows; if(S.sellerStoreId) loadWallet(S.sellerStoreId, S.role !== "seller"); } });
   if(!SB) store.listen("settings", rows => { if(rows){ S.walletCfg = rows.find(r => r.id === "wallet") || null; const ar = rows.find(r => r.id === "areas"); if(ar && ar.list){ S.areasLocal = ar.list; setAreas(ar.list); } } });
-  if(SB) loadAreas();
+  if(SB) loadAreas().then(() => autoLocate()); else autoLocate();
   loadComm();
   if(!SB) store.listen("chatmsgs", rows => { if(rows) S.chatMsgs = rows; });
   if(!SB) store.listen("drivers", rows => { if(rows) S.drivers = rows; if(S.role === "driver") drvRefresh(); });
