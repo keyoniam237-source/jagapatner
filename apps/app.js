@@ -230,6 +230,7 @@ function storeById(id){ return S.stores.find(s => s.id === id); }
 function myStores(){ return S.stores.filter(s => SB ? (S.myStoreIds ? S.myStoreIds.has(s.id) : false) : s.ownerId === ME).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)); }
 function avatarHtml(s){ return '<div class="avatar" style="color:'+esc(s.color||"#0f7a5a")+'">'+(s.logo?'<img alt="" src="'+esc(s.logo)+'">':esc(initials(s.name)))+'</div>'; }
 function payMethodsOf(s){
+  if(s.managed) return [{k:"cod", l:"Bayar ke driver saat pesanan sampai"}];
   const p = s.pay || {}; const out = [];
   if(p.bank && p.bank.no) out.push({k:"bank", l:"Transfer "+(p.bank.name||"Bank")});
   (p.ewallet||[]).forEach((w,i) => { if(w.no) out.push({k:"ew"+i, l:w.type}); });
@@ -1696,7 +1697,7 @@ function appStore(){
     '<div class="who'+ra(0)+'">'+avatarHtml(s)+'<div><h2>'+esc(s.name)+'</h2><small>'+(s.open===false?'Tutup sementara':'● Buka')+' · '+esc(s.category)+(s.hours?' · '+esc(s.hours):'')+' '+storeStars(s.id)+'</small></div></div>'+
     '<div class="tags'+ra(1)+'"><span>Ongkir Rp2rb/500 m</span><span>Rp0 admin</span>'+payMethodsOf(s).map(m=>'<span>'+esc(m.l)+'</span>').join("")+'</div></section>';
   h += '<div class="sec-pad" style="margin-top:14px">'+(s.desc?'<div class="pcard'+ra(2)+'"><div class="small" style="color:#45526b">'+esc(s.desc)+'</div><div class="small muted" style="margin-top:6px">'+esc(s.address||"")+(s.area?', '+esc(s.area):'')+'</div></div>':'')+
-    '<div class="actions" style="margin:0 0 4px">'+'<button class="btn ghost press grow" data-act="chat-seller" data-id="'+esc(s.id)+'">'+I("chat")+' Chat penjual'+askBadgeStore(s.id)+'</button>'+'<button class="btn ghost press" data-act="store-link" data-id="'+esc(s.id)+'">'+I("megaphone")+' Bagikan toko</button></div></div>';
+    '<div class="actions" style="margin:0 0 4px">'+(s.managed ? '' : '<button class="btn ghost press grow" data-act="chat-seller" data-id="'+esc(s.id)+'">'+I("chat")+' Chat penjual'+askBadgeStore(s.id)+'</button>')+'<button class="btn ghost press" data-act="store-link" data-id="'+esc(s.id)+'">'+I("megaphone")+' Bagikan toko</button></div></div>';
   if(!S.products[s.id]) return h + skeletonGrid(4);
   if(!prods.length) return h + aEmpty("package", "Belum ada produk", "Toko ini belum menambahkan produk.");
   return h + '<div class="ash"><h2>Semua produk</h2><span class="small muted">'+prods.length+' produk</span></div><div class="agrid">'+prods.map((p,i)=>appProdCard({p, s}, i)).join("")+'</div>';
@@ -2479,9 +2480,14 @@ function drvJob(o, offer){
   if(offer){
     h += '<div class="actions"><button class="btn press grow" data-act="drv-accept" data-id="'+esc(o.id)+'">Ambil pesanan</button><button class="btn ghost press" data-act="drv-decline" data-id="'+esc(o.id)+'">Lewati</button></div>';
   } else if(o.status === "driver_ke_toko"){
-    if(cod) h += '<div class="hint">COD: atur pembayaran barang '+rp(o.total)+' dengan toko (talangi dulu atau setor setelah diantar).</div>';
+    if(cod && !o.managed) h += '<div class="hint">COD: atur pembayaran barang '+rp(o.total)+' dengan toko (talangi dulu atau setor setelah diantar).</div>';
     h += '<div class="actions">'+chatBtn(o, "driver", "Chat toko & pembeli", "ghost")+'<button class="btn ghost sm" data-act="report" data-k="order" data-id="'+esc(o.id)+'">Lapor masalah</button></div>';
-    if(o.pickCode && !o.handedAt){
+    if(o.managed){
+      const its = (o.items || []).map(it => '<li><span>'+esc(it.qty+"× "+it.name)+'</span><b>'+rp((it.price||0)*(it.qty||1))+'</b></li>').join("");
+      h += '<div class="mbuy"><div class="mbuy-h">'+I("cart")+'<b>Beli pesanan ini di toko</b></div><ul>'+its+'</ul><div class="mbuy-t"><span>Bayar ke toko</span><b>'+rp(o.subtotal || o.total || 0)+'</b></div>'+
+        '<small>Toko kelolaan JAGA: bayar pakai QRIS toko atau uangmu sendiri. Pembeli mengganti <b>'+rp(o.total || 0)+' + ongkir</b> saat pesanan sampai.</small></div>';
+      h += '<div class="actions"><button class="btn press grow" data-act="drv-mpick" data-id="'+esc(o.id)+'">'+I("camera")+' Sudah beli & ambil</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
+    } else if(o.pickCode && !o.handedAt){
       h += '<div class="pickcode"><small>Kode ambil pesanan</small><b>'+esc(o.pickCode.split("").join(" "))+'</b><span>Tunjukkan kode ini ke toko. Toko memasukkan kode untuk mencocokkan, lalu pesanan diserahkan kepadamu.</span></div>';
       h += '<div class="actions"><button class="btn grow" disabled>'+I("clock")+' Menunggu toko cek kode</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
     } else if(o.pickCode){
@@ -2490,7 +2496,7 @@ function drvJob(o, offer){
     } else {
       h += '<div class="actions"><button class="btn press grow" data-act="drv-pickup" data-id="'+esc(o.id)+'">'+I("package")+' Sudah ambil di toko</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
     }
-  } else if(o.status === "diantar" && o.pickCode && !o.arrivedAt){
+  } else if(o.status === "diantar" && (o.pickCode || o.managed) && !o.arrivedAt){
     h += '<div class="actions">'+chatBtn(o, "driver", "Chat pembeli & toko", "ghost")+'</div>'+
       '<div class="actions"><button class="btn press grow" data-act="drv-arrive" data-id="'+esc(o.id)+'">'+I("camera")+' Pesanan sudah sampai</button></div>'+
       '<div class="hint">Sampai di alamat pembeli? Foto pesanan saat diserahkan sebagai bukti.</div>';
@@ -2586,6 +2592,8 @@ document.addEventListener("click", async e => {
   const rj = (S.drv.offers || []).concat(S.drv.mine || []).find(o => o.id === id); const ride = isRide(rj);
   if(a === "drv-accept"){ el.disabled = true; await drvDo(() => DRV.act(id, "accept", ride ? null : {flow:"2"}), ride ? "Order Jago diambil! Segera jemput penumpang." : "Pesanan diambil! Segera menuju toko."); return; }
   if(a === "drv-decline"){ await drvDo(() => DRV.act(id, "decline")); return; }
+  if(a === "drv-mpick"){
+    proofConfirm("Sudah membeli dan memegang pesanan? Foto struk atau pesanannya sebagai bukti.", "Ya, antar sekarang", ph => drvDo(() => DRV.act(id, "pickup", {photo:ph}), "Selamat mengantar! Tagih harga menu + ongkir ke pembeli."), true); return; }
   if(a === "drv-arrive"){
     proofConfirm("Pesanan sudah sampai di alamat pembeli? Foto pesanan saat diserahkan.", "Ya, sudah sampai", ph => drvDo(() => DRV.act(id, "arrive", {photo:ph}), "Pembeli sudah diberi tahu pesanan sampai."), true); return; }
   if(a === "drv-pickup"){
@@ -2598,7 +2606,7 @@ document.addEventListener("click", async e => {
     const v = parseInt(String(inp ? inp.value : "").replace(/\D/g, ""), 10);
     if(!isFinite(v) || v < 0) return toast(ride ? "Isi tarif yang disepakati." : "Isi ongkir yang disepakati.");
     if(ride){ confirmModal("Sudah sampai tujuan dengan tarif " + rp(v) + "? Komisi 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Perjalanan selesai. Tarif " + rp(v) + " tercatat.")); return; }
-    if(rj && rj.arrivedAt){ confirmModal("Selesaikan pesanan dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat.")); return; }
+    if(rj && rj.arrivedAt){ confirmModal((rj.managed ? "Tagih ke pembeli " + rp((rj.total || 0) + v) + " (menu " + rp(rj.total || 0) + " + ongkir " + rp(v) + "). " : "") + "Selesaikan pesanan dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat.")); return; }
     (SB ? proofConfirm : (t, l, f) => confirmModal(t, l, () => f("")))("Pesanan sudah diterima pembeli dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", ph => drvDo(() => DRV.act(id, "done", ph ? {ongkir:v, photo:ph} : {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat."));
     return;
   }
@@ -2761,7 +2769,7 @@ async function ownRefresh(){
 function startOwner(){
   if(ownTimer) return;
   ownRefresh();
-  ownTimer = setInterval(() => { if(!document.hidden && S.role === "owner"){ ownRefresh(); if(["saldo","toko"].includes(S.own.tab) && !typing()) loadOwnerWallet(); if(SB) loadOwnerRec(); } }, 15000);
+  ownTimer = setInterval(() => { if(!document.hidden && S.role === "owner"){ ownRefresh(); if(["saldo","toko"].includes(S.own.tab) && !typing()) loadOwnerWallet(); if(SB){ loadOwnerRec(); loadMData(); } } }, 15000);
 }
 const dayKey = t => { const d = new Date(t); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
 function rangeStart(r){
@@ -2983,10 +2991,10 @@ function appOwner(){
   if(S.own.threads === undefined){ S.own.threads = []; loadOwnThreads(); }
   const unreadMsg = (S.own.threads || []).reduce((a, t) => a + (t.unread || 0), 0);
   const stuckN = (D.orders || []).filter(ownStuck).length;
-  const tabs = [["ringkasan","Ringkasan","dashboard",0],["pesanan","Pesanan","receipt",stuckN],["pesan","Pesan","chat",unreadMsg],["laporan","Laporan masalah","note",D.reportsOpen||0],["toko","Toko","store",0],["driver","Driver","truck",pendDrv],["pembeli","Pembeli","user",pendBuy],["pulih","Pemulihan akun","badge",pendRec],["saldo","Saldo","cash",0],["cabang","Cabang","pin",0],["akun","Akun","settings",0]];
-  const TT = {ringkasan:["Ringkasan","Kondisi bisnis JAGA secara keseluruhan"], pesanan:["Pesanan","Semua pesanan belanja dan perjalanan Jago"], pesan:["Pesan","Tanya jawab dengan toko dan driver"], laporan:["Laporan masalah","Keluhan dari pembeli, toko, dan driver"], toko:["Toko","Kelola toko mitra: pesan, nonaktifkan, atau hapus"], driver:["Driver","Verifikasi dan kelola akun driver"], pembeli:["Pembeli","Setujui pendaftaran akun pembeli"], pulih:["Pemulihan akun","Toko & driver yang lupa akun atau password"], saldo:["Saldo","Isi saldo, bagi hasil, dan komisi"], cabang:["Cabang","Wilayah layanan JAGA"], akun:["Akun","Link penting dan keamanan"]};
+  const tabs = [["ringkasan","Ringkasan","dashboard",0],["pesanan","Pesanan","receipt",stuckN],["pesan","Pesan","chat",unreadMsg],["laporan","Laporan masalah","note",D.reportsOpen||0],["toko","Toko","store",0],["driver","Driver","truck",pendDrv],["pembeli","Pembeli","user",pendBuy],["pulih","Pemulihan akun","badge",pendRec],["mtoko","Toko JAGA","store",((S.own.m && S.own.m.orders) || []).filter(o => o.status === "menunggu_konfirmasi").length],["saldo","Saldo","cash",0],["cabang","Cabang","pin",0],["akun","Akun","settings",0]];
+  const TT = {ringkasan:["Ringkasan","Kondisi bisnis JAGA secara keseluruhan"], pesanan:["Pesanan","Semua pesanan belanja dan perjalanan Jago"], pesan:["Pesan","Tanya jawab dengan toko dan driver"], laporan:["Laporan masalah","Keluhan dari pembeli, toko, dan driver"], toko:["Toko","Kelola toko mitra: pesan, nonaktifkan, atau hapus"], driver:["Driver","Verifikasi dan kelola akun driver"], pembeli:["Pembeli","Setujui pendaftaran akun pembeli"], mtoko:["Toko JAGA (percobaan)","Toko yang didaftarkan & dikelola tim JAGA"], pulih:["Pemulihan akun","Toko & driver yang lupa akun atau password"], saldo:["Saldo","Isi saldo, bagi hasil, dan komisi"], cabang:["Cabang","Wilayah layanan JAGA"], akun:["Akun","Link penting dan keamanan"]};
   const tt = TT[S.own.tab] || TT.ringkasan;
-  const nav = cls => tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+I(t[2])+'<span>'+t[1]+'</span>'+(t[3]?'<em class="'+(t[0]==="pesan"||t[0]==="driver"||t[0]==="laporan"||t[0]==="pulih"?"red":"amb")+'">'+t[3]+'</em>':'')+'</button>').join("");
+  const nav = cls => tabs.map(t => '<button class="'+(S.own.tab===t[0]?"on":"")+'" data-act="own-tab" data-v="'+t[0]+'">'+I(t[2])+'<span>'+t[1]+'</span>'+(t[3]?'<em class="'+(t[0]==="pesan"||t[0]==="driver"||t[0]==="laporan"||t[0]==="pulih"||t[0]==="mtoko"?"red":"amb")+'">'+t[3]+'</em>':'')+'</button>').join("");
   const side = '<aside class="oside"><div class="obrand">'+JMARK()+'<div><b>JAGA</b><small>Portal Owner</small></div></div><nav>'+nav()+'</nav><div class="ofoot"><a href="'+esc(APP_URL)+'" target="_blank" rel="noopener">'+I("eye")+' Buka aplikasi pembeli</a></div></aside>';
   const ranges = [["hari","Hari ini"],["7hari","7 hari"],["bulan","Bulan ini"],["semua","Semua"]];
   const rangeBar = '<div class="oranges">'+ranges.map(r => '<button class="chip '+(S.own.range===r[0]?"on":"")+'" data-act="own-range" data-v="'+r[0]+'">'+r[1]+'</button>').join("")+'</div>';
@@ -3061,6 +3069,8 @@ function appOwner(){
     h += '<h3 class="sub" style="margin:16px 4px 8px">Perjalanan Jago ('+rl.length+')</h3><div class="card pad">'+(rl.length ? rl.map(ownRideRow).join("") : '<div class="muted small">Belum ada perjalanan.</div>')+'</div>';
   } else if(S.own.tab === "pulih"){
     h += ownerRecTab();
+  } else if(S.own.tab === "mtoko"){
+    h += ownerMTab();
   } else if(S.own.tab === "pesan"){
     h += ownerInboxTab(D);
   } else if(S.own.tab === "toko"){
@@ -3146,6 +3156,32 @@ document.addEventListener("click", async e => {
         accLoad();
       }catch(err){ toast(String(err.message || err).replace(/^.*?:\s*/, "")); }
     }); return;
+  }
+  if(a === "m-new"){ S.own.mf = {id:null, d:{category:CATS[0], area:"Ujungbatu"}, menu:[{},{},{}], removed:[]}; render(); scrollTo(0, 0); return; }
+  if(a === "m-cancel"){ S.own.mf = null; render(); return; }
+  if(a === "m-edit"){
+    const s0 = ((S.own.m || {}).stores || []).find(x => x.id === id); if(!s0) return;
+    S.own.mf = {id, hasMenuPhoto:s0.hasMenuPhoto, d:{name:s0.name, category:s0.category, area:s0.area, hours:s0.hours, address:s0.address, wa:s0.wa || "", lat:s0.lat, lng:s0.lng},
+      menu:(s0.products || []).map(p => ({id:p.id, name:p.name, price:String(p.price || ""), img:p.img || ""})).concat([{}]), removed:[]};
+    render(); scrollTo(0, 0); return;
+  }
+  if(a === "m-row-add"){ mSync(); S.own.mf.menu.push({}); render(); return; }
+  if(a === "m-row-del"){ mSync(); const m = S.own.mf.menu.splice(+v, 1)[0]; if(m && m.id) S.own.mf.removed.push(m.id); if(!S.own.mf.menu.length) S.own.mf.menu.push({}); render(); return; }
+  if(a === "m-gps"){
+    try{ el.disabled = true; const c = await getPos(); mSync(); S.own.mf.d.lat = c.lat; S.own.mf.d.lng = c.lng; const r = areaOf(c); render(); toast(r ? "Lokasi diambil · wilayah " + regionName(r) : "Lokasi di luar wilayah layanan JAGA"); }
+    catch(err){ el.disabled = false; toast(err.message); } return;
+  }
+  if(a === "m-open"){
+    const s0 = ((S.own.m || {}).stores || []).find(x => x.id === id); if(!s0) return;
+    try{ await sbStore.rpc("jt_owner_mstore_save", {p_id:id, p_data:{name:s0.name, category:s0.category, area:s0.area, hours:s0.hours, address:s0.address, lat:s0.lat, lng:s0.lng, open:v === "1"}}); toast(v === "1" ? "Toko dibuka" : "Toko ditutup sementara"); S.own.mSig = ""; loadMData(); }
+    catch(err){ toast(String(err.message || err).replace(/^.*?:\s*/, "")); } return;
+  }
+  if(a === "m-ok" || a === "m-no"){
+    let note = "";
+    if(a === "m-no"){ note = prompt("Alasan menolak (dikirim ke pembeli):", "Toko sedang tutup / menu habis"); if(note === null) return; }
+    el.disabled = true;
+    try{ await sbStore.rpc("jt_owner_morder_decide", {p_id:id, p_ok:a === "m-ok", p_note:note}); notifyPush("order", id); toast(a === "m-ok" ? "Disetujui · mencari driver terdekat" : "Pesanan ditolak"); S.own.mSig = ""; loadMData(); }
+    catch(err){ el.disabled = false; toast(String(err.message || err).replace(/^.*?:\s*/, "")); } return;
   }
   if(a === "own-rec-ok"){
     confirmModal("Hubungkan akun “" + (el.dataset.n || "") + "” ke HP peminta? Pastikan Anda sudah memastikan pemiliknya lewat WhatsApp.", "Ya, konfirmasi", async () => {
@@ -4621,6 +4657,101 @@ const OWNX = {
 };
 S.own.reports = null;
 async function loadOwnerReports(){ try{ S.own.reports = await REP.all(); }catch(e){ S.own.reports = []; } if(S.role === "owner" && !typing()) scheduleRender(); }
+/* ---------- Toko kelolaan JAGA (percobaan 30 toko) — diisi tim JAGA lewat portal owner ---------- */
+async function loadMData(){
+  if(!SB || S.own.mBusy) return; S.own.mBusy = true;
+  try{
+    const r = await sbStore.rpc("jt_owner_mdata", {}); const sig = JSON.stringify(r);
+    const pend = (r.orders || []).filter(o => o.status === "menunggu_konfirmasi").map(o => o.id);
+    if(S.own.mPend && S.role === "owner"){ const fresh = pend.filter(id => !S.own.mPend.includes(id)); if(fresh.length){ const o0 = r.orders.find(o => o.id === fresh[0]) || {}; notify("Pesanan toko JAGA perlu disetujui", (o0.code || "") + " · " + (o0.storeName || "") + " · " + rp(o0.total || 0), {kind:"order", act:() => { S.own.tab = "mtoko"; render(); }}); } }
+    S.own.mPend = pend;
+    if(sig !== S.own.mSig){ S.own.mSig = sig; S.own.m = r; if(!typing()) scheduleRender(); }
+  }catch(e){ S.own.m = S.own.m || {stores:[], orders:[], limit:30}; S.own.mErr = String((e && e.message) || e); }
+  S.own.mBusy = false;
+}
+function mOrderCard(o){
+  const items = (o.items || []).map(it => esc(it.qty + "× " + it.name)).join(", ");
+  let h = '<div class="card mord"><div class="mord-h"><div><b>'+esc(o.storeName || "-")+'</b><small>'+esc(o.code || "")+' · '+fmtDate(o.createdAt)+'</small></div>'+statusTag(o.status)+'</div>'+
+    '<div class="mord-b"><div>'+items+'</div><div class="small muted">Untuk: '+esc((o.buyer && o.buyer.name) || "-")+' · '+esc((o.buyer && o.buyer.address) || "")+'</div>'+
+    '<div class="mord-t"><span>Harga menu <b>'+rp(o.subtotal || o.total || 0)+'</b></span><span>Ongkir ±<b>'+rp(o.ongkirEst || 0)+'</b></span><span>Ditagih ke pembeli ±<b>'+rp((o.total || 0) + (o.ongkirEst || 0))+'</b></span></div>'+
+    (o.driver ? '<div class="small" style="margin-top:4px">Driver: <b>'+esc(o.driver.name)+'</b> '+esc(o.driver.plate || "")+'</div>' : '')+'</div>';
+  if(o.status === "menunggu_konfirmasi") h += '<div class="actions"><button class="btn press grow" data-act="m-ok" data-id="'+esc(o.id)+'">'+I("checkc")+' Setujui & cari driver</button><button class="btn danger sm" data-act="m-no" data-id="'+esc(o.id)+'">Tolak</button></div>';
+  return h + '</div>';
+}
+function ownerMTab(){
+  if(!SB && !S.own.m) return '<div class="card pad muted small">Toko kelolaan JAGA aktif di website asli (terhubung database).</div>';
+  if(S.own.m === undefined){ S.own.m = null; loadMData(); }
+  if(S.own.mf) return mStoreForm();
+  const M = S.own.m; if(!M) return '<div class="card pad muted small">Memuat…</div>';
+  const st = M.stores || [], od = M.orders || [];
+  const pend = od.filter(o => o.status === "menunggu_konfirmasi"), run = od.filter(o => !["menunggu_konfirmasi","selesai","dibatalkan"].includes(o.status)), done = od.filter(o => ["selesai","dibatalkan"].includes(o.status));
+  let h = '<div class="jmtop"><div class="mstats"><div><small>Toko percobaan</small><b>'+st.length+'<i>/'+(M.limit || 30)+'</i></b></div><div><small>Perlu disetujui</small><b class="'+(pend.length ? 'red' : '')+'">'+pend.length+'</b></div><div><small>Pesanan berjalan</small><b>'+run.length+'</b></div></div>'+
+    '<div class="jmbtns"><button class="btn press" data-act="m-new"'+(st.length >= (M.limit || 30) ? ' disabled' : '')+'>'+I("plus")+' Daftarkan toko</button>'+(pushOn("owner") ? '' : '<button class="btn ghost" data-act="push-on" data-v="owner">'+I("megaphone")+' Aktifkan notifikasi pesanan</button>')+'</div>'+
+    '<div class="hint">Toko yang didaftarkan di sini langsung tampil di aplikasi pembeli seperti toko biasa. Pesanan masuk ke portal ini untuk disetujui. Driver membeli pesanan di toko (QRIS toko atau uang driver), lalu pembeli membayar harga menu + ongkir ke driver saat pesanan sampai.</div></div>';
+  if(pend.length) h += '<h3 class="sub" style="margin:16px 4px 8px">Perlu disetujui ('+pend.length+')</h3>'+pend.map(mOrderCard).join("");
+  if(run.length) h += '<h3 class="sub" style="margin:16px 4px 8px">Pesanan berjalan ('+run.length+')</h3>'+run.map(mOrderCard).join("");
+  h += '<h3 class="sub" style="margin:16px 4px 8px">Toko percobaan ('+st.length+')</h3>';
+  h += st.length ? '<div class="mgrid">'+st.map(s => '<div class="card mst"><div class="mst-h">'+avatarHtml(s)+'<div class="grow"><b>'+esc(s.name)+'</b><small>'+esc(s.category)+' · '+esc(s.area || "")+' · '+esc(regionName(s.region))+'</small></div>'+(s.open === false ? '<span class="tag gray">Tutup</span>' : '<span class="tag green">Buka</span>')+'</div>'+
+      '<div class="mst-k"><span><b>'+(s.products || []).length+'</b> menu</span><span><b>'+(s.nDone || 0)+'</b> selesai</span><span><b>'+rp(s.omzet || 0)+'</b> omzet</span></div>'+
+      '<div class="actions"><button class="btn ghost sm" data-act="m-edit" data-id="'+esc(s.id)+'">'+I("settings")+' Ubah toko & menu</button><button class="btn ghost sm" data-act="m-open" data-id="'+esc(s.id)+'" data-v="'+(s.open === false ? '1' : '0')+'">'+(s.open === false ? 'Buka toko' : 'Tutup sementara')+'</button></div></div>').join("")+'</div>'
+    : '<div class="card pad muted small">Belum ada toko. Tekan “Daftarkan toko”, isi nama, menu, dan ambil lokasi saat berada di toko.</div>';
+  if(done.length) h += '<h3 class="sub" style="margin:16px 4px 8px">Selesai / batal (3 hari terakhir)</h3>'+done.slice(0, 20).map(mOrderCard).join("");
+  return h;
+}
+function mStoreForm(){
+  const f = S.own.mf, d = f.d;
+  const row = (m, i) => '<div class="mrow"><label class="mimg" title="Foto menu">'+(m.img ? '<img alt="" src="'+esc(m.img)+'">' : I("camera"))+'<input type="file" accept="image/*" data-mimg="'+i+'" hidden></label>'+
+    '<input class="in" name="mname'+i+'" placeholder="Nama menu" value="'+esc(m.name || "")+'"><input class="in mprice" name="mprice'+i+'" inputmode="numeric" placeholder="Harga" value="'+esc(m.price || "")+'">'+
+    '<button type="button" class="ibtn" data-act="m-row-del" data-v="'+i+'" aria-label="Hapus menu">✕</button></div>';
+  return '<form id="mForm" class="card pad mform"><div class="row-b"><h3 class="sub" style="margin:0">'+(f.id ? 'Ubah toko' : 'Daftarkan toko percobaan')+'</h3><button type="button" class="btn ghost sm" data-act="m-cancel">Batal</button></div>'+
+    '<div class="cols2"><div><label class="f">Nama toko *</label><input class="in" name="name" required value="'+esc(d.name || "")+'" placeholder="Contoh: Soto Pak Kumis"></div>'+
+    '<div><label class="f">Kategori *</label><select class="in" name="category">'+CATS.map(c => '<option'+(d.category === c ? ' selected' : '')+'>'+esc(c)+'</option>').join("")+'</select></div></div>'+
+    '<div class="cols2"><div><label class="f">Daerah</label><input class="in" name="area" value="'+esc(d.area || "Ujungbatu")+'"></div><div><label class="f">Jam buka</label><input class="in" name="hours" value="'+esc(d.hours || "")+'" placeholder="08.00–22.00"></div></div>'+
+    '<label class="f">Alamat</label><input class="in" name="address" value="'+esc(d.address || "")+'" placeholder="Jl. … dekat …">'+
+    '<label class="f">WhatsApp toko (opsional)</label><input class="in" name="wa" inputmode="tel" value="'+esc(d.wa || "")+'" placeholder="08…">'+
+    '<label class="f">Titik lokasi toko *</label><div class="mloc"><input class="in" name="ll" value="'+(typeof d.lat === "number" ? d.lat + ", " + d.lng : "")+'" placeholder="Ketuk tombol saat di toko, atau tempel koordinat Google Maps"><button type="button" class="btn ghost" data-act="m-gps">'+I("pin")+' Lokasi saya</button></div>'+
+    '<div class="cols2" style="margin-top:6px"><div><label class="f">Logo / foto toko</label><label class="mlogo">'+(d.logo ? '<img alt="" src="'+esc(d.logo)+'">' : I("camera")+'<span>Pilih foto</span>')+'<input type="file" accept="image/*" data-mlogo="1" hidden></label></div>'+
+    '<div><label class="f">Foto daftar menu (arsip)</label><label class="mlogo">'+(d.menuPhoto || f.hasMenuPhoto ? (d.menuPhoto ? '<img alt="" src="'+esc(d.menuPhoto)+'">' : I("checkc")+'<span>Tersimpan</span>') : I("camera")+'<span>Pilih foto</span>')+'<input type="file" accept="image/*" data-mmenu="1" hidden></label></div></div>'+
+    '<label class="f" style="margin-top:12px">Menu *</label><div class="mrows">'+f.menu.map(row).join("")+'</div>'+
+    '<button type="button" class="btn ghost sm" data-act="m-row-add">'+I("plus")+' Tambah menu</button>'+
+    '<button class="btn block press" style="margin-top:16px">'+(f.id ? 'Simpan perubahan' : 'Daftarkan & terbitkan')+'</button></form>';
+}
+function mSync(){
+  const form = document.getElementById("mForm"); if(!form || !S.own.mf) return;
+  const fd = new FormData(form), f = S.own.mf;
+  ["name","category","area","hours","address","wa"].forEach(k => { f.d[k] = String(fd.get(k) || ""); });
+  const ll = String(fd.get("ll") || "").match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)/);
+  if(ll){ f.d.lat = +ll[1]; f.d.lng = +ll[2]; } else { delete f.d.lat; delete f.d.lng; }
+  f.menu.forEach((m, i) => { m.name = String(fd.get("mname"+i) || "").trim(); m.price = String(fd.get("mprice"+i) || "").replace(/\D/g, ""); });
+}
+async function mSave(){
+  mSync(); const f = S.own.mf, d = f.d;
+  const menu = f.menu.filter(m => m.name || m.price || m.img);
+  if(!menu.length) return toast("Isi minimal 1 menu");
+  if(menu.some(m => !m.name || !(+m.price > 0))) return toast("Lengkapi nama dan harga setiap menu");
+  if(typeof d.lat !== "number") return toast("Ambil titik lokasi toko dulu");
+  S.own.mSaving = true; const btn = document.querySelector("#mForm button.btn.block"); if(btn) btn.disabled = true;
+  try{
+    const body = {name:d.name, category:d.category, area:d.area, hours:d.hours, address:d.address, wa:d.wa, lat:d.lat, lng:d.lng};
+    if(d.logo !== undefined) body.logo = d.logo; if(d.menuPhoto !== undefined) body.menuPhoto = d.menuPhoto;
+    const r = await sbStore.rpc("jt_owner_mstore_save", {p_id:f.id || null, p_data:body});
+    const sid = r.id;
+    for(const m of menu){ const pd = {name:m.name, price:+m.price, active:true}; if(m.imgNew) pd.img = m.img; await sbStore.rpc("jt_owner_mprod_save", {p_store:sid, p_pid:m.id || null, p_data:pd}); }
+    for(const pid of (f.removed || [])) await sbStore.rpc("jt_owner_mprod_del", {p_store:sid, p_pid:pid});
+    S.own.mf = null; S.own.mSig = ""; toast(f.id ? "Toko diperbarui" : "Toko terdaftar & langsung tampil di aplikasi"); await loadMData(); render();
+  }catch(err){ if(btn) btn.disabled = false; toast(String(err.message || err).replace(/^.*?:\s*/, "")); }
+  S.own.mSaving = false;
+}
+document.addEventListener("change", async e => {
+  const t = e.target; if(!S.own || !S.own.mf || !t.files || !t.files[0]) return;
+  try{
+    if(t.dataset.mimg != null){ mSync(); const m = S.own.mf.menu[+t.dataset.mimg]; m.img = await compressImage(t.files[0], 600); m.imgNew = true; render(); }
+    else if(t.dataset.mlogo){ mSync(); S.own.mf.d.logo = await compressImage(t.files[0], 300); render(); }
+    else if(t.dataset.mmenu){ mSync(); S.own.mf.d.menuPhoto = await compressImage(t.files[0], 1100); render(); }
+  }catch(_){ toast("Gambar tidak bisa dibaca."); }
+});
+document.addEventListener("submit", e => { if(e.target.id === "mForm"){ e.preventDefault(); mSave(); } });
+
 async function loadOwnerRec(){
   if(!SB) return;
   try{ const r = await sbStore.rpc("jt_owner_recover_list", {}); const sig = JSON.stringify(r); if(sig !== S.own.recSig){ S.own.recSig = sig; S.own.rec = r || []; if(!typing()) render(); } }catch(e){ S.own.rec = S.own.rec || []; }
