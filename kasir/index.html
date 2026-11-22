@@ -504,6 +504,7 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 .acc-m dt{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 .acc-m dd{margin:3px 0 0;font-size:14px;font-weight:600}
 .acc-a{display:flex;flex-wrap:wrap;gap:8px}
+.wasend{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:14px;padding:12px;background:color-mix(in srgb,#25D366 6%,var(--surface))}.wasend label.f{margin:0;font-weight:700}.wasend .btn .i{width:18px;height:18px}
 .own .funnel .stat{padding:12px 14px;box-shadow:none;background:var(--bg)}.own .funnel .stat::before{display:none}.own .funnel .stat b{font-size:22px}
 .ocat{display:flex;flex-direction:column;gap:14px;padding:16px}
 .osearch{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:0 14px;background:var(--bg)}
@@ -603,7 +604,7 @@ const I={
   laporan:'<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',
   pengaturan:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
   scan:'<path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M11 9v6M14 9v6M17 9v6"/>',
-  plus:'<path d="M12 5v14M5 12h14"/>', users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2c2.1.7 3.5 2.6 3.5 5.8"/>', peta:'<path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>', uang:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>', masuk:'<path d="M3 13l2.5-8h13L21 13v6H3z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/>', keluar:'<path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/>', cari:'<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>', check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>', kirim:'<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>', users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2c2.1.7 3.5 2.6 3.5 5.8"/>', peta:'<path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>', uang:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>', masuk:'<path d="M3 13l2.5-8h13L21 13v6H3z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/>', keluar:'<path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/>', cari:'<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>', check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
   print:'<path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7z"/>', camera:'<path d="M4 8h4l2-3h4l2 3h4v11H4z"/><circle cx="12" cy="13" r="3.5"/>', tap:'<path d="M9 11V5a2 2 0 0 1 4 0v5l4 1a2 2 0 0 1 1.5 2.3L17.5 20H10l-4-5 1.2-1.2a1.5 1.5 0 0 1 1.8-.2z"/>', trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'
 };
 const MARK=(cls)=>'<svg class="'+cls+'" viewBox="30 24 136 178" aria-hidden="true"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" class="mk-a" mask="url(#jkm)"/><path d="M74 132 V84 L96 72 V132 Z" class="mk-a" mask="url(#jkm)"/><path d="M104 132 V64 L120 55 V132 Z" class="mk-b" mask="url(#jkm)"/><path d="M40 176 L152 114.4 V126.4 L40 188 Z" class="mk-b"/></svg>';
@@ -637,7 +638,7 @@ const Store={
 /* ============ data ============ */
 let S=null,SESS=null,ACC=null;
 const SB={url:'https://flwajaadllviewenerya.supabase.co',key:'sb_publishable_1zd0fWLLIKEIABemgeyj6g_3rZssbCq'};
-const APP_VER='jaga-kasir-v26';
+const APP_VER='jaga-kasir-v27';
 const isAcc=()=>typeof SESS==='string'&&SESS.startsWith('acc:');
 const KEY=()=>SESS==='demo'?'jk_state_demo':isAcc()?'jk_state_'+SESS.replace(':','_'):'jk_state';
 const randKey=()=>{const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('')};
@@ -929,6 +930,10 @@ async function printQueue(){
   let n=0; for(const s of l){try{await printBt(s);s.printed=Date.now();n++;save();await sleep(700)}catch(e){PR.ch=null;break}}
   render(); toast(n===l.length?n+' struk tercetak.':n+' dari '+l.length+' struk tercetak. Sambungkan ulang printer lalu coba lagi.');
 }
+function rcWaSend(){const s=curSale,i=$('#rc-wa'),m=$('#rc-wa-msg');if(!s||!i)return;const w=waNum(i.value);
+  if(!w){if(m){m.textContent='Nomor WhatsApp belum benar. Contoh: 0812xxxxxxxx.';m.style.color='var(--bad)'}i.focus();return}
+  if(m){m.textContent='Membuka WhatsApp ke +'+w+'…';m.style.color=''}
+  s.waTo=w;save();const url=waLink(w,'```'+receiptText(s,width())+'```');const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
 function offerQueue(){const n=pending().length;if(!n||!PR.ch)return;
   confirmSheet('Cetak struk yang tertunda?',n+' struk dibuat saat printer belum tersambung. Cetak semuanya sekarang?','Cetak '+n+' struk',()=>printQueue())}
 function openReceipt(id,fresh){
@@ -941,7 +946,8 @@ function openReceipt(id,fresh){
     '<p class="muted small" id="estruk-st" style="margin:0;text-align:center">'+printStatus(s)+'</p>'+
     '<button class="btn primary block" data-act="print">'+ico('print')+'Cetak struk</button>'+
     (canShareFiles()?'<button class="btn block" data-act="share-struk">Bagikan struk ke pembeli</button>':'')+
-    '<div class="two"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent('```'+txt+'```')+'">Kirim teks WhatsApp</a><button class="btn" data-act="save-struk">Simpan gambar</button></div>'+
+    '<div class="wasend"><label class="f" for="rc-wa">Kirim struk ke WhatsApp pembeli</label><div class="row" style="flex-wrap:nowrap"><input class="grow" type="tel" inputmode="tel" id="rc-wa" placeholder="Nomor WA, mis. 0812xxxxxxxx" value="'+esc(s.waTo?'0'+String(s.waTo).slice(2):s.custWa?'0'+String(s.custWa).slice(2):'')+'" autocomplete="off" style="width:auto"><button class="btn pay" data-act="rc-wa-send">'+ico('kirim')+'Kirim</button></div><p class="muted small" id="rc-wa-msg" style="margin:0">Struk dikirim sebagai teks lewat aplikasi WhatsApp.</p></div>'+
+    '<button class="btn block" data-act="save-struk">Simpan gambar struk</button>'+
     (!fresh&&s.method==='kasbon'&&!s.lunas&&!s.void?'<button class="btn block" data-act="lunas">Tandai kasbon lunas</button>':'')+
     (!fresh&&!s.void?'<button class="btn danger block" data-act="void">Batalkan transaksi ini</button>':'')+
     (fresh?'<button class="btn block" data-act="close">Transaksi baru</button>':''));
@@ -1962,6 +1968,7 @@ const A={
   'print-queue':()=>printQueue(),
   'share-struk':async()=>{const s=curSale;try{const f=new File([dataBlob(eReceipt(s))],'struk-'+s.no+'.png',{type:'image/png'});await navigator.share({files:[f],title:'Struk '+(S.shop.name||'')+' '+s.no})}catch(e){if(!e||e.name!=='AbortError')toast('Tidak bisa membagikan dari perangkat ini. Pakai Kirim teks WhatsApp.')}},
   'save-struk':()=>download('struk-'+curSale.no+'.png',dataBlob(eReceipt(curSale)),'image/png'),
+  'rc-wa-send':()=>rcWaSend(),
   'copy-struk':()=>copyText(receiptText(curSale,width()),'Struk disalin.'),
   struk:e=>openReceipt(e.dataset.id),
   lunas:()=>{curSale.lunas=Date.now();save();closeSheet();render();toast('Kasbon '+(curSale.cust||'')+' ditandai lunas dan masuk kas hari ini.')},
@@ -2036,6 +2043,7 @@ document.addEventListener('change',ev=>{
     confirmSheet('Pulihkan cadangan ini?','Data di perangkat ini diganti dengan isi cadangan: '+d.products.length+' barang dan '+d.sales.length+' struk.','Pulihkan',()=>{S=normalize(d);save();go('kasir');toast('Cadangan dipulihkan.')})}catch(e){toast('Berkas ini bukan cadangan Jaga Kasir.')}};rd.readAsText(t.files[0]);t.value=''}
 });
 document.addEventListener('keydown',ev=>{
+  if(ev.key==='Enter'&&ev.target&&ev.target.id==='rc-wa'){ev.preventDefault();return rcWaSend()}
   if(ev.key==='Escape'){if($('#scan-root').firstChild)closeScanner();else if($('#sheet-root').firstChild)closeSheet()}
   const tg=ev.target, typing=tg&&/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName);
   if(!typing&&view==='kasir'&&!$('#sheet-root').firstChild&&!$('#scan-root').firstChild&&!ev.ctrlKey&&!ev.metaKey&&!ev.altKey){
