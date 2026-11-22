@@ -429,7 +429,9 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 .sheet.wzs #wz-top[hidden]{display:none}
 .sheet.wzs #wz-list{flex:1 1 auto;min-height:0;max-height:none;overflow:auto;margin:0 -4px;padding:4px}
 .sheet.wzs .wzg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));align-content:start;gap:12px}
-.sheet.wzs .upd-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));z-index:120;display:flex;gap:12px;align-items:center;background:var(--ink);color:#fff;padding:10px 12px 10px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(15,27,45,.35);font-weight:600;font-size:14px}
+.sheet.wzs .scan-view video.mirror{transform:scaleX(-1)}
+#cam-flip .i{width:18px;height:18px}
+.upd-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));z-index:120;display:flex;gap:12px;align-items:center;background:var(--ink);color:#fff;padding:10px 12px 10px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(15,27,45,.35);font-weight:600;font-size:14px}
 .wz-foot{position:static;margin-top:auto}
 @media (max-width:600px){.sheet.wzs{height:94vh;max-width:100%}.sheet.wzs .wzg{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
 .wzc .pic{width:100%}
@@ -563,7 +565,7 @@ const Store={
 /* ============ data ============ */
 let S=null,SESS=null,ACC=null;
 const SB={url:'https://flwajaadllviewenerya.supabase.co',key:'sb_publishable_1zd0fWLLIKEIABemgeyj6g_3rZssbCq'};
-const APP_VER='jaga-kasir-v23';
+const APP_VER='jaga-kasir-v24';
 const isAcc=()=>typeof SESS==='string'&&SESS.startsWith('acc:');
 const KEY=()=>SESS==='demo'?'jk_state_demo':isAcc()?'jk_state_'+SESS.replace(':','_'):'jk_state';
 const randKey=()=>{const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('')};
@@ -931,7 +933,7 @@ async function openScanner(cb,cont,title){
   SC.onDone=null;SC.cb=cb;SC.cont=cont;SC.last='';SC.torch=false;SC.fails=[];SC.hits={};SC.newKey='';SC.lastAuto=null;SC.lastF=null;SC.learnF=null;SP.q='';SP.c='';
   let m='barcode';if(cont){try{m=localStorage.getItem('jk_smode')||'barcode'}catch(e){}if(!SMODES.some(x=>x[0]===m))m='barcode'}SC.mode=m;
   const manual='<input type="text" inputmode="numeric" id="scan-manual" placeholder="Ketik kode barcode" autocomplete="off"><button class="btn" data-act="scan-manual">Pakai</button>'+(FRAMED?'<button class="btn" data-act="scan-demo">Contoh</button>':'');
-  $('#scan-root').innerHTML='<div class="scan'+(cont?' cart':'')+'" id="scan-box" role="dialog" aria-modal="true"><div class="scan-top"><b>'+esc(title||'Scan barcode')+'</b><button class="btn" data-act="torch" id="torch" hidden>Lampu</button><button class="btn" data-act="scan-close">'+(cont?'Tutup':'Selesai')+'</button></div>'+
+  $('#scan-root').innerHTML='<div class="scan'+(cont?' cart':'')+'" id="scan-box" role="dialog" aria-modal="true"><div class="scan-top"><b>'+esc(title||'Scan barcode')+'</b><button class="btn" data-act="cam-flip" id="cam-flip" hidden aria-label="Ganti kamera">'+ico('camera')+'<span id="cam-flip-l">Kamera depan</span></button><button class="btn" data-act="torch" id="torch" hidden>Lampu</button><button class="btn" data-act="scan-close">'+(cont?'Tutup':'Selesai')+'</button></div>'+
     (cont?'<div class="smodes" role="group" aria-label="Cara memasukkan barang">'+SMODES.map(x=>'<button data-act="smode" data-m="'+x[0]+'" aria-pressed="false">'+ico(x[2])+x[1]+'</button>').join('')+'</div>':'')+
     '<div class="stage" id="scan-stage"></div>'+
     (cont?'<div class="scan-panel"><div class="scan-list" id="scan-list" aria-live="polite"></div>'+
@@ -940,6 +942,11 @@ async function openScanner(cb,cont,title){
     :'<div class="scan-foot"><div class="scan-last"><span id="scan-last">Arahkan barcode ke dalam kotak</span><span class="num" id="scan-total"></span></div><div class="row" style="flex-wrap:nowrap">'+manual.replace('id="scan-manual"','id="scan-manual" class="grow" style="width:auto"')+'</div></div>')+'</div>';
   await scanStage();
 }
+function camFace(){try{return localStorage.getItem('jk_face')==='user'?'user':'environment'}catch(e){return 'environment'}}
+async function camFlipUi(){const b=$('#cam-flip'),v=SC.video;if(!b)return;const tr=SC.stream&&SC.stream.getVideoTracks()[0];let face=camFace();try{const st=tr&&tr.getSettings&&tr.getSettings();if(st&&st.facingMode)face=st.facingMode==='user'?'user':'environment'}catch(e){}
+  if(v)v.classList.toggle('mirror',face==='user');$('#cam-flip-l').textContent=face==='user'?'Kamera belakang':'Kamera depan';
+  let n=2;try{const d=await navigator.mediaDevices.enumerateDevices();n=d.filter(x=>x.kind==='videoinput').length}catch(e){}b.hidden=n<2}
+async function camFlip(){const next=camFace()==='user'?'environment':'user';try{localStorage.setItem('jk_face',next)}catch(e){}stopStream();await scanStage();toast(next==='user'?'Kamera depan aktif.':'Kamera belakang aktif.')}
 function setScanMode(m){if(!$('#scan-box')||SC.mode===m)return;SC.mode=m;try{localStorage.setItem('jk_smode',m)}catch(e){}scanStage()}
 async function scanStage(){
   const m=SC.mode,box=$('#scan-box'),st=$('#scan-stage');if(!box||!st)return;
@@ -954,12 +961,13 @@ async function scanStage(){
   if(m==='foto')visPrepare().then(n=>{if(SC.mode==='foto'&&!n&&!visHasLearnt())scanFx(false,'<div><b>Belum ada barang berfoto</b><span class="small">Tambahkan foto di menu Barang, atau tekan foto lalu pilih barangnya sekali supaya diingat.</span></div>')}).catch(()=>{});
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) throw new Error('nocam');
-    if(!SC.stream)SC.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+    if(!SC.stream)SC.stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:camFace()},width:{ideal:1280},height:{ideal:720}}});
     if(!$('#scan-root .scan')){stopStream();return}
     if(SC.mode!==m||!SC.video||!SC.video.isConnected){if(SC.mode==='pilih')stopStream();return}
     SC.video.srcObject=SC.stream; await SC.video.play().catch(()=>{});
     if(m==='barcode'){try{await ensureDecoder()}catch(e){throw Object.assign(new Error('decoder'),{name:'DecoderError'})}}
     const sm2=$('#scan-msg');if(sm2)sm2.hidden=true;
+    camFlipUi();
     const tr=SC.stream.getVideoTracks()[0]; try{if(tr.getCapabilities&&tr.getCapabilities().torch)$('#torch').hidden=false}catch(e){}
     if(!SC.on){SC.on=true; scanLoop()}
   }catch(e){
@@ -1876,6 +1884,7 @@ const A={
   'p-new':e=>{const o={code:e.dataset.code||'',name:e.dataset.name||'',tocart:!!e.dataset.tocart};productForm(null,o);productFormAfter(o)},
   'p-edit':e=>needOwner(()=>productForm(prod(e.dataset.id))),
   'pf-save':()=>saveProduct(),
+  'cam-flip':()=>camFlip(),
   'cph-open':()=>catPhotoSheet(), 'cph-apply':()=>cphApply(), 'cph-later':()=>{S.catPhAsk=catPhMatches().length;save();render()},
   'cph-other':e=>{const p=prod(e.dataset.id);if(p)catPicker({photoFor:p.id,q:(p.name.split(/\s+/)[0]||'')})},
   'pf-catphoto':e=>{const p=prod(e.dataset.id);if(p)catPicker({photoFor:p.id,q:(p.name.split(/\s+/)[0]||'')})},
