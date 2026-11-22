@@ -265,6 +265,7 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 .crow .grow{display:flex;flex-direction:column;gap:2px}
 .catbtn{display:flex;align-items:center;gap:10px;width:100%;border:1.5px dashed color-mix(in srgb,var(--brand) 55%,var(--line));background:color-mix(in srgb,var(--brand) 5%,var(--surface));border-radius:12px;padding:10px 12px;text-align:left;color:var(--ink)}
 .catbtn b{display:block}
+.cph-row{display:flex;align-items:center;gap:10px;cursor:pointer}.cph-row input[type=checkbox]{width:22px;height:22px;flex:none;accent-color:var(--brand)}.cph-row .btn{flex:none;padding:6px 10px;font-size:13px}
 .catnote{font-size:12.5px;font-weight:600;color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent);border-radius:10px;padding:8px 10px}
 .sl-row.fail.hit .nm{color:#4CC98A}
 /* kartu barang ala katalog: foto, nama, harga */
@@ -637,6 +638,7 @@ function render(){
   const pc=$('#printer-chip');let wc=$('#who-chip');if(!wc){wc=document.createElement('button');wc.id='who-chip';wc.className='chip who';wc.dataset.act='who-menu';pc.parentNode.insertBefore(wc,pc)}
   wc.hidden=!WHO;if(WHO)wc.textContent='Penjaga: '+WHO.name;
   ({kasir:vKasir,barang:vBarang,riwayat:vRiwayat,laporan:vLaporan,pengaturan:vAtur})[view]();
+  if(isAcc()&&!CPH.at&&!CPH.busy)setTimeout(()=>catAutoCheck(),2500);
 }
 
 /* ============ KASIR ============ */
@@ -677,6 +679,7 @@ function vKasir(){
   $('#view').innerHTML='<div class="kasir">'+
   '<section class="stack">'+
     (!WHO&&plan()==='expired'?'<div class="note plan-note" style="border-color:var(--bad)"><div class="grow"><b>Masa coba sudah habis.</b> Data tetap aman. Pilih paket sekali bayar untuk lanjut berjualan.</div><button class="btn pay" data-act="upgrade">Pilih paket</button></div>':'')+
+    catPhNote('kasir')+
     (!WHO&&isAcc()&&ACC&&ACC.lat==null&&!S.locAsk&&!S.demo&&S.products.length?'<div class="note"><div class="grow"><b>Tandai lokasi warung.</b> Supaya tim JAGA mudah menemukan warung Anda untuk pendampingan.</div><button class="btn" data-act="loc-set">Tandai</button><button class="btn ghost" data-act="loc-dismiss">Nanti</button></div>':'')+
     (plan()==='expired'?'<div class="note expired-note"><div class="grow"><b>Masa coba sudah habis.</b> '+esc(trialWhy())+' Transaksi baru terkunci. Hubungi JAGA untuk dapat menggunakan aplikasi lagi.</div><a class="btn pay" href="'+contactUrl()+'" target="_blank" rel="noopener">Hubungi JAGA</a></div>':'')+
     (!WHO&&SESS!=='local'&&plan()==='trial'?'<div class="note plan-note"><div class="grow"><b>Masa coba: sisa '+trialLeft()+' hari · '+trialTxLeft()+' transaksi.</b> Setelah 3 hari atau 30 transaksi, transaksi baru terkunci. Pilih paket, bayar sekali.</div><button class="btn" data-act="upgrade">Lihat paket</button></div>':'')+
@@ -1064,6 +1067,7 @@ function vBarang(){
     '<div class="row"><button class="btn" data-act="wizard">Isi barang cepat</button><button class="btn" data-act="sm-start">'+ico('scan')+'Stok masuk cepat</button><button class="btn" data-act="kulak">Daftar belanja'+(low+out?' · '+(low+out):'')+'</button><button class="btn" data-act="sup-list">Kontak supplier'+(sups().length?' · '+sups().length:'')+'</button></div>'+
     '<div class="tiles"><div class="stat"><small>Jenis barang</small><b class="num">'+S.products.length+'</b></div><div class="stat"><small>Stok menipis</small><b class="num" style="color:'+(low?'var(--warn)':'inherit')+'">'+low+'</b></div>'+
     '<div class="stat"><small>Stok habis</small><b class="num" style="color:'+(out?'var(--bad)':'inherit')+'">'+out+'</b></div><div class="stat"><small>Nilai stok (harga beli)</small><b class="num">'+rp(val)+'</b></div></div>'+
+    catPhNote('barang')+(isAcc()&&!WHO&&noPhoto().length&&!catPhMatches().length?'<button class="catbtn" data-act="cph-open">'+ico('barang')+'<span><b>Cari foto barang dari Katalog JAGA</b><span class="muted small">'+noPhoto().length+' barang belum berfoto</span></span></button>':'')+
     '<input type="search" id="bq" placeholder="Cari nama atau kode barang" value="'+esc(bq)+'" autocomplete="off">'+
     '<div class="seg">'+[['semua','Semua'],['menipis','Menipis'],['habis','Habis']].map(f=>'<button data-act="bf" data-f="'+f[0]+'" aria-pressed="'+(bf===f[0])+'">'+f[1]+'</button>').join('')+'</div>'+
     '<div class="card"><div class="list" id="blist"></div></div></div>';
@@ -1083,11 +1087,11 @@ async function catSearch(q,code){if(!isAcc())throw new Error(FRAMED?'Katalog akt
 async function catByCode(code){if(!code||!isAcc())return null;try{const r=await catSearch('',code);return r[0]||null}catch(e){return null}}
 function catPicker(opt){opt=opt||{};
   sheet('<div class="hd"><h2>Katalog JAGA</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
-    '<p class="muted small" style="margin:0">Pilih barang, lalu nama, barcode, jenis, dan foto terisi otomatis. Anda cukup mengisi harga dan stok.</p>'+
-    '<input type="hidden" id="cp-tocart" value="'+(opt.tocart?1:'')+'"><div class="row" style="flex-wrap:nowrap"><input type="search" class="grow" id="cp-q" placeholder="Cari nama, jenis, atau barcode" autocomplete="off" autofocus style="width:auto"><button class="btn" data-act="cp-scan">'+ico('scan')+'Scan</button></div>'+
+    '<p class="muted small" style="margin:0">'+(opt.photoFor?'Pilih foto yang sesuai untuk <b>'+esc((prod(opt.photoFor)||{}).name||'barang ini')+'</b>. Hanya fotonya yang dipakai, data lain tidak berubah.':'Pilih barang, lalu nama, barcode, jenis, dan foto terisi otomatis. Anda cukup mengisi harga dan stok.')+'</p>'+
+    '<input type="hidden" id="cp-tocart" value="'+(opt.tocart?1:'')+'"><input type="hidden" id="cp-photofor" value="'+esc(opt.photoFor||'')+'"><div class="row" style="flex-wrap:nowrap"><input type="search" class="grow" id="cp-q" placeholder="Cari nama, jenis, atau barcode" autocomplete="off" autofocus style="width:auto"><button class="btn" data-act="cp-scan">'+ico('scan')+'Scan</button></div>'+
     '<div class="list" id="cp-list"><div class="empty">Memuat katalog…</div></div>'+
-    '<button class="btn ghost block" data-act="cp-manual">Isi sendiri tanpa katalog</button>');
-  cpLoad('');
+    (opt.photoFor?'':'<button class="btn ghost block" data-act="cp-manual">Isi sendiri tanpa katalog</button>'));
+  if(opt.q){$('#cp-q').value=opt.q;cpLoad(opt.q)}else cpLoad('');
 }
 let cpT=0,cpSeq=0;
 async function cpLoad(q,code){const el=$('#cp-list');if(!el)return;const my=++cpSeq;
@@ -1107,6 +1111,45 @@ async function offFetch(path){const ctl=new AbortController(),t=setTimeout(()=>c
 async function offGet(code){if(!/^\d{8,14}$/.test(code||''))return null;try{const d=await offFetch('/api/v2/product/'+code+'.json?fields='+OFF.f);if(d.status!==1||!d.product||!d.product.product_name)return null;const o=offMap(d.product);o.code=code;return o}catch(e){return null}}
 async function offSearch(q){const d=await offFetch('/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&tagtype_0=countries&tag_contains_0=contains&tag_0=indonesia&json=1&page_size=24&fields='+OFF.f);return (d.products||[]).filter(x=>x.product_name).map(offMap)}
 async function urlToData(url,max){if(!url)return null;try{const r=await fetch(url);if(!r.ok)throw 0;return await shrinkFit(await r.blob(),max||520,.8)}catch(e){return null}}
+/* ---- Foto otomatis dari Katalog JAGA: pasang foto ke barang warung yang belum berfoto ---- */
+const CPH={m:null,ph:{},at:0,busy:false,sel:{}};
+function noPhoto(){return S.products.filter(p=>!p.img)}
+async function catMatch(list){list=(list||noPhoto()).slice(0,1500);if(!list.length||!isAcc())return [];
+  const r=await rpc('jk_cat_match',{p_key:await devKey(),p_items:list.map(p=>({i:p.id,n:p.name,c:p.code||''}))},45000);return Array.isArray(r)?r:[]}
+async function catPhotos(ids){const need=[...new Set(ids)].filter(id=>!CPH.ph[id]);
+  for(let k=0;k<need.length;k+=60){const r=await rpc('jk_cat_photos',{p_key:await devKey(),p_ids:need.slice(k,k+60)},45000);if(r&&typeof r==='object')Object.assign(CPH.ph,r)}}
+function catPhMatches(){const ids=new Set(noPhoto().map(p=>p.id));return (CPH.m||[]).filter(m=>ids.has(m.i))}
+async function catAutoCheck(force){if(!isAcc()||S.demo||CPH.busy||!noPhoto().length)return;if(!force&&CPH.at&&Date.now()-CPH.at<6*3600e3)return;
+  CPH.busy=true;try{CPH.m=await catMatch();CPH.at=Date.now();const ae=document.activeElement;if(catPhMatches().length&&(view==='kasir'||view==='barang')&&!$('#sheet-root .sheet')&&!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)))render()}catch(e){}finally{CPH.busy=false}}
+function catPhNote(where){const n=catPhMatches().length;if(!n||WHO||!isAcc())return '';
+  if(where==='kasir'&&S.catPhAsk&&S.catPhAsk>=n)return '';
+  return '<div class="note"><div class="grow"><b>'+n+' barang bisa pakai foto dari Katalog JAGA.</b> Foto produk dipasang otomatis, Anda tinggal periksa.</div><button class="btn" data-act="cph-open">Lihat foto</button>'+(where==='kasir'?'<button class="btn ghost" data-act="cph-later">Nanti</button>':'')+'</div>'}
+async function catPhotoSheet(){
+  sheet('<div class="hd"><h2>Foto dari Katalog JAGA</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    '<p class="muted small" style="margin:0">Barang Anda yang belum berfoto dicocokkan dengan Katalog JAGA. Centang foto yang sesuai, lalu pasang. Harga dan stok Anda tidak berubah.</p>'+
+    '<div class="list" id="cph-list"><div class="empty">Mencari foto yang cocok…</div></div>'+
+    '<button class="btn primary block" data-act="cph-apply" id="cph-apply" disabled>Pasang foto</button>');
+  let m;try{m=await catMatch();CPH.m=m;CPH.at=Date.now()}catch(e){const el=$('#cph-list');if(el)el.innerHTML='<div class="empty">'+esc(e.message||'Katalog tidak bisa dihubungi.')+'</div>';return}
+  const el=$('#cph-list');if(!el)return;CPH.sel={};
+  const rows=m.map(x=>({x,p:prod(x.i)})).filter(r=>r.p&&!r.p.img).sort((a,b)=>(b.x.sure-a.x.sure)||(b.x.s-a.x.s));
+  if(!rows.length){el.innerHTML='<div class="empty">Belum ada foto yang cocok untuk barang Anda. Anda tetap bisa memilih foto satu per satu di menu Ubah barang.</div>';$('#cph-apply').hidden=true;return}
+  rows.forEach(r=>{if(r.x.sure)CPH.sel[r.p.id]=r.x.id});
+  el.innerHTML=rows.map(r=>'<label class="item cph-row"><input type="checkbox" class="cph-cb" data-pid="'+esc(r.p.id)+'" data-cid="'+esc(r.x.id)+'"'+(r.x.sure?' checked':'')+'>'+
+    '<span class="th" data-cph="'+esc(r.x.id)+'">'+esc(r.x.name.charAt(0))+'</span><div class="grow"><b>'+esc(r.p.name)+'</b><span class="muted small">Foto: '+esc(r.x.name)+(r.x.sure?'':' · periksa dulu')+'</span></div>'+
+    '<button class="btn ghost small" type="button" data-act="cph-other" data-id="'+esc(r.p.id)+'">Pilih lain</button></label>').join('');
+  cphCount();
+  try{await catPhotos(rows.map(r=>r.x.id));document.querySelectorAll('[data-cph]').forEach(t=>{const u=CPH.ph[t.dataset.cph];if(u)t.innerHTML='<img src="'+u+'" alt="" loading="lazy">'})}catch(e){}
+}
+function cphCount(){const n=Object.keys(CPH.sel).length,b=$('#cph-apply');if(b){b.disabled=!n;b.textContent=n?'Pasang '+n+' foto':'Pilih foto yang sesuai'}}
+async function cphApply(){const pairs=Object.entries(CPH.sel);if(!pairs.length)return;const b=$('#cph-apply');b.disabled=true;b.textContent='Memasang foto…';
+  try{await catPhotos(pairs.map(x=>x[1]))}catch(e){b.disabled=false;cphCount();return toast(e.message||'Gagal mengambil foto.')}
+  let n=0;pairs.forEach(([pid,cid])=>{const p=prod(pid),u=CPH.ph[cid];if(p&&u&&!p.img){p.img=u;n++}});
+  if(n)save();closeSheet();render();toast(n?n+' foto barang terpasang dari Katalog JAGA.':'Tidak ada foto yang dipasang.')}
+async function pfNameCat(){const nm=$('#pf-name');if(!nm||!isAcc()||$('#pf-img').value)return;const name=nm.value.trim();if(name.length<3)return;
+  try{const r=await catMatch([{id:'x',name,code:$('#pf-code').value.trim()}]);const x=r[0];if(!x||!x.sure||!$('#pf-img')||$('#pf-img').value||$('#pf-name').value.trim()!==name)return;
+    await catPhotos([x.id]);const u=CPH.ph[x.id];if(!u||!$('#pf-img')||$('#pf-img').value)return;
+    $('#pf-img').value=u;$('#pf-img-prev').innerHTML='<img src="'+u+'" alt="">';$('#pf-img-del').hidden=false;
+    const n=$('#pf-catnote');if(n){n.hidden=false;n.textContent='Foto diambil dari Katalog JAGA ('+x.name+'). Hapus jika tidak sesuai.'}}catch(e){}}
 function productFromCat(x,opt){productForm(null,Object.assign({},opt||{},{cat:x}))}
 async function catFillByCode(code){
   if(!code||$('#pf-id').value||S.products.some(x=>x.code===code))return;
@@ -1131,6 +1174,7 @@ function productForm(p,opt){
     '<label class="f">Nama barang<input type="text" id="pf-name" value="'+esc(p.name)+'" placeholder="Contoh: Gula pasir 1 kg" autocomplete="off"'+(p.name?'':' autofocus')+'></label>'+
     '<div class="row" style="flex-wrap:nowrap"><span class="th big" id="pf-img-prev">'+pict(p)+'</span><div class="stack grow" style="gap:6px"><span class="small muted" style="font-weight:600">Foto barang (opsional)</span><div class="row"><label class="btn" for="pf-img-file">Ambil atau pilih foto</label><button class="btn ghost danger" type="button" data-act="pf-img-del" id="pf-img-del"'+(p.img?'':' hidden')+'>Hapus foto</button></div></div>'+
     '<input type="file" id="pf-img-file" accept="image/*" hidden><input type="hidden" id="pf-img" value="'+esc(p.img||'')+'"></div>'+
+    (!n&&isAcc()?'<button class="catbtn" type="button" data-act="pf-catphoto" data-id="'+esc(p.id)+'">'+ico('barang')+'<span><b>'+(p.img?'Ganti foto dari Katalog JAGA':'Ambil foto dari Katalog JAGA')+'</b><span class="muted small">Simpan perubahan lain dulu, lalu pilih foto</span></span></button>':'')+
     '<label class="f">Kode barcode (kosongkan jika tidak ada)<span class="row" style="flex-wrap:nowrap"><input class="grow" type="text" inputmode="numeric" id="pf-code" value="'+esc(p.code)+'" autocomplete="off"><button class="btn" type="button" data-act="pf-scan">'+ico('scan')+'Scan</button></span></label>'+
     '<div class="two"><label class="f">Jenis barang<input type="text" id="pf-cat" list="pf-cats" value="'+esc(p.cat)+'" autocomplete="off"><datalist id="pf-cats">'+cats.map(c=>'<option value="'+esc(c)+'">').join('')+'</datalist></label>'+
     '<label class="f">Satuan<input type="text" id="pf-unit" value="'+esc(p.unit||'pcs')+'" autocomplete="off"></label></div>'+
@@ -1804,8 +1848,11 @@ const A={
   'p-new':e=>{const o={code:e.dataset.code||'',name:e.dataset.name||'',tocart:!!e.dataset.tocart};productForm(null,o);productFormAfter(o)},
   'p-edit':e=>needOwner(()=>productForm(prod(e.dataset.id))),
   'pf-save':()=>saveProduct(),
+  'cph-open':()=>catPhotoSheet(), 'cph-apply':()=>cphApply(), 'cph-later':()=>{S.catPhAsk=catPhMatches().length;save();render()},
+  'cph-other':e=>{const p=prod(e.dataset.id);if(p)catPicker({photoFor:p.id,q:(p.name.split(/\s+/)[0]||'')})},
+  'pf-catphoto':e=>{const p=prod(e.dataset.id);if(p)catPicker({photoFor:p.id,q:(p.name.split(/\s+/)[0]||'')})},
   'cat-open':e=>{catPicker({tocart:!!e.dataset.tocart});if(e.dataset.q){$('#cp-q').value=e.dataset.q;cpLoad('',e.dataset.q)}},
-  'cp-pick':e=>{const x=CAT.cache[e.dataset.id];if(!x)return;const own=x.code&&S.products.find(p=>p.code===x.code);if(own){closeSheet();productForm(own);return toast('Barang ini sudah ada di daftar Anda.')}
+  'cp-pick':e=>{const x=CAT.cache[e.dataset.id];if(!x)return;const pf=($('#cp-photofor')||{}).value;if(pf){const p=prod(pf);if(!p||!x.photo)return toast('Barang katalog ini belum punya foto.');p.img=x.photo;save();closeSheet();render();productForm(p);return toast('Foto dari Katalog JAGA terpasang.')}const own=x.code&&S.products.find(p=>p.code===x.code);if(own){closeSheet();productForm(own);return toast('Barang ini sudah ada di daftar Anda.')}
     productFromCat(x,{tocart:!!($('#cp-tocart')||{}).value})},
   'cp-manual':()=>{const tc=!!($('#cp-tocart')||{}).value;productForm(null,{tocart:tc})},
   'cp-scan':()=>openScanner(c=>{beep(true);closeScanner();const q=$('#cp-q');if(q){q.value=c;cpLoad('',c)}},false,'Scan barcode katalog'),
@@ -1851,6 +1898,8 @@ document.addEventListener('change',ev=>{
   const t=ev.target;
   if(t.id==='oc-file'&&t.files[0]){const f=t.files[0];t.value='';shrinkFit(f,520,.78).then(u=>{OC.photo=u;OC.changed=true;$('#oc-prev').innerHTML='<img src="'+u+'" alt="">'}).catch(()=>toast('Foto ini tidak bisa dibaca.'))}
   if(t.id==='pf-code'&&t.value.trim())catFillByCode(t.value.trim());
+  if(t.id==='pf-name'&&!$('#pf-id').value)pfNameCat();
+  if(t.classList&&t.classList.contains('cph-cb')){if(t.checked)CPH.sel[t.dataset.pid]=t.dataset.cid;else delete CPH.sel[t.dataset.pid];cphCount()}
   if(t.dataset&&t.dataset.wz)wzSync(t.dataset.wz);
   if(t.id==='op-plan'){$('#op-amt').value=fmt(t.value==='basic'?129000:t.dataset.cur==='basic'?220000:349000)}
   if(t.classList&&t.classList.contains('kl-on'))kulakRefresh();
