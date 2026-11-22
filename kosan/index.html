@@ -1152,15 +1152,17 @@ function showRegister(){
   setTimeout(()=>{const u=$('#rg-shop');if(u&&(!document.activeElement||document.activeElement===document.body))u.focus()},50);
   rpc('jk_otp_status',{}).then(r=>{const bx=$('#rg-otp-box');if(bx&&r&&r.on)bx.hidden=false}).catch(()=>{});
 }
+function otpErr(m){const o=$('#otp-msg');if(o){o.textContent=m;o.style.color='var(--bad)';o.style.fontWeight='600'}toast(m)}
+function otpOk(m){const o=$('#otp-msg');if(o){o.textContent=m;o.style.color='';o.style.fontWeight=''}}
 async function otpCall(body){let r;try{r=await fetch(SB.url+'/functions/v1/jk-otp',{method:'POST',headers:{'apikey':SB.key,'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){throw new Error('Tidak ada sambungan internet. Coba lagi.')}
   let d=null;try{d=await r.json()}catch(e){}return d||{ok:false,error:'Layanan kode sedang bermasalah. Coba lagi.'}}
 let otpT=0;function otpWait(n){clearInterval(otpT);const b=$('#otp-btn');if(!b)return;b.disabled=true;let k=n;b.textContent='Kirim ulang '+k+'s';
   otpT=setInterval(()=>{const bb=$('#otp-btn');if(!bb){clearInterval(otpT);return}k--;if(k<=0){clearInterval(otpT);bb.disabled=false;bb.textContent='Kirim ulang kode'}else bb.textContent='Kirim ulang '+k+'s'},1000)}
-async function otpSend(){const err=$('#lg-err'),w=($('#rg-wa').value||'').trim();err.textContent='';if(!/^[0-9+\-\s]{9,}$/.test(w)){err.textContent='Isi nomor WhatsApp yang benar dulu.';return $('#rg-wa').focus()}
-  const b=$('#otp-btn');b.disabled=true;$('#otp-msg').textContent='Mengirim kode…';
-  try{const r=await otpCall({wa:w,app:'kosan'});if(!r.ok){$('#otp-msg').textContent='';err.textContent=r.error||'Kode gagal dikirim.';if(r.wait)otpWait(r.wait);else b.disabled=false;return}
-    $('#otp-msg').textContent='Kode terkirim ke WhatsApp '+w+'. Berlaku 10 menit.';otpWait(60);$('#rg-otp').focus()}
-  catch(e){b.disabled=false;$('#otp-msg').textContent='';err.textContent=e.message}}
+async function otpSend(){const err=$('#lg-err'),w=($('#rg-wa').value||'').trim();err.textContent='';if(!/^[0-9+\-\s]{9,}$/.test(w)){otpErr('Isi nomor WhatsApp yang benar dulu.');return $('#rg-wa').focus()}
+  const b=$('#otp-btn');b.disabled=true;otpOk('Mengirim kode…');
+  try{const r=await otpCall({wa:w,app:'kosan'});if(!r.ok){otpErr(r.error||'Kode gagal dikirim.');if(r.wait)otpWait(r.wait);else b.disabled=false;return}
+    otpOk('Kode terkirim ke WhatsApp '+w+'. Cek pesan WhatsApp dari JAGA, berlaku 10 menit.');otpWait(60);$('#rg-otp').focus()}
+  catch(e){b.disabled=false;otpErr(e.message)}}
 function devLabel(){const u=navigator.userAgent||'';const os=/iPad/.test(u)?'iPad':/iPhone/.test(u)?'iPhone':/Android/.test(u)?'Android':/Windows/.test(u)?'Windows':/Mac OS/.test(u)?'Mac':/Linux/.test(u)?'Linux':'Perangkat';
   const br=/SamsungBrowser/.test(u)?'Samsung Internet':/EdgA?\//.test(u)?'Edge':/OPR\//.test(u)?'Opera':/CriOS|Chrome\//.test(u)?'Chrome':/FxiOS|Firefox/.test(u)?'Firefox':/Safari/.test(u)?'Safari':'Browser';
   const a=u.match(/Android [\d.]+; ([^;)]+)\)/);const md=a&&a[1].trim()!=='K'?' '+a[1].trim():'';return (os+md+' · '+br).slice(0,60)}

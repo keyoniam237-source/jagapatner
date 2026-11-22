@@ -1787,11 +1787,11 @@ const A={
       '<div class="row" style="flex-wrap:nowrap"><input type="tel" class="grow" id="ot-wa" placeholder="0812xxxxxxxx" autocomplete="off" style="width:auto"><button class="btn" data-act="ot-test">Kirim tes</button></div>')},
   'ot-save':async()=>{const t=$('#ot-token').value.trim();try{const r=await rpc('jk_owner_otp_set',{p_key:OWN.key,p_on:$('#ot-on').checked,p_token:t||null});if(!r.ok)return toast(r.error);closeSheet();toast('Pengaturan verifikasi WhatsApp disimpan.')}catch(e){toast(e.message)}},
   'ot-test':async()=>{const w=$('#ot-wa').value.trim();if(w.length<9)return toast('Isi nomor WhatsApp tujuan.');try{const r=await otpCall({action:'test',owner_key:OWN.key,wa:w});toast(r.ok?'Pesan tes terkirim. Cek WhatsApp nomor itu.':r.error)}catch(e){toast(e.message)}},
-  'otp-send':async()=>{const err=$('#lg-err'),w=($('#rg-wa').value||'').trim();err.textContent='';if(!/^[0-9+\-\s]{9,}$/.test(w)){err.textContent='Isi nomor WhatsApp yang benar dulu.';return $('#rg-wa').focus()}
-    const b=$('#otp-btn');b.disabled=true;$('#otp-msg').textContent='Mengirim kode…';
-    try{const r=await otpCall({wa:w,app:'kasir'});if(!r.ok){$('#otp-msg').textContent='';err.textContent=r.error||'Kode gagal dikirim.';if(r.wait)otpWait(r.wait);else b.disabled=false;return}
-      $('#otp-msg').textContent='Kode terkirim ke WhatsApp '+w+'. Berlaku 10 menit.';otpWait(60);$('#rg-otp').focus()}
-    catch(e){b.disabled=false;$('#otp-msg').textContent='';err.textContent=e.message}},
+  'otp-send':async()=>{const err=$('#lg-err'),w=($('#rg-wa').value||'').trim();err.textContent='';if(!/^[0-9+\-\s]{9,}$/.test(w)){otpErr('Isi nomor WhatsApp yang benar dulu.');return $('#rg-wa').focus()}
+    const b=$('#otp-btn');b.disabled=true;otpOk('Mengirim kode…');
+    try{const r=await otpCall({wa:w,app:'kasir'});if(!r.ok){otpErr(r.error||'Kode gagal dikirim.');if(r.wait)otpWait(r.wait);else b.disabled=false;return}
+      otpOk('Kode terkirim ke WhatsApp '+w+'. Cek pesan WhatsApp dari JAGA, berlaku 10 menit.');otpWait(60);$('#rg-otp').focus()}
+    catch(e){b.disabled=false;otpErr(e.message)}},
   'owner-login':()=>ownerLogin(), 'owner-refresh':()=>ownerOpen(), 'owner-f':e=>{OWN.f=e.dataset.f;ownerRender()},
   'owner-logout':async()=>{try{await rpc('jk_owner_logout',{p_key:OWN.key})}catch(e){}OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin()},
   'owner-set':e=>{const a=OWN.list.find(x=>x.id===e.dataset.id),s=e.dataset.s,lbl={active:'Aktifkan',rejected:'Tolak',disabled:'Nonaktifkan'}[s];
@@ -2051,6 +2051,8 @@ async function doRegister(){
   }catch(e){err.textContent=e.message}finally{const bb=$('#rg-btn');if(bb)bb.disabled=false}
 }
 
+function otpErr(m){const o=$('#otp-msg');if(o){o.textContent=m;o.style.color='var(--bad)';o.style.fontWeight='600'}toast(m)}
+function otpOk(m){const o=$('#otp-msg');if(o){o.textContent=m;o.style.color='';o.style.fontWeight=''}}
 async function otpCall(body){let r;try{r=await fetch(SB.url+'/functions/v1/jk-otp',{method:'POST',headers:{'apikey':SB.key,'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){throw new Error('Tidak ada sambungan internet. Coba lagi.')}
   let d=null;try{d=await r.json()}catch(e){}return d||{ok:false,error:'Layanan kode sedang bermasalah. Coba lagi.'}}
 let otpT=0;function otpWait(n){clearInterval(otpT);const b=$('#otp-btn');if(!b)return;b.disabled=true;let k=n;b.textContent='Kirim ulang '+k+'s';
