@@ -83,7 +83,7 @@ label.f input,label.f select{color:var(--ink);font-weight:500;font-size:15px}
 .pill.info{background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand)}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
 .seg button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 13px;font-weight:600;font-size:13px;min-height:36px}
-.seg.scroll{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.seg.scroll{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:2px 0 4px;scrollbar-width:none;flex-shrink:0;min-height:44px}
 .seg.scroll button{flex:none}
 .cat-h{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--display);font-weight:800;font-size:14px;color:var(--brand);padding:14px 2px 2px;border-top:1px solid var(--line)}
 .cat-h:first-child{border-top:0;padding-top:2px}
@@ -423,6 +423,16 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 .wzc .wzk{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center}.wzc .wzk svg{width:16px;height:16px}
 .wzc .nm{font-weight:600;font-size:13px;line-height:1.25;text-align:left}.wz-more{grid-column:1/-1}
 .btn.primary-soft{border-color:color-mix(in srgb,var(--brand) 45%,var(--line));background:color-mix(in srgb,var(--brand) 7%,var(--surface))}
+.sheet.wzs{max-width:min(1000px,96vw);height:min(90vh,940px);max-height:none;overflow:hidden}
+.sheet.wzs>*{flex-shrink:0}
+.sheet.wzs #wz-top{display:flex;flex-direction:column;gap:8px}
+.sheet.wzs #wz-top[hidden]{display:none}
+.sheet.wzs #wz-list{flex:1 1 auto;min-height:0;max-height:none;overflow:auto;margin:0 -4px;padding:4px}
+.sheet.wzs .wzg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));align-content:start;gap:12px}
+.sheet.wzs .upd-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));z-index:120;display:flex;gap:12px;align-items:center;background:var(--ink);color:#fff;padding:10px 12px 10px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(15,27,45,.35);font-weight:600;font-size:14px}
+.wz-foot{position:static;margin-top:auto}
+@media (max-width:600px){.sheet.wzs{height:94vh;max-width:100%}.sheet.wzs .wzg{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
+.wzc .pic{width:100%}
 .wz-foot{position:sticky;bottom:-16px;background:var(--surface);display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0 4px;border-top:1px solid var(--line)}
 .trial{border-style:solid;background:#FFF3D6;border-color:#F3D9A0}
 .lg-foot{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;font-size:12.5px}
@@ -553,6 +563,7 @@ const Store={
 /* ============ data ============ */
 let S=null,SESS=null,ACC=null;
 const SB={url:'https://flwajaadllviewenerya.supabase.co',key:'sb_publishable_1zd0fWLLIKEIABemgeyj6g_3rZssbCq'};
+const APP_VER='jaga-kasir-v23';
 const isAcc=()=>typeof SESS==='string'&&SESS.startsWith('acc:');
 const KEY=()=>SESS==='demo'?'jk_state_demo':isAcc()?'jk_state_'+SESS.replace(':','_'):'jk_state';
 const randKey=()=>{const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('')};
@@ -1610,7 +1621,8 @@ function wzShell(){
     '<p class="muted small" style="margin:0" id="wz-help"></p>'+
     '<div id="wz-top"><input type="search" id="wz-q" placeholder="Cari barang, misalnya indomie, gula, sabun" autocomplete="off" value="'+esc(WZ.q)+'"><div class="seg scroll" id="wz-cats"></div></div>'+
     '<div id="wz-list"></div>'+
-    '<div class="wz-foot"><span class="muted small" id="wz-n">0 dipilih</span><span class="row" style="gap:8px"><button class="btn" data-act="wz-back" id="wz-back" hidden>Kembali</button><button class="btn pay" data-act="wz-next" id="wz-next" disabled>Lanjut isi harga</button></span></div>')}
+    '<div class="wz-foot"><span class="muted small" id="wz-n">0 dipilih</span><span class="row" style="gap:8px"><button class="btn" data-act="wz-back" id="wz-back" hidden>Kembali</button><button class="btn pay" data-act="wz-next" id="wz-next" disabled>Lanjut isi harga</button></span></div>');
+  const sh=$('#sheet-root .sheet');if(sh)sh.classList.add('wzs')}
 function wzRender(){if(!WZ||!$('#wz-list'))return;const two=WZ.step===2;
   $('#wz-help').textContent=two?'Isi harga jual tiap barang. Stok boleh diisi sekarang atau nanti lewat Stok masuk cepat.':WZ.rows.length+' barang berfoto. Ketuk barang yang Anda jual, nama, jenis, dan fotonya terisi otomatis.';
   $('#wz-top').hidden=two;$('#wz-back').hidden=!two;
@@ -2197,6 +2209,9 @@ async function startSession(kind){SESS=kind;await Store.set('jk_session',kind);$
   if(!FRAMED&&'serviceWorker' in navigator&&location.protocol==='https:'){
     const l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);
     navigator.serviceWorker.register('sw.js').catch(()=>{});
+    const chk=async()=>{try{const t=await (await fetch('sw.js',{cache:'no-store'})).text();const v=(t.match(/VERSION = '([^']+)'/)||[])[1];
+      if(v&&v!==APP_VER&&!document.getElementById('upd-bar')){const d=document.createElement('div');d.id='upd-bar';d.className='upd-bar';d.innerHTML='<span>Versi baru Jaga Kasir tersedia.</span><button class="btn pay">Muat ulang</button>';d.querySelector('button').onclick=()=>location.reload();document.body.appendChild(d)}}catch(e){}};
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')chk()});setInterval(chk,15*60e3);setTimeout(chk,8000);
   }
 })();
 </script>
