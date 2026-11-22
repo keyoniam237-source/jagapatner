@@ -139,14 +139,23 @@ const sbStore = {
       const vis = () => { if(!document.hidden) load(); }; document.addEventListener("visibilitychange", vis);
       return () => { alive = false; clearInterval(iv); document.removeEventListener("visibilitychange", vis); };
     }
-    const load = async () => {
-      const { data, error } = await SB.from("docs").select("id,data").eq("col", col);
+    /* hemat kuota: tiap 30 dtk hanya cek tanda waktu; data lengkap diunduh bila ada yang berubah */
+    let lastSig = null;
+    const sigOf = rows => rows.map(r => r.id + "@" + r.updated_at).sort().join("|");
+    const load = async force => {
+      if(!force && lastSig !== null){
+        const { data:hd, error:he } = await SB.from("docs").select("id,updated_at").eq("col", col);
+        if(!alive) return;
+        if(!he && sigOf(hd) === lastSig) return;
+      }
+      const { data, error } = await SB.from("docs").select("id,data,updated_at").eq("col", col);
       if(!alive) return;
       if(error){ cb(null, false); return; }
+      lastSig = sigOf(data);
       cb(data.map(r => Object.assign({id: r.id.split("/").pop()}, r.data || {})), false);
     };
-    const soon = () => { clearTimeout(t); t = setTimeout(load, 150); };
-    load();
+    const soon = () => { clearTimeout(t); t = setTimeout(() => load(true), 150); };
+    load(true);
     const ch = SB.channel("c:" + col + ":" + Math.random().toString(36).slice(2))
       .on("postgres_changes", {event:"*", schema:"public", table:"docs", filter:"col=eq." + col}, soon)
       .subscribe();
@@ -155,16 +164,36 @@ const sbStore = {
   },
   async rpc(fn, args){ const { data, error } = await SB.rpc(fn, Object.assign({p_key: KEY}, args)); if(error) throw sbErr(error); return data; },
   async set(path, data){
+    await mediaize(data);
     if(path.startsWith("orders/")){ await this.rpc("jt_order_create", {p_id: path.slice(7), p_data: data}); if(ORD_REFRESH) await ORD_REFRESH(); return; }
     await this.rpc("jt_write", {p_op:"set", p_path:path, p_data:data});
     if(/^stores\/[^/]+$/.test(path)){ if(S.myStoreIds) S.myStoreIds.add(path.slice(7)); refreshMyStores(); }
   },
   async update(path, data){
+    await mediaize(data);
     if(path.startsWith("orders/")){ await this.rpc("jt_order_update", {p_id: path.slice(7), p_data: data}); if(ORD_REFRESH) await ORD_REFRESH(); return; }
     await this.rpc("jt_write", {p_op:"update", p_path:path, p_data:data});
   },
   async del(path){ await this.rpc("jt_write", {p_op:"delete", p_path:path, p_data:null}); }
 };
+/* foto disimpan di Storage (sekali unduh, di-cache HP), database hanya menyimpan alamatnya */
+const MEDIA_CACHE = {};
+async function mediaUp(v){
+  if(typeof v !== "string" || !v.startsWith("data:image/") || !SB) return v;
+  if(MEDIA_CACHE[v]) return MEDIA_CACHE[v];
+  try{
+    const r = await fetch(String(CFG.supabaseUrl).replace(/\/$/, "") + "/functions/v1/media", {method:"POST",
+      headers:{"content-type":"application/json", apikey:CFG.supabaseAnonKey, authorization:"Bearer " + CFG.supabaseAnonKey}, body:JSON.stringify({key:KEY, data:v})});
+    const j = await r.json(); if(j && j.url){ MEDIA_CACHE[v] = j.url; return j.url; }
+  }catch(_){}
+  return v;
+}
+async function mediaize(d){
+  if(!d || typeof d !== "object") return d;
+  for(const k of ["img","logo","menuPhoto"]) if(typeof d[k] === "string" && d[k].startsWith("data:image/")) d[k] = await mediaUp(d[k]);
+  if(d.pay && typeof d.pay.qris === "string" && d.pay.qris.startsWith("data:image/")) d.pay.qris = await mediaUp(d.pay.qris);
+  return d;
+}
 function localFire(){ local.subs.forEach(s=>s.fire()); }
 const store = {
   listen(col, cb){
@@ -4733,10 +4762,10 @@ async function mSave(){
   S.own.mSaving = true; const btn = document.querySelector("#mForm button.btn.block"); if(btn) btn.disabled = true;
   try{
     const body = {name:d.name, category:d.category, area:d.area, hours:d.hours, address:d.address, wa:d.wa, lat:d.lat, lng:d.lng};
-    if(d.logo !== undefined) body.logo = d.logo; if(d.menuPhoto !== undefined) body.menuPhoto = d.menuPhoto;
+    if(d.logo !== undefined) body.logo = await mediaUp(d.logo); if(d.menuPhoto !== undefined) body.menuPhoto = await mediaUp(d.menuPhoto);
     const r = await sbStore.rpc("jt_owner_mstore_save", {p_id:f.id || null, p_data:body});
     const sid = r.id;
-    for(const m of menu){ const pd = {name:m.name, price:+m.price, active:true}; if(m.imgNew) pd.img = m.img; await sbStore.rpc("jt_owner_mprod_save", {p_store:sid, p_pid:m.id || null, p_data:pd}); }
+    for(const m of menu){ const pd = {name:m.name, price:+m.price, active:true}; if(m.imgNew) pd.img = await mediaUp(m.img); await sbStore.rpc("jt_owner_mprod_save", {p_store:sid, p_pid:m.id || null, p_data:pd}); }
     for(const pid of (f.removed || [])) await sbStore.rpc("jt_owner_mprod_del", {p_store:sid, p_pid:pid});
     S.own.mf = null; S.own.mSig = ""; toast(f.id ? "Toko diperbarui" : "Toko terdaftar & langsung tampil di aplikasi"); await loadMData(); render();
   }catch(err){ if(btn) btn.disabled = false; toast(String(err.message || err).replace(/^.*?:\s*/, "")); }
