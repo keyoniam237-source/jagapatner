@@ -1532,7 +1532,7 @@ async function ownerMapRender(){
   try{await leafletLoad()}catch(e){$('#omap').innerHTML='<div class="empty">'+esc(e.message)+'</div>';return}
   if(OMAP){try{OMAP.remove()}catch(e){}OMAP=null}
   const m=OMAP=L.map('omap',{scrollWheelZoom:false}).setView([-2.5,118],5);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(m);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,referrerPolicy:'strict-origin-when-cross-origin',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(m);
   const pts=pin.map(a=>{const k=planOf(a),c=PLAN_C[k];
     L.circleMarker([a.lat,a.lng],{radius:9,color:'#FFFFFF',weight:2,fillColor:c[1],fillOpacity:.95}).addTo(m)
       .bindPopup('<div class="mpop"><b>'+esc(a.shop_name)+'</b><span>'+esc(a.owner_name)+' · '+c[0]+'</span>'+(a.address?'<span>'+esc(a.address)+'</span>':'')+
