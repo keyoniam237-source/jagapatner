@@ -1618,6 +1618,15 @@ function renderHomeBody(){
   const hero = document.querySelector(".ahero"); if(hero) hero.classList.toggle("flat", filtering);
   renderMiniCart();
 }
+/* menu kategori di kartu utama beranda: Semua, kategori toko, dan Jago */
+function catHub(ar){
+  const tint = ["t1","t3","t4","t1"];
+  return '<div class="hub chub'+ra(2)+'"><div class="hgrid">'+
+    [["Semua","all"]].concat(CATS.map(c => [c, catE(c)])).map((c, i) =>
+      '<button class="ht press'+(S.cat === c[0] ? ' on' : '')+'" data-act="cat" data-v="'+esc(c[0])+'"><span class="ib '+tint[i % 4]+'">'+E(c[1])+'</span><b>'+esc(c[0])+'</b></button>').join("")+
+    '<button class="ht jg press" data-act="nav" data-v="jago"><span class="ib t2">'+E("scooter")+'</span><b>Jago</b>'+(ar?'<span class="bd2 ok">Jalan</span>':'<span class="bd2">Ojek</span>')+'</button>'+
+    '</div></div>';
+}
 function appHomeBody(){
   const q = S.q.trim().toLowerCase();
   const filtering = !!(q || S.cat !== "Semua");
@@ -1635,11 +1644,7 @@ function appHomeBody(){
     if(locOk(getProf()) && !inArea(getProf())) h += '<div style="margin:0 16px 12px">'+areaBanner()+'</div>';
     h += regionPicker();
     const oc = myActiveOrders();
-    h += '<div class="hub'+ra(2)+'"><div class="hgrid">'+
-      '<button class="ht press" data-act="scroll-prod"><span class="ib t1">'+E("cart")+'</span><b>Belanja</b></button>'+
-      '<button class="ht jg press" data-act="nav" data-v="jago"><span class="ib t2">'+E("scooter")+'</span><b>Jago</b>'+(ar?'<span class="bd2 ok">Jalan</span>':'<span class="bd2">Baru</span>')+'</button>'+
-      '<button class="ht press" data-act="scroll-store"><span class="ib t3">'+E("store")+'</span><b>Toko</b></button>'+
-      '<button class="ht press" data-act="nav" data-v="orders"><span class="ib t4">'+E("receipt")+'</span><b>Pesanan</b>'+(oc?'<span class="bd2 rd">'+oc+'</span>':'')+'</button></div>'+'</div>';
+    h += catHub(ar);
     h += '<div class="tstrip'+ra(3)+'"><div class="th">'+I("badge")+' Kami <b class="jg2"><em>JA</em><em>GA</em></b> Kepercayaan anda</div>'+
       '<div class="tc"><span class="ti">'+I("checkc")+'</span><span><b class="ab"><em>JA</em>minan</b><small>Driver & toko aman</small></span></div>'+
       '<div class="tc"><span class="ti">'+I("checkc")+'</span><span><b class="ab"><em>GA</em>ransi</b><small>Pesanan pasti sampai</small></span></div></div>';
@@ -1648,9 +1653,7 @@ function appHomeBody(){
       '<div class="adots" id="dots">'+ASLIDES.map((x,i)=>'<button class="'+(i===S.slide%ASLIDES.length?"on":"")+'" data-act="slide-to" data-v="'+i+'" aria-label="Banner '+(i+1)+'"></button>').join("")+'</div></div>';
   }
   if(!filtering) h += installCard();
-  h += '<div class="ash"><h2>Kategori</h2>'+(S.cat!=="Semua"?'<button data-act="cat" data-v="Semua">Lihat semua</button>':'')+'</div>';
-  h += '<div class="hscroll">'+[["Semua","all"]].concat(CATS.map(c=>[c,catE(c)])).map((c,i) =>
-    '<button class="acat press'+(S.cat===c[0]?" on":"")+ra(i+3)+'" data-act="cat" data-v="'+esc(c[0])+'">'+E(c[1])+'<span>'+esc(c[0])+'</span></button>').join("")+'</div>';
+  if(filtering) h += catHub(S.rides.find(r => RIDE_ACTIVE.includes(r.status)));
   if(!S.ready.stores) return h + '<div class="ash"><h2>Pilihan untukmu</h2></div>' + skeletonGrid(4);
   if(filtering){
     h += '<div class="ash"><h2>'+(q?'Hasil “'+esc(S.q.trim())+'”':esc(S.cat))+'</h2><button data-act="clear-filter">Hapus filter</button></div>';

@@ -1741,3 +1741,10 @@ html.navopen,html.navopen body{overflow:hidden}
 .regline{display:flex;align-items:center;gap:6px;margin:0 16px 12px;font-size:13px;color:rgba(255,255,255,.85)}
 .regline b{color:#fff}.regline .linkbtn{color:#cfe0ff;text-decoration:underline}
 .regline svg{width:15px;height:15px;color:#cfe0ff}
+
+/* kategori di kartu utama */
+.chub .hgrid{grid-template-columns:repeat(5,1fr)}
+.chub .ht .ib{width:52px;height:52px}
+.chub .ht b{font-size:12px}
+.chub .ht.on .ib{outline:2.5px solid #2f6bff;outline-offset:2px}
+.chub .ht.on b{color:#1f4fd1}
