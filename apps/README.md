@@ -4,8 +4,8 @@ Marketplace semua toko — gratis ongkir, tanpa biaya admin, pembayaran langsung
 
 | Halaman | Alamat |
 |---|---|
-| Pembeli / pengunjung | https://jagapatner.my.id/toko/ |
-| Portal penjual (mitra) | https://jagapatner.my.id/toko/#mitra |
+| Pembeli / pengunjung | https://jagapatner.my.id/apps/ |
+| Portal penjual (mitra) | https://jagapatner.my.id/apps/#mitra |
 
 Kategori: Makanan, Minuman, Sembako, Sayur & Buah, Rumah Tangga, Fashion, Handphone, Laptop, Game.
 

@@ -354,7 +354,7 @@ function watchProducts(storeId){
   });
 }
 
-const PREVIEW_BANNER = () => S.mode === "db" ? '<div class="notice" style="background:#fff1f0;border-color:#ffc9c4;color:#a1281c;font-weight:600">⚠️ Ini halaman <b>PRATINJAU desain</b>. Toko & pesanan di sini <b>tidak tampil</b> di aplikasi asli. Daftar & belanja di <a href="https://jagapatner.my.id/toko/" target="_blank" rel="noopener" style="color:#a1281c">jagapatner.my.id/toko</a></div>' : '';
+const PREVIEW_BANNER = () => S.mode === "db" ? '<div class="notice" style="background:#fff1f0;border-color:#ffc9c4;color:#a1281c;font-weight:600">⚠️ Ini halaman <b>PRATINJAU desain</b>. Toko & pesanan di sini <b>tidak tampil</b> di aplikasi asli. Daftar & belanja di <a href="https://jagapatner.my.id/apps/" target="_blank" rel="noopener" style="color:#a1281c">jagapatner.my.id/apps</a></div>' : '';
 /* ============ Render ============ */
 /* simpan isian formulir agar tidak hilang saat data diperbarui otomatis */
 function viewSig(){ return [S.role, S.view, S.storeId, S.prodId, S.orderId, S.sellerTab, S.sellerStoreId, S.drv && S.drv.editing].join("|"); }
@@ -1282,7 +1282,7 @@ async function placeOrder(form){
 }
 
 async function saveStore(form){
-  if(S.mode === "db" && !form.dataset.id){ toast("Pendaftaran toko hanya di jagapatner.my.id/toko/#mitra — ini halaman pratinjau."); return; }
+  if(S.mode === "db" && !form.dataset.id){ toast("Pendaftaran toko hanya di jagapatner.my.id/apps/#mitra — ini halaman pratinjau."); return; }
   const fd = new FormData(form);
   const id = form.dataset.id;
   const old = id ? storeById(id) : null;
@@ -1756,7 +1756,7 @@ function appProfile(){
     '</div><div class="plist p2'+ra(2)+'">'+
       '<button data-act="mitra-info">'+E("store")+'<div class="grow">Jadi mitra toko<small>Daftar gratis · bagi hasil 3%</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<button data-act="open-seller">'+E("store")+'<div class="grow">Masuk sebagai toko<small>Konfirmasi pesanan & kelola toko</small></div><span class="chev">'+I("chev")+'</span></button>'+
-      '<button data-act="open-driver">'+E("scooter")+'<div class="grow">Jadi driver JAGA<small>Antar barang & ojek Jago · jagapatner.my.id/toko/#driver</small></div><span class="chev">'+I("chev")+'</span></button>'+
+      '<button data-act="open-driver">'+E("scooter")+'<div class="grow">Jadi driver JAGA<small>Antar barang & ojek Jago · jagapatner.my.id/apps/#driver</small></div><span class="chev">'+I("chev")+'</span></button>'+
       (!isStandalone() ? '<button data-act="install"><img class="e3d" src="icons/icon-192.png" alt="" style="border-radius:8px"><div class="grow">Pasang aplikasi di HP<small>Buka JAGA langsung dari layar utama</small></div><span class="chev">'+I("chev")+'</span></button>' : '')+
       '<button data-act="rules">'+E("check")+'<div class="grow">Aturan JAGA<small>Ketentuan akun pembeli, toko & driver</small></div><span class="chev">'+I("chev")+'</span></button>'+
       '<a target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa,"Halo JAGA, saya butuh bantuan."))+'">'+E("bell")+'<div class="grow">Bantuan<small>WhatsApp '+esc(CONTACT.wa)+'</small></div><span class="chev">'+I("chev")+'</span></a>'+
@@ -2706,7 +2706,7 @@ document.addEventListener("submit", async e => {
   const f = e.target;
   if(f.id === "storeLogin"){
     e.preventDefault();
-    if(!SB) return toast("Login toko hanya di jagapatner.my.id/toko/#mitra — ini halaman pratinjau.");
+    if(!SB) return toast("Login toko hanya di jagapatner.my.id/apps/#mitra — ini halaman pratinjau.");
     const fd = new FormData(f); const btn = f.querySelector("button.btn"); btn.disabled = true;
     try{
       const { data, error } = await SB.rpc("jt_store_login", {p_login: fd.get("login"), p_pass: fd.get("pass"), p_key: KEY});
@@ -3107,7 +3107,7 @@ function appOwner(){
       accLine("driver", d.id, d.name, d.plate)+
       '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="drv:'+esc(d.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-adjust" data-id="drv:'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">'+I("cash")+' Saldo</button>'+
       '<details class="kmenu"><summary class="btn ghost sm">Lainnya ▾</summary><div class="kpop"><button data-act="own-exempt" data-k="d" data-id="'+esc(d.id)+'" data-v="Driver '+esc(d.name)+'">Bebas komisi</button><button data-act="own-drv-active" data-id="'+esc(d.id)+'" data-v="'+(d.suspended?"1":"0")+'" data-name="'+esc(d.name)+'">'+(d.suspended?"Aktifkan":"Nonaktifkan")+'</button><button class="dangerc" data-act="own-drv-del" data-id="'+esc(d.id)+'" data-v="'+esc(d.name)+'">Hapus</button></div></details></div></div></div>';
-    }).join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/toko/#driver ke calon driver.</div>')+'</div>';
+    }).join("") : '<div class="muted small">Belum ada driver terdaftar. Bagikan link jagapatner.my.id/apps/#driver ke calon driver.</div>')+'</div>';
   } else {
     h += '<div class="card pad"><h3 class="sub">Link penting</h3>'+
       [["Aplikasi pembeli",APP_URL],["Portal toko",APP_URL+"#mitra"],["Portal driver",APP_URL+"#driver"]].map(l => '<div class="orow"><div class="grow"><b>'+l[0]+'</b><small>'+esc(l[1])+'</small></div><button class="btn ghost sm" data-act="copy" data-v="'+esc(l[1])+'">Salin</button></div>').join("")+'</div>';
@@ -3128,7 +3128,7 @@ document.addEventListener("click", async e => {
         const d = {plate:r.plate};
         const info = kind === "store" ? "Nama login: " + r.login + "\nPassword: " + r.pass : "Nama: " + r.name + "\nPlat: " + (d.plate || "-") + "\nPassword: " + r.pass;
         const wa = r.wa;
-        const msg = "Halo, ini tim JAGA. Berikut data masuk akun " + (kind === "store" ? "toko" : "driver") + " Anda di jagapatner.my.id/toko:\n\n" + info + "\n\nSegera ganti password setelah masuk. Jangan berikan ke siapa pun.";
+        const msg = "Halo, ini tim JAGA. Berikut data masuk akun " + (kind === "store" ? "toko" : "driver") + " Anda di jagapatner.my.id/apps:\n\n" + info + "\n\nSegera ganti password setelah masuk. Jangan berikan ke siapa pun.";
         document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Password sementara</h2>'+
           '<div class="tmppass">'+(kind === "store" ? '<small>Nama login</small><b>'+esc(r.login)+'</b>' : '<small>Nama + plat</small><b>'+esc(r.name)+' · '+esc(d.plate || "-")+'</b>')+'<small>Password</small><b class="pw">'+esc(r.pass)+'</b></div>'+
           '<div class="hint">Password ini hanya tampil sekali. Kirim ke pemilik akun lewat WhatsApp, lalu minta ia menggantinya setelah masuk.</div>'+
@@ -5400,7 +5400,7 @@ function appMasuk(){
 document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return; const a = el.dataset.act;
   if(a === "masuk-tab"){ S.masukTab = el.dataset.v; render(); }
-  else if(a === "rec-open"){ if(!SB) return toast("Pemulihan akun hanya tersedia di jagapatner.my.id/toko"); S.masukForgot = true; render(); }
+  else if(a === "rec-open"){ if(!SB) return toast("Pemulihan akun hanya tersedia di jagapatner.my.id/apps"); S.masukForgot = true; render(); }
   else if(a === "rec-close"){ S.masukForgot = false; render(); }
   else if(a === "rec-dismiss"){ if(S.rec){ sbStore.rpc("jt_recover_seen", {p_id:S.rec.id}).catch(() => {}); S.rec.seen = true; } render(); }
   else if(a === "rec-skip"){ await recFinish(); toast("Akun terhubung. Buat password nanti di menu pengaturan."); }
@@ -5436,7 +5436,7 @@ document.addEventListener("submit", async e => {
   }
   if(f.id !== "drvLogin" && f.id !== "storeLogin2") return;
   e.preventDefault();
-  if(!SB) return toast("Masuk akun hanya tersedia di jagapatner.my.id/toko. Ini halaman pratinjau.");
+  if(!SB) return toast("Masuk akun hanya tersedia di jagapatner.my.id/apps. Ini halaman pratinjau.");
   const fd = new FormData(f), btn = f.querySelector("button.btn"); btn.disabled = true; btn.textContent = "Memeriksa…";
   try{
     if(f.id === "drvLogin"){

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<!-- Google Analytics 4 (jagapatner.my.id) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7SZ59PQSWK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-7SZ59PQSWK');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" id="mf" href="manifest.webmanifest">
+<script>(function(){try{var h=location.hash,m=document.getElementById("mf"),st=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+if(st&&(!h||h==="#")){var r=localStorage.getItem("jt_home_role");if(r==="seller"){location.replace("#mitra");h="#mitra";}else if(r==="driver"){location.replace("#driver");h="#driver";}}
+m.href=h==="#mitra"?"manifest-mitra.webmanifest":h==="#driver"?"manifest-driver.webmanifest":"manifest.webmanifest";}catch(e){}})();</script>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="JAGA">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="JAGA — JAminan Driver dan toko Aman, GAransi pesanan pasti sampai. Kami JAGA kepercayaan anda. Belanja dari toko sekitar dan ojek online Jago di Rokan Hulu.">
+<link rel="icon" href="../jaga-logo.svg" type="image/svg+xml">
+<meta name="theme-color" content="#2a5ccc">
+<title>JAGA — Kami JAGA Kepercayaan Anda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@300;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css?v=58">
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="logo" data-act="logo" aria-label="JAGA"><svg class="jmark" viewBox="30 24 136 178" aria-hidden="true"><mask id="jtm" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="220"><rect width="200" height="220" fill="#fff"/><path d="M36 172 L156 106 V126 L36 192 Z" fill="#000"/></mask><g mask="url(#jtm)"><path d="M128 44 L152 30 V142 A56 56 0 0 1 40 142 V122 L64 110 V142 A32 32 0 0 0 128 142 Z" fill="currentColor"/><path d="M74 132 V84 L96 72 V132 Z" fill="currentColor"/><path d="M104 132 V64 L120 55 V132 Z" fill="#b08d4f"/></g><path d="M40 176 L152 114.4 V126.4 L40 188 Z" fill="#b08d4f"/></svg><span class="lsep"></span><span class="wm">JAGA</span></div><span class="mitra">Mitra</span>
+    <form class="hsearch" id="hsearch" autocomplete="off"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Cari produk atau toko di JAGA"></form>
+    <nav class="nav" id="nav"></nav>
+    <div class="hicons" id="hicons"></div>
+    <div class="roleswitch" id="roles"></div>
+  </div>
+</header>
+<main><div class="wrap" id="app"><div class="empty">Memuat…</div></div></main>
+<nav class="bottomnav" id="bnav"></nav>
+<div id="cartbar"></div>
+<div id="modal"></div>
+<div id="toast"></div><div id="notifs" aria-live="assertive"></div>
+
+<script src="app.js?v=58"></script>
+</body>
+</html>
