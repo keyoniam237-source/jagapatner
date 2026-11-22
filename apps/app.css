@@ -1719,3 +1719,13 @@ html.navopen,html.navopen body{overflow:hidden}
 .tmppass{display:grid;gap:2px;padding:14px;border-radius:14px;background:#eef3ff;margin:4px 0 10px}
 .tmppass small{color:#5b6478;font-size:12px;margin-top:6px}.tmppass small:first-child{margin-top:0}
 .tmppass b{font-size:16px;color:#0b1a3d}.tmppass b.pw{font-size:28px;letter-spacing:.12em;font-family:ui-monospace,Menlo,monospace}
+
+/* ajakan notifikasi pemesan */
+.nask{max-width:380px}
+.nask-ic{width:64px;height:64px;margin:0 auto 6px;display:grid;place-items:center;border-radius:20px;background:#eef3ff}
+.nask-ic>*{width:40px;height:40px}
+.nsteps{margin:0;padding-left:20px;font-size:13.5px;line-height:1.7}
+.nsteps svg{width:15px;height:15px;vertical-align:-2px}
+.nline{display:flex;align-items:center;gap:8px;margin:12px 0 4px;padding:9px 12px;border-radius:12px;background:#fff7e6;border:1px solid #ffd99a;color:#7a4f00;font-size:12.5px;line-height:1.4}
+.nline>.e3d{flex:none;width:20px;height:20px}
+.nline .linkbtn{white-space:nowrap}

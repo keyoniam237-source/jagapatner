@@ -688,6 +688,7 @@ function viewOrder(){
   const s = storeById(o.storeId);
   let h = '<button class="back" data-act="go" data-v="orders">← Pesanan saya</button>';
   h += '<div class="two"><div class="card pad"><div class="order-top"><div><h2 class="sec" style="margin:0">'+esc(o.storeName)+'</h2><div class="small muted">'+esc(o.code)+' · '+fmtDate(o.createdAt)+'</div></div>'+statusTag(o.status)+'</div>'+stepper(o);
+  if(o.isMine !== false && !["selesai","dibatalkan"].includes(o.status)) h += buyerNotifLine();
   if(o.status === "menunggu_pembayaran"){
     h += '<h3 class="sub" style="margin-top:16px">Langkah pembayaran</h3>'+payInstructions(o)+
       '<label class="f">Unggah bukti pembayaran</label><input type="file" accept="image/*" class="in" id="proofFile"><div class="hint">Foto/screenshot bukti transfer. Toko akan mengecek lalu memproses pesanan.</div>'+
@@ -1278,7 +1279,7 @@ async function placeOrder(form){
   S.cart = {storeId:null, items:{}}; saveCart();
   go("order", {orderId:id, justOrdered:true});
   S.hist = [{view:"orders"}];
-  if(S.role !== "seller") celebrate(); else toast("Pesanan dibuat!");
+  if(S.role !== "seller"){ celebrate(); buyerNotifAsk("order"); } else toast("Pesanan dibuat!");
 }
 
 async function saveStore(form){
@@ -3697,6 +3698,7 @@ function rideDriverBox(o){
 }
 function rideCard(o){
   let h = '<div class="card pad rcard"><div class="dj-head">'+statusTag(o.status)+'<span class="small muted">'+esc(o.code)+' · '+fmtDate(o.createdAt)+'</span></div>'+rideSteps(o);
+  if(RIDE_ACTIVE.includes(o.status)) h += buyerNotifLine();
   if(o.status === "mencari_driver"){
     h += searchBox(o, "Mencari driver Jago terdekat…");
   } else if(o.status === "driver_jemput" || o.status === "dalam_perjalanan"){
@@ -3868,7 +3870,7 @@ document.addEventListener("submit", async e => {
       if(data.useSaldo) loadPts("buyer", true);
       if(r && r.id) S.jago.seen[r.id] = r.status;
       S.jago.dest = null; S.jago.res = null; S.jago.q = ""; S.jago.open = null;
-      toast("Order Jago dibuat. Mencari driver terdekat…");
+      toast("Order Jago dibuat. Mencari driver terdekat…"); buyerNotifAsk("ride");
       try{ if(!audioCtx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC) audioCtx = new AC(); } }catch(_){}
       if(SB) await rideRefresh();
     }catch(err){ toast(String(err.message||"Gagal").replace(/^.*?:\s*/, "").slice(0, 140)); }
@@ -4373,6 +4375,39 @@ async function pushEnable(role){
   }catch(e){ toast("Notifikasi gagal diaktifkan: " + String(e.message || e).replace(/^.*?:\s*/, "").slice(0, 80)); }
   render();
 }
+/* ajakan aktifkan notifikasi untuk pemesan/penumpang */
+const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const IS_STANDALONE = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+function buyerNotifState(){
+  if(pushOn("buyer")) return "on";
+  if(!SB) return "on";
+  if(!PUSH_OK) return IS_IOS && !IS_STANDALONE ? "ios" : "none";
+  if(Notification.permission === "denied") return "denied";
+  return "off";
+}
+function buyerNotifAsk(kind){
+  const st = buyerNotifState(); if(st === "on" || st === "none") return;
+  const last = Number(lsGet("jt_notif_ask") || 0); if(Date.now() - last < 6 * 3600e3) return;
+  lsSet("jt_notif_ask", String(Date.now()));
+  const ride = kind === "ride";
+  const what = ride ? "driver Jago ditemukan, sudah dekat, dan perjalanan selesai" : "pesanan diambil driver, sedang diantar, dan sudah sampai";
+  const body = st === "ios"
+    ? '<p class="small" style="margin:0 0 10px">Di iPhone, notifikasi hanya bisa aktif setelah JAGA dipasang ke layar utama:</p><ol class="nsteps"><li>Ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas) di Safari</li><li>Pilih <b>Tambah ke Layar Utama</b></li><li>Buka JAGA dari ikon di layar utama, lalu aktifkan notifikasi</li></ol>'
+    : st === "denied"
+    ? '<p class="small" style="margin:0">Notifikasi JAGA sedang diblokir di browser. Ketuk ikon gembok/ⓘ di samping alamat situs → <b>Notifikasi</b> → <b>Izinkan</b>, lalu muat ulang halaman.</p>'
+    : '<p class="small" style="margin:0">Kami kabari langsung di HP saat '+what+', walaupun aplikasi JAGA sedang ditutup.</p>';
+  setTimeout(() => {
+    const m = document.getElementById("modal"); if(!m || m.innerHTML.trim()) return;
+    m.innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal nask"><div class="nask-ic">'+E("bell")+'</div><h2 class="sec" style="text-align:center">'+(ride ? 'Mau tahu kapan driver datang?' : 'Mau tahu kapan pesanan sampai?')+'</h2>'+body+
+      '<div class="actions" style="margin-top:14px">'+(st === "off" ? '<button class="btn block press" data-act="nask-on">Aktifkan notifikasi</button>' : '')+
+      '<button class="btn ghost block" data-act="close-modal">'+(st === "off" ? 'Nanti saja' : 'Mengerti')+'</button></div></div></div>';
+  }, 1800);
+}
+function buyerNotifLine(){
+  const st = buyerNotifState(); if(st === "on" || st === "none") return "";
+  return '<div class="nline">'+E("bell")+'<span class="grow">'+(st === "ios" ? 'Pasang JAGA ke layar utama agar dapat kabar pesanan walau aplikasi ditutup.' : st === "denied" ? 'Notifikasi diblokir. Izinkan di pengaturan browser agar dapat kabar pesanan.' : 'Notifikasi mati. Anda tidak dikabari bila aplikasi ditutup.')+'</span>'+
+    (st === "off" ? '<button class="linkbtn small" data-act="push-on" data-v="buyer">Aktifkan</button>' : '<button class="linkbtn small" data-act="nask-help">Caranya</button>')+'</div>';
+}
 function pushCard(role, text){
   if(!PUSH_OK || pushOn(role)) return "";
   return '<div class="pushcard">'+E("bell")+'<div class="grow"><b>Aktifkan notifikasi</b><small>'+esc(text)+'</small></div><button class="btn sm press" data-act="push-on" data-v="'+role+'">Aktifkan</button></div>';
@@ -4630,6 +4665,8 @@ document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
   const a = el.dataset.act, id = el.dataset.id, v = el.dataset.v;
   if(a === "push-on"){ pushEnable(v); return; }
+  if(a === "nask-on"){ closeModal(); pushEnable("buyer"); return; }
+  if(a === "nask-help"){ lsSet("jt_notif_ask", "0"); buyerNotifAsk("order"); return; }
   if(a === "report"){ openReport(el.dataset.k, id); return; }
   if(a === "rate"){
     const n = +v; el.parentNode.querySelectorAll("button").forEach((b, i) => b.classList.toggle("on", i < n));
