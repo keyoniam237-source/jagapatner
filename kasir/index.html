@@ -411,7 +411,7 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 .scan .uchips button[aria-pressed="true"]{background:#fff;color:var(--ink)}
 .who{background:var(--gold2);color:var(--ink);border:0;font-weight:700}
 .wz{max-height:52vh;overflow:auto;margin:0 -4px;padding:0 4px}
-.wz-row{display:grid;grid-template-columns:minmax(0,1fr) 104px 62px;gap:6px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.wz-row{display:grid;grid-template-columns:minmax(0,1fr) 112px auto 66px;gap:6px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
 .wz-row.on{background:color-mix(in srgb,var(--brand) 5%,transparent)}
 .wz-l{display:flex;gap:10px;align-items:center;min-width:0}
 .wz-l input{width:20px;height:20px;flex:none}
@@ -431,6 +431,11 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 .sheet.wzs .wzg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));align-content:start;gap:12px}
 .sheet.wzs .scan-view video.mirror{transform:scaleX(-1)}
 #cam-flip .i{width:18px;height:18px}
+.upick{display:flex;align-items:center;gap:6px;min-width:0}
+.upick .up-per{font-size:13px;color:var(--muted,#6b7280);font-weight:600}
+.upick .up-q{width:58px!important;min-width:0;text-align:center;padding-left:4px;padding-right:4px}
+.upick .up-s{min-height:38px;flex:1 1 auto;min-width:84px;max-width:130px}
+.upick .up-c{width:96px!important;min-width:0}
 .upd-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));z-index:120;display:flex;gap:12px;align-items:center;background:var(--ink);color:#fff;padding:10px 12px 10px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(15,27,45,.35);font-weight:600;font-size:14px}
 .wz-foot{position:static;margin-top:auto}
 @media (max-width:600px){.sheet.wzs{height:94vh;max-width:100%}.sheet.wzs .wzg{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
@@ -440,7 +445,7 @@ details.more summary{font-weight:700;cursor:pointer;color:var(--brand)}
 .lg-foot{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;font-size:12.5px}
 .lg-foot a{color:var(--muted);text-decoration:none;font-weight:600}
 .funnel{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
-@media (max-width:420px){.wz-row{grid-template-columns:minmax(0,1fr) 92px 54px}}
+@media (max-width:640px){.wz-row{grid-template-columns:minmax(0,1fr) 72px;grid-template-areas:'n n' 'p s' 'u u'}.wz-row .wz-l{grid-area:n}.wz-row .wz-p{grid-area:p}.wz-row .wz-s{grid-area:s}.wz-row .upick{grid-area:u}}
 /* warna platform JAGA (navy & emas) */
 .top{border-bottom:2px solid var(--gold)}
 .logo{font-family:var(--brandfont);font-size:22px;gap:9px}
@@ -565,7 +570,7 @@ const Store={
 /* ============ data ============ */
 let S=null,SESS=null,ACC=null;
 const SB={url:'https://flwajaadllviewenerya.supabase.co',key:'sb_publishable_1zd0fWLLIKEIABemgeyj6g_3rZssbCq'};
-const APP_VER='jaga-kasir-v24';
+const APP_VER='jaga-kasir-v25';
 const isAcc=()=>typeof SESS==='string'&&SESS.startsWith('acc:');
 const KEY=()=>SESS==='demo'?'jk_state_demo':isAcc()?'jk_state_'+SESS.replace(':','_'):'jk_state';
 const randKey=()=>{const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('')};
@@ -679,10 +684,22 @@ function pickHtml(){
 const inCart=id=>{const c=S.cart.find(x=>x.key===id);return c?c.qty:0};
 function tileHtml(p,act){const n=inCart(p.id);return '<button class="tile'+(p.stock<=0?' out':'')+'" data-act="'+act+'" data-id="'+p.id+'"><span class="pic">'+pict(p)+(p.cat?'<i class="ptag">'+esc(p.cat)+'</i>':'')+(n?'<i class="pq num">'+n+'</i>':'')+'</span><b>'+esc(p.name)+'</b><span class="num">'+(p.stock<=0?'Stok habis · ':'')+rp(p.sell)+'</span></button>'}
 function pcard(o){return '<button class="pcard" data-act="'+o.act+'" '+(o.attr||'')+'><span class="pic">'+(o.img?'<img src="'+esc(o.img)+'" alt="" loading="lazy">':esc((o.name||'?').charAt(0).toUpperCase()))+(o.tag?'<i class="ptag">'+esc(o.tag)+'</i>':'')+(o.badge?'<i class="pq'+(o.badgeOk?' ok':'')+'">'+o.badge+'</i>':'')+'</span><b>'+esc(o.name)+'</b>'+(o.sub?'<span class="small muted">'+o.sub+'</span>':'')+'<span class="price num">'+(o.price?rp(o.price):'<span class="muted small">'+(o.noprice||'')+'</span>')+'</span></button>'}
+const UNITS=['pcs','pack','bungkus','sachet','renteng','botol','kaleng','kotak','dus','lusin','liter','ml','kg','gram','ons','butir','ikat','karung','cup','gelas','batang','tabung','lembar','meter'];
+const fmtQ=n=>String(Math.round((+n||1)*1000)/1000).replace('.',',');
+const qtyNum=v=>{const n=parseFloat(String(v||'').replace(',','.'));return n>0?Math.min(n,100000):1};
+const ul=p=>(p&&p.uq&&p.uq!==1?fmtQ(p.uq)+' ':'')+((p&&p.unit)||'pcs');
+function unitPick(k,u,q,attr){u=u||'pcs';const known=UNITS.includes(u);attr=attr||'';
+  return '<span class="upick"><span class="up-per">per</span><input type="text" inputmode="decimal" class="up-q" '+attr+' data-up="'+k+'" value="'+fmtQ(q||1)+'" aria-label="Jumlah" autocomplete="off">'+
+    '<select class="up-s" '+attr+' data-up="'+k+'" aria-label="Satuan">'+UNITS.map(x=>'<option'+(x===u?' selected':'')+'>'+x+'</option>').join('')+'<option value="__"'+(known?'':' selected')+'>lainnya…</option></select>'+
+    '<input type="text" class="up-c" '+attr+' data-up="'+k+'" placeholder="tulis satuan" value="'+(known?'':esc(u))+'"'+(known?' hidden':'')+' autocomplete="off"></span>'}
+function unitRead(k,root){root=root||document;const q=root.querySelector('.up-q[data-up="'+k+'"]'),s=root.querySelector('.up-s[data-up="'+k+'"]'),c=root.querySelector('.up-c[data-up="'+k+'"]');if(!s)return {unit:'pcs',uq:1};
+  const u=s.value==='__'?((c&&c.value.trim())||'pcs'):s.value;return {unit:u.slice(0,20),uq:qtyNum(q&&q.value)}}
+function unitSet(k,u){const s=document.querySelector('.up-s[data-up="'+k+'"]'),c=document.querySelector('.up-c[data-up="'+k+'"]');if(!s||!u)return;if(UNITS.includes(u)){s.value=u;if(c)c.hidden=true}else{s.value='__';if(c){c.hidden=false;c.value=u}}unitLabel(k)}
+function unitLabel(k){if(k!=='pf')return;const r=unitRead('pf'),t='per '+fmtQ(r.uq)+' '+r.unit;document.querySelectorAll('.pf-per').forEach(e=>e.textContent=t)}
 const ci=c=>{if(c.pid){const p=prod(c.pid);if(!p)return null;const u=c.u!=null&&p.units&&p.units[c.u];
     if(u)return {pid:p.id,name:p.name+' ('+u.n+')',price:u.p,buy:(p.buy||0)*u.q,unit:u.n,stock:Math.floor(p.stock/u.q),f:u.q,un:u.n};
     let price=p.sell;(p.tiers||[]).forEach(t=>{if(c.qty>=t.min&&t.p>0)price=t.p});
-    return {pid:p.id,name:p.name,price,buy:p.buy||0,unit:p.unit||'pcs',stock:p.stock,f:1,grosir:price!==p.sell}}
+    return {pid:p.id,name:p.name,price,buy:p.buy||0,unit:ul(p),stock:p.stock,f:1,grosir:price!==p.sell}}
   return {pid:null,name:c.name,price:c.price,buy:0,unit:'pcs',stock:Infinity}};
 const cartTotal=()=>S.cart.reduce((a,c)=>{const i=ci(c);return a+(i?i.price*c.qty:0)},0);
 const cartQty=()=>S.cart.reduce((a,c)=>a+c.qty,0);
@@ -1102,7 +1119,7 @@ function refreshBarang(){
   const l=S.products.filter(p=>(!k||p.name.toLowerCase().includes(k)||(p.code||'').includes(k))&&(bf==='semua'||(bf==='habis'?p.stock<=0:p.stock>0&&p.stock<=p.min))).sort((a,b)=>a.name.localeCompare(b.name));
   const grp=cats().map(c=>[c,l.filter(p=>catOf(p)===c)]).filter(g=>g[1].length);
   $('#blist').innerHTML=l.length?grp.map(g=>'<div class="cat-h"><span>'+esc(g[0])+'</span><small>'+g[1].length+' barang</small></div>'+g[1].map(p=>'<button class="item" data-act="p-edit" data-id="'+p.id+'"><span class="th">'+pict(p)+'</span><div class="grow"><b>'+esc(p.name)+'</b><span class="muted small num">'+(p.code?esc(p.code):'tanpa barcode')+'</span></div>'+
-    '<div class="r"><div class="num" style="font-weight:700">'+rp(p.sell)+'</div><div class="small num">'+p.stock+' '+esc(p.unit||'pcs')+' '+stockPill(p)+'</div></div></button>').join('')).join(''):'<div class="empty">Tidak ada barang di daftar ini.</div>';
+    '<div class="r"><div class="num" style="font-weight:700">'+rp(p.sell)+' <span class="muted small" style="font-weight:500">/ '+esc(ul(p))+'</span></div><div class="small num">'+p.stock+' '+(p.uq&&p.uq!==1?'× '+esc(ul(p)):esc(p.unit||'pcs'))+' '+stockPill(p)+'</div></div></button>').join('')).join(''):'<div class="empty">Tidak ada barang di daftar ini.</div>';
 }
 /* ---- Katalog JAGA (warung) ---- */
 const CAT={cache:{}};
@@ -1183,7 +1200,7 @@ async function catFillByCode(code){
     const n0=$('#pf-catnote');if(n0){n0.hidden=false;n0.textContent='Ditemukan di Open Food Facts: '+o.name+'. Isi harga jual dan stok.'}
     if(!$('#pf-img').value&&o.photoUrl){const u=await urlToData(o.photoUrl,420);if(u&&$('#pf-img')&&!$('#pf-img').value){$('#pf-img').value=u;$('#pf-img-prev').innerHTML='<img src="'+u+'" alt="">';$('#pf-img-del').hidden=false}}
     return}
-  if(!$('#pf-name').value.trim())$('#pf-name').value=x.name;if(!$('#pf-cat').value.trim())$('#pf-cat').value=x.cat;$('#pf-unit').value=x.unit||$('#pf-unit').value;
+  if(!$('#pf-name').value.trim())$('#pf-name').value=x.name;if(!$('#pf-cat').value.trim())$('#pf-cat').value=x.cat;unitSet('pf',x.unit);
   if(!$('#pf-sell').value&&x.price)$('#pf-sell').value=fmt(x.price);
   if(x.photo&&!$('#pf-img').value){$('#pf-img').value=x.photo;$('#pf-img-prev').innerHTML='<img src="'+x.photo+'" alt="">';$('#pf-img-del').hidden=false}
   const n=$('#pf-catnote');if(n){n.hidden=false;n.textContent='Ditemukan di Katalog JAGA: '+x.name+'. Periksa harga jual dan isi stok.'}
@@ -1201,10 +1218,10 @@ function productForm(p,opt){
     (!n&&isAcc()?'<button class="catbtn" type="button" data-act="pf-catphoto" data-id="'+esc(p.id)+'">'+ico('barang')+'<span><b>'+(p.img?'Ganti foto dari Katalog JAGA':'Ambil foto dari Katalog JAGA')+'</b><span class="muted small">Simpan perubahan lain dulu, lalu pilih foto</span></span></button>':'')+
     '<label class="f">Kode barcode (kosongkan jika tidak ada)<span class="row" style="flex-wrap:nowrap"><input class="grow" type="text" inputmode="numeric" id="pf-code" value="'+esc(p.code)+'" autocomplete="off"><button class="btn" type="button" data-act="pf-scan">'+ico('scan')+'Scan</button></span></label>'+
     '<div class="two"><label class="f">Jenis barang<input type="text" id="pf-cat" list="pf-cats" value="'+esc(p.cat)+'" autocomplete="off"><datalist id="pf-cats">'+cats.map(c=>'<option value="'+esc(c)+'">').join('')+'</datalist></label>'+
-    '<label class="f">Satuan<input type="text" id="pf-unit" value="'+esc(p.unit||'pcs')+'" autocomplete="off"></label></div>'+
+    '<label class="f">Dijual per'+unitPick('pf',p.unit,p.uq)+'</label></div>'+
     '<label class="f">Supplier (opsional)<select id="pf-sup"><option value="">Belum dipilih</option>'+sups().map(x=>'<option value="'+x.id+'"'+(p.sup===x.id?' selected':'')+'>'+esc(supLabel(x))+'</option>').join('')+'</select>'+(sups().length?'':'<span class="muted small">Tambah kontak di Barang → Kontak supplier.</span>')+'</label>'+
-    '<div class="two"><label class="f">Harga beli<input type="text" inputmode="numeric" data-rp id="pf-buy" value="'+(p.buy?fmt(p.buy):'')+'" placeholder="0" autocomplete="off"></label>'+
-    '<label class="f">Harga jual<input type="text" inputmode="numeric" data-rp id="pf-sell" value="'+(p.sell?fmt(p.sell):'')+'" placeholder="0" autocomplete="off"></label></div>'+
+    '<div class="two"><label class="f"><span>Harga beli <span class="muted pf-per">per '+esc(fmtQ(p.uq||1)+' '+(p.unit||'pcs'))+'</span></span><input type="text" inputmode="numeric" data-rp id="pf-buy" value="'+(p.buy?fmt(p.buy):'')+'" placeholder="0" autocomplete="off"></label>'+
+    '<label class="f"><span>Harga jual <span class="muted pf-per">per '+esc(fmtQ(p.uq||1)+' '+(p.unit||'pcs'))+'</span></span><input type="text" inputmode="numeric" data-rp id="pf-sell" value="'+(p.sell?fmt(p.sell):'')+'" placeholder="0" autocomplete="off"></label></div>'+
     moreUnitsHtml(p)+
     '<div class="two"><label class="f">Stok sekarang<input type="text" inputmode="numeric" id="pf-stock" value="'+p.stock+'" autocomplete="off"></label>'+
     '<label class="f">Ingatkan jika stok ≤<input type="text" inputmode="numeric" id="pf-min" value="'+p.min+'" autocomplete="off"></label></div>'+
@@ -1217,7 +1234,7 @@ function saveProduct(){
   if(!name) return toast('Isi nama barang dulu.');
   if(!sell) return toast('Isi harga jual dulu.');
   if(code&&S.products.some(x=>x.code===code&&x.id!==id)) return toast('Kode barcode ini sudah dipakai barang lain.');
-  const stock=parseInt($('#pf-stock').value,10)||0, data=Object.assign({img:$('#pf-img').value,code,name,cat:$('#pf-cat').value.trim(),sup:($('#pf-sup')||{}).value||'',unit:$('#pf-unit').value.trim()||'pcs',buy,sell,min:num($('#pf-min').value)},readUnits());
+  const stock=parseInt($('#pf-stock').value,10)||0, data=Object.assign({img:$('#pf-img').value,code,name,cat:$('#pf-cat').value.trim(),sup:($('#pf-sup')||{}).value||'',...unitRead('pf'),buy,sell,min:num($('#pf-min').value)},readUnits());
   let p=prod(id);
   if(p){if(stock!==p.stock)S.moves.push({ts:Date.now(),pid:p.id,qty:stock-p.stock,type:'koreksi'});Object.assign(p,data,{stock})}
   else{p=Object.assign({id:uid(),stock},data);S.products.push(p);if(stock)S.moves.push({ts:Date.now(),pid:p.id,qty:stock,type:'masuk'})}
@@ -1636,8 +1653,8 @@ function wzRender(){if(!WZ||!$('#wz-list'))return;const two=WZ.step===2;
   $('#wz-top').hidden=two;$('#wz-back').hidden=!two;
   if(two){const l=Object.keys(WZ.sel).map(id=>WZ.rows.find(r=>r.id===id)).filter(Boolean);
     $('#wz-list').className='list wz';
-    $('#wz-list').innerHTML=l.map(r=>{const s=WZ.sel[r.id];return '<div class="wz-row on"><div class="wz-l"><span class="th" data-wzimg="'+r.id+'">'+(WZPH[r.id]?'<img src="'+WZPH[r.id]+'" alt="">':esc(r.name.charAt(0)))+'</span><span><b>'+esc(r.name)+'</b><span class="muted small">'+esc(r.unit)+' · <a href="#" data-act="wz-pick" data-id="'+r.id+'">hapus</a></span></span></div>'+
-      '<input type="text" inputmode="numeric" data-rp class="wz-p" data-id="'+r.id+'" placeholder="Harga jual" value="'+(s.price?fmt(s.price):'')+'" autocomplete="off">'+
+    $('#wz-list').innerHTML=l.map(r=>{const s=WZ.sel[r.id];return '<div class="wz-row on"><div class="wz-l"><span class="th" data-wzimg="'+r.id+'">'+(WZPH[r.id]?'<img src="'+WZPH[r.id]+'" alt="">':esc(r.name.charAt(0)))+'</span><span><b>'+esc(r.name)+'</b><span class="muted small"><a href="#" data-act="wz-pick" data-id="'+r.id+'">hapus</a></span></span></div>'+
+      '<input type="text" inputmode="numeric" data-rp class="wz-p" data-id="'+r.id+'" placeholder="Harga jual" value="'+(s.price?fmt(s.price):'')+'" autocomplete="off">'+unitPick('wz'+r.id,s.unit||r.unit,s.uq||1,'data-wzu="'+r.id+'"')+
       '<input type="text" inputmode="numeric" class="wz-s" data-id="'+r.id+'" placeholder="Stok" value="'+(s.stock||'')+'" autocomplete="off"></div>'}).join('')||'<div class="empty">Belum ada barang dipilih.</div>';
     wzCount();return}
   const cnt={};WZ.rows.forEach(r=>cnt[r.cat]=(cnt[r.cat]||0)+1);
@@ -1650,14 +1667,14 @@ function wzRender(){if(!WZ||!$('#wz-list'))return;const two=WZ.step===2;
     (l.length>WZ.lim?'<button class="btn block wz-more" data-act="wz-more">Tampilkan lagi ('+(l.length-WZ.lim)+')</button>':''):'<div class="empty">Tidak ada di katalog. Tutup lalu pakai Tambah barang untuk mengisi sendiri.</div>';
   wzCount();wzPhotos(show.filter(r=>r.photo).map(r=>r.id))}
 function wzCount(){const n=Object.keys(WZ.sel).length,e=$('#wz-n');if(e)e.textContent=n+' dipilih';const b=$('#wz-next');if(b){b.disabled=!n;b.textContent=WZ.step===2?(n?'Simpan '+n+' barang':'Simpan barang'):(n?'Lanjut isi harga · '+n:'Lanjut isi harga')}}
-function wzPick(id){const r=WZ.rows.find(x=>x.id===id);if(!r||r.have)return;if(WZ.sel[id])delete WZ.sel[id];else WZ.sel[id]={price:r.price||0,stock:0};
+function wzPick(id){const r=WZ.rows.find(x=>x.id===id);if(!r||r.have)return;if(WZ.sel[id])delete WZ.sel[id];else WZ.sel[id]={price:r.price||0,stock:0,unit:r.unit||'pcs',uq:1};
   if(WZ.step===2){if(!Object.keys(WZ.sel).length)WZ.step=1;return wzRender()}
   const b=document.querySelector('.wzc[data-id="'+CSS.escape(id)+'"]');if(b){b.classList.toggle('on',!!WZ.sel[id]);const k=b.querySelector('.wzk');if(WZ.sel[id]&&!k)b.insertAdjacentHTML('beforeend','<i class="wzk">'+ico('check')+'</i>');if(!WZ.sel[id]&&k)k.remove()}wzCount()}
 async function wzSave(){const ids=Object.keys(WZ.sel),miss=ids.filter(id=>!WZ.sel[id].price);
   if(miss.length){toast('Isi harga jual untuk '+miss.length+' barang.');const f=document.querySelector('.wz-p[data-id="'+CSS.escape(miss[0])+'"]');if(f){f.focus();f.scrollIntoView({block:'center'})}return}
   const b=$('#wz-next');b.disabled=true;b.textContent='Menyimpan…';const rows=ids.map(id=>WZ.rows.find(r=>r.id===id)).filter(Boolean);
   await wzPhotos(rows.filter(r=>r.photo).map(r=>r.id));
-  const ts=Date.now();rows.forEach(r=>{if(r.code&&byCode(r.code))return;const s=WZ.sel[r.id],p={id:uid(),code:r.code,name:r.name,cat:r.cat==='Lainnya'?'':r.cat,unit:r.unit,buy:0,sell:s.price,stock:s.stock||0,min:3,img:WZPH[r.id]||''};
+  const ts=Date.now();rows.forEach(r=>{if(r.code&&byCode(r.code))return;const s=WZ.sel[r.id],p={id:uid(),code:r.code,name:r.name,cat:r.cat==='Lainnya'?'':r.cat,unit:s.unit||r.unit,uq:s.uq||1,buy:0,sell:s.price,stock:s.stock||0,min:3,img:WZPH[r.id]||''};
     S.products.push(p);if(p.stock)S.moves.push({ts,pid:p.id,qty:p.stock,type:'masuk'})});
   S.onb=1;save();closeSheet();WZ=null;track('wizard');if(S.products.length)track('barang_pertama');render();toast(rows.length+' barang siap dijual.')}
 
@@ -1936,6 +1953,7 @@ document.addEventListener('change',ev=>{
   if(t.id==='oc-file'&&t.files[0]){const f=t.files[0];t.value='';shrinkFit(f,520,.78).then(u=>{OC.photo=u;OC.changed=true;$('#oc-prev').innerHTML='<img src="'+u+'" alt="">'}).catch(()=>toast('Foto ini tidak bisa dibaca.'))}
   if(t.id==='pf-code'&&t.value.trim())catFillByCode(t.value.trim());
   if(t.id==='pf-name'&&!$('#pf-id').value)pfNameCat();
+  if(t.classList&&(t.classList.contains('up-s')||t.classList.contains('up-q')||t.classList.contains('up-c'))){const k=t.dataset.up;if(t.classList.contains('up-s')){const c=t.parentNode.querySelector('.up-c');if(c){c.hidden=t.value!=='__';if(!c.hidden)c.focus()}}unitLabel(k);if(t.dataset.wzu&&WZ&&WZ.sel[t.dataset.wzu])Object.assign(WZ.sel[t.dataset.wzu],unitRead(k,t.closest('.wz-row')))}
   if(t.classList&&t.classList.contains('cph-cb')){if(t.checked)CPH.sel[t.dataset.pid]=t.dataset.cid;else delete CPH.sel[t.dataset.pid];cphCount()}
   if(t.id==='op-plan'){$('#op-amt').value=fmt(t.value==='basic'?129000:t.dataset.cur==='basic'?220000:349000)}
   if(t.classList&&t.classList.contains('kl-on'))kulakRefresh();

@@ -1,5 +1,5 @@
 // Jaga Kasir: simpan aplikasi di perangkat supaya kasir tetap jalan tanpa internet.
-const VERSION = 'jaga-kasir-v24';
+const VERSION = 'jaga-kasir-v25';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'vendor/zxing.min.js'];
 self.addEventListener('install', e => e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(
