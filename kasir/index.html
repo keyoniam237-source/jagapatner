@@ -10,7 +10,7 @@
 <meta property="og:description" content="Barang langsung lengkap dengan foto, stok otomatis, kasbon tertagih, dan laporan tutup toko ke WhatsApp pemilik.">
 <meta property="og:type" content="website"><meta property="og:url" content="https://jagapatner.my.id/kasir/"><meta property="og:image" content="https://jagapatner.my.id/kasir/icon-512.png">
 <link rel="canonical" href="https://jagapatner.my.id/kasir/">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com/@zxing/library@0.21.3/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.openfoodfacts.org; connect-src 'self' https://flwajaadllviewenerya.supabase.co https://world.openfoodfacts.org https://images.openfoodfacts.org https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com/@zxing/library@0.21.3/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.openfoodfacts.org https://tile.openstreetmap.org; connect-src 'self' https://flwajaadllviewenerya.supabase.co https://world.openfoodfacts.org https://images.openfoodfacts.org https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="same-origin">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -453,6 +453,15 @@ details.more summary{color:var(--brand)}
 .pk-p{font-size:24px;font-weight:800}.pk-p small{font-size:13px;color:var(--muted);font-weight:600}
 .pk ul{margin:0;padding-left:18px;font-size:14px}.pk li{margin:3px 0}
 .plan-note{border-style:solid}
+.omap-wrap{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#E8E4DA}
+#omap{height:min(62vh,560px);width:100%}
+.omap-leg{display:flex;flex-wrap:wrap;gap:10px;padding:8px 12px;background:var(--surface);border-top:1px solid var(--line);font-size:12.5px;font-weight:600}
+.omap-leg span{display:flex;align-items:center;gap:6px}.omap-leg i{width:12px;height:12px;border-radius:99px;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)}
+.mpop{display:flex;flex-direction:column;gap:3px;font:13px/1.4 'Plus Jakarta Sans',system-ui,sans-serif;min-width:180px}.mpop b{font-size:14px}.mpop span{color:#4A4F5B}
+.mpop-a{display:flex;gap:12px;margin-top:4px}.mpop-a a{font-weight:700;color:#0F1B2D}
+.item.sup{align-items:flex-start}.item.sup .grow{display:flex;flex-direction:column;gap:2px}.sup-act{margin-top:6px;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip-btn{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 11px;font:inherit;font-size:13px;font-weight:600}
+.linkbtn{border:0;background:none;padding:0;font:inherit;color:var(--brand);font-weight:700;text-decoration:underline;cursor:pointer}
 .expired-note{border:1px solid #E7B4AC;background:#FCEDEA;align-items:center}.expired-note .btn{white-space:nowrap;text-decoration:none}
 .steps-l{margin:0;padding-left:20px;font-size:14px}.steps-l li{margin:4px 0}
 .rg-plans{display:flex;flex-direction:column;gap:6px}
@@ -557,9 +566,9 @@ async function rpc(fn,args,ms){
 }
 async function devKey(){let k=await Store.get('jk_devkey');if(!k||k.length<20){k=randKey();await Store.set('jk_devkey',k)}return k}
 const blank=()=>({v:1,shop:{name:'',address:'',phone:'',footer:'Terima kasih, selamat belanja kembali',paper:58,autoPrint:false},
-  products:[],sales:[],moves:[],expenses:[],modal:{},cart:[],seq:{day:'',n:0},demo:false});
+  products:[],sales:[],moves:[],expenses:[],suppliers:[],modal:{},cart:[],seq:{day:'',n:0},demo:false});
 function normalize(d){const s=Object.assign(blank(),d);s.shop=Object.assign(blank().shop,d.shop||{});
-  ['products','sales','moves','expenses','cart'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]});if(!s.modal||typeof s.modal!=='object')s.modal={};if(!s.seq||typeof s.seq!=='object')s.seq={day:'',n:0};
+  ['products','sales','moves','expenses','suppliers','cart'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]});if(!s.modal||typeof s.modal!=='object')s.modal={};if(!s.seq||typeof s.seq!=='object')s.seq={day:'',n:0};
   s.cart=s.cart.map(c=>Object.assign({key:c.pid||('m'+uid())},c));if(s.moves.length>3000)s.moves=s.moves.slice(-3000);s.sales.forEach(x=>{if(x.printed===undefined)x.printed=x.ts});return s}
 function seed(){
   const s=blank(); s.demo=true; s.shop.name='Warung Contoh'; s.shop.address='Jl. Mawar No. 12, Ujungbatu';
@@ -668,6 +677,7 @@ function vKasir(){
   $('#view').innerHTML='<div class="kasir">'+
   '<section class="stack">'+
     (!WHO&&plan()==='expired'?'<div class="note plan-note" style="border-color:var(--bad)"><div class="grow"><b>Masa coba sudah habis.</b> Data tetap aman. Pilih paket sekali bayar untuk lanjut berjualan.</div><button class="btn pay" data-act="upgrade">Pilih paket</button></div>':'')+
+    (!WHO&&isAcc()&&ACC&&ACC.lat==null&&!S.locAsk&&!S.demo&&S.products.length?'<div class="note"><div class="grow"><b>Tandai lokasi warung.</b> Supaya tim JAGA mudah menemukan warung Anda untuk pendampingan.</div><button class="btn" data-act="loc-set">Tandai</button><button class="btn ghost" data-act="loc-dismiss">Nanti</button></div>':'')+
     (plan()==='expired'?'<div class="note expired-note"><div class="grow"><b>Masa coba sudah habis.</b> '+esc(trialWhy())+' Transaksi baru terkunci. Hubungi JAGA untuk dapat menggunakan aplikasi lagi.</div><a class="btn pay" href="'+contactUrl()+'" target="_blank" rel="noopener">Hubungi JAGA</a></div>':'')+
     (!WHO&&SESS!=='local'&&plan()==='trial'?'<div class="note plan-note"><div class="grow"><b>Masa coba: sisa '+trialLeft()+' hari · '+trialTxLeft()+' transaksi.</b> Setelah 3 hari atau 30 transaksi, transaksi baru terkunci. Pilih paket, bayar sekali.</div><button class="btn" data-act="upgrade">Lihat paket</button></div>':'')+
     (SESS==='local'?'<div class="note trial"><div class="grow"><b>Mode coba · sisa '+trialLeft()+' hari · '+trialTxLeft()+' transaksi.</b> Data hanya tersimpan di HP ini. Daftar supaya data tercadang online dan bisa memakai Katalog JAGA berfoto.</div><button class="btn" data-act="trial-register">Daftar</button></div>':'')+
@@ -1051,7 +1061,7 @@ function vBarang(){
   const low=S.products.filter(p=>p.stock>0&&p.stock<=p.min).length,out=S.products.filter(p=>p.stock<=0).length;
   const val=S.products.reduce((a,p)=>a+Math.max(0,p.stock)*(p.buy||0),0);
   $('#view').innerHTML='<div class="wrap stack"><div class="row"><h2 class="grow">Barang &amp; stok</h2><button class="btn primary" data-act="p-new">'+ico('plus')+'Tambah barang</button></div>'+
-    '<div class="row"><button class="btn" data-act="wizard">Isi barang cepat</button><button class="btn" data-act="sm-start">'+ico('scan')+'Stok masuk cepat</button><button class="btn" data-act="kulak">Daftar belanja'+(low+out?' · '+(low+out):'')+'</button></div>'+
+    '<div class="row"><button class="btn" data-act="wizard">Isi barang cepat</button><button class="btn" data-act="sm-start">'+ico('scan')+'Stok masuk cepat</button><button class="btn" data-act="kulak">Daftar belanja'+(low+out?' · '+(low+out):'')+'</button><button class="btn" data-act="sup-list">Kontak supplier'+(sups().length?' · '+sups().length:'')+'</button></div>'+
     '<div class="tiles"><div class="stat"><small>Jenis barang</small><b class="num">'+S.products.length+'</b></div><div class="stat"><small>Stok menipis</small><b class="num" style="color:'+(low?'var(--warn)':'inherit')+'">'+low+'</b></div>'+
     '<div class="stat"><small>Stok habis</small><b class="num" style="color:'+(out?'var(--bad)':'inherit')+'">'+out+'</b></div><div class="stat"><small>Nilai stok (harga beli)</small><b class="num">'+rp(val)+'</b></div></div>'+
     '<input type="search" id="bq" placeholder="Cari nama atau kode barang" value="'+esc(bq)+'" autocomplete="off">'+
@@ -1124,6 +1134,7 @@ function productForm(p,opt){
     '<label class="f">Kode barcode (kosongkan jika tidak ada)<span class="row" style="flex-wrap:nowrap"><input class="grow" type="text" inputmode="numeric" id="pf-code" value="'+esc(p.code)+'" autocomplete="off"><button class="btn" type="button" data-act="pf-scan">'+ico('scan')+'Scan</button></span></label>'+
     '<div class="two"><label class="f">Jenis barang<input type="text" id="pf-cat" list="pf-cats" value="'+esc(p.cat)+'" autocomplete="off"><datalist id="pf-cats">'+cats.map(c=>'<option value="'+esc(c)+'">').join('')+'</datalist></label>'+
     '<label class="f">Satuan<input type="text" id="pf-unit" value="'+esc(p.unit||'pcs')+'" autocomplete="off"></label></div>'+
+    '<label class="f">Supplier (opsional)<select id="pf-sup"><option value="">Belum dipilih</option>'+sups().map(x=>'<option value="'+x.id+'"'+(p.sup===x.id?' selected':'')+'>'+esc(supLabel(x))+'</option>').join('')+'</select>'+(sups().length?'':'<span class="muted small">Tambah kontak di Barang → Kontak supplier.</span>')+'</label>'+
     '<div class="two"><label class="f">Harga beli<input type="text" inputmode="numeric" data-rp id="pf-buy" value="'+(p.buy?fmt(p.buy):'')+'" placeholder="0" autocomplete="off"></label>'+
     '<label class="f">Harga jual<input type="text" inputmode="numeric" data-rp id="pf-sell" value="'+(p.sell?fmt(p.sell):'')+'" placeholder="0" autocomplete="off"></label></div>'+
     moreUnitsHtml(p)+
@@ -1138,7 +1149,7 @@ function saveProduct(){
   if(!name) return toast('Isi nama barang dulu.');
   if(!sell) return toast('Isi harga jual dulu.');
   if(code&&S.products.some(x=>x.code===code&&x.id!==id)) return toast('Kode barcode ini sudah dipakai barang lain.');
-  const stock=parseInt($('#pf-stock').value,10)||0, data=Object.assign({img:$('#pf-img').value,code,name,cat:$('#pf-cat').value.trim(),unit:$('#pf-unit').value.trim()||'pcs',buy,sell,min:num($('#pf-min').value)},readUnits());
+  const stock=parseInt($('#pf-stock').value,10)||0, data=Object.assign({img:$('#pf-img').value,code,name,cat:$('#pf-cat').value.trim(),sup:($('#pf-sup')||{}).value||'',unit:$('#pf-unit').value.trim()||'pcs',buy,sell,min:num($('#pf-min').value)},readUnits());
   let p=prod(id);
   if(p){if(stock!==p.stock)S.moves.push({ts:Date.now(),pid:p.id,qty:stock-p.stock,type:'koreksi'});Object.assign(p,data,{stock})}
   else{p=Object.assign({id:uid(),stock},data);S.products.push(p);if(stock)S.moves.push({ts:Date.now(),pid:p.id,qty:stock,type:'masuk'})}
@@ -1252,7 +1263,7 @@ function vAtur(){
       '<div class="two"><label class="f">Nomor telepon / WA<input type="tel" id="st-phone" value="'+esc(sh.phone)+'" autocomplete="off"></label>'+
       '<label class="f">Lebar kertas struk<select id="st-paper"><option value="58"'+(sh.paper===58?' selected':'')+'>58 mm (printer mini)</option><option value="80"'+(sh.paper===80?' selected':'')+'>80 mm</option></select></label></div>'+
       '<label class="f">Pesan di bawah struk<input type="text" id="st-footer" value="'+esc(sh.footer)+'" autocomplete="off"></label><button class="btn primary" data-act="st-save">Simpan profil</button></div>'+
-    planCard()+staffCard()+
+    planCard()+locCard()+staffCard()+
     '<div class="card stack"><h3>QRIS warung</h3><p class="muted" style="margin:0">Gambar QRIS ini tampil di layar pembayaran saat pembeli memilih QRIS.</p>'+(sh.qris?'<img class="qris" src="'+esc(sh.qris)+'" alt="Kode QRIS warung">':'')+
       '<div class="row"><label class="btn" for="st-qris-file">'+(sh.qris?'Ganti gambar QRIS':'Unggah gambar QRIS')+'</label>'+(sh.qris?'<button class="btn danger" data-act="qris-del">Hapus</button>':'')+'<input type="file" id="st-qris-file" accept="image/*" hidden></div></div>'+
     '<div class="card stack"><h3>Printer struk</h3>'+
@@ -1440,19 +1451,96 @@ function smReview(){if(!SM)return;const ids=Object.keys(SM.items).filter(id=>pro
 
 /* ---- daftar belanja ke grosir ---- */
 function kulakItems(){return S.products.filter(p=>p.stock<=p.min).sort((a,b)=>a.stock-b.stock)}
-function kulakSheet(){const l=kulakItems();
+function kulakSheet(supId){const l=kulakItems(),ws=sups().filter(x=>waNum(x.wa)),pre=supById(supId)||(l.length&&ws.find(x=>l.some(p=>p.sup===x.id)))||null;
   sheet('<div class="hd"><h2>Daftar belanja</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
-    (l.length?'<p class="muted small" style="margin:0">Barang yang stoknya menipis atau habis. Ubah jumlahnya, lalu kirim ke grosir lewat WhatsApp.</p><div class="list">'+l.map(p=>'<label class="item"><input type="checkbox" class="kl-on" data-id="'+p.id+'" checked style="width:20px;height:20px;flex:none"><div class="grow"><b>'+esc(p.name)+'</b><span class="muted small num">stok '+p.stock+' · batas '+p.min+(p.buy?' · beli '+rp(p.buy):'')+'</span></div>'+
+    (l.length?'<p class="muted small" style="margin:0">Barang yang stoknya menipis atau habis. Ubah jumlahnya, lalu kirim ke grosir lewat WhatsApp.</p><div class="list">'+l.map(p=>'<label class="item"><input type="checkbox" class="kl-on" data-id="'+p.id+'" checked style="width:20px;height:20px;flex:none"><div class="grow"><b>'+esc(p.name)+'</b><span class="muted small num">stok '+p.stock+' · batas '+p.min+(p.buy?' · beli '+rp(p.buy):'')+(supById(p.sup)?' · '+esc(supById(p.sup).co):'')+'</span></div>'+
       '<input type="text" inputmode="numeric" class="num kl-q" data-id="'+p.id+'" value="'+Math.max(1,p.min*2-Math.max(0,p.stock))+'" style="width:64px;text-align:center" aria-label="Jumlah pesan '+esc(p.name)+'"></label>').join('')+'</div>'+
       '<div class="kv sum"><span>Perkiraan belanja</span><span class="num" id="kl-tot"></span></div>'+
-      '<label class="f">WhatsApp grosir / sales<input type="tel" id="kl-wa" value="'+esc(S.shop.supplierWa||'')+'" placeholder="0812xxxxxxxx" autocomplete="off"></label>'+
+      (ws.length?'<label class="f">Kirim ke supplier<select id="kl-sup"><option value="">Nomor lain</option>'+ws.map(x=>'<option value="'+x.id+'"'+(pre&&pre.id===x.id?' selected':'')+'>'+esc(supLabel(x))+'</option>').join('')+'</select></label>':'<p class="muted small" style="margin:0">Simpan nomor sales di <button class="linkbtn" data-act="sup-list">Kontak supplier</button> supaya tinggal dipilih.</p>')+
+      '<label class="f">WhatsApp grosir / sales<input type="tel" id="kl-wa" value="'+esc(pre?pre.wa:(S.shop.supplierWa||''))+'" placeholder="0812xxxxxxxx" autocomplete="off"></label>'+
       '<a class="btn pay block" id="kl-send" target="_blank" rel="noopener" data-act="kl-sent" href="#">Kirim pesanan lewat WhatsApp</a><button class="btn block" data-act="kl-copy">Salin daftar</button>':
       '<div class="empty">Semua stok masih aman. Barang muncul di sini saat stoknya sampai batas pengingat.</div>'));
-  kulakRefresh()}
+  if(pre)kulakPick(pre.id);kulakRefresh()}
+function kulakPick(id){const x=supById(id);if(!$('#kl-wa'))return;if(x){$('#kl-wa').value=x.wa;document.querySelectorAll('.kl-on').forEach(c=>{const p=prod(c.dataset.id);c.checked=!p.sup||p.sup===id})}else document.querySelectorAll('.kl-on').forEach(c=>c.checked=true);kulakRefresh()}
 function kulakText(){const on=[...document.querySelectorAll('.kl-on')].filter(x=>x.checked).map(x=>x.dataset.id);
   const rows=on.map(id=>{const p=prod(id),q=num((document.querySelector('.kl-q[data-id="'+id+'"]')||{}).value);return p&&q?{p,q}:null}).filter(Boolean);
-  return {rows,text:'Halo, saya '+(S.shop.name||'pemilik warung')+' mau pesan:\n'+rows.map((r,i)=>(i+1)+'. '+r.p.name+' — '+r.q+' '+(r.p.unit||'pcs')).join('\n')+'\n\nMohon info total dan kapan bisa diantar. Terima kasih.'}}
+  const sx=supById(($('#kl-sup')||{}).value);return {rows,text:'Halo'+(sx&&sx.sales?' '+sx.sales:'')+', saya '+(S.shop.name||'pemilik warung')+' mau pesan:\n'+rows.map((r,i)=>(i+1)+'. '+r.p.name+' — '+r.q+' '+(r.p.unit||'pcs')).join('\n')+'\n\nMohon info total dan kapan bisa diantar. Terima kasih.'}}
 function kulakRefresh(){const a=$('#kl-send');if(!a)return;const k=kulakText();$('#kl-tot').textContent=rp(k.rows.reduce((s,r)=>s+(r.p.buy||0)*r.q,0));a.href=waLink($('#kl-wa').value,k.text)}
+
+/* ---- kontak supplier ---- */
+const SUP_CO=['Indofood','Wings','Unilever','Mayora','Orang Tua','Garudafood','Sinar Sosro','Nestlé','Sampoerna','Grosir langganan'];
+const SUP_DAYS=['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+let supQ='';
+const sups=()=>S.suppliers||(S.suppliers=[]);
+const supById=id=>id?sups().find(s=>s.id===id):null;
+const supLabel=s=>s?(s.co+(s.sales?' · '+s.sales:'')):'';
+function supSheet(){const all=sups(),q=supQ.toLowerCase(),l=all.filter(s=>!q||[s.co,s.sales,s.brands,s.note].join(' ').toLowerCase().includes(q));
+  const nprod=id=>S.products.filter(p=>p.sup===id).length;
+  sheet('<div class="hd"><h2>Kontak supplier</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div>'+
+    '<p class="muted small" style="margin:0">Simpan nomor sales distributor (Indofood, Wings, Unilever, dan lainnya) serta grosir langganan. Pesan stok langsung lewat WhatsApp.</p>'+
+    '<div class="row"><button class="btn primary grow" data-act="sup-new">'+ico('plus')+'Tambah supplier</button><button class="btn" data-act="kulak">Daftar belanja</button></div>'+
+    (all.length>4?'<input type="search" id="sup-q" placeholder="Cari supplier, sales, atau merek" value="'+esc(supQ)+'" autocomplete="off">':'')+
+    '<div class="list" id="sup-list">'+(l.length?l.map(s=>'<div class="item sup"><div class="grow"><b>'+esc(s.co)+'</b><span class="muted small">'+[s.sales?'Sales: '+esc(s.sales):'',s.wa?'<span class="num">'+esc(s.wa)+'</span>':'',s.day?'Kunjungan: '+esc(s.day):''].filter(Boolean).join(' · ')+'</span>'+
+      (s.brands?'<span class="small">Barang: '+esc(s.brands)+'</span>':'')+(s.note?'<span class="muted small">'+esc(s.note)+'</span>':'')+(nprod(s.id)?'<span class="muted small">'+nprod(s.id)+' barang di warung dari supplier ini</span>':'')+
+      '<div class="row sup-act">'+(waNum(s.wa)?'<a class="btn pay sm" target="_blank" rel="noopener" href="'+waLink(s.wa,'Halo'+(s.sales?' '+s.sales:'')+', saya '+(S.shop.name||'pemilik warung')+'. ')+'">WhatsApp</a><a class="btn sm" href="tel:+'+waNum(s.wa)+'">Telepon</a>':'')+
+      '<button class="btn sm" data-act="kulak" data-sup="'+s.id+'">Pesan stok</button><button class="btn sm ghost" data-act="sup-edit" data-id="'+s.id+'">Ubah</button></div></div></div>').join(''):
+      '<div class="empty">'+(all.length?'Tidak ada supplier yang cocok.':'Belum ada kontak supplier. Tambahkan sales distributor atau grosir tempat Anda belanja stok.')+'</div>')+'</div>')}
+function supForm(id){const s=supById(id)||{id:'',co:'',sales:'',wa:'',brands:'',day:'',note:''};
+  sheet('<div class="hd"><h2>'+(s.id?'Ubah supplier':'Tambah supplier')+'</h2><button class="btn ghost" data-act="close" aria-label="Tutup">'+ico('x')+'</button></div><input type="hidden" id="sp-id" value="'+esc(s.id)+'">'+
+    '<label class="f">Perusahaan / distributor / grosir<input type="text" id="sp-co" list="sp-cos" value="'+esc(s.co)+'" placeholder="Contoh: Indofood, Grosir Sumber Rejeki" autocomplete="off"'+(s.id?'':' autofocus')+'><datalist id="sp-cos">'+SUP_CO.map(c=>'<option value="'+esc(c)+'">').join('')+'</datalist></label>'+
+    (s.id?'':'<div class="chips">'+SUP_CO.slice(0,8).map(c=>'<button class="chip-btn" type="button" data-act="sp-co" data-v="'+esc(c)+'">'+esc(c)+'</button>').join('')+'</div>')+
+    '<div class="two"><label class="f">Nama sales (opsional)<input type="text" id="sp-sales" value="'+esc(s.sales)+'" placeholder="Contoh: Pak Andi" autocomplete="off"></label>'+
+    '<label class="f">Nomor WhatsApp / telepon<input type="tel" id="sp-wa" value="'+esc(s.wa)+'" placeholder="0812xxxxxxxx" autocomplete="off"></label></div>'+
+    '<label class="f">Barang atau merek yang dipasok<input type="text" id="sp-brands" value="'+esc(s.brands)+'" placeholder="Contoh: Indomie, Sarimi, Bimoli, Chitato" autocomplete="off"></label>'+
+    '<div class="two"><label class="f">Hari kunjungan sales<select id="sp-day"><option value="">Tidak tentu</option>'+SUP_DAYS.map(d=>'<option'+(s.day===d?' selected':'')+'>'+d+'</option>').join('')+'</select></label>'+
+    '<label class="f">Catatan (minimal order, tempo)<input type="text" id="sp-note" value="'+esc(s.note)+'" placeholder="Contoh: min. 1 dus, tempo 7 hari" autocomplete="off"></label></div>'+
+    '<button class="btn primary block" data-act="sp-save">Simpan supplier</button>'+(s.id?'<button class="btn danger block" data-act="sp-del" data-id="'+s.id+'">Hapus supplier</button>':'')+'<button class="btn block" data-act="sup-list">Kembali ke daftar</button>')}
+function supSave(){const id=$('#sp-id').value,co=$('#sp-co').value.trim(),wa=$('#sp-wa').value.trim();
+  if(co.length<2)return toast('Isi nama perusahaan, distributor, atau grosir.');if(wa&&!waNum(wa))return toast('Nomor WhatsApp belum benar. Contoh: 081234567890.');
+  const d={co,sales:$('#sp-sales').value.trim(),wa,brands:$('#sp-brands').value.trim(),day:$('#sp-day').value,note:$('#sp-note').value.trim()};
+  const s=supById(id);if(s)Object.assign(s,d);else sups().push(Object.assign({id:uid()},d));save();track('supplier');supSheet();toast('Supplier tersimpan.')}
+
+/* ---- lokasi warung (titik peta) ---- */
+const mapsUrl=(lat,lng)=>'https://www.google.com/maps?q='+lat+','+lng;
+function locCard(){if(!isAcc()||!ACC)return '';const has=ACC.lat!=null&&ACC.lng!=null;
+  return '<div class="card stack" id="loc-card"><h3>Lokasi warung</h3><p class="muted" style="margin:0">'+(has?'Titik warung tersimpan: <a href="'+mapsUrl(ACC.lat,ACC.lng)+'" target="_blank" rel="noopener" class="num">'+(+ACC.lat).toFixed(5)+', '+(+ACC.lng).toFixed(5)+'</a>. Tim JAGA memakai titik ini untuk kunjungan pendampingan dan dukungan.':'Tandai titik warung supaya tim JAGA bisa menemukan warung Anda untuk kunjungan pendampingan dan dukungan. Lakukan saat Anda berada di warung.')+'</p>'+
+    '<div class="row"><button class="btn '+(has?'':'primary')+'" data-act="loc-set">'+(has?'Perbarui dari lokasi sekarang':'Tandai lokasi warung sekarang')+'</button>'+(has?'<button class="btn ghost danger" data-act="loc-del">Hapus titik</button>':'')+'</div></div>'}
+function locSet(){if(!navigator.geolocation)return toast('Perangkat ini tidak bisa membaca lokasi.');toast('Membaca lokasi…');
+  navigator.geolocation.getCurrentPosition(async p=>{const {latitude:lat,longitude:lng,accuracy}=p.coords;
+    try{const r=await rpc('jk_set_location',{p_key:await devKey(),p_lat:lat,p_lng:lng});if(!r.ok)return toast(r.error);ACC.lat=lat;ACC.lng=lng;S.locAsk=1;save();render();toast('Lokasi warung tersimpan'+(accuracy>150?' (akurasi sekitar '+Math.round(accuracy)+' m, coba lagi di luar ruangan bila kurang tepat).':'.'))}catch(e){toast(e.message)}},
+    e=>toast(e.code===1?'Izin lokasi ditolak. Izinkan akses lokasi untuk situs ini di pengaturan browser.':'Lokasi belum terbaca. Coba lagi di dekat jendela atau di luar ruangan.'),{enableHighAccuracy:true,timeout:20000,maximumAge:60000})}
+
+/* ---- peta warung (portal pemilik) ---- */
+let LF=null;
+function leafletLoad(){if(window.L)return Promise.resolve();if(LF)return LF;
+  LF=new Promise((res,rej)=>{const c=document.createElement('link');c.rel='stylesheet';c.href='vendor/leaflet/leaflet.css';document.head.appendChild(c);
+    const s=document.createElement('script');s.src='vendor/leaflet/leaflet.js';s.onload=()=>res();s.onerror=()=>{LF=null;rej(new Error('Peta gagal dimuat. Periksa internet lalu coba lagi.'))};document.head.appendChild(s)});return LF}
+const planOf=a=>a.plan==='plus'?'plus':a.plan==='basic'?'basic':a.trial_until&&Date.parse(a.trial_until)<Date.now()?'habis':'coba';
+const PLAN_C={plus:['Lifetime Plus','#B08D4F'],basic:['Lifetime Basic','#0F1B2D'],coba:['Masa coba','#2F7DD1'],habis:['Masa coba habis','#8A8F99']};
+let OMAP=null;
+async function ownerMapRender(){
+  const L0=OWN.list||[],f=OWN.mf||'semua',on=L0.filter(a=>a.status==='active'||a.status==='pending'),
+    l=on.filter(a=>f==='semua'||planOf(a)===f||(f==='bayar'&&(a.plan==='basic'||a.plan==='plus'))),pin=l.filter(a=>a.lat!=null&&a.lng!=null),nopin=l.filter(a=>a.lat==null||a.lng==null);
+  $('#login-root').innerHTML='<div class="own"><header class="top"><div class="logo">'+MARK('mk')+'<b>JAGA</b><span>Pemilik</span></div><div class="shop">Peta warung Jaga Kasir</div><button class="chip" data-act="owner-logout">Keluar</button></header>'+
+    '<div class="own-body">'+ownerTabs()+'<div class="row"><h2 class="grow">Peta warung</h2><button class="btn" data-act="owner-refresh">Muat ulang</button></div>'+
+    '<div class="tiles"><div class="stat"><small>Warung di peta</small><b class="num">'+pin.length+'</b></div><div class="stat"><small>Belum bertitik</small><b class="num" style="color:'+(nopin.length?'var(--warn)':'inherit')+'">'+nopin.length+'</b></div><div class="stat"><small>Berbayar</small><b class="num">'+on.filter(a=>a.plan==='basic'||a.plan==='plus').length+'</b></div></div>'+
+    '<div class="seg">'+[['semua','Semua'],['bayar','Berbayar'],['coba','Masa coba'],['habis','Coba habis']].map(x=>'<button data-act="omap-f" data-f="'+x[0]+'" aria-pressed="'+(f===x[0])+'">'+x[1]+'</button>').join('')+'</div>'+
+    '<div class="omap-wrap"><div id="omap" role="region" aria-label="Peta lokasi warung"></div><div class="omap-leg">'+Object.values(PLAN_C).map(c=>'<span><i style="background:'+c[1]+'"></i>'+c[0]+'</span>').join('')+'</div></div>'+
+    (nopin.length?'<div class="card"><h3 style="margin-bottom:6px">Belum menandai lokasi · '+nopin.length+'</h3><p class="muted small" style="margin:0 0 8px">Warung menandai titiknya dari menu Atur → Lokasi warung. Kirim pengingat lewat WhatsApp.</p><div class="list">'+
+      nopin.map(a=>'<div class="item"><div class="grow"><b>'+esc(a.shop_name)+'</b><span class="muted small">'+esc(a.owner_name)+(a.address?' · '+esc(a.address):'')+'</span></div><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/'+esc(a.wa)+'?text='+encodeURIComponent('Halo '+a.owner_name+', ini JAGA. Mohon tandai lokasi '+a.shop_name+' di aplikasi Jaga Kasir: buka Atur → Lokasi warung → Tandai lokasi warung sekarang (lakukan saat berada di warung). Terima kasih.')+'">Ingatkan</a></div>').join('')+'</div></div>':'')+
+    '</div></div>';
+  try{await leafletLoad()}catch(e){$('#omap').innerHTML='<div class="empty">'+esc(e.message)+'</div>';return}
+  if(OMAP){try{OMAP.remove()}catch(e){}OMAP=null}
+  const m=OMAP=L.map('omap',{scrollWheelZoom:false}).setView([-2.5,118],5);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(m);
+  const pts=pin.map(a=>{const k=planOf(a),c=PLAN_C[k];
+    L.circleMarker([a.lat,a.lng],{radius:9,color:'#FFFFFF',weight:2,fillColor:c[1],fillOpacity:.95}).addTo(m)
+      .bindPopup('<div class="mpop"><b>'+esc(a.shop_name)+'</b><span>'+esc(a.owner_name)+' · '+c[0]+'</span>'+(a.address?'<span>'+esc(a.address)+'</span>':'')+
+        '<span>Daftar '+fmtDate(Date.parse(a.created_at))+(a.last_login?' · masuk '+fmtDate(Date.parse(a.last_login)):'')+'</span>'+
+        '<span class="mpop-a"><a href="'+mapsUrl(a.lat,a.lng)+'" target="_blank" rel="noopener">Rute (Google Maps)</a><a href="https://wa.me/'+esc(a.wa)+'" target="_blank" rel="noopener">WhatsApp</a></span></div>');
+    return [a.lat,a.lng]});
+  if(pts.length===1)m.setView(pts[0],15);else if(pts.length)m.fitBounds(pts,{padding:[30,30],maxZoom:15});
+  setTimeout(()=>m.invalidateSize(),60)}
 
 /* ---- isi barang cepat (wizard) ---- */
 const STARTER={'Sembako':[['Beras 5 kg','karung'],['Beras 1 liter','liter'],['Gula pasir 1 kg','kg'],['Gula pasir 1/4 kg','bungkus'],['Minyak goreng 1 L','pouch'],['Minyak goreng 2 L','pouch'],['Telur ayam','butir'],['Telur ayam 1 kg','kg'],['Tepung terigu 1 kg','kg'],['Garam dapur','bungkus'],['Kecap manis sachet','sachet'],['Kecap manis botol','botol'],['Saos sambal sachet','sachet'],['Saos sambal botol','botol'],['Susu kental manis kaleng','kaleng'],['Susu kental manis sachet','sachet'],['Mentega sachet','sachet']],
@@ -1565,12 +1653,18 @@ const A={
   'sm-more':()=>{const keep=SM;closeSheet();smStart(keep)},
   'sm-save':()=>{const ts=Date.now();let n=0;document.querySelectorAll('[data-smq]').forEach(i=>{const p=prod(i.dataset.smq),q=num(i.value);if(p&&q){p.stock+=q;S.moves.push({ts,pid:p.id,qty:q,type:'masuk'});n++}});
     SM=null;save();closeSheet();render();toast('Stok masuk tersimpan untuk '+n+' barang.')},
-  kulak:()=>{track('kulakan');kulakSheet()},
+  kulak:e=>{track('kulakan');kulakSheet(e&&e.dataset&&e.dataset.sup)},
+  'sup-list':()=>{supQ='';supSheet()}, 'sup-new':()=>supForm(), 'sup-edit':e=>supForm(e.dataset.id), 'sp-save':()=>supSave(),
+  'sp-co':e=>{$('#sp-co').value=e.dataset.v;$('#sp-sales').focus()},
+  'sp-del':e=>{const id=e.dataset.id,x=supById(id);confirmSheet('Hapus supplier ini?',(x?x.co:'')+' dihapus dari kontak. Barang yang terhubung tetap ada.','Hapus supplier',()=>{S.suppliers=sups().filter(s=>s.id!==id);S.products.forEach(p=>{if(p.sup===id)p.sup=''});save();supSheet();toast('Supplier dihapus.')},true)},
+  'loc-set':()=>locSet(), 'loc-dismiss':()=>{S.locAsk=1;save();render()},
+  'loc-del':()=>confirmSheet('Hapus titik lokasi?','Tim JAGA tidak akan melihat warung Anda di peta.','Hapus titik',async()=>{try{const r=await rpc('jk_set_location',{p_key:await devKey(),p_lat:null,p_lng:null});if(r.ok){ACC.lat=null;ACC.lng=null;render();toast('Titik lokasi dihapus.')}}catch(err){toast(err.message)}},true),
+  'omap-f':e=>{OWN.mf=e.dataset.f;ownerMapRender()},
   'kl-sent':()=>{const w=$('#kl-wa').value.trim();if(waNum(w)){S.shop.supplierWa=w;save()}},
   'kl-copy':()=>copyText(kulakText().text,'Daftar belanja disalin.'),
   'to-register':()=>showRegister(), 'to-login':()=>showLogin(), register:()=>doRegister(),
   'to-owner':async()=>{OWN.key=await Store.get('jk_owner_key');if(OWN.key)ownerOpen();else showOwnerLogin()},
-  'owner-tab':e=>{OWN.tab=e.dataset.t;if(OWN.tab==='akun')return ownerRender();if(OWN.tab==='pemasukan')return ownerPayLoad();if(OWN.tab==='usulan')OWN.sug=null;ownerCatRender();ownerCatLoad()},
+  'owner-tab':e=>{OWN.tab=e.dataset.t;if(OWN.tab==='akun')return ownerRender();if(OWN.tab==='peta')return OWN.list?ownerMapRender():ownerOpen();if(OWN.tab==='pemasukan')return ownerPayLoad();if(OWN.tab==='usulan')OWN.sug=null;ownerCatRender();ownerCatLoad()},
   'oc-new':()=>ownerCatForm(null),
   'oc-edit':e=>ownerCatForm((OWN.cat.items||[]).find(x=>x.id===e.dataset.id)),
   'os-take':e=>{const x=OWN.sug[+e.dataset.i];ownerCatForm(Object.assign({},x,{id:''}),true)},
@@ -1737,6 +1831,7 @@ document.addEventListener('click',ev=>{const e=ev.target.closest('[data-act]');i
 document.addEventListener('input',ev=>{
   const t=ev.target;
   if(t.id==='sp-q'){SP.q=t.value;SP.c='';spRefresh()}
+  if(t.id==='sup-q'){supQ=t.value;const pos=t.selectionStart;supSheet();const n=$('#sup-q');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}}
   if(t.id==='cp-q'){clearTimeout(cpT);cpT=setTimeout(()=>cpLoad(t.value.trim()),300)}
   if(t.id==='oc-q'){clearTimeout(ocT);ocT=setTimeout(()=>{OWN.cq=t.value.trim();ownerCatLoad()},350)}
   if(t.matches('[data-rp]')){const n=num(t.value);t.value=n?fmt(n):''}
@@ -1759,6 +1854,7 @@ document.addEventListener('change',ev=>{
   if(t.dataset&&t.dataset.wz)wzSync(t.dataset.wz);
   if(t.id==='op-plan'){$('#op-amt').value=fmt(t.value==='basic'?129000:t.dataset.cur==='basic'?220000:349000)}
   if(t.classList&&t.classList.contains('kl-on'))kulakRefresh();
+  if(t.id==='kl-sup')kulakPick(t.value);
   if(t.id==='foto-file'&&t.files[0]){const f=t.files[0];t.value='';const u=URL.createObjectURL(f);loadImg(u).then(im=>snapFoto(im)).catch(()=>toast('Foto ini tidak bisa dibaca.')).finally(()=>setTimeout(()=>URL.revokeObjectURL(u),2000))}
   if(t.dataset&&t.dataset.sq){const c=S.cart.find(x=>x.key===t.dataset.sq);if(c){c.qty=Math.max(0,num(t.value));cartSave();scanList()}}
   if(t.id==='st-auto'){S.shop.autoPrint=t.checked;save()}
@@ -1918,12 +2014,13 @@ async function ownerLogin(){
 }
 async function ownerOpen(){
   if(OWN.tab==='pemasukan')return ownerPayLoad();
-  if(OWN.tab!=='akun'){ownerCatRender();return ownerCatLoad()}
+  if(OWN.tab!=='akun'&&OWN.tab!=='peta'){ownerCatRender();return ownerCatLoad()}
   try{OWN.list=await rpc('jk_owner_list',{p_key:OWN.key,p_app:'kasir'})||[];try{OWN.fun=await rpc('jk_owner_funnel',{p_key:OWN.key})}catch(e){OWN.fun=null}}
   catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');showOwnerLogin();$('#lg-err').textContent=e.message;return}toast(e.message);if(!$('.own'))showOwnerLogin();return}
+  if(OWN.tab==='peta')return ownerMapRender();
   ownerRender();
 }
-function ownerTabs(){return '<div class="otabs">'+[['akun','Akun warung'],['pemasukan','Pemasukan'],['katalog','Katalog'],['usulan','Usulan warung'+(OWN.sug&&OWN.sug.length?' · '+OWN.sug.length:'')]].map(t=>'<button data-act="owner-tab" data-t="'+t[0]+'"'+(OWN.tab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>').join('')+'</div>'}
+function ownerTabs(){return '<div class="otabs">'+[['akun','Akun warung'],['peta','Peta'],['pemasukan','Pemasukan'],['katalog','Katalog'],['usulan','Usulan warung'+(OWN.sug&&OWN.sug.length?' · '+OWN.sug.length:'')]].map(t=>'<button data-act="owner-tab" data-t="'+t[0]+'"'+(OWN.tab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>').join('')+'</div>'}
 async function ownerCatLoad(){try{if(OWN.tab==='usulan'){OWN.sug=await rpc('jk_owner_cat_suggest',{p_key:OWN.key})||[]}else{OWN.cat=await rpc('jk_owner_cat_list',{p_key:OWN.key,p_q:OWN.cq})||{items:[],total:0}}ownerCatRender(true)}
   catch(e){if(e.owner){OWN.key=null;await Store.set('jk_owner_key','');return showOwnerLogin()}toast(e.message)}}
 function ownerCatRender(partial){
@@ -1961,6 +2058,7 @@ function ownerCatForm(x,fromSug){const n=!x||!x.id;x=x||{name:'',code:'',cat:'',
 }
 const ST={pending:['Menunggu','warn'],active:['Aktif','ok'],rejected:['Ditolak','bad'],disabled:['Nonaktif','bad']};
 function ownerRender(){
+  if(OWN.tab==='peta')return ownerMapRender();
   if(OWN.tab!=='akun')return ownerCatRender();
   const L=OWN.list,cnt=k=>L.filter(a=>a.status===k).length,l=L.filter(a=>OWN.f==='semua'||a.status===OWN.f);
   const wa=a=>'https://wa.me/'+a.wa+'?text='+encodeURIComponent(a.status==='active'?'Halo '+a.owner_name+', akun Jaga Kasir untuk '+a.shop_name+' sudah aktif. Masuk di https://jagapatner.my.id/kasir/ dengan nama pengguna: '+a.username:'Halo '+a.owner_name+', ini JAGA tentang pendaftaran Jaga Kasir untuk '+a.shop_name+'.');
@@ -1973,6 +2071,7 @@ function ownerRender(){
       '<div class="small muted">'+esc(a.owner_name)+' · <span class="num">+'+esc(a.wa)+'</span> · pengguna <b>'+esc(a.username)+'</b></div>'+
       (a.address?'<div class="small muted">'+esc(a.address)+'</div>':'')+
       (a.app==='kasir'?'<div class="small">Paket: <b>'+(a.plan==='plus'?'Lifetime Plus':a.plan==='basic'?'Lifetime Basic':(a.trial_until&&Date.parse(a.trial_until)<Date.now()?'Masa coba habis':'Masa coba sampai '+fmtDate(Date.parse(a.trial_until||Date.now()))))+'</b></div>':'')+
+      '<div class="small">Lokasi: '+(a.lat!=null?'<a href="'+mapsUrl(a.lat,a.lng)+'" target="_blank" rel="noopener">titik tersimpan</a>':'<span class="muted">belum ditandai</span>')+'</div>'+
       '<div class="small">Perangkat: <b class="num">'+(a.devices||0)+(a.max_devices?' dari '+a.max_devices:'')+'</b>'+(a.max_devices?'':' · tanpa batas')+'</div>'+
       '<div class="small muted">Daftar '+fmtDate(Date.parse(a.created_at))+(a.last_login?' · terakhir masuk '+fmtDate(Date.parse(a.last_login)):'')+(a.backup_at?' · cadangan '+fmtDate(Date.parse(a.backup_at))+' '+fmtTime(Date.parse(a.backup_at)):'')+'</div>'+
       (a.note?'<div class="small">Catatan: '+esc(a.note)+'</div>':'')+
