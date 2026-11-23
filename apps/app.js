@@ -3190,7 +3190,7 @@ document.addEventListener("click", async e => {
   if(a === "m-cancel"){ S.own.mf = null; render(); return; }
   if(a === "m-edit"){
     const s0 = ((S.own.m || {}).stores || []).find(x => x.id === id); if(!s0) return;
-    S.own.mf = {id, hasMenuPhoto:s0.hasMenuPhoto, d:{name:s0.name, category:s0.category, area:s0.area, hours:s0.hours, address:s0.address, wa:s0.wa || "", lat:s0.lat, lng:s0.lng},
+    S.own.mf = {id, hasMenuPhoto:s0.hasMenuPhoto, login:s0.login || "", owners:+s0.owners || 0, d:{name:s0.name, category:s0.category, area:s0.area, hours:s0.hours, address:s0.address, wa:s0.wa || "", lat:s0.lat, lng:s0.lng},
       menu:(s0.products || []).map(p => ({id:p.id, name:p.name, price:String(p.price || ""), img:p.img || ""})).concat([{}]), removed:[]};
     render(); scrollTo(0, 0); return;
   }
@@ -4721,6 +4721,7 @@ function ownerMTab(){
   if(run.length) h += '<h3 class="sub" style="margin:16px 4px 8px">Pesanan berjalan ('+run.length+')</h3>'+run.map(mOrderCard).join("");
   h += '<h3 class="sub" style="margin:16px 4px 8px">Toko percobaan ('+st.length+')</h3>';
   h += st.length ? '<div class="mgrid">'+st.map(s => '<div class="card mst"><div class="mst-h">'+avatarHtml(s)+'<div class="grow"><b>'+esc(s.name)+'</b><small>'+esc(s.category)+' · '+esc(s.area || "")+' · '+esc(regionName(s.region))+'</small></div>'+(s.open === false ? '<span class="tag gray">Tutup</span>' : '<span class="tag green">Buka</span>')+'</div>'+
+      (s.login ? '<div class="small muted" style="margin-top:6px">'+I("badge")+' Login pemilik: <b>'+esc(s.login)+'</b>'+(s.owners ? ' · aktif di '+s.owners+' HP' : ' · belum dipakai')+'</div>' : '<div class="small muted" style="margin-top:6px">Belum ada akun pemilik toko</div>')+
       '<div class="mst-k"><span><b>'+(s.products || []).length+'</b> menu</span><span><b>'+(s.nDone || 0)+'</b> selesai</span><span><b>'+rp(s.omzet || 0)+'</b> omzet</span></div>'+
       '<div class="actions"><button class="btn ghost sm" data-act="m-edit" data-id="'+esc(s.id)+'">'+I("settings")+' Ubah toko & menu</button><button class="btn ghost sm" data-act="m-open" data-id="'+esc(s.id)+'" data-v="'+(s.open === false ? '1' : '0')+'">'+(s.open === false ? 'Buka toko' : 'Tutup sementara')+'</button></div></div>').join("")+'</div>'
     : '<div class="card pad muted small">Belum ada toko. Tekan “Daftarkan toko”, isi nama, menu, dan ambil lokasi saat berada di toko.</div>';
@@ -4737,7 +4738,10 @@ function mStoreForm(){
     '<div><label class="f">Kategori *</label><select class="in" name="category">'+CATS.map(c => '<option'+(d.category === c ? ' selected' : '')+'>'+esc(c)+'</option>').join("")+'</select></div></div>'+
     '<div class="cols2"><div><label class="f">Daerah</label><input class="in" name="area" value="'+esc(d.area || "Ujungbatu")+'"></div><div><label class="f">Jam buka</label><input class="in" name="hours" value="'+esc(d.hours || "")+'" placeholder="08.00–22.00"></div></div>'+
     '<label class="f">Alamat</label><input class="in" name="address" value="'+esc(d.address || "")+'" placeholder="Jl. … dekat …">'+
-    '<label class="f">WhatsApp toko (opsional)</label><input class="in" name="wa" inputmode="tel" value="'+esc(d.wa || "")+'" placeholder="08…">'+
+    '<label class="f">No. WhatsApp pemilik toko</label><input class="in" name="wa" inputmode="tel" value="'+esc(d.wa || "")+'" placeholder="08…">'+
+    '<div class="macc"><b>'+I("badge")+' Akun pemilik toko</b><small>Buat nama login & password agar pemilik toko yang asli bisa masuk lewat halaman Masuk → Toko, memantau pesanan, dan mengubah menu sendiri.'+(f.login ? ' Login sekarang: <b>'+esc(f.login)+'</b>'+(f.owners ? ' · dipakai di '+f.owners+' HP' : '')+'. Isi password baru untuk menggantinya.' : '')+'</small>'+
+    '<div class="cols2"><div><label class="f">Nama login</label><input class="in" name="login" autocapitalize="none" autocomplete="off" value="'+esc(d.login || f.login || "")+'" placeholder="contoh: tehdesa"></div>'+
+    '<div><label class="f">Password'+(f.login ? ' baru' : '')+'</label><input class="in" name="pass" autocomplete="off" value="'+esc(d.pass || "")+'" placeholder="min. 4 karakter"></div></div></div>'+
     '<label class="f">Titik lokasi toko *</label><div class="mloc"><input class="in" name="ll" value="'+(typeof d.lat === "number" ? d.lat + ", " + d.lng : "")+'" placeholder="Ketuk tombol saat di toko, atau tempel koordinat Google Maps"><button type="button" class="btn ghost" data-act="m-gps">'+I("pin")+' Lokasi saya</button></div>'+
     '<div class="cols2" style="margin-top:6px"><div><label class="f">Logo / foto toko</label><label class="mlogo">'+(d.logo ? '<img alt="" src="'+esc(d.logo)+'">' : I("camera")+'<span>Pilih foto</span>')+'<input type="file" accept="image/*" data-mlogo="1" hidden></label></div>'+
     '<div><label class="f">Foto daftar menu (arsip)</label><label class="mlogo">'+(d.menuPhoto || f.hasMenuPhoto ? (d.menuPhoto ? '<img alt="" src="'+esc(d.menuPhoto)+'">' : I("checkc")+'<span>Tersimpan</span>') : I("camera")+'<span>Pilih foto</span>')+'<input type="file" accept="image/*" data-mmenu="1" hidden></label></div></div>'+
@@ -4745,10 +4749,18 @@ function mStoreForm(){
     '<button type="button" class="btn ghost sm" data-act="m-row-add">'+I("plus")+' Tambah menu</button>'+
     '<button class="btn block press" style="margin-top:16px">'+(f.id ? 'Simpan perubahan' : 'Daftarkan & terbitkan')+'</button></form>';
 }
+function mAccModal(a){
+  const msg = "Halo, ini tim JAGA. Toko " + a.name + " sudah tampil di aplikasi JAGA (jagapatner.my.id/apps).\n\nUntuk masuk sebagai pemilik toko:\nBuka aplikasi → Masuk → Toko\nNama login: " + a.login + "\nPassword: " + a.pass + "\n\nSegera ganti password setelah masuk. Jangan berikan ke siapa pun.";
+  document.getElementById("modal").innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal"><h2 class="sec">Akun pemilik toko siap</h2>'+
+    '<div class="tmppass"><small>Toko</small><b>'+esc(a.name)+'</b><small>Nama login</small><b>'+esc(a.login)+'</b><small>Password</small><b class="pw">'+esc(a.pass)+'</b></div>'+
+    '<div class="hint">Pemilik toko masuk lewat halaman <b>Masuk → Toko</b>. Pesanan toko percobaan tetap juga masuk ke portal owner.</div>'+
+    '<div class="actions">'+(a.wa ? '<a class="btn press" target="_blank" rel="noopener" href="'+esc(waLink(a.wa, msg))+'">'+I("chat")+' Kirim ke WA pemilik</a>' : '')+'<button class="btn ghost" id="maCopy">Salin</button><button class="btn ghost" data-act="close-modal">Tutup</button></div></div></div>';
+  document.getElementById("maCopy").onclick = () => { try{ navigator.clipboard.writeText(msg); toast("Disalin"); }catch(_){ toast("Gagal menyalin"); } };
+}
 function mSync(){
   const form = document.getElementById("mForm"); if(!form || !S.own.mf) return;
   const fd = new FormData(form), f = S.own.mf;
-  ["name","category","area","hours","address","wa"].forEach(k => { f.d[k] = String(fd.get(k) || ""); });
+  ["name","category","area","hours","address","wa","login","pass"].forEach(k => { f.d[k] = String(fd.get(k) || ""); });
   const ll = String(fd.get("ll") || "").match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)/);
   if(ll){ f.d.lat = +ll[1]; f.d.lng = +ll[2]; } else { delete f.d.lat; delete f.d.lng; }
   f.menu.forEach((m, i) => { m.name = String(fd.get("mname"+i) || "").trim(); m.price = String(fd.get("mprice"+i) || "").replace(/\D/g, ""); });
@@ -4767,7 +4779,14 @@ async function mSave(){
     const sid = r.id;
     for(const m of menu){ const pd = {name:m.name, price:+m.price, active:true}; if(m.imgNew) pd.img = await mediaUp(m.img); await sbStore.rpc("jt_owner_mprod_save", {p_store:sid, p_pid:m.id || null, p_data:pd}); }
     for(const pid of (f.removed || [])) await sbStore.rpc("jt_owner_mprod_del", {p_store:sid, p_pid:pid});
-    S.own.mf = null; S.own.mSig = ""; toast(f.id ? "Toko diperbarui" : "Toko terdaftar & langsung tampil di aplikasi"); await loadMData(); render();
+    let acc = null;
+    if(d.pass.trim()){
+      if(!d.login.trim()) throw new Error("Isi nama login pemilik toko");
+      acc = await sbStore.rpc("jt_owner_mstore_setlogin", {p_store:sid, p_login:d.login.trim(), p_pass:d.pass.trim()});
+      acc.pass = d.pass.trim(); acc.name = d.name;
+    }
+    S.own.mf = null;
+    if(acc) setTimeout(() => mAccModal(acc), 300); S.own.mSig = ""; toast(f.id ? "Toko diperbarui" : "Toko terdaftar & langsung tampil di aplikasi"); await loadMData(); render();
   }catch(err){ if(btn) btn.disabled = false; toast(String(err.message || err).replace(/^.*?:\s*/, "")); }
   S.own.mSaving = false;
 }

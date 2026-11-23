@@ -1792,3 +1792,8 @@ html.navopen,html.navopen body{overflow:hidden}
 .scover.photo{padding-top:calc(14px + env(safe-area-inset-top))}
 .scover.photo .who{margin-top:170px}
 .astore .cv.photo .e3d{display:none}
+
+.macc{margin:14px 0 4px;padding:12px 14px;border-radius:16px;background:#eef3ff;border:1px solid #c9d8ff}
+.macc>b{display:flex;align-items:center;gap:6px;color:#1f3f8f}.macc>b svg{width:17px;height:17px}
+.macc>small{display:block;color:#3c4559;font-size:12.5px;line-height:1.45;margin:4px 0 2px}
+.mst .small svg{width:14px;height:14px;vertical-align:-2px}
