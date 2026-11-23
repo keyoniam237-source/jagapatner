@@ -53,9 +53,11 @@ const MITRA_URL = APP_URL + "#mitra";
 const CONTACT = {wa:"0882005837975", email:"", office:""};
 function modeFromHash(){ let hsh = ""; try{ hsh = location.hash; }catch(e){} return hsh === "#mitra" ? "seller" : hsh === "#driver" ? "driver" : hsh === "#owner" ? "owner" : "buyer"; }
 S.role = modeFromHash();
+function saveMode(){ try{ if(!/^#toko-/.test(location.hash)) localStorage.setItem("jt_last_mode", S.role); }catch(_){} }
+saveMode();
 S.view = S.role === "seller" ? "seller" : S.role === "driver" ? "driver" : S.role === "owner" ? "owner" : "home";
 if(S.role === "buyer"){ try{ if(!localStorage.getItem("jt_onb")) S.view = "login"; }catch(e){} }
-S.sellerTab = "ringkasan";
+S.sellerTab = (function(){ try{ return localStorage.getItem("jt_seller_tab") || "ringkasan"; }catch(_){ return "ringkasan"; } })();
 let DB = null;
 let prodUnsub = null, prodUnsubFor = null;
 
@@ -83,7 +85,7 @@ function sbErr(error){
   return e;
 }
 /* ============ Login tetap tersimpan: cadangan data login di IndexedDB + minta penyimpanan permanen ============ */
-const VAULT_KEYS = ["jt_key", "st_buyer", "jt_onb", "jt_home_role"];
+const VAULT_KEYS = ["jt_key", "st_buyer", "jt_onb", "jt_home_role", "jt_last_mode"];
 const VAULT = (() => {
   let dbp = null;
   const db = () => dbp || (dbp = new Promise((res, rej) => { try{ const r = indexedDB.open("jaga-vault", 1); r.onupgradeneeded = () => r.result.createObjectStore("kv"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }catch(e){ rej(e); } }));
@@ -422,7 +424,7 @@ function restoreForms(snap){
   }
   app.dataset.sig = sig;
 }
-function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); try{ mountMaps(); }catch(e){} try{ mountJagoMap(); }catch(e){} lazyImgs(); try{ fillStoreWa(); }catch(e){} }
+function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); try{ mountMaps(); }catch(e){} try{ mountJagoMap(); }catch(e){} lazyImgs(); try{ fillStoreWa(); }catch(e){}  try{ if(S.role === "owner" && S.own && S.own.tab) localStorage.setItem("jt_own_tab", S.own.tab); if(S.role === "seller" && S.view === "seller" && S.sellerTab) localStorage.setItem("jt_seller_tab", S.sellerTab); }catch(_){} }
 /* WA toko tidak lagi publik: pemilik mengambilnya lewat RPC privat */
 const MYWA = {};
 function fillStoreWa(){ const f = document.getElementById("storeForm"); if(!f || !SB) return; const id = f.dataset.id, inp = f.elements.wa; if(!id || !inp) return;
@@ -1395,7 +1397,7 @@ document.addEventListener("click", async e => {
   if(a === "pay" || a === "pick-store") return;
   if(el.tagName === "A" && el.getAttribute("href")) return;
   if(a === "go"){ go(v); return; }
-  if(a === "logo"){ if(S.role === "seller") go("seller", {sellerTab:"ringkasan"}); else go("home"); return; }
+  if(a === "logo"){ if(S.role === "seller") go("seller", {sellerTab:"ringkasan"}); else if(S.role === "owner") go("owner"); else if(S.role === "driver") go("driver"); else go("home"); return; }
   if(a === "mitra-info"){ openMitraModal(); return; }
   if(a === "rules"){ openRules(); return; }
   if(a === "akses-copy"){ copyText(KEY); return; }
@@ -1495,7 +1497,7 @@ function setSlide(i){
 }
 setInterval(() => { if(S.view === "home" && !document.hidden && document.getElementById("slides")) setSlide(S.slide + 1); }, 5000);
 
-window.addEventListener("hashchange", () => { try{ const m = document.getElementById("mf"); if(m) m.href = location.hash === "#mitra" ? "manifest-mitra.webmanifest" : location.hash === "#driver" ? "manifest-driver.webmanifest" : "manifest.webmanifest"; }catch(_){} if(openStoreFromHash()) return; const r = modeFromHash(); if(r !== S.role){ S.role = r; if(r === "driver") startDriver(); if(r === "owner") startOwner(); go(r === "seller" ? "seller" : r === "driver" ? "driver" : r === "owner" ? "owner" : "home", r === "seller" ? {sellerTab:"ringkasan"} : {}); } });
+window.addEventListener("hashchange", () => { try{ const m = document.getElementById("mf"); if(m) m.href = location.hash === "#mitra" ? "manifest-mitra.webmanifest" : location.hash === "#driver" ? "manifest-driver.webmanifest" : "manifest.webmanifest"; }catch(_){} if(openStoreFromHash()) return; const r = modeFromHash(); if(r !== S.role){ S.role = r; saveMode(); S.role = r; if(r === "driver") startDriver(); if(r === "owner") startOwner(); go(r === "seller" ? "seller" : r === "driver" ? "driver" : r === "owner" ? "owner" : "home", r === "seller" ? {sellerTab:"ringkasan"} : {}); } });
 
 
 /* ================= JAGA — MODE APLIKASI (pembeli) ================= */
@@ -2787,7 +2789,7 @@ document.addEventListener("submit", async e => {
 });
 
 /* ============ Portal Owner (pemilik aplikasi) ============ */
-S.own = {loaded:false, authed:false, data:null, tab:"ringkasan", range:"bulan", err:"", sig:""};
+S.own = {loaded:false, authed:false, data:null, tab:(function(){ try{ return localStorage.getItem("jt_own_tab") || "ringkasan"; }catch(_){ return "ringkasan"; } })(), range:"bulan", err:"", sig:""};
 let ownTimer = null;
 async function ownRefresh(){
   try{

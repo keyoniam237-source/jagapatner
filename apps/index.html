@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" id="mf" href="manifest.webmanifest">
 <script>(function(){try{var h=location.hash,m=document.getElementById("mf"),st=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
-if(st&&(!h||h==="#")){var r=localStorage.getItem("jt_home_role");if(r==="seller"){location.replace("#mitra");h="#mitra";}else if(r==="driver"){location.replace("#driver");h="#driver";}}
+if(!h||h==="#"){var lm=localStorage.getItem("jt_last_mode"),r=localStorage.getItem("jt_home_role"),go=lm==="owner"?"#owner":lm==="seller"?"#mitra":lm==="driver"?"#driver":(lm==="buyer"?"":(st?(r==="seller"?"#mitra":r==="driver"?"#driver":""):""));if(go){location.replace(go);h=go;}}
 m.href=h==="#mitra"?"manifest-mitra.webmanifest":h==="#driver"?"manifest-driver.webmanifest":"manifest.webmanifest";}catch(e){}})();</script>
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
@@ -26,7 +26,7 @@ m.href=h==="#mitra"?"manifest-mitra.webmanifest":h==="#driver"?"manifest-driver.
 <title>JAGA — Kami JAGA Kepercayaan Anda</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@300;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=67">
+<link rel="stylesheet" href="app.css?v=68">
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -46,6 +46,6 @@ m.href=h==="#mitra"?"manifest-mitra.webmanifest":h==="#driver"?"manifest-driver.
 <div id="modal"></div>
 <div id="toast"></div><div id="notifs" aria-live="assertive"></div>
 
-<script src="app.js?v=67"></script>
+<script src="app.js?v=68"></script>
 </body>
 </html>
