@@ -781,7 +781,8 @@ function viewSeller(){
     '<button class="btn ghost sm" data-act="preview-store" data-id="'+esc(s.id)+'">'+I("eye")+' Lihat toko</button>'+
     '<button class="btn ghost sm" data-act="store-link" data-id="'+esc(s.id)+'">'+I("megaphone")+' Salin link toko</button>'+
     '<button class="btn ghost sm sup-btn" data-act="sup-open" data-v="store:'+esc(s.id)+'">'+I("chat")+' Tanya JAGA'+supBadge("store:"+s.id)+'</button>'+
-    '<button class="btn ghost sm" data-act="go" data-v="register" data-new="1">+ Toko baru</button></div></div>';
+    '<button class="btn ghost sm" data-act="go" data-v="register" data-new="1">+ Toko baru</button>'+
+    '<button class="btn ghost sm out-btn" data-act="store-logout" data-id="'+esc(s.id)+'">'+I("logout")+' Keluar</button></div></div>';
   if(s.active === false) h += '<div class="notice warnbox">'+I("bell")+' <b>Toko Anda sedang dinonaktifkan tim JAGA</b> dan tidak tampil di aplikasi pembeli. <button class="linkbtn" data-act="sup-open" data-v="store:'+esc(s.id)+'">Tanya tim JAGA</button></div>';
   if(["ringkasan","pesanan"].includes(S.sellerTab || "ringkasan")) h += askInbox(s);
   if((S.sup.unread||{})["store:"+s.id]) h += '<button class="supnote" data-act="sup-open" data-v="store:'+esc(s.id)+'">'+I("chat")+'<div class="grow"><b>Ada pesan baru dari tim JAGA</b><small>Ketuk untuk membaca dan membalas</small></div><em>'+S.sup.unread["store:"+s.id]+'</em></button>';
@@ -2740,10 +2741,18 @@ document.addEventListener("click", async e => {
   if(el.dataset.act === "pw-toggle"){ const i = el.parentElement.querySelector("input"); i.type = i.type === "password" ? "text" : "password"; return; }
   if(el.dataset.act === "store-logout"){
     const sid = el.dataset.id;
-    confirmModal("Keluar dari dashboard toko di perangkat ini? Anda bisa masuk lagi dengan login & password toko.", "Keluar", async () => {
-      try{ await SB.rpc("jt_store_logout", {p_store: sid, p_key: KEY}); }catch(_){}
-      S.myStoreIds = null; await refreshMyStores(); go("seller", {sellerTab:"ringkasan"});
-      if(myStores().some(s => s.id === sid)) toast("Perangkat ini adalah perangkat pendaftar toko, jadi tetap terhubung."); else toast("Sudah keluar dari toko");
+    const st = storeById(sid) || {};
+    if(!SB) return toast("Keluar akun toko hanya tersedia di jagapatner.my.id/apps");
+    confirmModal("Keluar dari toko “" + (st.name || "") + "” di HP ini? Untuk masuk lagi: Masuk → Toko, lalu isi nama login & password toko.", "Keluar", async () => {
+      try{
+        const { error } = await SB.rpc("jt_store_signout", {p_store: sid, p_key: KEY});
+        if(error) throw sbErr(error);
+      }catch(err){ toast(String((err && err.message) || err).replace(/^.*?:\s*/, "")); S.sellerTab = "pengaturan"; render(); return; }
+      try{ localStorage.removeItem("jt_home_role"); }catch(_){}
+      S.myStoreIds = null; S.sellerStoreId = null; await refreshMyStores();
+      if(myStores().length){ go("seller", {sellerTab:"ringkasan"}); toast("Sudah keluar dari " + (st.name || "toko")); return; }
+      S.role = "buyer"; try{ history.replaceState(null, "", location.pathname + location.search); }catch(_){ location.hash = ""; }
+      go("home"); toast("Sudah keluar dari akun toko");
     });
   }
 });
