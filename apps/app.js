@@ -3175,7 +3175,7 @@ function appOwner(){
 }
 document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
-  const a = el.dataset.act, v = el.dataset.v;
+  const a = el.dataset.act, v = el.dataset.v, id = el.dataset.id;
   if(a === "ver-tap"){ S._vt = (S._vtT && Date.now() - S._vtT < 1500 ? (S._vt||0) : 0) + 1; S._vtT = Date.now(); if(S._vt >= 5){ S._vt = 0; location.hash = "owner"; } return; }
   if(a === "own-resetpass"){
     const kind = el.dataset.k, nm = el.dataset.v || "";
