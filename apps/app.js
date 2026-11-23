@@ -734,7 +734,7 @@ function viewOrder(){
     h += o.handedAt ? driverBox(o, "Pesanan sudah diambil driver di toko. Sebentar lagi diantar.") + liveMap(o, "pembeli")
       : driverBox(o, "Driver sedang menuju toko untuk mengambil pesanan Anda.") + liveMap(o, "pembeli");
   } else if(o.status === "diantar" && o.driverId){
-    h += o.arrivedAt ? driverBox(o, "Pesanan sudah sampai. Silakan terima dari driver.") + proofBtn(o) + ongkirNego(o)
+    h += o.arrivedAt ? driverBox(o, "Pesanan sudah sampai. Silakan terima dari driver.") + proofBtn(o) + buyerDue(o) + ongkirNego(o)
       : driverBox(o, o.codeReq ? "Paket dalam perjalanan ke alamat Anda." : "Pesanan sedang diantar ke alamat Anda.") + liveMap(o, "pembeli") + ongkirNego(o);
   } else if(o.status === "diantar"){
     h += '<div class="paybox">'+I("truck")+' Pesanan sedang diantar oleh toko ke alamat Anda.'+(o.pay&&o.pay.k==="cod"?' Siapkan <b>'+rp(o.total)+'</b> tunai.':'')+'</div><button class="btn block" data-act="buyer-done" data-id="'+esc(o.id)+'">Pesanan sudah saya terima</button>';
@@ -743,7 +743,7 @@ function viewOrder(){
   } else if(o.status === "dibatalkan"){
     h += '<div class="paybox">Pesanan dibatalkan'+(o.cancelBy?' oleh '+esc(o.cancelBy):'')+'.</div>';
   } else if(o.status === "selesai"){
-    h += '<div class="paybox">'+I("badge")+' Pesanan selesai. Terima kasih sudah belanja!'+(typeof o.ongkirFinal==="number"?'<div class="small" style="margin-top:6px">Ongkir dibayar ke driver'+(o.driver?' '+esc(o.driver.name):'')+': <b>'+rp(o.ongkirFinal)+'</b></div>':'')+'</div>';
+    h += (o.payRecv ? payRecvLine(o, true) : '') + '<div class="paybox">'+I("badge")+' Pesanan selesai. Terima kasih sudah belanja!'+(o.payRecv ? '' : typeof o.ongkirFinal==="number"?'<div class="small" style="margin-top:6px">Ongkir dibayar ke driver'+(o.driver?' '+esc(o.driver.name):'')+': <b>'+rp(o.ongkirFinal)+'</b></div>':'')+'</div>';
   }
   h += proofBtn(o);
   if(o.proof && o.status !== "menunggu_pembayaran") h += '<div class="small muted" style="margin-top:10px">Bukti pembayaran Anda:</div><img class="proof" alt="Bukti pembayaran" src="'+esc(o.proof)+'">';
@@ -2230,6 +2230,7 @@ const localDrv = {
         const v = Math.round(Number(data && data.ongkir));
         patch = {status:"selesai", ongkirFinal: isFinite(v) && v >= 0 ? v : (ongkirEstOf(o) || 0), doneAt:now, updatedAt:now};
         patch.drvFee = rideFee(patch.ongkirFinal);
+        { const pd = payDue(o, patch.ongkirFinal), m = data && PAYM_LBL[data.method] ? data.method : "tunai"; patch.payRecv = {items:pd.items, ongkir:pd.ongkir, voucher:pd.vch, total:pd.total, method:m, at:now}; }
       } else throw srvErr("Aksi tidak valid");
     }
     await store.update("orders/" + id, patch);
@@ -2280,10 +2281,10 @@ async function drvRefresh(){
     offers.forEach(o => S.drv.seen.add(o.id));
     (r.mine || []).forEach(o => { const ride = isRide(o); if(o.autoAssigned && o.status === (ride ? "driver_jemput" : "driver_ke_toko") && !o.handedAt && !_drvAssigned.has(o.id)){ _drvAssigned.add(o.id); if(!S.drv.loaded) return;
       notifyPush(ride ? "ride" : "order", o.id);
-      notify(ride ? "Order Jago untukmu!" : "Pesanan antar untukmu!", "Kamu driver terdekat (" + fmtDist(o.assignDist) + "). " + (ride ? "Jemput penumpang di " + shortAddr(o.pickup && o.pickup.address) : "Ambil pesanan di " + (o.storeName || "toko")) + " sekarang.", {kind:"order", tag:"drv-assign", act:() => window.scrollTo({top:0, behavior:"smooth"})}); } });
+      notify(ride ? "Order Jago untukmu!" : "Pesanan antar untukmu!", "Kamu driver terdekat (" + fmtDist(o.assignDist) + "). " + (ride ? "Jemput penumpang di " + shortAddr(o.pickup && o.pickup.address) : "Ambil pesanan di " + (o.storeName || "toko")) + " sekarang.", {kind:"order", tag:"drv-assign", alarm:true, act:() => window.scrollTo({top:0, behavior:"smooth"})}); } });
     (r.mine || []).forEach(o => { if(o.handedAt && o.status === "driver_ke_toko" && !_drvHanded.has(o.id)){ _drvHanded.add(o.id); if(S.drv.loaded) notify("Kode cocok ✓", (o.storeName || "Toko") + " sudah menyerahkan pesanan " + (o.code || "") + ". Tekan “Antar pesanan”.", {kind:"order"}); } });
     S.drv.me = r.me || null; S.drv.offers = offers; S.drv.mine = r.mine || []; S.drv.wallet = r.wallet || null; S.drv.blocked = r.blocked || []; S.drv.locFresh = r.locFresh !== false; S.drv.loaded = true; S.drv.err = "";
-    if(fresh.length && S.drv.me && S.drv.me.online) notify(fresh.length > 1 ? fresh.length + " order baru!" : (isRide(fresh[0]) ? "Order Jago baru!" : "Order antar baru!"), fresh.map(o => isRide(o) ? "Jago · " + shortAddr(o.pickup && o.pickup.address) : (o.storeName || "Toko") + (o.dist != null ? " · " + fmtDist(o.dist) : "")).join(" | ").slice(0, 120) + " — ambil sekarang", {kind:"order", tag:"drv-offer", act:() => window.scrollTo({top:0, behavior:"smooth"})});
+    if(fresh.length && S.drv.me && S.drv.me.online) notify(fresh.length > 1 ? fresh.length + " order baru!" : (isRide(fresh[0]) ? "Order Jago baru!" : "Order antar baru!"), fresh.map(o => isRide(o) ? "Jago · " + shortAddr(o.pickup && o.pickup.address) : (o.storeName || "Toko") + (o.dist != null ? " · " + fmtDist(o.dist) : "")).join(" | ").slice(0, 120) + " — ambil sekarang", {kind:"order", tag:"drv-offer", alarm:true, act:() => window.scrollTo({top:0, behavior:"smooth"})});
     if(S.drv.me && S.drv.me.online) startGeo();
   }catch(e){ S.drv.loaded = true; S.drv.err = (e && e.message) || "Gagal memuat"; }
   drvBusy = false;
@@ -2319,7 +2320,7 @@ function startGeo(){
 }
 function stopGeo(){ if(geoWatch !== null && navigator.geolocation){ navigator.geolocation.clearWatch(geoWatch); } geoWatch = null; }
 /* ============ Notifikasi melayang 10 detik + nada keras (semua perangkat) ============ */
-const NOTIF_MS = 10000;
+const NOTIF_MS = 10000, ALARM_MS = 45000;
 let NOTIF_SOUND = (() => { try{ return localStorage.getItem("jt_sound") !== "0"; }catch(_){ return true; } })();
 function audioUnlock(){
   try{ if(!audioCtx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC) audioCtx = new AC(); } if(audioCtx && audioCtx.state === "suspended") audioCtx.resume(); }catch(_){}
@@ -2362,8 +2363,14 @@ function notify(title, body, o){
   const box = document.getElementById("notifs"); if(!box) return;
   while(box.children.length >= 3) box.firstElementChild.remove();
   box.insertAdjacentHTML("beforeend", '<div class="nfy k-'+esc(kind)+'" id="'+id+'" role="alert" data-act="nfy-open" data-id="'+id+'">'+E(NOTIF_IC[kind] || "bell")+
-    '<div class="grow"><b>'+esc(title)+'</b>'+(body ? '<small>'+esc(body)+'</small>' : '')+'</div><button class="nfx" data-act="nfy-close" data-id="'+id+'" aria-label="Tutup">×</button><i class="nbar" style="animation-duration:'+NOTIF_MS+'ms"></i></div>');
-  setTimeout(() => notifClose(id), NOTIF_MS);
+    '<div class="grow"><b>'+esc(title)+'</b>'+(body ? '<small>'+esc(body)+'</small>' : '')+'</div><button class="nfx" data-act="nfy-close" data-id="'+id+'" aria-label="Tutup">×</button><i class="nbar" style="animation-duration:'+(o.alarm ? ALARM_MS : NOTIF_MS)+'ms"></i></div>');
+  if(o.alarm){ // order masuk: nada diulang sampai disentuh (maks. 45 detik)
+    document.getElementById(id).classList.add("alarm");
+    try{ navigator.vibrate && navigator.vibrate([500, 200, 500, 200, 800]); }catch(_){}
+    const iv = setInterval(() => { if(!document.getElementById(id)){ clearInterval(iv); return; } loudTone(kind); try{ navigator.vibrate && navigator.vibrate([400, 150, 400]); }catch(_){} }, 3500);
+    setTimeout(() => clearInterval(iv), ALARM_MS);
+  }
+  setTimeout(() => notifClose(id), o.alarm ? ALARM_MS : NOTIF_MS);
 }
 function notifClose(id){ const el = document.getElementById(id); if(!el) return; el.classList.add("out"); setTimeout(() => { el.remove(); delete notifActs[id]; }, 260); }
 document.addEventListener("click", e => {
@@ -2462,6 +2469,10 @@ function driverBox(o, text, compact){
     '<div class="small muted">'+esc([d.vehicle, d.plate].filter(Boolean).join(" · "))+(near ? ' · <b class="near">'+near+'</b>' : '')+'</div></div>'+
     chatBtn(o, compact ? "toko" : "pembeli", "Chat")+'</div>'+proofBtn(o);
 }
+function buyerDue(o){
+  const est = ongkirEstOf(o), d = payDue(o, est || 0);
+  return '<div class="buydue">'+E("money")+'<div class="grow"><small>Siapkan pembayaran ke driver</small><b>'+(est == null && !d.items ? 'Ongkir sesuai kesepakatan' : (est == null ? rp(d.items) + ' + ongkir' : '±' + rp(d.total)))+'</b><small>'+(d.items ? 'Pesanan ' + rp(d.items) + ' + ' : 'Pesanan sudah lunas · ')+'ongkir '+(est == null ? 'disepakati' : '±' + rp(est))+(d.vch ? ' − saldo JAGA ' + rp(d.vch) : '')+'. Driver akan mengonfirmasi jumlah yang Anda bayar.</small></div></div>';
+}
 function ongkirNego(o){
   const est = ongkirEstOf(o), cod = o.pay && o.pay.k === "cod";
   const dist = ongkirDistOf(o);
@@ -2529,20 +2540,49 @@ function drvJob(o, offer){
       h += '<div class="actions"><button class="btn press grow" data-act="drv-pickup" data-id="'+esc(o.id)+'">'+I("package")+' Sudah ambil di toko</button><button class="btn ghost sm" data-act="drv-release" data-id="'+esc(o.id)+'">Batal ambil</button></div>';
     }
   } else if(o.status === "diantar" && (o.pickCode || o.managed) && !o.arrivedAt){
-    h += '<div class="actions">'+chatBtn(o, "driver", "Chat pembeli & toko", "ghost")+'</div>'+
-      '<div class="actions"><button class="btn press grow" data-act="drv-arrive" data-id="'+esc(o.id)+'">'+I("camera")+' Pesanan sudah sampai</button></div>'+
-      '<div class="hint">Sampai di alamat pembeli? Foto pesanan saat diserahkan sebagai bukti.</div>';
+    const v = S.drv.draft[o.id] != null ? S.drv.draft[o.id] : (est == null ? "" : est);
+    h += payPanel(o, v, est, estNote) + '<div class="actions">'+chatBtn(o, "driver", "Chat pembeli & toko", "ghost")+'</div>';
   } else if(o.status === "diantar"){
     const v = S.drv.draft[o.id] != null ? S.drv.draft[o.id] : (est == null ? "" : est);
-    h += '<div class="negobox"><label class="f">Ongkir yang disepakati dengan pembeli</label><div class="rpin"><span>Rp</span><input class="in" inputmode="numeric" id="ongkir-'+esc(o.id)+'" data-ongkir="'+esc(o.id)+'" value="'+esc(v)+'"></div>'+
-      '<div class="hint">'+(est==null?'Tarif '+ONGKIR_LBL+' dari toko ke pembeli.':'Patokan '+ONGKIR_LBL+' = '+rp(est)+(estNote?' ('+esc(estNote)+')':'')+'.')+' Boleh nego langsung dengan pembeli.'+(cod?' Tagih tunai: <b>'+rp(o.total)+'</b> + ongkir.':' Barang sudah dibayar ke toko, tagih ongkir saja.')+'</div></div>'+
-      '<div class="actions">'+chatBtn(o, "driver", "Chat pembeli & toko", "ghost")+'</div>'+
-      '<div class="actions"><button class="btn press grow" data-act="drv-done" data-id="'+esc(o.id)+'">'+I("checkc")+(o.arrivedAt ? ' Selesaikan pesanan' : ' Pesanan sudah sampai')+'</button></div>';
+    h += payPanel(o, v, est, estNote) + '<div class="actions">'+chatBtn(o, "driver", "Chat pembeli & toko", "ghost")+'</div>';
   } else if(o.status === "selesai"){
-    h += '<div class="small" style="margin-top:6px">Ongkir diterima: <b>'+rp(o.ongkirFinal || 0)+'</b> · '+fmtDate(o.doneAt || o.updatedAt)+'</div>';
+    h += o.payRecv ? payRecvLine(o) : '<div class="small" style="margin-top:6px">Ongkir diterima: <b>'+rp(o.ongkirFinal || 0)+'</b> · '+fmtDate(o.doneAt || o.updatedAt)+'</div>';
   }
   return h + '</div>';
 }
+
+/* ---------- driver terima pembayaran dari pembeli: harga pesanan + ongkir ---------- */
+const PAYM = [["tunai","Tunai"],["transfer","Transfer"],["qris","QRIS"]];
+const PAYM_LBL = {tunai:"Tunai", transfer:"Transfer", qris:"QRIS"};
+function payDue(o, ongkir){
+  const items = (o.pay && o.pay.k === "cod") || o.managed ? (o.total || 0) : 0;
+  const vch = o.voucher > 0 ? o.voucher : 0, og = Math.max(0, Math.round(Number(ongkir) || 0));
+  return {items, ongkir:og, vch, total:Math.max(0, items + og - vch)};
+}
+function payPanel(o, v, est, estNote){
+  const id = o.id, d = payDue(o, v), m = (S.drv.paym || {})[id] || "tunai", ready = !(o.pickCode || o.managed) || o.arrivedAt;
+  return '<div class="paycol"><div class="pc-h">'+E("money")+'<b>'+(ready ? 'Terima pembayaran dari pembeli' : 'Rincian tagihan ke pembeli')+'</b></div>'+
+    '<div class="pc-row"><span>Harga pesanan<small>'+(d.items ? (o.managed ? 'menu yang kamu belikan' : 'COD, bayar di tempat') : 'sudah dibayar ke toko')+'</small></span><b>'+(d.items ? rp(d.items) : '<em class="free">Lunas</em>')+'</b></div>'+
+    '<div class="pc-row"><span>Ongkir driver<small>'+(est == null ? 'tarif '+ONGKIR_LBL : 'patokan '+rp(est)+' · boleh nego')+'</small></span><div class="rpin pc-in"><span>Rp</span><input class="in" inputmode="numeric" id="ongkir-'+esc(id)+'" data-ongkir="'+esc(id)+'" value="'+esc(v)+'"></div></div>'+
+    (d.vch ? '<div class="pc-row"><span>Potongan saldo JAGA<small>diganti JAGA ke saldomu</small></span><b class="free">−'+rp(d.vch)+'</b></div>' : '')+
+    '<div class="pc-tot"><span>Total diterima dari pembeli</span><b id="paytot-'+esc(id)+'">'+rp(d.total)+'</b></div>'+
+    (ready ? '<div class="pc-mlbl">Dibayar dengan</div><div class="pc-m">'+PAYM.map(x => '<button type="button" data-act="drv-paym" data-id="'+esc(id)+'" data-v="'+x[0]+'" aria-pressed="'+(m === x[0])+'">'+x[1]+'</button>').join("")+'</div>' : '')+
+    '<div class="hint">'+(ready ? 'Hitung uang bersama pembeli. Setelah dikonfirmasi, rincian pembayaran tampil di aplikasi pembeli.' : 'Sampai di alamat pembeli? Foto pesanan saat diserahkan, lalu konfirmasi pembayaran.')+(estNote && est != null ? ' <span class="muted">('+esc(estNote)+')</span>' : '')+'</div>'+
+    (ready ? '<button class="btn press block pc-ok" data-act="drv-done" data-id="'+esc(id)+'" id="payok-'+esc(id)+'">'+I("checkc")+' Konfirmasi terima '+rp(d.total)+'</button>'
+      : '<button class="btn press block pc-ok" data-act="drv-arrive" data-id="'+esc(id)+'">'+I("camera")+' Pesanan sudah sampai</button>')+'</div>';
+}
+function payRecvLine(o, buyer){
+  const p = o.payRecv || {};
+  return '<div class="payrecv">'+I("checkc")+'<div class="grow"><b>'+(buyer ? 'Dibayar ke driver ' : 'Pembayaran diterima ')+rp(p.total || 0)+'</b><small>'+
+    (p.items ? 'Pesanan '+rp(p.items)+' + ' : '')+'ongkir '+rp(p.ongkir || 0)+(p.voucher ? ' − saldo JAGA '+rp(p.voucher) : '')+' · '+esc(PAYM_LBL[p.method] || "Tunai")+(p.at ? ' · '+fmtDate(p.at) : '')+'</small></div></div>';
+}
+document.addEventListener("input", e => {
+  const id = e.target.dataset && e.target.dataset.ongkir; if(!id) return;
+  const o = ((S.drv && S.drv.mine) || []).find(x => x.id === id); if(!o || isRide(o)) return;
+  const d = payDue(o, e.target.value), t = document.getElementById("paytot-" + id), b = document.getElementById("payok-" + id);
+  if(t) t.textContent = rp(d.total);
+  if(b) b.innerHTML = I("checkc") + " Konfirmasi terima " + rp(d.total);
+});
 function appDriver(){
   let h = '<div class="dtop">'+JMARK()+'<div class="grow"><b>JAGA</b><small>Portal Driver</small></div>'+
     (S.drv.me && S.drv.me.id ? '<button class="ibtn sup-btn" data-act="sup-open" data-v="drv:'+esc(S.drv.me.id)+'" aria-label="Tanya tim JAGA">'+I("chat")+supBadge("drv:"+S.drv.me.id)+'</button>' : '<a class="ibtn" target="_blank" rel="noopener" href="'+esc(waLink(CONTACT.wa, "Halo JAGA, saya driver butuh bantuan."))+'" aria-label="Bantuan">'+I("chat")+'</a>')+'</div>'+
@@ -2633,13 +2673,17 @@ document.addEventListener("click", async e => {
     if(!ride && SB){ proofConfirm("Pesanan sudah diambil dari toko dan siap diantar?", "Ya, antar sekarang", ph => drvDo(() => DRV.act(id, "pickup", ph ? {photo:ph} : null), "Selamat mengantar!")); return; }
     confirmModal(ride ? "Penumpang sudah naik dan siap berangkat?" : "Pesanan sudah diambil dari toko dan siap diantar?", ride ? "Ya, berangkat" : "Ya, antar sekarang", () => drvDo(() => DRV.act(id, "pickup"), ride ? "Selamat jalan, hati-hati di jalan!" : "Selamat mengantar!")); return; }
   if(a === "drv-release"){ confirmModal(ride ? "Batal mengambil order Jago ini? Order langsung dipindah ke driver terdekat berikutnya." : "Batal mengambil pesanan ini? Pesanan langsung dipindah ke driver terdekat berikutnya.", "Batal ambil", () => drvDo(() => DRV.act(id, "release"), "Pesanan dilepas")); return; }
+  if(a === "drv-paym"){ (S.drv.paym = S.drv.paym || {})[id] = el.dataset.v; document.querySelectorAll('[data-act="drv-paym"][data-id="'+id+'"]').forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === el.dataset.v))); return; }
   if(a === "drv-done"){
     const inp = document.getElementById("ongkir-" + id);
     const v = parseInt(String(inp ? inp.value : "").replace(/\D/g, ""), 10);
     if(!isFinite(v) || v < 0) return toast(ride ? "Isi tarif yang disepakati." : "Isi ongkir yang disepakati.");
     if(ride){ confirmModal("Sudah sampai tujuan dengan tarif " + rp(v) + "? Komisi 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Perjalanan selesai. Tarif " + rp(v) + " tercatat.")); return; }
-    if(rj && rj.arrivedAt){ confirmModal((rj.managed ? "Tagih ke pembeli " + rp((rj.total || 0) + v) + " (menu " + rp(rj.total || 0) + " + ongkir " + rp(v) + "). " : "") + "Selesaikan pesanan dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", () => drvDo(() => DRV.act(id, "done", {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat.")); return; }
-    (SB ? proofConfirm : (t, l, f) => confirmModal(t, l, () => f("")))("Pesanan sudah diterima pembeli dengan ongkir " + rp(v) + "? Potongan 3% (" + rp(rideFee(v)) + ") dipotong dari saldo driver.", "Ya, selesai", ph => drvDo(() => DRV.act(id, "done", ph ? {ongkir:v, photo:ph} : {ongkir:v}).then(() => { delete S.drv.draft[id]; }), "Pesanan selesai. Ongkir " + rp(v) + " tercatat."));
+    const m = (S.drv.paym || {})[id] || "tunai", d = payDue(rj || {}, v);
+    const msg = "Konfirmasi pembayaran dari pembeli: " + (d.items ? "pesanan " + rp(d.items) + " + " : "") + "ongkir " + rp(v) + (d.vch ? " − saldo JAGA " + rp(d.vch) : "") + " = " + rp(d.total) + " (" + PAYM_LBL[m] + "). Uang sudah kamu terima? Potongan 3% ongkir (" + rp(rideFee(v)) + ") dari saldo driver.";
+    const fin = ph => drvDo(() => DRV.act(id, "done", Object.assign({ongkir:v, method:m, collect:d.total}, ph ? {photo:ph} : {})).then(() => { delete S.drv.draft[id]; }), "Pembayaran " + rp(d.total) + " tercatat. Pesanan selesai ✓");
+    if(rj && rj.arrivedAt){ confirmModal(msg, "Ya, sudah diterima", () => fin("")); return; }
+    (SB ? proofConfirm : (t, l, f) => confirmModal(t, l, () => f("")))(msg, "Ya, sudah diterima", fin);
     return;
   }
   if(a === "pick-verify"){
@@ -2736,7 +2780,7 @@ function notifyNewOrders(){
     if(k === "driver_ke_toko") notify("Driver menuju toko Anda 🛵", (o.code || "") + " · " + ((o.driver && o.driver.name) || "Driver") + ". Siapkan pesanan, lalu cocokkan kode ambil dari driver.", {kind:"order", act:() => go("seller", {sellerTab:"pesanan"})});
     else if(o.status === "selesai") notify("Pesanan selesai ✓", (o.code || "") + " sudah diterima pembeli.", {kind:"done"});
   });
-  if(fresh.length){ const o0 = S.orders.find(o => o.id === fresh[0]) || {}; notify(fresh.length > 1 ? fresh.length + " pesanan baru!" : "Pesanan baru!", (o0.buyer ? o0.buyer.name + " · " : "") + (o0.items ? o0.items.map(i => i.qty + "× " + i.name).join(", ").slice(0, 90) : "") + " — segera konfirmasi", {kind:"order", tag:"store-order", act:() => { go("seller", {sellerTab:"pesanan"}); }}); }
+  if(fresh.length){ const o0 = S.orders.find(o => o.id === fresh[0]) || {}; notify(fresh.length > 1 ? fresh.length + " pesanan baru!" : "Pesanan baru!", (o0.buyer ? o0.buyer.name + " · " : "") + (o0.items ? o0.items.map(i => i.qty + "× " + i.name).join(", ").slice(0, 90) : "") + " — segera konfirmasi", {kind:"order", tag:"store-order", alarm:true, act:() => { go("seller", {sellerTab:"pesanan"}); }}); }
 }
 document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
@@ -4508,8 +4552,9 @@ async function pushEnable(role){
     let sub = await reg.pushManager.getSubscription();
     if(!sub) sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64u(VAPID_PUB)});
     await sbStore.rpc("jt_push_save", {p_sub:sub.toJSON(), p_role:role});
-    lsSet("jt_push_" + role, "1");
-    toast("Notifikasi aktif. Kamu akan diberi tahu walau aplikasi ditutup.");
+    lsSet("jt_push_" + role, "1"); lsSet("jt_pushsync_" + role, sub.endpoint.slice(-24) + "|" + new Date().toISOString().slice(0, 10));
+    toast("Siaga order aktif. Kamu diberi tahu walau aplikasi ditutup.");
+    if(siagaNow()) keepAwake(true);
   }catch(e){ toast("Notifikasi gagal diaktifkan: " + String(e.message || e).replace(/^.*?:\s*/, "").slice(0, 80)); }
   render();
 }
@@ -4547,8 +4592,51 @@ function buyerNotifLine(){
     (st === "off" ? '<button class="linkbtn small" data-act="push-on" data-v="buyer">Aktifkan</button>' : '<button class="linkbtn small" data-act="nask-help">Caranya</button>')+'</div>';
 }
 function pushCard(role, text){
-  if(!PUSH_OK || pushOn(role)) return "";
+  if(!SB) return "";
+  if(role === "buyer") return !PUSH_OK || pushOn(role) ? "" : '<div class="pushcard">'+E("bell")+'<div class="grow"><b>Aktifkan notifikasi</b><small>'+esc(text)+'</small></div><button class="btn sm press" data-act="push-on" data-v="'+role+'">Aktifkan</button></div>';
+  if(pushOn(role)){
+    const wake = !!navigator.wakeLock;
+    return '<div class="siaga">'+E("bell")+'<div class="grow"><b>Siaga order aktif</b><small>Notifikasi masuk walau aplikasi ditutup atau HP terkunci'+(wake ? ' · layar tetap menyala selama aplikasi dibuka' : '')+'.</small></div><button class="btn ghost sm" data-act="push-test" data-v="'+role+'">Tes</button></div>';
+  }
+  const st = !PUSH_OK ? (IS_IOS && !IS_STANDALONE ? "ios" : "none") : Notification.permission === "denied" ? "denied" : "off";
+  if(st === "none") return '<div class="pushcard off">'+E("bell")+'<div class="grow"><b>Notifikasi belum didukung</b><small>Buka JAGA dengan Chrome, lalu pasang ke layar utama agar order tetap masuk.</small></div></div>';
+  if(st === "ios") return '<div class="pushcard off">'+E("bell")+'<div class="grow"><b>Pasang JAGA ke layar utama</b><small>Di iPhone: Safari → Bagikan → Tambah ke Layar Utama, lalu buka JAGA dari ikon dan aktifkan notifikasi.</small></div></div>';
+  if(st === "denied") return '<div class="pushcard off">'+E("bell")+'<div class="grow"><b>Notifikasi diblokir</b><small>Ketuk ikon gembok/ⓘ di samping alamat situs → Notifikasi → Izinkan, lalu muat ulang. Tanpa ini order bisa terlewat.</small></div></div>';
   return '<div class="pushcard">'+E("bell")+'<div class="grow"><b>Aktifkan notifikasi</b><small>'+esc(text)+'</small></div><button class="btn sm press" data-act="push-on" data-v="'+role+'">Aktifkan</button></div>';
+}
+function siagaNow(){
+  if(document.hidden || !SB) return false;
+  if(S.role === "driver") return !!(S.drv && S.drv.me && S.drv.me.online) && pushOn("driver");
+  if(S.role === "seller") return pushOn("store");
+  if(S.role === "owner") return pushOn("owner");
+  return false;
+}
+/* langganan notifikasi disegarkan otomatis tiap hari & saat aplikasi dibuka, agar tidak putus */
+let _pushSyncAt = 0;
+async function pushResync(force){
+  if(!PUSH_OK || Notification.permission !== "granted") return;
+  const roles = ["driver", "store", "owner", "buyer"].filter(r => lsGet("jt_push_" + r) === "1"); if(!roles.length) return;
+  if(!force && Date.now() - _pushSyncAt < 60e3) return; _pushSyncAt = Date.now();
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if(!sub) sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64u(VAPID_PUB)});
+    const day = new Date().toISOString().slice(0, 10), sig = sub.endpoint.slice(-24) + "|" + day;
+    for(const r of roles){
+      if(!force && lsGet("jt_pushsync_" + r) === sig) continue;
+      try{ await sbStore.rpc("jt_push_save", {p_sub:sub.toJSON(), p_role:r}); lsSet("jt_pushsync_" + r, sig); }catch(_){}
+    }
+  }catch(_){}
+}
+setTimeout(() => pushResync(true), 4000);
+setInterval(() => { if(siagaNow()) keepAwake(true); }, 20000);
+async function pushTest(){
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification("Tes notifikasi JAGA ✓", {body:"Notifikasi berfungsi. Order baru akan muncul seperti ini walau aplikasi ditutup.", icon:"icons/icon-192.png", badge:"icons/icon-192.png", tag:"jt-test", renotify:true, vibrate:[400, 150, 400, 150, 600], requireInteraction:false});
+    loudTone("order"); toast("Notifikasi tes dikirim. Cek bilah notifikasi HP.");
+  }catch(e){ toast("Tes gagal: " + String(e.message || e).slice(0, 80)); }
+  pushResync(true);
 }
 const NOTIFY_RPC = {jt_order_create:"order", jt_order_update:"order", jt_driver_act:"auto", jt_ride_create:"ride", jt_ride_act:"ride", jt_owner_order_set:null, jt_pick_verify:"order"};
 function notifyPush(kind, id){
@@ -4917,6 +5005,7 @@ document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
   const a = el.dataset.act, id = el.dataset.id, v = el.dataset.v;
   if(a === "push-on"){ pushEnable(v); return; }
+  if(a === "push-test"){ pushTest(); return; }
   if(a === "region-set"){ setRegion(v); return; }
   if(a === "region-pick"){ regionModal(); return; }
   if(a === "region-gps"){
@@ -5805,7 +5894,7 @@ function navCheck(){
     const k = o.id + ":" + o.status; if(NAV_SEEN[k]) continue; NAV_SEEN[k] = 1;
     if(navTarget(o) && S.role === "driver" && !document.getElementById("modal").innerHTML.trim()){ if(S.drv.loc) sendLoc(S.drv.loc); navSheet(o); break; }
   }
-  keepAwake(mine.some(o => DRV_BUSY.includes(o.status)));
+  keepAwake(mine.some(o => DRV_BUSY.includes(o.status)) || siagaNow());
 }
 { const _dr = drvRefresh; drvRefresh = async function(){ const r = await _dr.apply(this, arguments); try{ navCheck(); }catch(_){} return r; }; }
 document.addEventListener("click", e => { const a = e.target.closest('[data-act="nav-go"]'); if(a) setTimeout(closeModal, 400); });
@@ -5818,6 +5907,7 @@ async function keepAwake(on){
   }catch(_){ WAKE = null; }
 }
 document.addEventListener("visibilitychange", () => {
+  if(!document.hidden){ pushResync(); if(siagaNow()) keepAwake(true); }
   if(document.hidden || S.role !== "driver") return;
   const busy = ((S.drv && S.drv.mine) || []).some(o => DRV_BUSY.includes(o.status));
   if(!busy) return;
