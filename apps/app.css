@@ -1784,3 +1784,11 @@ html.navopen,html.navopen body{overflow:hidden}
 .mbuy li{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed #f3d2a6}
 .mbuy-t{display:flex;justify-content:space-between;font-size:15px;margin-bottom:6px}
 .mbuy small{display:block;color:#7a4f00;font-size:12.5px;line-height:1.45}
+
+/* foto bangunan toko sebagai sampul halaman toko */
+.sbanner.has-cover{background-size:cover;background-position:center top;min-height:300px;align-items:flex-end;padding-top:150px}
+.sbanner.has-cover .avatar{box-shadow:0 0 0 3px rgba(255,255,255,.9)}
+
+.scover.photo{padding-top:calc(14px + env(safe-area-inset-top))}
+.scover.photo .who{margin-top:170px}
+.astore .cv.photo .e3d{display:none}

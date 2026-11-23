@@ -612,11 +612,11 @@ function viewStore(){
   const prods = (S.products[s.id]||[]).filter(p => p.active !== false);
   const isOpen = s.open !== false;
   let h = S.preview ? '<div class="preview-bar"><span>'+I("eye")+' Pratinjau: begini toko Anda terlihat oleh pembeli</span><button class="btn sm" data-act="nav" data-v="seller" data-t="ringkasan">← Kembali ke dashboard</button></div>' : '<div class="crumbs"><a data-act="go" data-v="home">Beranda</a>›<span>'+esc(s.name)+'</span></div>';
-  h += '<div class="sbanner">'+avatarHtml(s)+'<div class="grow"><h2>'+esc(s.name)+'</h2>'+
+  h += '<div class="sbanner'+(s.cover ? ' has-cover' : '')+'"'+(s.cover ? ' style="background-image:linear-gradient(180deg,rgba(11,26,61,.05) 0%,rgba(11,26,61,.55) 45%,rgba(11,26,61,.96) 100%),url(&quot;'+esc(s.cover)+'&quot;)"' : '')+'>'+avatarHtml(s)+'<div class="grow"><h2>'+esc(s.name)+'</h2>'+
     '<div class="small muted">'+(isOpen?'<span style="color:#86efac;font-weight:700">● Buka</span>':'<span style="color:#fca5a5;font-weight:700">Tutup</span>')+' · '+(CAT_ICON[s.category]||"")+' '+esc(s.category)+' · '+I("pin")+' '+esc(s.address||"")+(s.area?', '+esc(s.area):'')+(s.hours?' · '+I("clock")+' '+esc(s.hours):'')+'</div>'+
     (s.desc?'<p style="margin:8px 0 0;color:#dce6fb">'+esc(s.desc)+'</p>':'')+
     '<div class="paylist"><span class="tag">'+I("truck")+' Ongkir Rp2rb/500 m</span><span class="tag">0% admin</span>'+payMethodsOf(s).map(p=>'<span class="tag gray">'+esc(p.l)+'</span>').join("")+'</div></div>'+
-    '<button class="btn ghost sm" data-act="chat-seller" data-id="'+esc(s.id)+'">'+I("chat")+' Chat penjual</button></div>';
+    (s.managed ? '' : '<button class="btn ghost sm" data-act="chat-seller" data-id="'+esc(s.id)+'">'+I("chat")+' Chat penjual</button>')+'</div>';
   if(!S.products[s.id]) return h + '<div class="empty">'+I("loader")+' Memuat produk…</div>';
   if(!prods.length) return h + '<div class="empty card"><div class="big">'+I("package")+'</div>Toko ini belum menambahkan produk.</div>';
   h += '<div class="sec-head" style="margin:4px 0 12px"><h2 style="font-size:19px">Semua produk</h2><span class="small muted">'+prods.length+' produk</span></div>';
@@ -1701,7 +1701,7 @@ function appHomeBody(){
   if(stores.length){
     h += '<div class="ash" id="storeTop"><h2>'+(filtering?'Toko':'Toko di sekitarmu')+'</h2><span class="small muted">'+stores.length+' toko</span></div><div class="hscroll">'+stores.slice(0,20).map((s,i) => {
       const c = s.color || "#2f6bff";
-      return '<div class="astore press'+ra(i)+'" data-act="open-store" data-id="'+esc(s.id)+'"><div class="cv" style="background:linear-gradient(140deg,'+esc(c)+'26,'+esc(c)+'66)">'+avatarHtml(s)+E(catE(s.category))+'</div>'+
+      return '<div class="astore press'+ra(i)+'" data-act="open-store" data-id="'+esc(s.id)+'"><div class="cv'+(s.cover ? ' photo' : '')+'" style="'+(s.cover ? 'background:url(&quot;'+esc(s.cover)+'&quot;) center/cover' : 'background:linear-gradient(140deg,'+esc(c)+'26,'+esc(c)+'66)')+'">'+avatarHtml(s)+(s.cover ? '' : E(catE(s.category)))+'</div>'+
         '<div class="bd"><b>'+esc(s.name)+'</b><small>'+(s.open===false?'<span class="closedt">Tutup</span>':'<span class="open">● Buka</span>')+' · '+esc(s.category)+' · '+esc(s.area||"")+'</small>'+storeStars(s.id)+'</div></div>';
     }).join("")+'</div>';
   }
@@ -1721,8 +1721,8 @@ function appStore(){
   if(!s) return appBar("Toko") + aEmpty("store", "Toko tidak ditemukan", "Mungkin toko sudah tidak aktif.");
   const prods = (S.products[s.id]||[]).filter(p => p.active !== false);
   const c = s.color || "#2f6bff";
-  let h = '<section class="scover" style="background:linear-gradient(140deg,'+esc(c)+' 0%,#12306f 100%)"><button class="ibtn press" data-act="back" aria-label="Kembali">'+I("back")+'</button>'+
-    '<span class="art">'+E(catE(s.category))+'</span>'+
+  let h = '<section class="scover'+(s.cover ? ' photo' : '')+'" style="background:'+(s.cover ? 'linear-gradient(180deg,rgba(8,20,48,.15) 0%,rgba(8,20,48,.35) 40%,rgba(8,20,48,.92) 100%),url(&quot;'+esc(s.cover)+'&quot;) center top/cover' : 'linear-gradient(140deg,'+esc(c)+' 0%,#12306f 100%)')+'"><button class="ibtn press" data-act="back" aria-label="Kembali">'+I("back")+'</button>'+
+    (s.cover ? '' : '<span class="art">'+E(catE(s.category))+'</span>')+
     '<div class="who'+ra(0)+'">'+avatarHtml(s)+'<div><h2>'+esc(s.name)+'</h2><small>'+(s.open===false?'Tutup sementara':'● Buka')+' · '+esc(s.category)+(s.hours?' · '+esc(s.hours):'')+' '+storeStars(s.id)+'</small></div></div>'+
     '<div class="tags'+ra(1)+'"><span>Ongkir Rp2rb/500 m</span><span>Rp0 admin</span>'+payMethodsOf(s).map(m=>'<span>'+esc(m.l)+'</span>').join("")+'</div></section>';
   h += '<div class="sec-pad" style="margin-top:14px">'+(s.desc?'<div class="pcard'+ra(2)+'"><div class="small" style="color:#45526b">'+esc(s.desc)+'</div><div class="small muted" style="margin-top:6px">'+esc(s.address||"")+(s.area?', '+esc(s.area):'')+'</div></div>':'')+
