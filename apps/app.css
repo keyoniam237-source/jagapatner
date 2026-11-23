@@ -1826,3 +1826,60 @@ html.navopen,html.navopen body{overflow:hidden}
 .pushcard.off{border-color:#fecaca;background:#fef2f2}.pushcard.off small{color:#8a2c2c}
 .nfy.alarm{animation:nfyIn .32s cubic-bezier(.2,.9,.3,1.2),nfyPulse 1.2s ease-in-out .4s infinite}
 @keyframes nfyPulse{0%,100%{box-shadow:0 18px 40px -10px rgba(5,12,35,.55),0 0 0 0 rgba(47,107,255,.55)}50%{box-shadow:0 18px 40px -10px rgba(5,12,35,.55),0 0 0 10px rgba(47,107,255,0)}}
+/* owner: daftar toko ringkas + peta */
+.omapc{padding:12px;margin-bottom:10px}
+.omh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}.omh b{display:flex;align-items:center;gap:6px;font-size:15px}.omh small{color:#6a7894;font-size:12px}
+.omapw{position:relative}.omap{height:300px;border-radius:14px;overflow:hidden;background:#e8eef7;z-index:0}
+.omleg{position:absolute;left:10px;bottom:10px;z-index:500;display:flex;gap:10px;background:rgba(255,255,255,.92);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:700}
+.omleg span{display:flex;align-items:center;gap:5px}.omleg i{width:10px;height:10px;border-radius:50%;display:inline-block}.omleg i.on{background:#16a34a}.omleg i.off{background:#9aa5b8}
+.smk i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;font-style:normal;font-weight:800;font-size:13px;color:#fff;border:2.5px solid #fff;box-shadow:0 4px 10px -3px rgba(10,22,51,.55)}
+.smk i.on{background:#16a34a}.smk i.off{background:#9aa5b8}
+.oregs,.osf{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:8px 0 2px}.oregs::-webkit-scrollbar,.osf::-webkit-scrollbar{display:none}
+.oregs button,.osf button{flex:none;border:1px solid #dbe3f0;background:#fff;border-radius:99px;padding:6px 11px;font:inherit;font-size:12.5px;font-weight:700;color:#22304f;cursor:pointer}
+.oregs button b,.osf button b{color:#6a7894;font-weight:800;margin-left:2px}
+.oregs button[aria-pressed="true"],.osf button[aria-pressed="true"]{background:#0a1633;border-color:#0a1633;color:#fff}.oregs button[aria-pressed="true"] b,.osf button[aria-pressed="true"] b{color:#c9d6f5}
+.osf{padding:0 0 8px}
+.olist{padding:0;overflow:hidden}
+.osr{border-bottom:1px solid #eef1f6}.osr:last-child{border-bottom:0}
+.osr-h{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:11px 12px;font:inherit;text-align:left;cursor:pointer;color:inherit}
+.osr-h:hover{background:#f7f9fd}
+.osr-h b{display:block;font-size:14.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.osr-h .grow{min-width:0}.osr-h small{display:block;font-size:12px;color:#6a7894;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.osr-h .sdot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}.osr-h .sdot.on{background:#16a34a}.osr-h .sdot.cl{background:#f59e0b}.osr-h .sdot.off{background:#b7c0cf}
+.osr-n{text-align:right;flex:none}.osr-n b{display:block;font-size:13.5px}.osr-n small{font-size:11.5px}
+.osr .chev{color:#9aa5b8;font-size:12px;flex:none}
+.osr.off .osr-h b{color:#7a869e}
+.osr.xp{background:#f8fbff}.osr.xp .osr-h{background:#eef4ff}
+.osr-b{padding:4px 12px 12px}.osr-b .om{margin-top:8px}
+.osr.focus{box-shadow:inset 3px 0 0 #2f6bff}
+.osr.ost{padding:0}.osr.ost.off{opacity:1}.osr.ost .osr-h small{display:block}
+.osr-h b{color:#0a1633}.osr.off .osr-h b{color:#7a869e}
+/* owner: kotak toko kecil berwarna */
+.otiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
+.otile{position:relative;border:0;border-radius:14px;padding:10px 8px 9px;font:inherit;text-align:left;cursor:pointer;color:#fff;min-height:92px;display:flex;flex-direction:column;gap:2px;box-shadow:0 6px 14px -8px rgba(10,22,51,.45);transition:transform .12s}
+.otile:active{transform:scale(.96)}
+.otile.on{background:linear-gradient(150deg,#22c55e,#15803d)}.otile.cl{background:linear-gradient(150deg,#fbbf24,#d97706)}.otile.off{background:linear-gradient(150deg,#b6bfcd,#8b95a7)}
+.otile em{font-style:normal;font-weight:800;font-size:15px;width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.25);display:grid;place-items:center;margin-bottom:4px}
+.otile b{font-size:12.5px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#fff}
+.otile small{font-size:10.5px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.otile .lowb{position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%;background:#ef4444;border:2px solid #fff}
+.otile .nolocb{position:absolute;top:7px;right:22px;width:15px;height:15px;border-radius:50%;background:#fff;color:#b45309;font-style:normal;font-weight:900;font-size:11px;display:grid;place-items:center}
+.otile.ost{padding:10px 8px 9px}.otile.ost.off{opacity:1}
+.otleg{display:flex;flex-wrap:wrap;gap:12px;margin:10px 2px 4px;font-size:11.5px;color:#6a7894;font-weight:700}
+.otleg span{display:flex;align-items:center;gap:5px}.otleg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.otleg i.on{background:#16a34a}.otleg i.cl{background:#f59e0b}.otleg i.off{background:#9aa5b8}.otleg i.lw{background:#ef4444;border-radius:50%}
+.sphead{display:flex;align-items:center;gap:12px;padding:14px;color:#fff;margin-bottom:10px}
+.sphead.on{background:linear-gradient(130deg,#22c55e,#15803d)}.sphead.cl{background:linear-gradient(130deg,#fbbf24,#d97706)}.sphead.off{background:linear-gradient(130deg,#b6bfcd,#7d889b)}
+.sphead em{font-style:normal;font-weight:800;font-size:22px;width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.25);display:grid;place-items:center;flex:none}
+.sphead b{display:block;font-size:18px}.sphead small{display:block;opacity:.9;font-size:12.5px}
+.sphead .tag{background:rgba(255,255,255,.95)}
+.spm{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#f5f8fe;border-radius:12px;padding:10px}.spm small{display:block;font-size:11px;color:#6a7894}.spm b{font-size:15px}
+.spr{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #eef1f6;font-size:13.5px}.spr span{color:#6a7894}.spr b{text-align:right;font-weight:700}
+.omap.one{height:220px}
+.smk i.big{width:40px;height:40px;font-size:17px}
+.card.pad+.card.pad{margin-top:10px}
+.otiles{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
+.otile{min-height:72px;padding:7px 7px 6px;border-radius:12px}.otile.ost{padding:7px 7px 6px}
+.otile em{width:22px;height:22px;font-size:12px;border-radius:7px;margin-bottom:2px}
+.otile b{font-size:11px}.otile small{font-size:9.5px}
+.otile .lowb{top:6px;right:6px;width:8px;height:8px}.otile .nolocb{top:5px;right:17px;width:13px;height:13px;font-size:9px}

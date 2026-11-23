@@ -424,7 +424,7 @@ function restoreForms(snap){
   }
   app.dataset.sig = sig;
 }
-function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); try{ mountMaps(); }catch(e){} try{ mountJagoMap(); }catch(e){} lazyImgs(); try{ fillStoreWa(); }catch(e){}  try{ if(S.role === "owner" && S.own && S.own.tab) localStorage.setItem("jt_own_tab", S.own.tab); if(S.role === "seller" && S.view === "seller" && S.sellerTab) localStorage.setItem("jt_seller_tab", S.sellerTab); }catch(_){} }
+function render(){ const snap = snapForms(); renderInner(); restoreForms(snap); try{ mountMaps(); }catch(e){} try{ mountJagoMap(); }catch(e){} try{ mountOwnerMap(); }catch(e){} try{ mountOneMap(); }catch(e){} lazyImgs(); try{ fillStoreWa(); }catch(e){}  try{ if(S.role === "owner" && S.own && S.own.tab) localStorage.setItem("jt_own_tab", S.own.tab); if(S.role === "seller" && S.view === "seller" && S.sellerTab) localStorage.setItem("jt_seller_tab", S.sellerTab); }catch(_){} }
 /* WA toko tidak lagi publik: pemilik mengambilnya lewat RPC privat */
 const MYWA = {};
 function fillStoreWa(){ const f = document.getElementById("storeForm"); if(!f || !SB) return; const id = f.dataset.id, inp = f.elements.wa; if(!id || !inp) return;
@@ -3158,26 +3158,33 @@ function appOwner(){
   } else if(S.own.tab === "pesan"){
     h += ownerInboxTab(D);
   } else if(S.own.tab === "toko"){
-    h += '<div class="otool"><input class="in" id="ownFind" placeholder="Cari nama toko…" autocomplete="off"><button class="btn ghost sm" data-act="own-msg-new">'+I("chat")+' Kirim pesan</button></div>';
+    const hTokoStart = h.length;
     const mStart = rangeStart("bulan");
     const rows = stores.map(s => {
       const os = (D.orders||[]).filter(o => o.storeId === s.id);
       const dn = os.filter(o => o.status === "selesai" && doneT(o) >= rangeStart(S.own.range));
       const billM = os.filter(o => o.status === "selesai" && doneT(o) >= mStart).reduce((a,o)=>a+shareVal(o),0);
-      return {s, n:os.filter(o => (o.createdAt||0) >= rangeStart(S.own.range)).length, gmv:dn.reduce((a,o)=>a+(o.total||0),0), share:dn.reduce((a,o)=>a+shareVal(o),0), billM, last:os[0] ? os[0].createdAt : 0};
-    }).sort((a, b) => b.gmv - a.gmv);
-    h += '<div class="ostores">'+(rows.length ? rows.map(r => {
-      const s = r.s, off = s.active === false;
-      const month = new Date().toLocaleDateString("id-ID",{month:"long",year:"numeric"});
-      return '<div class="card ost'+(off?' off':'')+(S.own.focus===s.id?' focus':'')+'" data-n="'+esc(String(s.name||"").toLowerCase())+'"><div class="oh"><div class="grow"><b>'+esc(s.name)+'</b><small>'+esc(s.category||"")+' · '+esc(s.area||"")+' · '+(s.products||0)+' produk'+(typeof s.lat==="number"?' · 📍':' · <span class="warnc">lokasi belum diatur</span>')+'</small>'+
-        '<small>'+(off?'<span class="warnc">Dinonaktifkan</span>':s.open===false?'Tutup':'Buka')+(s.hasLogin===false?' · belum ada login':'')+(r.last?' · pesanan terakhir '+ago(r.last):'')+'</small></div>'+
-        (off ? '<span class="tag amber">Nonaktif</span>' : '<span class="tag green">Aktif</span>')+'</div>'+
-        '<div class="om"><div><small>Pesanan</small><b>'+r.n+'</b></div><div><small>Penjualan</small><b>'+rp(r.gmv)+'</b></div><div><small>Bagi hasil</small><b>'+rp(r.share)+'</b></div></div>'+
-        '<div class="obill"><span>Saldo toko: <b class="'+(S.ownW && S.ownW.balances && (S.ownW.balances[s.id]||0) < ((S.ownW.cfg||{}).minBalance||0) ? 'neg' : '')+'">'+(S.ownW && S.ownW.balances ? rp(S.ownW.balances[s.id]||0) : '…')+'</b></span>'+'<button class="linkbtn small" data-act="own-msg" data-v="store:'+esc(s.id)+'">Kirim pesan</button>'+'</div>'+
-        accLine("store", s.id, s.name)+
-        '<div class="oacts"><button class="btn ghost sm" data-act="own-msg" data-v="store:'+esc(s.id)+'">'+I("chat")+' Pesan</button><button class="btn ghost sm" data-act="own-exempt" data-k="s" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("percent")+' Bebas komisi</button>'+exTag("s", s.id)+'<button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("cash")+' Saldo</button>'+
-        '<button class="btn ghost sm" data-act="own-store-active" data-id="'+esc(s.id)+'" data-v="'+(off?"1":"0")+'">'+(off?"Aktifkan":"Nonaktifkan")+'</button><button class="btn ghost sm dangerc" data-act="own-store-del" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Hapus</button></div></div>';
-    }).join("") : '<div class="card pad muted small">Belum ada toko terdaftar.</div>')+'</div>';
+      return {s, n:os.filter(o => (o.createdAt||0) >= rangeStart(S.own.range)).length, gmv:dn.reduce((a,o)=>a+(o.total||0),0), share:dn.reduce((a,o)=>a+shareVal(o),0), billM, last:os[0] ? os[0].createdAt : 0, reg:storeRegion(s) || "", loc:typeof s.lat === "number"};
+    }).sort((a, b) => (a.s.active === false) - (b.s.active === false) || b.gmv - a.gmv || b.last - a.last);
+    const sf = S.own.sf || "all", sr = S.own.sr || "";
+    const cnt = {all:rows.length, on:rows.filter(r => r.s.active !== false).length, off:rows.filter(r => r.s.active === false).length, noloc:rows.filter(r => !r.loc).length};
+    const regs = {}; rows.forEach(r => { const k = r.reg || "-"; regs[k] = (regs[k] || 0) + 1; });
+    const vis = rows.filter(r => (sf === "all" || (sf === "on" ? r.s.active !== false : sf === "off" ? r.s.active === false : !r.loc)) && (!sr || (r.reg || "-") === sr));
+    h += '<div class="card omapc"><div class="omh"><b>'+I("pin")+' Peta toko terdaftar</b><small>'+cnt.all+' toko · '+(cnt.all - cnt.noloc)+' sudah ada lokasi</small></div>'+
+      '<div class="omapw"><div class="omap" data-omap="stores"></div><div class="omleg"><span><i class="on"></i>Aktif</span><span><i class="off"></i>Nonaktif</span></div></div>'+
+      '<div class="oregs"><button data-act="own-sr" data-v="" aria-pressed="'+(!sr)+'">Semua wilayah</button>'+Object.keys(regs).sort((x, y) => regs[y] - regs[x]).map(k => '<button data-act="own-sr" data-v="'+esc(k)+'" aria-pressed="'+(sr === k)+'">'+esc(k === "-" ? "Belum ada wilayah" : regionName(k))+' <b>'+regs[k]+'</b></button>').join("")+'</div></div>';
+    h += '<div class="otool"><input class="in" id="ownFind" placeholder="Cari nama toko…" autocomplete="off"><button class="btn ghost sm" data-act="own-msg-new">'+I("chat")+' Kirim pesan</button></div>';
+    h += '<div class="osf">'+[["all","Semua"],["on","Aktif"],["off","Nonaktif"],["noloc","Tanpa lokasi"]].map(x => '<button data-act="own-sf" data-v="'+x[0]+'" aria-pressed="'+(sf === x[0])+'">'+x[1]+' <b>'+cnt[x[0]]+'</b></button>').join("")+'</div>';
+    const pg = S.own.storePage && rows.find(r => r.s.id === S.own.storePage);
+    if(pg){ OWN_MAP_ROWS = rows; h = h.slice(0, hTokoStart) + ownStorePage(pg); return h + '</div></div></div>'; }
+    h += '<div class="otiles">'+(vis.length ? vis.map(r => {
+      const s = r.s, off = s.active === false, cls = off ? 'off' : s.open === false ? 'cl' : 'on';
+      const bal = S.ownW && S.ownW.balances ? (S.ownW.balances[s.id] || 0) : null, low = bal != null && bal < ((S.ownW.cfg||{}).minBalance||0);
+      return '<button class="otile '+cls+' ost" data-n="'+esc(String(s.name||"").toLowerCase())+'" data-act="own-sopen" data-id="'+esc(s.id)+'">'+(low ? '<i class="lowb" title="Saldo rendah"></i>' : '')+(r.loc ? '' : '<i class="nolocb" title="Belum ada lokasi">!</i>')+
+        '<em>'+esc((s.name||"?").trim().charAt(0).toUpperCase())+'</em><b>'+esc(s.name)+'</b><small>'+(r.n ? r.n+' pesanan' : esc(r.reg ? regionName(r.reg) : (s.area||"")))+'</small></button>';
+    }).join("") : '<div class="pad muted small">'+(rows.length ? 'Tidak ada toko pada filter ini.' : 'Belum ada toko terdaftar.')+'</div>')+'</div>'+
+    '<div class="otleg"><span><i class="on"></i>Aktif & buka</span><span><i class="cl"></i>Tutup</span><span><i class="off"></i>Nonaktif</span><span><i class="lw"></i>Saldo rendah</span></div>';
+    OWN_MAP_ROWS = rows;
   } else if(S.own.tab === "pembeli"){
     h += ownerBuyersTab();
   } else if(S.own.tab === "laporan"){
@@ -3284,6 +3291,10 @@ document.addEventListener("click", async e => {
     if(S.own.focus) setTimeout(() => { const f = document.querySelector(".focus"); if(f) f.scrollIntoView({block:"center", behavior:"smooth"}); }, 120); return; }
   if(a === "own-thread"){ S.own.thread = v || null; render(); if(v) loadOwnMsgs(v, true); return; }
   if(a === "own-ifilter"){ S.own.ifilter = v; render(); return; }
+  if(a === "own-sopen"){ S.own.storePage = id; S.own.focus = null; render(); window.scrollTo(0, 0); return; }
+  if(a === "own-sback"){ const id0 = S.own.storePage; S.own.storePage = ""; render(); setTimeout(() => { const t = document.querySelector('.otile[data-id="'+id0+'"]'); if(t) t.scrollIntoView({block:"center"}); }, 60); return; }
+  if(a === "own-sf"){ S.own.sf = v; render(); return; }
+  if(a === "own-sr"){ S.own.sr = v; render(); ownMapFit(); return; }
   if(a === "own-msg"){ S.own.tab = "pesan"; S.own.thread = v; render(); window.scrollTo(0,0); loadOwnMsgs(v, true); return; }
   if(a === "own-msg-new"){ const D = ownD(); if(!(D.stores||[]).length && !(D.drivers||[]).length) return toast("Belum ada toko atau driver."); openOwnNewMsg(D, ""); return; }
   if(a === "own-quick"){ const t = document.querySelector("#ownSupForm textarea"); if(t){ t.value = v; t.focus(); } return; }
@@ -5074,6 +5085,78 @@ document.addEventListener("submit", async e => {
   }
 });
 
+
+
+function ownStorePage(r){
+  const s = r.s, off = s.active === false, cls = off ? 'off' : s.open === false ? 'cl' : 'on';
+  const bal = S.ownW && S.ownW.balances ? (S.ownW.balances[s.id] || 0) : null, low = bal != null && bal < ((S.ownW.cfg||{}).minBalance||0);
+  const row = (k, v) => '<div class="spr"><span>'+k+'</span><b>'+v+'</b></div>';
+  return '<button class="back" data-act="own-sback">← Semua toko</button>'+
+    '<div class="card sphead '+cls+'"><em>'+esc((s.name||"?").trim().charAt(0).toUpperCase())+'</em><div class="grow"><b>'+esc(s.name)+'</b><small>'+esc(s.category||"")+' · '+esc(r.reg ? regionName(r.reg) : (s.area||"-"))+'</small></div><span class="tag '+(off?'amber':'green')+'">'+(off?'Nonaktif':s.open===false?'Tutup':'Aktif · Buka')+'</span></div>'+
+    '<div class="card pad"><div class="om spm"><div><small>Pesanan</small><b>'+r.n+'</b></div><div><small>Penjualan</small><b>'+rp(r.gmv)+'</b></div><div><small>Bagi hasil</small><b>'+rp(r.share)+'</b></div></div>'+
+      '<div class="small muted" style="margin-top:6px">Periode: '+esc(({hari:"hari ini",minggu:"7 hari",bulan:"bulan ini",semua:"semua waktu"})[S.own.range] || "terpilih")+'. Ganti periode di halaman daftar toko.</div></div>'+
+    '<div class="card pad"><h3 class="sub" style="margin-top:0">Informasi toko</h3>'+
+      row("Kategori", esc(s.category||"-"))+row("Alamat / area", esc(s.address || s.area || "-"))+row("Wilayah layanan", esc(r.reg ? regionName(r.reg) : "-"))+row("Jumlah produk", (s.products||0)+" produk")+
+      row("Status", off ? '<span class="warnc">Dinonaktifkan tim JAGA</span>' : s.open === false ? 'Tutup' : 'Buka')+row("Pesanan terakhir", r.last ? ago(r.last) : "belum ada")+
+      row("Saldo toko", '<span class="'+(low?'neg':'')+'">'+(bal != null ? rp(bal) : '…')+'</span>'+(low ? ' <small class="warnc">di bawah minimum</small>' : ''))+
+      (s.wa ? row("WhatsApp", '<a target="_blank" rel="noopener" href="'+esc(waLink(s.wa, "Halo "+(s.name||"")+", ini tim JAGA."))+'">'+esc(s.wa)+'</a>') : '')+
+      accLine("store", s.id, s.name)+'</div>'+
+    '<div class="card pad"><h3 class="sub" style="margin-top:0">Lokasi</h3>'+(r.loc ? '<div class="omap one" data-omap="one" data-id="'+esc(s.id)+'"></div><a class="btn ghost sm" style="margin-top:8px" target="_blank" rel="noopener" href="'+esc(navLink({lat:s.lat, lng:s.lng}))+'">'+I("pin")+' Buka di Google Maps</a>' : '<div class="notice warnbox" style="margin:0">'+I("pin")+' Lokasi toko belum diatur. Minta pemilik toko menekan "Lokasi saya" di portal mitra.</div>')+'</div>'+
+    '<div class="card pad"><h3 class="sub" style="margin-top:0">Tindakan</h3><div class="oacts spacts"><button class="btn ghost sm" data-act="own-msg" data-v="store:'+esc(s.id)+'">'+I("chat")+' Kirim pesan</button><button class="btn ghost sm" data-act="own-exempt" data-k="s" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("percent")+' Bebas komisi</button>'+exTag("s", s.id)+'<button class="btn ghost sm" data-act="own-adjust" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">'+I("cash")+' Atur saldo</button>'+
+      '<button class="btn ghost sm" data-act="own-store-active" data-id="'+esc(s.id)+'" data-v="'+(off?"1":"0")+'">'+(off?"Aktifkan toko":"Nonaktifkan toko")+'</button><button class="btn ghost sm dangerc" data-act="own-store-del" data-id="'+esc(s.id)+'" data-v="'+esc(s.name)+'">Hapus toko</button></div></div>';
+}
+let ONE_MAP = null;
+function mountOneMap(){
+  const ph = document.querySelector('[data-omap="one"]'); if(!ph) return;
+  const r = (OWN_MAP_ROWS || []).find(x => x.s.id === ph.dataset.id); if(!r || !r.loc) return;
+  loadLeaflet().then(() => {
+    if(!ph.isConnected) return;
+    if(ONE_MAP){ try{ ONE_MAP.remove(); }catch(_){} ONE_MAP = null; }
+    const node = document.createElement("div"); node.className = "omap one"; ph.replaceWith(node);
+    ONE_MAP = L.map(node, {zoomControl:true, attributionControl:true, scrollWheelZoom:false}).setView([r.s.lat, r.s.lng], 16);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(ONE_MAP);
+    const off = r.s.active === false;
+    L.marker([r.s.lat, r.s.lng], {icon:L.divIcon({className:"smk", html:'<i class="'+(off?'off':'on')+' big">'+esc((r.s.name||"?").trim().charAt(0).toUpperCase())+'</i>', iconSize:[40,40], iconAnchor:[20,20]})}).addTo(ONE_MAP);
+  }).catch(() => {});
+}
+/* ---------- peta sebaran toko di portal owner ---------- */
+let OWN_MAP_ROWS = [], OWN_MAP = {node:null, map:null, mk:{}, sig:""};
+function ownMapFit(){
+  const m = OWN_MAP.map; if(!m) return;
+  let sr = S.own.sr || "";
+  if(!sr){ const c = {}; OWN_MAP_ROWS.forEach(r => { if(r.loc){ const k = r.reg || "-"; c[k] = (c[k] || 0) + 1; } }); sr = Object.keys(c).sort((a, b) => c[b] - c[a])[0] || ""; }
+  const pts = OWN_MAP_ROWS.filter(r => r.loc && (!sr || (r.reg || "-") === sr)).map(r => [r.s.lat, r.s.lng]);
+  if(pts.length === 1) m.setView(pts[0], 15); else if(pts.length) m.fitBounds(pts, {padding:[28, 28], maxZoom:15});
+}
+function mountOwnerMap(){
+  const ph = document.querySelector('[data-omap="stores"]'); if(!ph) return;
+  loadLeaflet().then(() => {
+    if(!ph.isConnected) return;
+    if(!OWN_MAP.map){
+      const node = document.createElement("div"); node.className = "omap"; ph.replaceWith(node);
+      const map = L.map(node, {zoomControl:true, attributionControl:true, scrollWheelZoom:false});
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(map);
+      map.setView([0.71, 100.55], 11);
+      OWN_MAP = {node, map, mk:{}, sig:""};
+    } else { ph.replaceWith(OWN_MAP.node); setTimeout(() => OWN_MAP.map.invalidateSize(), 50); }
+    const m = OWN_MAP, seen = {};
+    OWN_MAP_ROWS.forEach(r => {
+      if(!r.loc) return; const s = r.s, off = s.active === false; seen[s.id] = 1;
+      const icon = L.divIcon({className:"smk", html:'<i class="'+(off?'off':'on')+'">'+esc((s.name||"?").trim().charAt(0).toUpperCase())+'</i>', iconSize:[30,30], iconAnchor:[15,15]});
+      const pop = '<b>'+esc(s.name)+'</b><br><small>'+esc(s.category||"")+' · '+esc(r.reg ? regionName(r.reg) : (s.area||""))+'</small><br><small>'+(off?'Nonaktif':'Aktif')+' · '+r.n+' pesanan · '+rp(r.gmv)+'</small><br><button class="linkbtn small" data-act="own-sopen-map" data-id="'+esc(s.id)+'">Buka rincian</button>';
+      if(m.mk[s.id]){ m.mk[s.id].setLatLng([s.lat, s.lng]).setIcon(icon).setPopupContent(pop); }
+      else m.mk[s.id] = L.marker([s.lat, s.lng], {icon}).bindPopup(pop).addTo(m.map);
+    });
+    Object.keys(m.mk).forEach(id => { if(!seen[id]){ m.map.removeLayer(m.mk[id]); delete m.mk[id]; } });
+    const sig = OWN_MAP_ROWS.filter(r => r.loc).map(r => r.s.id).join(",") + "|" + (S.own.sr || "");
+    if(sig !== m.sig){ m.sig = sig; ownMapFit(); }
+  }).catch(() => { const n = document.querySelector('[data-omap="stores"]'); if(n) n.innerHTML = '<div class="pad small muted">Peta tidak bisa dimuat. Periksa koneksi internet.</div>'; });
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest('[data-act="own-sopen-map"]'); if(!b) return;
+  e.preventDefault(); e.stopPropagation();
+  S.own.storePage = b.dataset.id; if(OWN_MAP.map) OWN_MAP.map.closePopup(); render(); window.scrollTo(0, 0);
+}, true);
 /* ============ Peta live posisi driver ============ */
 let LEAF_P = null;
 function loadLeaflet(){
