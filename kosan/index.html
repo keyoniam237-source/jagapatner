@@ -190,6 +190,9 @@ pre.struk{font:500 12.5px/1.45 var(--mono);background:#FFFFFF;color:#111111;bord
 .lg-ok{color:var(--ok);font-weight:600;font-size:13.5px;background:color-mix(in srgb,var(--ok) 10%,transparent);border-radius:10px;padding:10px 12px}
 .lg-links{display:flex;flex-direction:column;gap:2px;align-items:center}
 .lg-links .btn{min-height:40px}
+.offchip{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:rgba(201,169,106,.18);border:1px solid var(--gold);color:var(--brand-ink);font-size:12.5px;font-weight:700;white-space:nowrap}
+.offchip::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.offchip[hidden]{display:none}
 .sync{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted)}
 .sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .sync.ok i{background:var(--ok)}.sync.wait i{background:var(--warn)}.sync.err i{background:var(--bad)}
@@ -365,7 +368,7 @@ label.f{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.01em}
   <header class="top">
     <div class="logo" id="top-logo"></div>
     <div class="shop" id="shop-name"></div>
-    
+    <span class="offchip" id="offchip" hidden title="Tanpa internet: semua fitur tetap jalan, data tersimpan di HP dan dikirim otomatis saat online.">Tanpa internet</span>
   </header>
   <main id="view" tabindex="-1"></main>
   <nav class="tabs" id="tabs" aria-label="Menu utama"></nav>
@@ -1106,6 +1109,9 @@ async function sessionEnded(msg){
   showLogin(); const e=$('#lg-err'); if(e) e.textContent=msg||'Sesi berakhir. Silakan masuk lagi.';
 }
 window.addEventListener('online',()=>{if(isAcc()&&Sync.dirty)Sync.push()});
+function netUi(ev){const off=navigator.onLine===false,c=$('#offchip');if(c)c.hidden=!off;
+  if(ev&&S)toast(off?'Tanpa internet. Aplikasi tetap bisa dipakai, data tersimpan di HP dan dikirim otomatis saat online.':'Internet kembali. Data sedang disimpan online.')}
+window.addEventListener('offline',()=>netUi(1));window.addEventListener('online',()=>netUi(1));setTimeout(()=>netUi(),0);
 setInterval(()=>{if(isAcc()&&Sync.dirty&&!Sync.busy&&navigator.onLine!==false)Sync.push()},60000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&isAcc()&&Sync.dirty){clearTimeout(Sync.timer);Sync.push()}});
 

@@ -1,5 +1,5 @@
 // Jaga Kosan: simpan aplikasi di perangkat supaya kasir tetap jalan tanpa internet.
-const VERSION = 'jaga-kosan-v8';
+const VERSION = 'jaga-kosan-v9';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(
