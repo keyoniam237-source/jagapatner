@@ -471,7 +471,7 @@ const blank=()=>({v:1,shop:{name:'',address:'',phone:'',bank:'',qris:'',remindBe
 function normalize(d){const s=Object.assign(blank(),d||{});s.shop=Object.assign(blank().shop,(d&&d.shop)||{});
   ['rooms','tenants','bills','expenses','issues'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]});if(!s.seq||typeof s.seq!=='object')s.seq={m:'',n:0};
   if(!s.shop.tplV||s.shop.tplV<2){const B=blank().shop;Object.assign(s.shop,{tplRemind:B.tplRemind,tplToday:B.tplToday,tplLate:B.tplLate,tplV:2})}
-  s.bills.forEach(b=>{if(!Array.isArray(b.items))b.items=[];if(!Array.isArray(b.pays))b.pays=[];if(!Array.isArray(b.rem))b.rem=[]});return s}
+  s.bills.forEach(b=>{if(!Array.isArray(b.items))b.items=[];if(!Array.isArray(b.pays))b.pays=[];if(!Array.isArray(b.rem))b.rem=[];b.pays.forEach(p=>{if(p.m==='tunai')p.m='Tunai'})});return s}
 const save=()=>{const p=Store.set(KEY(),S);if(isAcc())Sync.touch();return p};
 const room=id=>S.rooms.find(r=>r.id===id), tenant=id=>S.tenants.find(t=>t.id===id), bill=id=>S.bills.find(b=>b.id===id);
 const BULAN_F=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -832,9 +832,10 @@ function remindSheet(id){const b=bill(id),t=tenant(b.tid)||{},s=bState(b),kind=r
     '<div class="two"><button class="btn" data-act="rm-copy">Salin pesan</button><button class="btn" data-act="bill-open" data-id="'+b.id+'">Lihat tagihan</button></div>'+
     (b.rem.length?'<p class="muted small" style="margin:0">Sudah diingatkan '+b.rem.length+'× · terakhir '+fmtDate(b.rem[b.rem.length-1])+' '+fmtTime(b.rem[b.rem.length-1])+'</p>':''));
 }
-function paySheet(id){const b=bill(id),t=tenant(b.tid)||{};PAYM='tunai';
-  sheet(back('Catat pembayaran')+'<p class="muted" style="margin:0">'+esc(t.name||'')+' · '+mLabel(b.period)+' · sisa <b class="num">'+rp(bLeft(b))+'</b></p><input type="hidden" id="py-id" value="'+b.id+'">'+
-    '<label class="f">Jumlah diterima<input type="text" inputmode="numeric" data-rp id="py-amt" value="'+fmt(bLeft(b))+'" autocomplete="off"></label>'+
+function paySheet(id){const b=bill(id),t=tenant(b.tid)||{},fee=lateFeeDue(b);PAYM='Tunai';
+  sheet(back('Catat pembayaran')+'<p class="muted" style="margin:0">'+esc(t.name||'')+' · '+mLabel(b.period)+' · sisa <b class="num">'+rp(bLeft(b))+'</b>'+(fee?' + denda <b class="num">'+rp(fee)+'</b>':'')+'</p><input type="hidden" id="py-id" value="'+b.id+'">'+
+    '<label class="f">Jumlah diterima<input type="text" inputmode="numeric" data-rp id="py-amt" value="'+fmt(bLeft(b)+fee)+'" autocomplete="off"></label>'+
+    (fee?'<p class="muted small" style="margin:-4px 0 0">Jika jumlah yang diterima melebihi sisa sewa, denda keterlambatan '+rp(fee)+' otomatis ditambahkan ke tagihan.</p>':'')+
     '<div class="seg" id="py-m">'+['Tunai','Transfer','QRIS'].map(m=>'<button data-act="py-m" data-m="'+m+'" aria-pressed="'+(m==='Tunai')+'">'+m+'</button>').join('')+'</div>'+
     '<label class="f">Tanggal bayar<input type="date" id="py-date" value="'+dayKey(Date.now())+'" max="'+dayKey(Date.now())+'"></label>'+
     '<label class="f">Catatan (opsional)<input type="text" id="py-note" autocomplete="off"></label>'+
@@ -891,7 +892,7 @@ function vReport(){
       (ex.length?ex.sort((a,b)=>b.ts-a.ts).map(e=>'<div class="item"><div class="grow"><b>'+esc(e.cat)+'</b><span class="muted small">'+fmtDate(e.ts)+(e.note?' · '+esc(e.note):'')+'</span></div><b class="num">'+rp(e.amount)+'</b><button class="btn ghost danger mini" data-act="ex-del" data-id="'+e.id+'" aria-label="Hapus pengeluaran">'+ico('x')+'</button></div>').join(''):'<div class="empty">Belum ada pengeluaran di bulan ini.</div>')+'</div></div>'+
     '</div>';
 }
-function reportCsv(){const q=v=>'"'+String(v).replace(/"/g,'""')+'"';const rows=[['Jenis','Tanggal','Penghuni','Kamar','Periode','Keterangan','Cara bayar','No kwitansi','Jumlah']];
+function reportCsv(){const q=v=>{let x=String(v);if(typeof v!=='number'&&/^[=+\-@\t\r]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"'};const rows=[['Jenis','Tanggal','Penghuni','Kamar','Periode','Keterangan','Cara bayar','No kwitansi','Jumlah']];
   S.bills.filter(b=>!b.void).forEach(b=>{const t=tenant(b.tid)||{},r=room(b.rid)||{};b.pays.forEach(p=>rows.push(['Pemasukan',dayKey(p.ts),t.name||'',r.name||'',b.period,b.items.map(i=>i.n).join(' + '),p.m,p.no,p.a]))});
   S.expenses.forEach(e=>rows.push(['Pengeluaran',dayKey(e.ts),'','','',e.cat+(e.note?' - '+e.note:''),'','',-e.amount]));
   return rows.map(r=>r.map(q).join(',')).join('\r\n')}
@@ -1004,6 +1005,7 @@ const A={
   'pay-new':e=>paySheet(e.dataset.id),
   'py-m':e=>{PAYM=e.dataset.m;$$('#py-m button').forEach(b=>b.setAttribute('aria-pressed',b===e))},
   'py-save':()=>{const b=bill($('#py-id').value),a=num($('#py-amt').value),dv=$('#py-date').value;if(!a)return toast('Isi jumlah yang diterima.');
+    {const f=lateFeeDue(b);if(f&&a>bLeft(b)&&a<=bLeft(b)+f)b.items.push({n:'Denda keterlambatan',a:f,fee:1})}
     if(a>bLeft(b))return toast('Jumlah melebihi sisa tagihan '+rp(bLeft(b))+'. Tambahkan biaya dulu jika perlu.');
     const day=dv?new Date(dv+'T00:00:00'):new Date(),now=new Date();if(day.getTime()>today0())return toast('Tanggal bayar tidak boleh di masa depan.');day.setHours(now.getHours(),now.getMinutes(),now.getSeconds());
     const p={no:nextNo(day.getTime()),ts:day.getTime(),a,m:PAYM||'Tunai',note:$('#py-note').value.trim()};b.pays.push(p);save();render();kwSheet(b.id,p.no,true)},
