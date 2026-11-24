@@ -859,7 +859,7 @@ function orderCard(s, o){
       info += '<div class="wlowbox">'+E("money")+'<div><b>Saldo toko kurang</b><small>Butuh minimal '+rp(walletNeed(o.storeId, o.share))+' untuk menerima pesanan ini. Saldo sekarang '+rp((S.wallet[o.storeId]||{}).balance||0)+'.</small></div><button class="btn sm" data-act="nav" data-v="seller" data-t="saldo">Isi saldo</button></div>';
       if(o.status==="menunggu_konfirmasi") acts = "";
     }
-    if(o.status==="mencari_driver"){ info = searchBox(o, "Mencari driver terdekat dari toko Anda…", true); acts = (searchElapsed(o) >= 210 ? '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">Cari ulang</button>' : '')+selfBtn; }
+    if(o.status==="mencari_driver"){ info = searchBox(o, "Mencari driver terdekat dari toko Anda…", true) + callDrvLine(o); acts = '<button class="btn sm" data-act="call-drv" data-id="'+esc(o.id)+'">'+I("chat")+' Minta driver langsung</button>' + (searchElapsed(o) >= 210 ? '<button class="btn sm" data-act="set-status" data-id="'+esc(o.id)+'" data-v="mencari_driver">Cari ulang</button>' : '')+selfBtn; }
     if(o.status==="driver_ke_toko"){
       if(o.handedAt) info = driverBox(o, "Pesanan sudah diserahkan ke driver ✓", true);
       else {
@@ -1394,6 +1394,9 @@ document.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
   const a = el.dataset.act, id = el.dataset.id, v = el.dataset.v;
   if(a === "modal-bg"){ if(e.target === el) closeModal(); return; }
+  if(a === "modal-close"){ closeModal(); return; }
+  if(a === "call-drv"){ openCallDrv(id); return; }
+  if(a === "drv-want-x"){ S.drv.want = ""; render(); return; }
   if(a === "pay" || a === "pick-store") return;
   if(el.tagName === "A" && el.getAttribute("href")) return;
   if(a === "go"){ go(v); return; }
@@ -2381,7 +2384,7 @@ document.addEventListener("click", e => {
 // pesan dari service worker (push saat aplikasi sedang dibuka)
 if(navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", e => {
   const d = e.data || {}; if(d.type !== "jt-push") return;
-  notify(d.title || "JAGA", d.body || "", {kind:/order|pesanan/i.test(d.title || "") ? "order" : "info", act:d.url ? () => { const h = String(d.url).split("#")[1]; if(h && location.hash !== "#" + h) location.hash = h; } : null});
+  notify(d.title || "JAGA", d.body || "", {kind:/order|pesanan/i.test(d.title || "") ? "order" : "info", act:d.url ? () => { const am = String(d.url).match(/ambil=([\w-]+)/); if(am){ (S.drv = S.drv || {}).want = am[1]; render(); } const h = String(d.url).split("#")[1]; if(h && location.hash !== "#" + h) location.hash = h; } : null});
 });
 // status pesanan pembeli berubah
 let _bOrdSeen = null;
@@ -2503,9 +2506,10 @@ function drvJob(o, offer){
   let est = ongkirEstOf(o), estNote = ongkirDistOf(o) != null ? "jarak toko–pembeli ±" + kmTxt(ongkirDistOf(o)) : "";
   if(est == null && !offer && o.status === "diantar" && locOk(o.storeLoc) && S.drv.loc){ const dd = distM(o.storeLoc, S.drv.loc); est = ongkirByDist(dd); estNote = "dari jarak toko ke posisimu sekarang (±" + kmTxt(dd) + ")"; }
   const items = o.items.map(i => i.qty+'× '+esc(i.name)).join(", ");
-  let h = '<div class="card djob'+(offer?' offer':'')+'">';
+  let h = '<div class="card djob'+(offer?' offer':'')+(offer && S.drv.me && (o.callDrv || []).includes(S.drv.me.id) ? ' asked' : '')+'">';
   if(offer){
-    h += '<div class="dj-head">'+E("bell")+'<b>Order baru</b>'+(o.dist!=null?'<span class="dist">'+fmtDist(o.dist)+' ke toko</span>':'')+'</div>';
+    const asked = S.drv.me && (o.callDrv || []).includes(S.drv.me.id);
+    h += '<div class="dj-head">'+E("bell")+'<b>'+(asked ? 'Diminta langsung oleh toko' : 'Order baru')+'</b>'+(o.dist!=null?'<span class="dist">'+fmtDist(o.dist)+' ke toko</span>':'')+'</div>';
   } else {
     h += '<div class="dj-head">'+statusTag(o.status)+'<span class="small muted">'+esc(o.code)+'</span></div>';
     if(o.autoAssigned && o.status === "driver_ke_toko" && !o.handedAt) h += '<div class="small" style="margin:6px 0;color:#2f6bff;font-weight:700">'+I("checkc")+' Ditugaskan otomatis — kamu driver terdekat'+(o.assignDist != null ? ' ('+fmtDist(o.assignDist)+' dari toko)' : '')+'. Tidak bisa? Tekan “Batal ambil”, pesanan langsung pindah ke driver terdekat berikutnya.</div>';
@@ -2619,12 +2623,14 @@ function appDriver(){
   if(active.length){
     h += '<h2 class="dsec">Pesanan aktif</h2>' + active.map(o => drvJob(o, false)).join("");
   } else if(me.online){
-    const offers = S.drv.offers || [];
+    const offers = (S.drv.offers || []).slice().sort((x, y) => (y.id === S.drv.want) - (x.id === S.drv.want) || ((y.callDrv || []).includes(me.id)) - ((x.callDrv || []).includes(me.id)));
+    h += drvWantCard(me);
     h += '<h2 class="dsec">Order masuk'+(offers.length?' <span class="cnt">'+offers.length+'</span>':'')+'</h2>';
     h += drvBlockedNote();
     h += offers.length ? offers.map(o => drvJob(o, true)).join("")
       : '<div class="dwait">'+COURIER_SVG+'<b>Menunggu order…</b><small>Order dari toko & penumpang Jago terdekat akan muncul di sini otomatis. Biarkan halaman ini terbuka.</small></div>';
   } else {
+    h += drvWantCard(me);
     h += '<div class="dwait off">'+E("scooter")+'<b>Kamu sedang offline</b><small>Nyalakan ONLINE untuk mulai menerima order dari toko di sekitarmu.</small></div>';
   }
   h += drvAchieve();
@@ -5118,6 +5124,67 @@ function mountOneMap(){
     const off = r.s.active === false;
     L.marker([r.s.lat, r.s.lng], {icon:L.divIcon({className:"smk", html:'<i class="'+(off?'off':'on')+' big">'+esc((r.s.name||"?").trim().charAt(0).toUpperCase())+'</i>', iconSize:[40,40], iconAnchor:[20,20]})}).addTo(ONE_MAP);
   }).catch(() => {});
+}
+
+/* ---------- toko meminta driver tertentu (WA + link langsung ke pesanan) ---------- */
+const DRV_LINK = "https://jagapatner.my.id/apps/";
+function callDrvLine(o){
+  const ids = o.callDrv || []; if(!ids.length) return "";
+  const nm = ids.map(i => (o.callNames || {})[i] || "driver").slice(-3).join(", ");
+  return '<div class="calledln">'+I("send")+'<span>Sudah diminta: <b>'+esc(nm)+'</b>'+(o.callAt ? ' · '+ago(o.callAt) : '')+'. Menunggu driver membuka link & menerima.</span></div>';
+}
+function callDrvMsg(o, d){
+  const est = ongkirEstOf(o), dist = ongkirDistOf(o), cod = (o.pay && o.pay.k === "cod") || o.managed;
+  const n = (o.items || []).reduce((a, i) => a + (i.qty || 0), 0);
+  return "Halo " + (d.name || "") + ", saya dari toko " + (o.storeName || "") + " (JAGA). Ada pesanan antar " + (o.code || "") + ":\n" +
+    "📦 " + n + " barang\n" +
+    "🏪 Ambil di: " + (o.storeName || "") + (o.storeAddress ? ", " + o.storeAddress : "") + "\n" +
+    "🏠 Antar ke: " + (shortAddr(o.buyer && o.buyer.address) || "alamat pembeli") + (dist != null ? " (±" + kmTxt(dist) + ")" : "") + "\n" +
+    "💰 Ongkir " + (est != null ? "±" + rp(est) : "sesuai kesepakatan") + (cod ? " · tagih pesanan " + rp(o.total || 0) + " ke pembeli" : "") + "\n\n" +
+    "Bisa antar sekarang? Buka link ini, nyalakan ONLINE, lalu tekan Terima:\n" + DRV_LINK + "?ambil=" + o.id + "#driver";
+}
+async function openCallDrv(id){
+  const o = S.orders.find(x => x.id === id); if(!o) return;
+  const m = document.getElementById("modal");
+  m.innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal cdm"><h2 class="sec">Minta driver mengantar</h2><div class="pad muted small">Memuat daftar driver…</div></div></div>';
+  let r;
+  try{
+    r = SB ? await sbStore.rpc("jt_store_drivers", {p_id:id})
+      : {drivers:(S.drivers || []).filter(d => !d.suspended).map(d => ({id:d.id, name:d.name, wa:d.wa, vehicle:d.vehicle || "", plate:d.plate || "", online:!!d.online, free:!!d.online, can:true, dist:null, called:(o.callDrv || []).includes(d.id)}))};
+  }catch(e){ m.innerHTML = ""; return toast(String(e.message || e)); }
+  const list = (r && r.drivers) || [];
+  const row = d => {
+    const st = d.declined ? ['gray', 'Sudah menolak pesanan ini'] : d.free && d.can ? ['ok', 'Online · siap' + (d.dist != null ? ' · ' + fmtDist(d.dist) + ' dari toko' : '')]
+      : d.free ? ['warn', 'Online · saldo driver kurang'] : d.online ? ['busy', 'Sedang mengantar pesanan lain'] : ['off', 'Offline' + (d.seen ? ' · aktif ' + ago(d.seen) : '')];
+    const wa = d.wa && !d.declined ? '<a class="btn sm press" href="'+esc(waLink(d.wa, callDrvMsg(o, d)))+'" target="_blank" rel="noopener" data-calldrv="'+esc(d.id)+'" data-oid="'+esc(o.id)+'">'+I("chat")+' WA</a>' : '';
+    const tel = d.wa ? '<a class="btn ghost sm" href="tel:'+esc(String(d.wa).replace(/[^\d+]/g, ""))+'">'+I("phone")+'</a>' : '';
+    return '<div class="cdr"><div class="drv-av">'+esc(initials(d.name))+'</div><div class="grow"><b>'+esc(d.name || "Driver")+(d.called ? ' <span class="tag blue">Sudah diminta</span>' : '')+'</b><small>'+esc([d.vehicle, d.plate, d.area].filter(Boolean).join(" · "))+'</small>'+
+      '<small class="cds '+st[0]+'"><i></i>'+esc(st[1])+'</small></div><div class="cdb">'+wa+tel+'</div></div>';
+  };
+  m.innerHTML = '<div class="modal-bg" data-act="modal-bg"><div class="modal cdm"><h2 class="sec">Minta driver mengantar</h2>'+
+    '<div class="cdo"><b>'+esc(o.code || "")+'</b> · antar ke '+esc(shortAddr(o.buyer && o.buyer.address) || "pembeli")+(ongkirEstOf(o) != null ? ' · ongkir ±'+rp(ongkirEstOf(o)) : '')+'</div>'+
+    (list.length ? '<div class="cdl">'+list.map(row).join("")+'</div>' : '<div class="notice">Belum ada driver terdaftar di sekitar toko. Anda bisa mengantar sendiri.</div>')+
+    '<div class="hint" style="margin-top:10px">Ketuk <b>WA</b> untuk mengirim permintaan. Driver yang Anda minta <b>bisa menerima pesanan ini walau di luar radius</b>, dan link di pesan WA langsung membuka pesanan ini di aplikasi driver. Status pesanan berubah otomatis saat driver menerima.</div>'+
+    '<button type="button" class="btn ghost block" style="margin-top:10px" data-act="modal-close">Tutup</button></div></div>';
+}
+document.addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest("a[data-calldrv]"); if(!a) return;
+  const oid = a.dataset.oid, did = a.dataset.calldrv, o = S.orders.find(x => x.id === oid);
+  if(SB) sbStore.rpc("jt_store_call_driver", {p_id:oid, p_driver:did}).then(r => {
+    if(o){ o.callDrv = (o.callDrv || []).filter(x => x !== did).concat(did); o.callNames = Object.assign({}, o.callNames, {[did]:r && r.name}); o.callAt = Date.now(); }
+    toast((r && r.name ? r.name : "Driver") + " diminta. " + (r && r.free ? "Ia bisa langsung menerima di aplikasi." : "Minta ia membuka link & menyalakan ONLINE."));
+    render();
+  }).catch(err => toast(String(err.message || err)));
+  else if(o){ o.callDrv = (o.callDrv || []).filter(x => x !== did).concat(did); o.callAt = Date.now(); const d = (S.drivers || []).find(x => x.id === did); o.callNames = Object.assign({}, o.callNames, {[did]:d && d.name}); render(); }
+}, true);
+/* driver membuka link permintaan toko: ?ambil=ID#driver */
+(function(){ try{ const q = new URLSearchParams(location.search).get("ambil"); if(q && /^[\w-]{4,64}$/.test(q)){ (S.drv = S.drv || {}).want = q; history.replaceState(null, "", location.pathname + location.hash); } }catch(_){} })();
+function drvWantCard(me){
+  const id = S.drv.want; if(!id) return "";
+  if(!me.online) return '<div class="card wantc">'+E("bell")+'<div class="grow"><b>Toko meminta kamu mengantar pesanan</b><small>Nyalakan <b>ONLINE</b> agar pesanan yang diminta muncul di sini, lalu tekan Terima.</small></div><button class="btn sm press" data-act="drv-online">Nyalakan ONLINE</button></div>';
+  if(!S.drv.loaded) return "";
+  if((S.drv.offers || []).some(o => o.id === id) || (S.drv.mine || []).some(o => o.id === id)) return "";
+  return '<div class="card wantc gone">'+I("megaphone")+'<div class="grow"><b>Pesanan yang diminta sudah tidak tersedia</b><small>Mungkin sudah diambil driver lain, diantar sendiri oleh toko, atau dibatalkan.</small></div><button class="btn ghost sm" data-act="drv-want-x">Tutup</button></div>';
 }
 /* ---------- peta sebaran toko di portal owner ---------- */
 let OWN_MAP_ROWS = [], OWN_MAP = {node:null, map:null, mk:{}, sig:""};

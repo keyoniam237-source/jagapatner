@@ -1883,3 +1883,24 @@ html.navopen,html.navopen body{overflow:hidden}
 .otile em{width:22px;height:22px;font-size:12px;border-radius:7px;margin-bottom:2px}
 .otile b{font-size:11px}.otile small{font-size:9.5px}
 .otile .lowb{top:6px;right:6px;width:8px;height:8px}.otile .nolocb{top:5px;right:17px;width:13px;height:13px;font-size:9px}
+/* toko minta driver langsung */
+.calledln{display:flex;gap:8px;align-items:flex-start;margin-top:8px;background:#eef4ff;border:1px solid #cfdcff;border-radius:12px;padding:8px 10px;font-size:12.5px;color:#22304f}
+.calledln .ic{flex:none;margin-top:1px}
+.cdm{max-width:460px}
+.cdo{font-size:13px;color:#22304f;background:#f5f8fe;border-radius:12px;padding:9px 11px;margin:-4px 0 10px}
+.cdl{display:grid;gap:2px;max-height:56vh;overflow:auto;margin:0 -4px;padding:0 4px}
+.cdr{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eef1f6}.cdr:last-child{border-bottom:0}
+.cdr .drv-av{flex:none}
+.cdr b{display:block;font-size:14.5px}.cdr small{display:block;font-size:12px;color:#6a7894}
+.cds{display:flex!important;align-items:center;gap:6px;font-weight:700;margin-top:2px}
+.cds i{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.cds.ok{color:#15803d!important}.cds.ok i{background:#16a34a}
+.cds.warn{color:#b45309!important}.cds.warn i{background:#f59e0b}
+.cds.busy{color:#c2410c!important}.cds.busy i{background:#fb923c}
+.cds.off i,.cds.gray i{background:#b7c0cf}
+.cdb{display:flex;gap:6px;flex:none}.cdb .btn{padding:8px 11px}
+.djob.asked{box-shadow:0 0 0 2.5px #2f6bff,0 14px 30px -16px rgba(47,107,255,.6)}
+.wantc{display:flex;gap:10px;align-items:center;margin:0 16px 12px;padding:12px;border:1.5px solid #2f6bff;background:#eef4ff}
+.wantc.gone{border-color:#e4e9f2;background:#f7f9fc}
+.wantc .e3d{width:32px;height:32px;flex:none}.wantc b{display:block;font-size:14px}.wantc small{display:block;font-size:12.5px;color:#475673}
+.wantc small b{display:inline;font-size:inherit}
